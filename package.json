@@ -1,0 +1,13 @@
+{
+    "id": "ld-select",
+    "name": "下拉多选、单选",
+    "version": "1.0.5",
+    "description": "下拉多选 下拉单选",
+    "keywords": [
+        "select"
+    ],
+    "dependencies": {
+        "dayjs": "^1.11.5",
+        "uview-ui": "^2.0.36"
+    }
+}

@@ -1,0 +1,13 @@
+; top-most EditorConfig file
+root = true
+
+; Unix-style newlines
+[*]
+end_of_line = LF
+charset = utf-8
+
+[*.vue]
+indent_style = space
+indent_size = 4
+
+

@@ -1,0 +1,386 @@
+{
+	"pages": [
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},{
+            "path" : "pages/home/home",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "史伟莎"
+            }
+            
+        },{
+			"path": "pages/my/my",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		}
+        ,{
+            "path" : "pages/service/detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "服务详情"
+            }
+            
+        },{
+            "path" : "pages/service/start",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "开始服务"
+            }
+            
+        },{
+            "path" : "pages/service/briefing",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "服务简报"
+            }
+            
+        },{
+            "path" : "pages/service/material",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "物料使用"
+            }
+            
+        },{
+            "path" : "pages/service/add_material",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "新增物料使用"
+            }
+            
+        },{
+            "path" : "pages/service/equipment",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "设备情况"
+            }
+            
+        },{
+            "path" : "pages/service/risk",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "风险跟进",
+				"enablePullDownRefresh":true
+            }
+            
+        },{
+            "path" : "pages/service/photo",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "现场工作照"
+            }
+            
+        },{
+			"path": "pages/report/detail",
+			"style": {
+				"navigationBarTitleText": "服务详情"
+			}
+		},{
+            "path" : "pages/report/risk_detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "风险跟进"
+            }
+            
+        },{
+            "path" : "pages/sign/sign",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "到店签到"
+            }
+            
+        },{
+            "path" : "pages/sign/check_out",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "签出离店"
+            }
+            
+        },{
+            "path" : "pages/sign/select",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "位置微调"
+            }
+            
+        },{
+            "path" : "pages/sign/search",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "位置搜索"
+            }
+            
+        }
+        ,{
+            "path" : "pages/service/equipment_hz",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "汇总预览"
+            }
+            
+        }
+        ,{
+            "path" : "pages/service/equipment_xq",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "检查详情"
+            }
+            
+        }
+        ,{
+            "path" : "pages/service/risk_detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "风险跟进"
+            }
+            
+        }
+        ,{
+            "path" : "pages/service/last_risk",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "历史风险"
+            }
+            
+        }
+        ,{
+            "path" : "pages/service/last_risk_detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "历史风险详情"
+            }
+            
+        }
+        ,{
+            "path" : "pages/service/add_photo",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "新增工作照"
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/aboutus",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "关于我们"
+            }
+            
+        }
+        ,{
+            "path" : "pages/history/list",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "历史任务",
+				"enablePullDownRefresh":true
+            }
+            
+        }
+        ,{
+            "path" : "pages/history/report_detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "报告详情"
+            }
+            
+        },{
+			"path": "pages/report/sign",
+			"style": {
+				"navigationBarTitleText": "签名"
+			}
+		}
+        ,{
+            "path" : "pages/history/job_detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "任务详情"
+            }
+            
+        }    
+        ,{
+            "path" : "pages/service/scan_equipment",
+            "style" :                                                                                    
+            { 
+                "navigationBarTitleText": "设备详情"
+            }
+        },{
+            "path" : "pages/report/material",
+            "style" :                                                                                    
+            { 
+                "navigationBarTitleText": "物料证件"
+            }
+        },{
+            "path" : "pages/my/demo",
+            "style" :                                                                                    
+            { 
+                "navigationBarTitleText": "demo",
+				"enablePullDownRefresh":true
+            }
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "LBS",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"usingComponents": {
+			"van-button": "/wxcomponents/vant/button/index",
+			"van-cell": "/wxcomponents/vant/cell/index",
+			"van-cell-group": "/wxcomponents/vant/cell-group/index",
+			"van-search": "/wxcomponents/vant/search/index",
+			"van-icon": "/wxcomponents/vant/icon/index",
+			"van-field": "/wxcomponents/vant/field/index",
+			"van-loading": "/wxcomponents/vant/loading/index",
+			"van-info": "/wxcomponents/vant/info/index"
+		}
+	},
+	"tabBar": {
+	    "color": "#bdbdbd",
+	    "selectedColor": "#1899dc",
+	    "borderStyle": "black",
+	    "backgroundColor": "#ffffff",
+	    "list": [{
+	        "pagePath": "pages/home/home",
+	        "iconPath": "/static/icon/tabbar/risks.png",
+	        "selectedIconPath": "/static/icon/tabbar/risks_x.png",
+	        "text": "任务"
+	    }, 
+		{
+	        "pagePath": "pages/my/my",
+	        "iconPath": "/static/icon/tabbar/wode.png",
+	        "selectedIconPath": "/static/icon/tabbar/wode_x.png",
+	        "text": "我的"
+	    }]
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"cl-(.*)": "@/cl-uni/components/cl-$1/cl-$1.vue",
+			"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+		}
+	},
+	"condition": {
+	    "current": 0,
+	    "list": [
+			{
+	            "name": "首页",
+	            "path": "pages/home/home",
+	            "query": "interval=4000&autoplay=false"
+	        },
+			{
+			    "name": "服务详情",
+			    "path": "pages/service/detail",
+			    "query": "jobtype=1&jobid=104"
+			},
+	        {
+	            "name": "历史任务",
+	            "path": "pages/history/list",
+				"query": "job_type=1&job_date=2023-12-10&service_type=1"
+	        },
+			{
+			    "name": "任务详情",
+			    "path": "pages/history/job_detail",
+				"query": "jobid=104&jobtype=1"
+			},
+			{
+			    "name": "报告详情",
+			    "path": "pages/history/report_detail",
+				"query": "jobid=104&jobtype=1"
+			},
+			{
+			    "name": "开始服务",
+			    "path": "pages/service/start",
+				"query": "jobid=1&jobtype=1&ct=0"
+			},
+			{
+			    "name": "服务简报",
+			    "path": "pages/service/briefing",
+				"query": "jobid=1&jobtype=1&ct=0&shortcut_type=undefined&service_type=2"
+			},
+			{
+			    "name": "物料使用",
+			    "path": "pages/service/material",
+				"query": "jobid=105&jobtype=1&ct=0&shortcut_type=undefined&service_type=2"
+			},
+			{
+			    "name": "设备情况",
+			    "path": "pages/service/equipment",
+				"query": "jobid=105&jobtype=1&ct=0&shortcut_type=undefined&service_type=2"
+			},
+			{
+			    "name": "设备详情",
+			    "path": "pages/service/scan_equipment",
+				"query": "jobid=1&jobtype=1&id=1" // jobid=1&jobtype=1&id=45%2C46
+			},
+			{
+			    "name": "汇总预览",
+			    "path": "pages/service/equipment_hz",
+				"query": "jobid=1&jobtype=1" 
+			},
+			{
+			    "name": "风险跟进",
+			    "path": "pages/service/risk",
+				"query": "jobid=105&jobtype=1" 
+			},
+			{
+			    "name": "风险跟进",
+			    "path": "pages/service/risk_detail",
+				"query": "jobid=1&jobtype=1&id=3" 
+			},
+			{
+			    "name": "风险历史",
+			    "path": "pages/service/last_risk",
+				"query": "jobid=1&jobtype=1&service_type=&shortcut_type=" 
+			},
+			
+			{
+			    "name": "风险历史详情",
+			    "path": "pages/service/last_risk_detail",
+				"query": "jobid=1&jobtype=1&service_type=&shortcut_type=&id=27" 
+			},
+			{
+			    "name": "现场工作照",
+			    "path": "pages/service/photo",
+				"query": "jobid=104&jobtype=1&id=3" 
+			},
+			{
+			    "name": "新增工作照",
+			    "path": "pages/service/add_photo",
+				"query": "jobid=104&jobtype=1" 
+			},
+			{
+			    "name": "编辑工作照",
+			    "path": "pages/service/add_photo",
+				"query": "jobid=104&jobtype=1&id=1" 
+			},
+			{
+			    "name": "服务详情",
+			    "path": "pages/report/detail",
+				"query": "jobid=105&jobtype=1" 
+			},
+			{
+			    "name": "风险跟进",
+			    "path": "pages/report/risk_detail",
+				"query": "id=1&jobid=105&jobtype=1" 
+			},
+			{
+			    "name": "签离出店",
+			    "path": "pages/sign/check_out",
+				"query": "jobid=1&jobtype=1" 
+			},
+	        {
+	            "name": "我的",
+	            "path": "pages/my/my"
+	        },
+	        {
+	            "name": "demo",
+	            "path": "pages/my/demo"
+	        }
+	    ]
+	}
+}
