@@ -95,6 +95,9 @@
 			</view>
 			<cl-textarea v-model="matters_needing_attention" placeholder="请输入" count></cl-textarea>
 		</view>
+		<view style="width: 100%; height: 100rpx;">
+			
+		</view>
 		<view class="bu" @tap="save()">
 			保存
 		</view>
@@ -119,7 +122,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 		},
 		data() {
 			return {
-				name:'物料使用 - 详情',
+				name:'新增物料使用',
 				shortcuts: [],
 				shortcutsOld:[],	// 快捷语原值 用于恢复
 				material: "",
@@ -163,10 +166,9 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 			this.id = index.id
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
-			// this.shortcut_type = index.shortcut_type
-			// this.service_type = index.service_type
+			
 			this.data_select()
-			// this.getshortcuts()
+			
 		},
 		methods: {
 			/**
@@ -174,7 +176,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 			 * *
 			 */
 			inputFun(data) {
-				// console.log(data)
+				
 				this.search_key = data.value;
 				this.clearTimer()
 				if (this.search_key && this.search_key.length > 0) {
@@ -214,7 +216,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					data: param,
 					success: (res) => {
 						if (res.data.code == 200) {
-							console.log(res.data.data)
+							// console.log(res.data.data)
 							
 							if (res.data.data) {
 								
@@ -224,24 +226,19 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 									item.value = item.name
 								})
 								this.material_lists = material_lists
-								
-								// this.material = this.material_lists[0].value;		// 当前物料信息
-								// this.registration_no = this.material_lists[0].registration_no;
-								// this.active_ingredient = this.material_lists[0].active_ingredient;
-								// this.ratio = this.material_lists[0].ratio;
+							
 								this.targets = res.data.data.materialTargets	     // 靶标
 								this.usemodes = res.data.data.materialUsemodes       // 使用方式
 								this.useareas = res.data.data.materialUseareas		 // 使用区域
 								
-								
-								let shortcuts = []			// 快捷语内容
+								// 快捷语内容
+								let shortcuts = []			
 								if(res.data.data.shortcutContents.length>0)
 								{
 									res.data.data.shortcutContents.forEach((item,i)=>{
 										shortcuts.push({label:item,value:item})
 									})
 								}
-								// console.log(shortcuts)
 								this.shortcuts = shortcuts
 								this.shortcutsOld = shortcuts
 								
@@ -256,13 +253,17 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 									this.usemode = res.data.data.material.use_mode.split(',')
 									this.usearea = res.data.data.material.use_area.split(',')
 									this.processing_space = res.data.data.material.processing_space	// 处理空间
-									this.dosage = res.data.data.material.dosage		// 药物用量
+									this.dosage = res.data.data.material.dosage						// 药物用量
 									this.matters_needing_attention = res.data.data.material.matters_needing_attention	// 注意事项
 									
 								}
 							}
-							// 其它状态
-							this.checkCode(res.data.code,res.data.msg)
+							
+							
+							if(res.data.code == 400)
+							{
+								uni.$utils.toast("消息")
+							}
 							
 						}
 
@@ -271,38 +272,6 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						console.log(res);
 					}
 				})
-			},
-			getshortcuts() {
-				//查询快捷语
-				let params = {
-					staffid: uni.getStorageSync('staffid'),
-					city: uni.getStorageSync('city'),
-					shortcut_type: this.shortcut_type,
-					service_type: this.service_type,
-					search_key: this.search_key
-				}
-				uni.request({
-					url: `${this.$baseUrl}/getshortcuts`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: params,
-					success: (res) => {
-						if (res.data.code == 1) {
-							this.shortcuts = res.data.data
-						} else {
-							uni.showToast({
-								title: res.msg
-							});
-						}
-
-					},
-					fail: (err) => {
-						console.log(res);
-					}
-				});
 			},
 			change_material(e) {
 				for (let i = 0; i < this.material_lists.length; i++) {
@@ -316,11 +285,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 			},
 			// 保存
 			save() {
-				// console.log(this.id)
-				// return false
 				
-				// console.log(this.material);return;
-				// if (this.material == '' || this.material == undefined || this.target == '' || this.usemode == '') {
 				if (!this.material)
 				{
 					uni.showToast({
@@ -333,7 +298,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						title: "保存中..."
 					});
 					let params = {
-						// staffid: uni.getStorageSync('staffid'),
+						
 						id: this.id,
 						job_id: this.jobid,
 						job_type: this.jobtype,
@@ -580,7 +545,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 		right: 0;
 		bottom: 0px;
 		line-height: 50px;
-		/* z-index: 9999; */
+		z-index: 9;
 	}
 
 	.cl-select {

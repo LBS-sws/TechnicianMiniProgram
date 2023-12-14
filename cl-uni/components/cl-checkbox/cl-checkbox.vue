@@ -125,7 +125,7 @@ export default {
 			}
 
 			this.checked = !this.checked;
-
+			
 			// 回调到组件或者多选框组
 			if (this.hasParent) {
 				this.dispatch("ClCheckboxGroup", "checkbox.change", this.label);

@@ -46,8 +46,7 @@
 			}
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
-			// this.shortcut_type = index.shortcut_type
-			// this.service_type = index.service_type
+			
 			this.data_select()
 
 		},

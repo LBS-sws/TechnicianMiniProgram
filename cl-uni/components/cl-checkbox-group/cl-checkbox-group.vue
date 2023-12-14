@@ -46,7 +46,19 @@ export default {
 		this.$on("checkbox.change", (label) => {
 			let index = this.value.findIndex((e) => e == label);
 			let list = cloneDeep(this.value);
-
+			
+			// 处理选择后前面有逗号bug
+			if(Array.isArray(list))
+			{
+				
+				list.forEach((item,i)=>{
+					if(item == "")
+					{
+						list.splice(i, 1);
+					}
+				})
+			}
+			
 			if (index >= 0) {
 				list.splice(index, 1);
 			} else {
