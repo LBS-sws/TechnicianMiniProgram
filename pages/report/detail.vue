@@ -3,8 +3,9 @@
 		<view class="download" @tap="download()" v-if="current_tab==0">
 			<cl-icon name="cl-icon-cloud-download" color="#007AFF" :size="80"></cl-icon>
 		</view>
-		<view v-if="basic.jStaff01==Staff01">
-			<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.Status==2 || basic.Status==-1)">
+		
+		<view>
+			<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1)">
 				<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
 			</view>
 		</view>
@@ -50,12 +51,12 @@
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="服务时间(开始)：">
-						<text>{{basic.job_date}}  &nbsp; {{basic.job_start_time}}</text>
+						<text>{{basic.start_date}}  &nbsp; {{basic.start_time}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="服务时间(结束)：">
-						<text>{{basic.job_date}}  &nbsp; {{basic.job_end_time}}</text>
+						<text v-if="basic.finish_date">{{basic.finish_date}}  &nbsp; {{basic.finish_time}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
@@ -163,7 +164,9 @@
 								</t-tr>
 								<t-tr v-if="JSON.stringify(item.content)!='{}'"
 									v-for="(contents, index_cs) in item.table_data" :key="index_cs">
-									<t-td v-for="(content, index_c) in contents" :key="index_c">{{content}}</t-td>
+									<t-td v-for="(content, index_c) in contents" :key="index_c">
+										<text v-if="content !='null'">{{content}}</text>
+									</t-td>
 								</t-tr>
 							</t-table>
 						</view>
@@ -182,7 +185,7 @@
 								<cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
 								<cl-list v-if="ct==1"><span>风险区域：</span>{{item.risk_area}}</cl-list>
 								<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.creat_time}}</cl-list>
+								<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
 								<cl-row>
 									<cl-col span="12">
 										<view class="fx">风险等级：{{item.risk_rank}}</view>
@@ -435,7 +438,8 @@
 					questions: []
 				},
 				questionsData:[],	// 问题列表
-				radioData:[{t: '是　Yes', v: 1}, {t: '否　No', v: 0}]	// 是、否
+				radioData:[{t: '是　Yes', v: 1}, {t: '否　No', v: 0}],	// 是、否
+				isShowAdd:false,
 			}
 		},
 		onLoad(index) {
@@ -457,7 +461,7 @@
 			this.ct = uni.getStorageSync('ct')
 			this.shortcut_type = index.shortcut_type
 			this.service_type = index.service_type
-			this.Staff01 = uni.getStorageSync('staffid')
+			this.Staff01 = uni.getStorageSync('staffname')
 			// 首次获取屏幕宽度
 			uni.getSystemInfo({
 				success: (res) => {
@@ -542,6 +546,8 @@
 			},
 			// 执行整个tab事件
 			run_tab(index) {
+				console.log(index)
+				
 				// 记录当前滑动的位置
 				this.current_tab = index
 				// 如果点击了第4个以后的,滚动条向右移动屏幕的宽度
@@ -639,16 +645,28 @@
 					job_type:this.jobtype,
 				}
 				this.$api.getSignature(params6).then(res=>{
-					// console.log(res.data)
+					console.log(res.data)
 					// 员工签名
-					this.autograph_employee01_signature = `${this.$baseUrl_imgs}` + res.data.main[0]
+					if(res.data.main[0])
+					{
+						// console.log(res.data.main[0])
+						this.autograph_employee01_signature = `${this.$baseUrl_imgs}` + res.data.main[0]
+					}
 					
-					// 客户签名与附加签名
-					this.autograph_customer_signature = res.data.cust.customer_signature_url
-					this.autograph_customer_signature_add = res.data.cust.customer_signature_url_add
+					
+					// 客户签名
+					if(res.data.cust.customer_signature_url)
+					{
+						this.autograph_customer_signature = res.data.cust.customer_signature_url
+					}
+					// 客户附加签名
+					if(res.data.cust.customer_signature_url_add)
+					{
+						this.autograph_customer_signature_add = res.data.cust.customer_signature_url_add
+					}
 					
 					// 客户点评
-					this.autograph_customer_grade = res.data.evaluates.score
+					// this.autograph_customer_grade = res.data.evaluates.score
 					
 				}).catch(err=>{
 					// console.log(err)
@@ -670,9 +688,13 @@
 					data: param,
 					success: (res) => {
 						if (res.data.code == 200) {
-							// if (res.data.data) {
+							if (res.data.data) {
 								this.basic = res.data.data
-							// }
+								if(res.data.data.staff.main == this.Staff01)
+								{
+									this.isShowAdd = true
+								}
+							}
 							// console.log(res.data)
 							
 							// 点评列表
@@ -684,8 +706,12 @@
 							this.questionsData = questionsData
 							// this.startSign_sData.questions = questionsData
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
+						if(res.data.code == 400)
+						{
+							uni.$utils.toast(res.data.msg)
+							return false
+						}
 					},
 					fail: (err) => {
 						console.log(res);
@@ -713,8 +739,7 @@
 							// }
 							// console.log(res.data)
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);
@@ -742,8 +767,7 @@
 							// }
 							// console.log(res.data)
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);
@@ -771,8 +795,7 @@
 							// }
 							// console.log(res.data)
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);
@@ -807,10 +830,9 @@
 								
 								this.risk = list
 							// }
-							console.log(res.data.data.data)
+							// console.log(res.data.data.data)
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);
@@ -846,12 +868,9 @@
 								
 							})
 							
-							// console.log(list)
-							
 							this.photo = list
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);

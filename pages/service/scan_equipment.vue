@@ -178,12 +178,11 @@ export default {
 		}
 		this.jobid = index.jobid
 		this.jobtype = index.jobtype
-		// this.shortcut_type = index.shortcut_type
-		// this.service_type = index.service_type
+		
 		this.id = index.id
 		// this.ct = uni.getStorageSync('ct')
 		this.data_select()
-		// this.getshortcuts()
+		
 	},
 	methods: {
 			
@@ -359,6 +358,12 @@ export default {
 								// 6.补充说明
 								if(res.data.data.list.length == 1){
 									this.more_info = res.data.data.list[0].more_info
+									if(res.data.data.list[0].more_info == "null")
+									{
+										this.more_info = ''
+									}else{
+										this.more_info = res.data.data.list[0].more_info
+									}
 								}
 								
 								this.list = res.data.data.list		// 数组
@@ -428,41 +433,6 @@ export default {
 							});
 						}
 						
-					}
-				});
-			},
-			getshortcuts() {
-				//查询快捷语
-				// if(s_key){
-				// 	 this.search_key = s_key
-				// }  
-				let params = {
-					staffid: uni.getStorageSync('staffid'),
-					city: uni.getStorageSync('city'),
-					shortcut_type: this.shortcut_type,
-					service_type: this.service_type,
-					search_key: this.search_key
-				}
-				uni.request({
-					url: `${this.$baseUrl}/getshortcuts`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: params,
-					success: (res) => {
-						if (res.data.code == 1) {
-							this.shortcuts = res.data.data
-						} else {
-							uni.showToast({
-								title: res.msg
-							});
-						}
-
-					},
-					fail: (err) => {
-						console.log(res);
 					}
 				});
 			},

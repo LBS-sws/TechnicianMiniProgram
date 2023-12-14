@@ -7,17 +7,17 @@
 		<view class="service">
 			<view class="service_title">现场照片<span class="jh">*</span><span class="dcts">(最多4张)</span></view>
 			<view class="service_content">
-				<!-- <view label="限制上传图片格式/大小">
-					<new-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加工作照片"
-						@upload="handleLoaded3" @change="handleChange3" :number="4" :type="type">
+				<view label="限制上传图片格式/大小">
+					<m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加工作照片"
+						@upload="handleLoaded3" @change="handleChange3" :number="4"  :formData="formData">
 						<template v-slot:icon>
 							<text class="s-add-list-btn-icon">+</text>
 						</template>
-					</new-upload>
-				</view> -->
+					</m-upload>
+				</view>
 			<!-- upload -->
 			
-			<view class="bg-white">
+			<!-- <view class="bg-white">
 				
 				<view class="uni-file-picker__container">
 					<view class="file-picker__box" v-for="(item,index) in picturesx" :key="index">
@@ -40,7 +40,7 @@
 						</view>
 					</view>
 				</view>
-			</view>
+			</view> -->
 				
 			</view>
 		</view>
@@ -101,6 +101,9 @@
 				type:0,
 				pictures:[],
 				picturesx:[],		// 带http
+				formData: {
+					type:1
+				},
 			};
 		},
 		onLoad(index) {
@@ -298,20 +301,28 @@
 					success: (res) => {
 						if (res.data.code == 200) {
 							if (res.data.data) {
-								console.log(res.data.data)
-
-								let list = res.data.data.site_photos
-								let arr = []
-								list.forEach((item,i)=>{
-									// 处理图片地址
-									arr.push(`${this.$baseUrl_imgs}/` + item)
-									
-								})
-								// console.log(arr)
-								that.pictures = res.data.data.site_photos
-								that.picturesx = arr
+								// console.log(res.data.data)
+	
+								var strArr = res.data.data.site_photos ?? [];	
+								if (strArr.length > 0) {
+										
+									strArr.forEach((item,i)=>{
+										
+									let imgurl = '/' + item
+										imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
+										this.init_photos[i] = imgurl
+									})
+							
+									this.$refs.upload3.setItems(this.init_photos);
+								}
 								
 								that.remarks = res.data.data.remarks
+							}
+						}else{
+							if(res.data.code == 400)
+							{
+								uni.$utils.toast(res.data.msg)
+								return false
 							}
 						}
 
@@ -448,21 +459,15 @@
 			},
 			// 添加
 			add() {
-				// this.upload_site_photos = this.pictures
-				//保存信息
-				console.log("保存图片信息：")
-				if(this.pictures.length == 0)
-				{
-					 	uni.showToast({
-							icon: 'none',
-							title: `没选择工作照(⊙_⊙)?`
-						});
-						return false;
+				
+				if (this.upload_site_photos == '' || this.upload_site_photos == undefined || this.upload_site_photos.length == 0) {
+					uni.showToast({icon: 'none', title: `没选择工作照(⊙_⊙)?`});
+				    return false;
 				}
 				let param = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
-					site_photos: this.pictures,
+					site_photos: this.upload_site_photos,
 					remarks: this.remarks,
 				}
 				uni.showLoading({
@@ -498,15 +503,9 @@
 									})
 								}, 100)
 							}
-						} else {
-
-							uni.showToast({
-								icon: 'error',
-								title: res.data.msg
-							});
-							setTimeout(function() {
-								uni.hideLoading();
-							}, 2000);
+						}else{
+							uni.$utils.toast(res.data.msg)
+							return false
 						}
 					},
 					fail: (err) => {
@@ -527,19 +526,15 @@
 			save() {
 				//保存信息
 				console.log("保存图片信息：")
-				if(this.pictures.length == 0)
-				{
-					uni.showToast({
-						icon: 'none',
-						title: `没选择工作照(⊙_⊙)?`
-					});
-					return false
+				if (this.upload_site_photos == '' || this.upload_site_photos == undefined || this.upload_site_photos.length == 0) {
+					uni.showToast({icon: 'none', title: `没选择工作照(⊙_⊙)?`});
+					return false;
 				}
 				
 				// this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 				let param = {
 					id: this.id,
-					site_photos: this.pictures,
+					site_photos:this.upload_site_photos,
 					remarks: this.remarks,
 				}
 				uni.showLoading({
@@ -571,11 +566,13 @@
 								})
 								setTimeout(() => {
 									uni.redirectTo({
-										url: "/pages/service/photo?jobid=" + this.jobid +
-											'&jobtype=' + this.jobtype
+										url: "/pages/service/photo?jobid=" + this.jobid +'&jobtype=' + this.jobtype
 									})
 								}, 1000)
 							}
+						}else{
+							uni.$utils.toast(res.data.msg)
+							return false
 						}
 
 					},

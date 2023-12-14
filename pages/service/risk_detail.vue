@@ -62,31 +62,6 @@
 						</template>
 					</m-upload>
 				</view>
-				<!-- <view class="bg-white">
-
-					<view class="uni-file-picker__container">
-						<view class="file-picker__box" v-for="(item,index) in picturesx" :key="index">
-							<view class="file-picker__box-content">
-								<image :src="item" class="file-image" mode="aspectFill" @click="previewImage(index)">
-								</image>
-								<view class="icon-del-box" @click="delFile(index)">
-									<view class="icon-del"></view>
-									<view class="icon-del rotate"></view>
-								</view>
-							</view>
-						</view>
-
-						<view class="file-picker__box" @click="upload" v-if="picturesx.length!=4">
-							<view class="file-picker__box-content is-add">
-								<view class="is-add">
-									<view class="icon-add"></view>
-									<view class="icon-add rotate"></view>
-								</view>
-							</view>
-						</view>
-					</view>
-				</view> -->
-
 			</view>
 		</view>
 		<view class="service">
@@ -119,7 +94,7 @@
 				<cl-textarea rows="13" cols="40" placeholder="采取措施" v-model="take_steps" count></cl-textarea>
 			</view>
 		</view>
-		<view style="display: none;">{{id}}</view>
+		<view style="width: 100%; height: 100rpx;"></view>
 		<view class="bu" @tap="$noMultipleClicks(save)" v-if="id>0">
 			保存
 		</view>
@@ -189,10 +164,7 @@
 				},
 				ct: 0,
 				risk_area: '',
-				pictures: [],
-				picturesx: [], // 带http
 				formData: {
-					// file:item,
 					type:1
 				},
 			}
@@ -212,94 +184,12 @@
 			this.id = index.id
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
-			// this.ct = uni.getStorageSync('ct')
-			// this.shortcut_type = index.shortcut_type
-			// this.service_type = index.service_type
+			
 			this.data_select()
-			// this.data_shortcuts()
+			
 		},
 		methods: {
-			upload() {
-				console.log(this.upload_site_photos)
-
-				let that = this
-				let picture = {}
-				let pictures = this.pictures
-				let picturesx = this.picturesx
-
-				// let photos = this.upload_site_photos
-				uni.chooseImage({
-					sourceType: ['camera', 'album'], //拍照或是打开系统相册选择照片
-					count: 4, //最多三张
-					success(res) {
-						if (Array.isArray(res.tempFilePaths)) {
-							//最多选择三张，如果多选删掉前面选择的
-							if (res.tempFilePaths.length === 4) {
-								pictures.length = 0
-							} else if (res.tempFilePaths.length == 3 && pictures.length == 3) {
-								pictures.splice(0, 1)
-							}
-							//把照片的路径放到数组里面
-							res.tempFilePaths.forEach(item => {
-								console.log(item)
-								uni.showLoading({
-									title: '上传中...'
-								});
-								uni.uploadFile({
-
-									url: `${that.$baseUrl}/Upload.Upload/image`,
-									header: {
-										// 'content-type': 'application/x-www-form-urlencoded',
-										'token': uni.getStorageSync('token')
-									},
-									filePath: item,
-									name: 'file',
-									formData: {
-										file: item,
-										type: 1
-									},
-									success: (uploadFileRes) => {
-										console.log(uploadFileRes.data);
-
-										const res = JSON.parse(uploadFileRes.data)
-										console.log(res)
-
-										if (res.code == 200) {
-											// cdn_url	直接预览
-											// detault_url	数据库存字段
-											// time  时间
-										}
-
-
-										// let url = `${that.$baseUrl_imgs}/` + res.data.detault_url
-										let url = res.data.detault_url
-										pictures.push(url)
-										that.pictures = pictures
-
-										let urlx = `${that.$baseUrl_imgs}/` + res.data
-											.detault_url
-										picturesx.push(urlx)
-										that.picturesx = picturesx
-
-										// 现场照
-										// console.log(res.data.detault_url)
-										// let photos = that.upload_site_photos
-										// photos.push(res.data.detault_url)
-										// that.upload_site_photos = photos
-
-
-										setTimeout(function() {
-											uni.hideLoading();
-										}, 500)
-									}
-								});
-
-							})
-
-						}
-					}
-				})
-			},
+			
 			/**
 			 *搜索开始
 			 * *
@@ -338,11 +228,10 @@
 				this.take_steps = val
 			},
 			data_select() {
-				//查询是否存在
+				let that = this
 				let param = {}
 				uni.request({
-					url: `${this.$baseUrl}/Risks.Risks/getRiskInfo?id=` + this.id + "&job_id=" + this.jobid +
-						"&job_type=" + this.jobtype,
+					url: `${this.$baseUrl}/Risks.Risks/getRiskInfo?id=` + this.id + "&job_id=" + this.jobid + "&job_type=" + this.jobtype,
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
 						'token': uni.getStorageSync('token')
@@ -351,7 +240,7 @@
 					data: param,
 					success: (res) => {
 						if (res.data.code == 200) {
-							console.log(res.data.data)
+							// console.log(res.data.data)
 
 							if (res.data.data) {
 								this.targets = res.data.data.riskTargets
@@ -370,36 +259,23 @@
 									this.risk_proposal = res.data.data.risk.risk_proposal // 整改建议
 									this.take_steps = res.data.data.risk.take_steps // 采取措施
 
-									var photoStr = res.data.data.risk.site_photos; // 现场照片
+									var photoStr = res.data.data.risk.site_photos ?? [];
+									// console.log(photoStr)
 
-									let pictures = []
-									let picturesx = []
-									if (photoStr != '') {
-										let strArr = photoStr.split(",");
-										console.log(strArr)
-										strArr.forEach((item, i) => {
-											pictures.push(item)
-
-											let urlx = `${this.$baseUrl_imgs}/` + item
-											picturesx.push(urlx)
-										})
-										this.pictures = pictures
-										this.picturesx = picturesx
+									if(photoStr != ''){
+										var strArr = photoStr.split(",")
+										if (strArr.length > 0 || photoStr != '') {
+										
+											strArr.forEach((item,i)=>{
+												
+												let imgurl = '/' + item
+												imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
+												this.init_photos[i] = imgurl
+											})
+											// console.log(this.init_photos)
+											this.$refs.upload3.setItems(this.init_photos);
+										}
 									}
-
-
-									// let url = res.data.detault_url
-									// pictures.push(url)
-									// that.pictures = pictures
-
-									// let urlx = `${that.$baseUrl_imgs}/` + res.data.detault_url
-									// picturesx.push(urlx)
-									// that.picturesx = picturesx
-
-
-
-									// 	// this.start_site_photos = this.site_photos;
-									// 	// this.end_site_photos = res.data.data.risk.site_photos.split(',')
 								}
 
 								// 快捷语  一维数组转二维数组
@@ -420,38 +296,6 @@
 						console.log(res);
 					}
 				})
-			},
-			data_shortcuts() {
-				//查询快捷语
-				let params = {
-					staffid: uni.getStorageSync('staffid'),
-					city: uni.getStorageSync('city'),
-					shortcut_type: this.shortcut_type,
-					service_type: this.service_type,
-					search_key: this.search_key
-				}
-				uni.request({
-					url: `${this.$baseUrl}/getshortcuts`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: params,
-					success: (res) => {
-						if (res.data.code == 1) {
-							this.service_content_lists = res.data.data
-						} else {
-							uni.showToast({
-								title: res.msg
-							});
-						}
-
-					},
-					fail: (err) => {
-						console.log(res);
-					}
-				});
 			},
 			editParkImg(currentTempFilePath) {},
 			deleteImg(index) {
@@ -478,26 +322,7 @@
 						return false;
 					}
 				}
-				// else if(this.ct == 1){
-				// 	if (this.risk_area == '' || this.risk_area == undefined) {
-				// 		uni.showToast({
-				// 			icon: 'none',
-				// 			title: `请填写风险区域?`
-				// 		});
-				// 		return false;
-				// 	}
-				// }
-				// if(this.upload_site_photos.indexOf('undefined') !== -1){
-				//   uni.showToast({icon: 'none', title: `保存失败,请检查图片问题后重试！`});
-				//   return false;
-				// }
-				// if (this.pictures.length == 0) {
-				// 	uni.showToast({
-				// 		icon: 'none',
-				// 		title: `没选择工作照(⊙_⊙)?`
-				// 	});
-				// 	return false;
-				// }
+				
 				uni.showLoading({
 					title: "正在保存"
 				});
@@ -516,9 +341,7 @@
 					take_steps: this.take_steps,
 					risk_area: this.risk_area,
 				}
-				// console.log(param)
-				// return false
-
+				
 				uni.request({
 					url: `${this.$baseUrl}/Risks.Risks/addRisk`,
 					header: {
@@ -535,10 +358,7 @@
 								this.del_index = []
 
 								uni.hideLoading();
-								uni.showToast({
-									title: '保存成功',
-									icon: 'none',
-								});
+								uni.$utils.toast("保存成功")
 								setTimeout(() => {
 									uni.redirectTo({
 										url: "/pages/service/risk?jobid=" + this.jobid +
@@ -547,8 +367,11 @@
 								}, 2000)
 							}
 						}
-						// 其它状态
-						
+						if(res.data.code == 400)
+						{
+							uni.$utils.toast(res.data.msg)
+							return false
+						}
 					},
 					fail: (err) => {
 						uni.showToast({
@@ -564,28 +387,14 @@
 			},
 			// 保存
 			save() {
-				// if (this.ct == 0) {
-				// 	if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
-				// 		uni.showToast({
-				// 			icon: 'none',
-				// 			title: `没上传现场照(⊙_⊙)?`
-				// 		});
-				// 		return false;
-				// 	}
-				// }else if(this.ct == 1){
-				// 	if (this.risk_area == '' || this.risk_area == undefined) {
-				// 		uni.showToast({
-				// 			icon: 'none',
-				// 			title: `请填写风险区域?`
-				// 		});
-				// 		return false;
-				// 	}
-				// }
-				// if(this.upload_site_photos.indexOf('undefined') !== -1){
-				//   uni.showToast({icon: 'none', title: `保存失败,请检查图片问题后重试！`});
-				//   return false;
-				// }
-
+				if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
+					uni.showToast({
+						icon: 'none',
+						title: `没上传现场照(⊙_⊙)?`
+					});
+					return false;
+				}
+				
 				uni.showLoading({
 					title: "正在保存"
 				});
@@ -628,11 +437,15 @@
 								});
 								setTimeout(() => {
 									uni.redirectTo({
-										url: "/pages/service/risk?jobid=" + this.jobid +
-											'&jobtype=' + this.jobtype
+										url: "/pages/service/risk?jobid=" + this.jobid +'&jobtype=' + this.jobtype
 									})
 								}, 2000)
 							}
+						}
+						if(res.data.code == 400)
+						{
+							uni.$utils.toast(res.data.msg)
+							return false
 						}
 					},
 					fail: (err) => {

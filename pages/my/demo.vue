@@ -39,7 +39,11 @@
 
 		},
 		onShow() {
-
+			// if(res.data.code == 400)
+			// {
+			// 	uni.$utils.toast(res.data.msg)
+			// 	return false
+			// }
 		},
 		methods: {
 			onBeforeUpload(file, index) {

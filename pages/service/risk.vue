@@ -38,7 +38,7 @@
 								<cl-list><span>靶标：</span>{{item.risk_targets}}</cl-list>
 								<cl-list v-if="ct==1"><span>风险区域：</span>{{item.risk_area}}</cl-list>
 								<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.creat_time}}</cl-list>
+								<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
 								<cl-row>
 									<cl-col span="12">
 										<view class="fx">风险等级：{{item.risk_rank}}</view>
@@ -137,16 +137,14 @@ export default {
 				data: params,
 				success: (res) => {
 					if (res.data.code == 200) {
-						//console.log(res.data)
 						
-						this.total = res.data.data.list.total	// 总数
+						this.total = res.data.data.data.total	// 总数
 						
-						let list = res.data.data.list.data		// 分页
+						let list = res.data.data.data.data		// 分页
 						list.forEach((item,i)=>{
 							let photoArr = item.site_photos.split(",")
 							item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
 						})
-						//console.log(list)
 						
 						this.risks = this.risks.concat(list)
 		
