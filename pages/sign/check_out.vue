@@ -31,7 +31,7 @@
 			<!-- upload -->
 			<view class="bg-white" v-if="invoice=='1'">
 				<!-- file -->
-				<view class="uni-file-picker__container">
+				<!-- <view class="uni-file-picker__container">
 					<view class="file-picker__box" v-for="(item,index) in picturesx" :key="index">
 						<view class="file-picker__box-content">
 							<image :src="item" class="file-image" mode="aspectFill" @click="previewImage(index)">
@@ -42,7 +42,7 @@
 							</view>
 						</view>
 					</view>
-					<!-- add -->
+					
 					<view class="file-picker__box" @click="upload" v-if="picturesx.length!=3">
 						<view class="file-picker__box-content is-add">
 							<view class="is-add">
@@ -50,6 +50,16 @@
 								<view class="icon-add rotate"></view>
 							</view>
 						</view>
+					</view>
+				</view> -->
+				<view class="service_content">
+					<view label="限制上传图片格式/大小">
+						<m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加照片"
+							@upload="handleLoaded3" @change="handleChange3" :number="4" :formData="formData">
+							<template v-slot:icon>
+								<text class="s-add-list-btn-icon">+</text>
+							</template>
+						</m-upload>
 					</view>
 				</view>
 			</view>
@@ -107,6 +117,15 @@
 				invoice: -1, // 0
 				pictures: [],
 				picturesx:[],		// 带http
+				upload_site_photos: [],
+				upPicUrl: `${this.$baseUrl}/Upload.Upload/image`,
+				init_photos: [],
+				headerUpload: {
+					'token': uni.getStorageSync('token')
+				},
+				formData: {
+					type:1
+				},
 			}
 		},
 		computed: {
@@ -147,6 +166,82 @@
 			// this.checkLocationAuth();
 		},
 		methods: {
+			handleChange3() {
+				this.$refs.upload3.upload();
+			},
+			
+			// 获取上传或者预览后的图片
+			handleLoaded3(arr) {
+				var imageStr = "";
+				for (var i = 0; i < arr.length; i++) {
+					imageStr += arr[i].result + ",";
+				}
+				//去掉最后一个逗号
+				if (imageStr.length > 0) {
+					imageStr = imageStr.substr(0, imageStr.length - 1);
+				}
+				// console.log(imageStr);
+				this.upload_site_photos = imageStr
+			},
+			// 删除
+			del() {
+				return false
+				this.$refs["del_confirm"].open({
+					title: "提示",
+					message: "确认删除？",
+					callback: ({
+						action
+					}) => {
+						if (action == 'confirm') {
+							if (this.id == '' || this.id == 0) {
+								uni.showToast({
+									icon: 'none',
+									title: '请选择'
+								});
+								return;
+							} else {
+								let param = {
+									id: this.id,
+								}
+								uni.request({
+									url: `${this.$baseUrl}/Risks.Risks/delRisk`,
+									header: {
+										'content-type': 'application/x-www-form-urlencoded',
+										'token': uni.getStorageSync('token')
+									},
+									method: 'DELETE',
+									data: param,
+									success: (res) => {
+										if (res.data.code == 200) {
+											uni.showToast({
+												icon: 'none',
+												title: '删除成功'
+											});
+											setTimeout(() => {
+												uni.redirectTo({
+													url: "/pages/service/risk?jobid=" +
+														this.jobid + '&jobtype=' +
+														this.jobtype
+												})
+											}, 2000)
+										}
+										// 其它状态
+										this.checkCode(res.data.code, res.data.msg)
+									},
+									fail: (err) => {
+										console.log(res);
+									}
+								})
+							}
+						} else {
+							uni.showToast({
+								icon: 'none',
+								title: '取消成功'
+							});
+						}
+					}
+				});
+			},
 			// 上传
 			upload() {
 				let that = this
@@ -251,7 +346,7 @@
 				}
 				if (this.invoice == '1') {
 
-					if (this.pictures.length == 0) {
+					if (!this.upload_site_photos) {
 						uni.showToast({
 							title: '请上传发票图片！',
 							icon: 'none'
@@ -407,16 +502,16 @@
 				return d * Math.PI / 180.0;
 			},
 			sign_success(signdate, starttime) {
-				let pics = this.pictures
+				let pics = this.upload_site_photos
 				let str = '';
-				if (pics.length > 0) {
-					str = pics.join(", ");
-				}
+				// if (pics.length > 0) {
+				// 	str = pics.join(", ");
+				// }
 				let is_invoice = this.invoice
 				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
-					pics: pics,
+					pics: this.upload_site_photos,
 					is_invoice:is_invoice,
 				}
 				// console.log(params)

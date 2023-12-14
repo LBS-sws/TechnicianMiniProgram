@@ -39,8 +39,7 @@
 						<view class="service_name">{{service.service_type_info.service_name}}</view>
 					</cl-col>
 					<cl-col span="8">
-						<view class="first_job" v-if="service.first_job_flag==1">首次服务</view>
-						<view v-else class="first_job">常规服务</view>
+						<view class="first_job" >{{service.first_job}}</view>
 					</cl-col>
 					<cl-col span="8" v-if="service.service_type==203 || service.service_type==249">
 						<view class="customer_type">工厂服务</view>

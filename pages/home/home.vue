@@ -151,7 +151,7 @@ export default {
 				var ct = 0 ;
 			}
 			uni.navigateTo({
-				url: "/pages/service/detail?jobtype=1&jobid=" + jobid
+				url: "/pages/service/detail?jobtype=" + type + "&jobid=" + jobid
 			});
 		},
 		// 列表
