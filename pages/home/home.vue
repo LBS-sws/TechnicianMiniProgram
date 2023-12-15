@@ -100,11 +100,11 @@ export default {
 		};
 	},
 	onLoad() {
-		// uni.showLoading({
-		// 	title: "加载中...",
-		// 	icon: 'none',
-		// 	mask: true
-		// })
+		uni.showLoading({
+			title: "加载中...",
+			icon: 'none',
+			mask: true
+		})
 		var token = uni.getStorageSync('token')
 		var loginRes = this.checkLogin();
 		
@@ -151,7 +151,7 @@ export default {
 				var ct = 0 ;
 			}
 			uni.navigateTo({
-				url: "/pages/service/detail?jobtype=1&jobid=" + jobid
+				url: "/pages/service/detail?jobtype=" + type + "&jobid=" + jobid
 			});
 		},
 		// 列表
@@ -159,51 +159,32 @@ export default {
 			let params = {
 				jobdate: this.Data
 			}
-			uni.request({
-				url: `${this.$baseUrl}/Order.Order/dayOrder`,
-				header: {
-					'content-type': 'application/x-www-form-urlencoded',
-					'token': uni.getStorageSync('token')
-				},
-				method: 'GET',
-				data: params,
-				success: (res) => {
-					if (res.data.code == 200) {
-						this.jobs = res.data.data
-					}
-					// 其它状态
-					this.checkCode(res.data.code,res.data.msg)
-				},
-				fail: (err) => {
-					console.log(err.errMsg);
+			
+			this.$api.dayOrderList(params).then(res=>{
+				if(res.code == 200) {
+					this.jobs = res.data
+				}else{
+					uni.$utils.toast(res.msg)
 				}
+			}).catch(err=>{
+				console.log(err)
 			})
 		},
 		// 统计
 		getJobTotal() {
 			let params = {}
-			uni.request({
-				url: `${this.$baseUrl}/Order.Order/dayCount`,
-				header: {
-					'content-type': 'application/x-www-form-urlencoded',
-					'token': uni.getStorageSync('token')
-				},
-				method: 'GET',
-				data: params,
-				success: (res) => {
-					if (res.data.code == 200) {
-						this.dotLists = res.data.data
-						this.isShowContent = true
-						uni.hideLoading()
-					}
-					// 其它状态
-					this.checkCode(res.data.code,res.data.msg)
-					
+
+			this.$api.dayCount(params).then(res=>{
+				if(res.code == 200) {
+					// this.jobs = res.data
+					this.dotLists = res.data
+					this.isShowContent = true
 					uni.hideLoading()
-				},
-				fail: (err) => {
-					console.log('error' + res);
-				},
+				}else{
+					uni.$utils.toast(res.msg)
+				}
+			}).catch(err=>{
+				console.log(err)
 			})
 		}
 		//...

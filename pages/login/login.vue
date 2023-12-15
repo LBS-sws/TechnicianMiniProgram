@@ -52,67 +52,57 @@
 			}
 		},
 		onLoad() {
-			// 判断token
-			// var token = uni.getStorageSync('token');
-			// if (token) {
-			// 	uni.switchTab({
-			// 		url: "/pages/home/home"
-			// 	});
-			// }
+			let token = uni.getStorageSync('token')
+			console.log('login')
+			if(token)
+			{
+				uni.switchTab({
+					url: "/pages/home/home"
+				})
+			}
 		},
 		methods: {
-			
 			//账号密码点击登录
 			submit() {
 				if (!this.validate('userPhone')) return;
 				if (!this.validate("userPwd")) return;
 				uni.showLoading({
 					title: "登录中..."
-				});
-
+				})
+				
 				//向服务器发送登陆请求
 				let params = {
 					staff_code:this.userPhone,
 					password: this.userPwd
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Staff.Login/login`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded'
-					},
-					method: 'POST',
-					data: params,
-					success: (res) => {
-						if (res.data.code == 200) {
-							
-							uni.setStorageSync('token', res.data.data.token);
-							uni.setStorageSync('staffname', res.data.data.name);
-							uni.setStorageSync('city', res.data.data.city);
-							uni.setStorageSync('officetel', res.data.data.officetel);
-							uni.hideLoading();
-							uni.showToast({
-								title: '登录成功',
-								icon: 'success'
-							})
-							setTimeout(() => {
-								uni.switchTab({
-									url: "/pages/home/home"
-								});
-							}, 2000)
-						}
-						if(res.data.code == 400)
-						{
-							uni.showToast({
-								title:msg,
-								icon:'none'
-							})
-							return false
-						}
-					},
-					fail: (err) => {
-						console.log(res);
+				
+				this.$api.passwordLogin(params).then(res=>{
+					
+					if(res.code == 200)
+					{
+						uni.setStorageSync('token', res.data.token);
+						uni.setStorageSync('staffname', res.data.name);
+						uni.setStorageSync('city', res.data.city);
+						uni.setStorageSync('officetel', res.data.officetel);
+						uni.hideLoading();
+						uni.showToast({
+							title: '登录成功',
+							icon: 'success'
+						})
+						setTimeout(() => {
+							uni.switchTab({
+								url: "/pages/home/home"
+							});
+						}, 2000)
 					}
+					if(res.code == 400)
+					{
+						uni.$utils.toast(res.msg)
+					}
+				}).catch(err=>{
+					console.log(err)
 				})
+				
 				//隐藏登录状态
 				uni.navigateBack({
 					delta: 1

@@ -14,7 +14,7 @@
 			<view v-for="(item, index) in tab_bar" class="tab-item"
 				v-bind:class="current_tab==index ? 'tab-bar-active' : ''" v-bind:key="index" v-bind:data-current="index"
 				v-bind:id="item.id" v-on:click="change_tab">{{item.tit}}</view>
-		</scroll-view>
+		</scroll-view> 
 		<view class="hr"></view>
 		<swiper class="swiper" v-bind:current="current_tab" duration="300" @change="change_swiper">
 			<!-- 基础信息 -->
@@ -157,7 +157,7 @@
 								{{item.equipment_name}}({{item.use_count}}/{{item.total_count}})
 							</view>
 						</view>
-						<view class="new_card_content">
+						<view class="new_card_content" v-if="item.table_data.length>0">
 							<t-table>
 								<t-tr>
 									<t-th v-for="(table_title, index_t) in item.table_title" :key="index_t">{{table_title}}</t-th>

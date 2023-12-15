@@ -1,13 +1,21 @@
 import request from "@/common/request.js"
 
 export default {
-	// 密码登录
+	// 密码登录 pages/home/home
 	passwordLogin(params) {
-		
 		return request("/Staff.Login/login", params, 'POST')
-		
 		// return request("/Staff.Login/login", params)
 	},
+	
+	// 首页 当日工作单 pages/home/home
+	dayOrderList(params){
+		 return request("/Order.Order/dayOrder", params, 'GET')
+	},
+	// 首页 统计所有工作单
+	dayCount(params){
+		 return request("/Order.Order/dayCount", params, 'GET')
+	},
+	
 	
 	// 未解决问题
 	stayQuestion(params) {

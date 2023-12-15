@@ -247,8 +247,8 @@
 								this.types = res.data.data.riskTypes
 								this.ranks = res.data.data.riskRanks
 								this.labels = res.data.data.riskLabel
-								if (res.data.data.risk) {
-
+								if (this.id>0) {
+									
 									// 	this.id = res.data.data.risk.id
 									this.risk_targets = res.data.data.risk.risk_targets.split(',') // 靶标
 									this.risk_types = res.data.data.risk.risk_types.split(',') // 风险类别
@@ -280,6 +280,7 @@
 
 								// 快捷语  一维数组转二维数组
 								let shortcutContents = res.data.data.shortcutContents
+								console.log(shortcutContents)
 								let shortcutArr = []
 								shortcutContents.forEach((item, i) => {
 									shortcutArr.push({

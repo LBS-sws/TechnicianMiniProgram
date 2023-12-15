@@ -346,7 +346,7 @@
 			{
 			    "name": "现场工作照",
 			    "path": "pages/service/photo",
-				"query": "jobid=104&jobtype=1&id=3" 
+				"query": "jobid=187&jobtype=1&id=3" 
 			},
 			{
 			    "name": "新增工作照",
@@ -371,7 +371,7 @@
 			{
 			    "name": "签离出店",
 			    "path": "pages/sign/check_out",
-				"query": "jobid=1&jobtype=1" 
+				"query": "jobid=187&jobtype=1" 
 			},
 	        {
 	            "name": "我的",
