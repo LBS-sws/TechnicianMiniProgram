@@ -11,7 +11,7 @@ export default {
 	dayOrderList(params){
 		 return request("/Order.Order/dayOrder", params, 'GET')
 	},
-	// 首页 统计所有工作单
+	// 首页 统计所有工作单 pages/home/home
 	dayCount(params){
 		 return request("/Order.Order/dayCount", params, 'GET')
 	},

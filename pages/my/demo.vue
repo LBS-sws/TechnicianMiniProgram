@@ -26,6 +26,12 @@
 			// 	uni.$utils.toast(res.data.msg)
 			// 	return false
 			// }
+			
+			// this.$api.passwordLogin(params).then(res=>{
+			// 		console.log(res)
+			// 	}).catch(err=>{
+			// 		console.log(err)
+			// 	})
 		},
 		methods: {
 			
