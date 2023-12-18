@@ -5,7 +5,7 @@
 				<view style="background-color: #FFFFFF;">
 					<view style="border-bottom: 1px solid #eeeeee;">
 						<cl-list-item label="跟进时间：">
-							<text>{{lastrisk.creat_time}}</text>
+							<text>{{lastrisk.follow_date}}</text>
 						</cl-list-item>
 					</view>
 					<view style="border-bottom: 1px solid #eeeeee;">
@@ -106,43 +106,35 @@
 			this.jobtype = index.jobtype
 			this.shortcut_type = index.shortcut_type
 			this.service_type = index.service_type
-			// this.data_select()
+			this.data_select()
 		},
 		methods: {
 			data_select() {
 				let params = {
-					staffid: uni.getStorageSync('staffid'),
+					// staffid: uni.getStorageSync('staffid'),
+					job_id:this.jobid,
+					job_type:this.jobtype,
 					id: this.id,
 				}
 				uni.request({
-					url: `${this.$baseUrl}/getlastriskbyid`,
+					url: `${this.$baseUrl}/Risks.Risks/getRiskInfo`,
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
 						'token': uni.getStorageSync('token')
 					},
-					method: 'POST',
+					method: 'GET',
 					data: params,
 					success: (res) => {
-						if (res.data.code == 1) {
-							this.lastrisk = res.data.data
-
+						if (res.data.code == 200) {
+							this.lastrisk = res.data.data.risk
+							console.log(res.data.data.risk)
 								this.lastrisk['site_photos'] = this.lastrisk['site_photos'].split(",");
 								for (let i = 0; i < this.lastrisk['site_photos'].length; i++) {
 									var site_po = this.lastrisk['site_photos'][i].replace(/\"/g, "").replace(/[\\]/g,'');
-									this.lastrisk['site_photos'][i] = `${this.$baseUrl_imgs}`+site_po;
+									this.lastrisk['site_photos'][i] = `${this.$baseUrl_imgs}/`+site_po;
 								}
 
-							console.log(this.lastrisk)
-						} else {
-							uni.showToast({
-								title: res.data.msg,
-								icon: 'none',
-							});
-							setTimeout(() => {
-								uni.redirectTo({
-									url: "/pages/login/login"
-								});
-							}, 2000)
+							// console.log(this.lastrisk)
 						}
 
 					},
@@ -162,19 +154,19 @@
 			},
 			save(status) {
 				let params = {
-					staffid: uni.getStorageSync('staffid'),
-					job_id: this.jobid,
-					job_type: this.jobtype,
+					// staffid: uni.getStorageSync('staffid'),
+					// job_id: this.jobid,
+					// job_type: this.jobtype,
 					id: this.id,
-					status:status
+					confirm_status:status
 				}
 				uni.request({
-					url: `${this.$baseUrl}/Savelastriskstatus`,
+					url: `${this.$baseUrl}/Risks.Risks/editRiskByTeach`,
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
 						'token': uni.getStorageSync('token')
 					},
-					method: 'POST',
+					method: 'PUT',
 					data: params,
 					success: (res) => {
 						uni.showToast({

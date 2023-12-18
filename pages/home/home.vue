@@ -105,6 +105,7 @@ export default {
 			icon: 'none',
 			mask: true
 		})
+		
 		var token = uni.getStorageSync('token')
 		var loginRes = this.checkLogin();
 		

@@ -11,10 +11,10 @@
 				服务人员：<span style="color: black;">{{service.customer.name_zh}}</span>
 			</view>
 			<view class="v_magin">
-				联系人员：<span style="color: black;">{{service.contact.contact_name}}</span>
+				联系人员：<span style="color: black;">{{service.contact_name}}</span>
 			</view>
 			<view class="v_magin">
-				联系电话：<span style="color: black;">{{service.contact.mobile}}</span>
+				联系电话：<span style="color: black;">{{service.tel}}</span>
 			</view>
 			<view class="v_magin">
 				联系地址：<span style="color: black;">{{service.customer.addr}}</span>

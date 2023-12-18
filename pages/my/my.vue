@@ -67,6 +67,7 @@ export default {
 						label: "退出登录",
 						color: "red",
 						click: done => {
+							uni.clearStorageSync()
 							// 请求接口
 							uni.request({
 								url: `${this.$baseUrl}/Staff.Login/logout`,
@@ -79,7 +80,17 @@ export default {
 								success: (res) => {
 									console.log(res)
 									if (res.data.code == 200) {
-										uni.removeStorageSync('token');
+										
+										uni.showToast({
+											title: "成功退出",
+											icon: 'none',
+										});
+										setTimeout(() => {
+											uni.reLaunch({
+													url:"/pages/login/login"
+											})
+										}, 2000);
+									}else{
 										uni.showToast({
 											title: "成功退出",
 											icon: 'none',

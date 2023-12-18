@@ -650,23 +650,25 @@
 					if(res.data.main[0])
 					{
 						// console.log(res.data.main[0])
-						this.autograph_employee01_signature = `${this.$baseUrl_imgs}` + res.data.main[0]
+						this.autograph_employee01_signature = `${this.$baseUrl_imgs}/` + res.data.main[0]
 					}
 					
 					
 					// 客户签名
 					if(res.data.cust.customer_signature_url)
 					{
-						this.autograph_customer_signature = res.data.cust.customer_signature_url
+						this.autograph_customer_signature = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url
+						
+						// console.log(res.data.cust.customer_signature_url)
 					}
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add)
 					{
-						this.autograph_customer_signature_add = res.data.cust.customer_signature_url_add
+						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url_add
 					}
 					
 					// 客户点评
-					// this.autograph_customer_grade = res.data.evaluates.score
+					this.autograph_customer_grade = res.data.evaluates.score
 					
 				}).catch(err=>{
 					// console.log(err)
@@ -700,7 +702,7 @@
 							// 点评列表
 							let questionsData = res.data.data.questionnaire
 							questionsData.forEach((item,i)=>{
-								item.answer = 1
+								item.answer = ''
 								item.options = this.radioData
 							})
 							this.questionsData = questionsData
@@ -933,7 +935,7 @@
 					job_type: this.jobtype,
 				}
 				uni.request({
-					url: `${this.$baseUrl}/Report.Report/downloadPdf`,
+					url: `${this.$baseUrl}/Preview.Preview/getHtmlContent`,
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
 						'token': uni.getStorageSync('token')

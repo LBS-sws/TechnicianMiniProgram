@@ -27,6 +27,7 @@ export default (path, data = {}, method = 'GET') => {
 			success(response) {
 				// console.log('%c响应拦截：', ' background:green', response);
 				if (response.data.code === 400) {
+					
 					// logout()
 				}
 				if (response.data.code == 200) {

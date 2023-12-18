@@ -100,6 +100,7 @@ export default {
 		this.jobtype = index.jobtype
 		
 		this.data_select()
+		this.getItems()
 		// this.dotAlert()
 	},
 	//	上拉触底函数
@@ -119,6 +120,22 @@ export default {
 	     }
 	},
 	methods: {
+		// 历史风险记录
+		getItems(){
+			// 未解决
+			let params = {
+				job_id: this.jobid,
+				job_type: this.jobtype,
+				type:0
+			}
+			this.$api.stayQuestion(params).then(res=>{
+				// console.log(res)
+				this.dotNum = res.data.total
+				// this.lastrisks_n = res.data.data || []
+			}).catch(err=>{
+				// console.log(err)
+			})
+		},
 		data_select() {
 			
 			let params = {
@@ -147,7 +164,10 @@ export default {
 						})
 						
 						this.risks = this.risks.concat(list)
-		
+						
+						
+						this.risk_total	 = res.data.data.assess_count	// 风险评估数
+						
 						this.isLoadMore=false				
 						setTimeout(()=>{
 							this.isLoadMore = true
@@ -155,7 +175,7 @@ export default {
 						},1000)
 						
 						// 风险历史记录
-						this.dotNum = res.data.data.history_count
+						// this.dotNum = res.data.data.history_count
 						// console.log(this.dotNum)
 						
 					}

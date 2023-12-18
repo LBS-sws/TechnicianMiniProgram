@@ -27,7 +27,7 @@ export default {
 	},
 	// 待确认
 	verifyQuestion(params) {
-	
+		return request("/Risks.Risks/getHistoryRiskList", params)
 	},
 	// 已解决
 	resolvedQuestion(params) {

@@ -17,7 +17,7 @@
 							<cl-col span="15" style="text-align: left;line-height: 22px;">
 								<cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
 								<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.creat_time}}</cl-list>
+								<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
 								<cl-row>
 									<cl-col span="12">
 										<view class="fx">风险等级：{{item.risk_rank}}</view>
@@ -44,7 +44,7 @@
 							<cl-col span="15" style="text-align: left;line-height: 22px;">
 								<cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
 								<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.creat_time}}</cl-list>
+								<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
 								<cl-row>
 									<cl-col span="12">
 										<view class="fx">风险等级：{{item.risk_rank}}</view>
@@ -72,7 +72,7 @@
 							<cl-col span="15" style="text-align: left;line-height: 22px;">
 								<cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
 								<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.creat_time}}</cl-list>
+								<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
 								<cl-row>
 									<cl-col span="12">
 										<view class="fx">风险等级：{{item.risk_rank}}</view>
@@ -100,7 +100,7 @@
               <cl-col span="15" style="text-align: left;line-height: 22px;">
                 <cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
                 <cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-                <cl-list><span>跟进时间：</span>{{item.creat_time}}</cl-list>
+                <cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
                 <cl-row>
                   <cl-col span="12">
                     <view class="fx">风险等级：{{item.risk_rank}}</view>
@@ -158,11 +158,21 @@
 				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
-					type:0
+					type:3
 				}
 				this.$api.stayQuestion(params).then(res=>{
 					// console.log(res)
-					this.lastrisks_n = res.data.data || []
+					let list = res.data.data
+					list.forEach((item,i)=>{
+						
+						let arr = item.site_photos.split(",")
+						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
+						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+					})
+					// console.log(list)
+					this.lastrisks_n = list
+					
+					
 				}).catch(err=>{
 					// console.log(err)
 				})
@@ -175,7 +185,15 @@
 				}
 				this.$api.followQuestion(params2).then(res=>{
 					// console.log(res)
-					this.lastrisks_f = res.data.data || []
+					// this.lastrisks_f = res.data.data || []
+					let list = res.data.data
+					list.forEach((item,i)=>{
+						
+						let arr = item.site_photos.split(",")
+						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
+						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+					})
+					this.lastrisks_f = list
 				}).catch(err=>{
 					// console.log(err)
 				})
@@ -189,7 +207,36 @@
 				}
 				this.$api.resolvedQuestion(params1).then(res=>{
 					// console.log(res)
-					this.lastrisks_y = res.data.data || []
+					// this.lastrisks_y = res.data.data || []
+					let list = res.data.data
+					list.forEach((item,i)=>{
+						
+						let arr = item.site_photos.split(",")
+						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
+						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+					})
+					this.lastrisks_y = list
+				}).catch(err=>{
+					// console.log(err)
+				})
+				
+				// 确认
+				
+				let params3 = {
+					job_id: this.jobid,
+					job_type: this.jobtype,
+					type:4
+				}
+				this.$api.verifyQuestion(params3).then(res=>{
+					
+					let list = res.data.data
+					list.forEach((item,i)=>{
+						
+						let arr = item.site_photos.split(",")
+						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
+						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+					})
+					this.lastrisks_g = list
 				}).catch(err=>{
 					// console.log(err)
 				})

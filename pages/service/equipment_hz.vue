@@ -11,7 +11,7 @@
 					<!-- 内容 -->
 					<t-tr v-if="JSON.stringify(item.content)!='{}'" v-for="(contents, index_cs) in item.table_data" :key="index_cs">
 						<t-td v-for="(content, index_c) in contents" :key="index_c">
-							<text v-if="content != 0 && content!='null'">
+							<text v-if="content!='null'">
 								{{content}}
 							</text>
 						
