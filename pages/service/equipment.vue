@@ -1,5 +1,5 @@
 <template>
-	<view class="content" style="padding-top: 80rpx;">
+	<view class="content" style="padding-top: 80rpx; padding-bottom: 80rpx;">
 		<!-- 添加 -->
 		<view class="add" @tap="add()">
 			<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
@@ -114,7 +114,7 @@
 				ct:0,
 				content_scole:1360343,
 				page: 1,		// 当前页 m
-				limit: 18,		// 每页多少条 m
+				limit: 21,		// 每页多少条 m
 				total:'',		// 总条数
 				loading:false,
 				isLoadMore:true,
@@ -263,7 +263,7 @@
 					equipment_area:this.equipment_area,
 					equipment_type_id:this.equipment,
 					page:this.page,
-					limit:this.limit
+					per_page:this.limit
 				}
 				uni.request({
 					url: `${this.$baseUrl}/Equipment.Equipment/list`,
@@ -278,13 +278,33 @@
 						if (res.data.code == 200) {
 							if (res.data.data) {
 							
+								// let all = res.data.data.data
+								// all.forEach((item,i)=>{
+								// 	item.label = item.equipment_name
+								// 	item.value = item.equipment_number
+								// 	item.eq_number = item.equipment_number
+								// })
+								// this.all = all
+								
+								this.total = res.data.data.data.total	// 总数
+								
 								let all = res.data.data.data
 								all.forEach((item,i)=>{
 									item.label = item.equipment_name
 									item.value = item.equipment_number
 									item.eq_number = item.equipment_number
 								})
-								this.all = all
+								this.all = this.all.concat(all)
+								if(all.length==0 && this.all.length>0)
+								{
+									// uni.$utils.toast('没有更多数据啦','none',1500)
+								}
+								
+								this.isLoadMore=false				
+								setTimeout(()=>{
+									this.isLoadMore = true
+									this.loading = false
+								},1000)
 							
 							}
 							// this.beforupload();
@@ -717,8 +737,15 @@
 		padding-top: 15px;
 		margin-top: 5px;
 	}
-
-	cl-checkbox {
+	.cl-checkbox-group{
+		display: flex;
+		justify-content: flex-start;
+		flex-wrap: wrap;
+	}
+	.cl-checkbox-group .content_{
+		
+	}
+/* 	cl-checkbox {
 		padding: 4px;
 		margin-bottom: 20rpx;
 	}
@@ -734,11 +761,14 @@
 		padding-top: 27px;
 		margin-top: 10px;
 	}
-
+*/
+	.cl-checkbox-group .content_ {
+	    margin: 0 8rpx 12rpx 8rpx;
+	}
 	.cl-checkbox+.cl-checkbox,
 	cl-checkbox+cl-checkbox {
 		margin-left: 0rpx;
-	}
+	} 
 
 	.cl-confirm {
 		position: relative;
