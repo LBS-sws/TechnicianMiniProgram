@@ -57,7 +57,8 @@
             "path" : "pages/service/equipment",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "设备情况"
+                "navigationBarTitleText": "设备情况",
+				"enablePullDownRefresh":true
             }
             
         },{

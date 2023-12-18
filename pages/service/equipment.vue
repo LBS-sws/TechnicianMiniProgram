@@ -1,5 +1,5 @@
 <template>
-	<view class="content">
+	<view class="content" style="padding-top: 80rpx;">
 		<!-- 添加 -->
 		<view class="add" @tap="add()">
 			<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
@@ -113,6 +113,11 @@
 				add_numbercode:'',
 				ct:0,
 				content_scole:1360343,
+				page: 1,		// 当前页 m
+				limit: 18,		// 每页多少条 m
+				total:'',		// 总条数
+				loading:false,
+				isLoadMore:true,
 			}
 		},
 		onLoad(index) {
@@ -140,6 +145,22 @@
 		},
 		onReady(){
 			this.but()
+		},
+		//	上拉触底函数
+		onReachBottom(){
+			console.log('触发')
+			
+		     if(this.isLoadMore){  //此处判断，上锁，防止重复请求
+				if(this.total< this.limit * this.page){
+					this.loading = false
+				}else{
+					this.loading = true
+					this.isLoadMore = true
+					this.page+=1
+					this.data_select()
+				}
+		        
+		     }
 		},
 		methods: {
 			optionEqAdd(){
@@ -236,10 +257,16 @@
 			// 设备列表
 			data_select() {
 				
-				let param = {}
+				let param = {
+					job_type:this.jobtype,
+					job_id:this.jobid,
+					equipment_area:this.equipment_area,
+					equipment_type_id:this.equipment,
+					page:this.page,
+					limit:this.limit
+				}
 				uni.request({
-					url: `${this.$baseUrl}/Equipment.Equipment/list?job_type=` + this.jobtype + "&job_id=" + this.jobid +"&equipment_area="
-					+ this.equipment_area +"&equipment_type_id=" + this.equipment,
+					url: `${this.$baseUrl}/Equipment.Equipment/list`,
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
 						'token': uni.getStorageSync('token')
@@ -262,8 +289,6 @@
 							}
 							// this.beforupload();
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
 						
 					},
 					fail: (err) => {
@@ -631,6 +656,13 @@
 	.lz {
 		padding: 10px;
 		border: 1px solid #eeeeee;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100rpx;
+		background: #fff;
+		box-sizing: border-box;
 	}
 
 	.cl-select {
@@ -688,6 +720,7 @@
 
 	cl-checkbox {
 		padding: 4px;
+		margin-bottom: 20rpx;
 	}
 
 	.cl-checkbox--border {
@@ -792,5 +825,11 @@
 	.last_edit{
 		margin-top: 20px;
 		margin-left: 20px;
+	}
+	.loadingText{
+		text-align: center;
+		font-size: 24rpx;
+		color: #666;
+		padding: 10rpx 0;
 	}
 </style>
