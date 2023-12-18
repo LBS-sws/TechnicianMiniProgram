@@ -1,5 +1,5 @@
 <template>
-	<view class="content" style="padding-top: 80rpx; padding-bottom: 80rpx;">
+	<view class="content" style="padding-top: 80rpx; padding-bottom: 120rpx;">
 		<!-- 添加 -->
 		<view class="add" @tap="add()">
 			<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
@@ -79,6 +79,10 @@
 				</cl-checkbox>
 			</cl-checkbox-group>
 		</view>
+		<view style="display: block; text-align: center;" v-if="loading">
+			<cl-loading></cl-loading>
+		</view>
+		<view v-else class="loadingText">没有数据啦!</view>
 		<view class="bu">
 			<cl-row>
 				<cl-col span="12" class="hzyl" @tap="hzyl()"><span style=" margin: 0 auto;">汇总预览</span></cl-col>
@@ -263,7 +267,7 @@
 					equipment_area:this.equipment_area,
 					equipment_type_id:this.equipment,
 					page:this.page,
-					per_page:this.limit
+					limit:this.limit
 				}
 				uni.request({
 					url: `${this.$baseUrl}/Equipment.Equipment/list`,
