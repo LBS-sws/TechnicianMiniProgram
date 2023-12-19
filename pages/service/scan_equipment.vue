@@ -286,17 +286,14 @@ export default {
 								if(res.data.data.list[0].equipment_type ==2)
 								{
 									let selectList = res.data.data.check_option
-									// console.log(selectList)
-									
 									selectList.forEach((itemx,index)=>{
-										
 										let arr_arr = []
 										itemx.forEach((item,i)=>{
 											arr_arr.push({label:item,value:item})
 										})
 										selectArr.push(arr_arr)
 									})
-									// console.log(selectArr)
+									
 									this.selectList = selectArr
 								}
 								// 单个设备
@@ -304,22 +301,19 @@ export default {
 									// 检查数据没有值时
 									if(res.data.data.list[0].check_datas == null)
 									{
-										let check_targt_arr = res.data.data.check_handle.check_targt
-										// console.log(check_targt_arr)
+										let check_targt_arr = res.data.data.check_handle.check_targt	
 										let check_targt_array = []
 										check_targt_arr.forEach((item,i)=>{
 											if(res.data.data.list[0].equipment_type==1){
 												check_targt_array.push({label:item,value:0})
 											}else{
-												check_targt_array.push({label:item,value:0,select:selectArr[i]})
+												check_targt_array.push({label:item,value:'',select:selectArr[i]})
 											}
-											
 										})
 										this.check_datas = check_targt_array
 									}else{
 										this.check_datas = res.data.data.list[0].check_datas
 									}
-									
 								}
 								
 								if(res.data.data.list.length > 1){
@@ -328,13 +322,12 @@ export default {
 									let check_datas_array = []
 									check_datas_arr.forEach((item,i)=>{
 										
-										// check_datas_array.push({label:item,value:0})
 										if(res.data.data.list[0].equipment_type==1){
-											// check_targt_array.push({label:item,value:0})
+											
 											check_datas_array.push({label:item,value:0})
 										}else{
-											// check_targt_array.push({label:item,value:0,select:selectArr[i]})
-											check_datas_array.push({label:item,value:0,select:selectArr[i]})
+											
+											check_datas_array.push({label:item,value:'',select:selectArr[i]})
 										}
 										
 									})
@@ -484,7 +477,6 @@ export default {
 				// return false
 				let params = {
 					
-					// id: this.id,
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					equipment_name: this.equipment_name,
@@ -493,9 +485,9 @@ export default {
 					check_handle: check_handle,
 					// site_photos: this.upload_site_photos,
 					more_info: this.more_info,
-					eq_number: this.eq_mark_num  // this.equipment_number
+					eq_number: this.eq_mark_num
 				}
-				// uni.setStorageSync('last_id_' + this.jobid,this.id)
+				
 				uni.request({
 					url: `${this.$baseUrl}/Equipment.Equipment/editEq?ids=`+ids,
 					header: {
