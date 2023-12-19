@@ -250,13 +250,32 @@
 			},
 			start() {
 				// 签到
-				if (this.service.start_time == null || this.service.start_time == '00:00:00') {
+				// if (this.service.start_time == null || this.service.start_time == '00:00:00') {
+				// 	uni.navigateTo({
+				// 		url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+				// 			.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+				// 	});
+				// } else {
+					
+				// 	if(this.service.CustomerType == 203 ||this.service.CustomerType == 249){
+				// 		uni.setStorageSync('ct', 1);
+				// 		var ct = 1 ;
+				// 	}else{
+				// 		uni.setStorageSync('ct', 0);
+				// 		var ct = 0 ;
+				// 	}
+				// 	uni.navigateTo({
+				// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&ct=" + ct
+				// 	});
+				// }
+				if (this.service.status == 2 && this.service.start_time == '00:00:00' || this.service.start_time == 'null') {
 					uni.navigateTo({
 						url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
 							.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-					});
-				} else {
-					
+					})
+				}
+				if(this.service.status == 3 || this.service.status == 2 && this.service.start_time != '00:00:00' || this.service.start_time == 'null' )
+				{
 					if(this.service.CustomerType == 203 ||this.service.CustomerType == 249){
 						uni.setStorageSync('ct', 1);
 						var ct = 1 ;

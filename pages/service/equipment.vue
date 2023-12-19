@@ -309,7 +309,7 @@
 								},1000)
 							
 							}
-							// this.beforupload();
+							
 						}
 						if(res.data.code == 400)
 						{
@@ -322,30 +322,6 @@
 					}
 				})
 			},
-			beforupload(){
-				
-						let all = this.all.filter((item,index)=>{
-							return item.check_datas==null
-						})
-						
-						// console.log('all.length',all.length)
-						if(all.length>0){
-							var ms = all.length+'台设备无数据，确认返回？'
-							// console.log('all.length',all)
-							wx.enableAlertBeforeUnload({
-								message:ms,
-								success:(e) =>{
-									// console.log(e);
-								},
-								fail:(e)=>{
-									// console.log(e)
-								}
-							})
-						}else{
-							wx.disableAlertBeforeUnload();
-						}
-						
-					},
 			hzyl() {
 				uni.navigateTo({
 					url: "/pages/service/equipment_hz?jobid=" + this.jobid + '&jobtype=' + this.jobtype
@@ -503,9 +479,11 @@
 							success: (res) => {
 								if (res.data.code == 200) {
 									this.add_number = 1;
+									// this.page = 1;
+									
 									this.optionEq()
 									this.optionEqAdd()
-									this.data_select()
+									// this.data_select()
 									
 									uni.showToast({
 										icon: 'none',
@@ -591,28 +569,6 @@
 				this.equipment_area = e;
 				this.data_select()
 			},
-			beforupload(){
-				let all = this.all.filter((item,index)=>{
-					return item.check_datas==null
-				})
-				// console.log('all.length',all.length)
-				if(all.length>0){
-					var ms = all.length+'台设备无数据，确认返回？'
-					// console.log('all.length',all)
-					wx.enableAlertBeforeUnload({
-						message:ms,
-						success:(e) =>{
-							// console.log(e);
-						},
-						fail:(e)=>{
-							// console.log(e)
-						}
-					})
-				}else{
-					wx.disableAlertBeforeUnload();
-				}
-				
-			}
 			//...
 		}
 	}
@@ -750,7 +706,7 @@
 	.cl-checkbox-group .content_{
 		
 	}
-/* 	cl-checkbox {
+	cl-checkbox {
 		padding: 4px;
 		margin-bottom: 20rpx;
 	}
@@ -766,10 +722,10 @@
 		padding-top: 27px;
 		margin-top: 10px;
 	}
-*/
-	.cl-checkbox-group .content_ {
+
+	/* .cl-checkbox-group .content_ {
 	    margin: 0 8rpx 12rpx 8rpx;
-	}
+	} */
 	.cl-checkbox+.cl-checkbox,
 	cl-checkbox+cl-checkbox {
 		margin-left: 0rpx;
