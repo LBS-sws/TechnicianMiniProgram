@@ -73,9 +73,6 @@
 						</span>
 						&nbsp;{{item.label}}
 					</view>
-					<!-- <view class="eq_isnull_color" >
-						<span>{{item.label}}</span>
-					</view> -->
 				</cl-checkbox>
 			</cl-checkbox-group>
 		</view>
@@ -118,7 +115,7 @@
 				ct:0,
 				content_scole:1360343,
 				page: 1,		// 当前页 m
-				limit: 21,		// 每页多少条 m
+				limit: 1000,	// 每页多少条 m
 				total:'',		// 总条数
 				loading:false,
 				isLoadMore:true,
@@ -155,17 +152,17 @@
 		onReachBottom(){
 			console.log('触发')
 			
-		     if(this.isLoadMore){  //此处判断，上锁，防止重复请求
-				if(this.total< this.limit * this.page){
-					this.loading = false
-				}else{
-					this.loading = true
-					this.isLoadMore = true
-					this.page+=1
-					this.data_select()
-				}
+		  //    if(this.isLoadMore){  //此处判断，上锁，防止重复请求
+				// if(this.total< this.limit * this.page){
+				// 	this.loading = false
+				// }else{
+				// 	this.loading = true
+				// 	this.isLoadMore = true
+				// 	this.page+=1
+				// 	this.data_select()
+				// }
 		        
-		     }
+		  //    }
 		},
 		methods: {
 			optionEqAdd(){
@@ -287,26 +284,27 @@
 						if (res.data.code == 200) {
 							if (res.data.data) {
 							
-								this.total = res.data.data.data.total	// 总数
+								// this.total = res.data.data.data.total	// 总数
 								
-								let all = res.data.data.data
+								let all = res.data.data
 								all.forEach((item,i)=>{
 									item.label = item.equipment_name
 									item.value = item.equipment_number
 									item.eq_number = item.equipment_number
 								})
-								this.all = this.all.concat(all)
-								if(all.length==0 && this.all.length>0)
-								{
+								this.all = all
+								// this.all = this.all.concat(all)
+								// if(all.length==0 && this.all.length>0)
+								// {
 									
-									this.loadingText = '数据已经加载完啦！'
-								}
+								// 	this.loadingText = '数据已经加载完啦！'
+								// }
 								
-								this.isLoadMore=false				
-								setTimeout(()=>{
-									this.isLoadMore = true
-									this.loading = false
-								},1000)
+								// this.isLoadMore=false				
+								// setTimeout(()=>{
+								// 	this.isLoadMore = true
+								// 	this.loading = false
+								// },1000)
 							
 							}
 							
@@ -483,18 +481,12 @@
 									
 									this.optionEq()
 									this.optionEqAdd()
-									// this.data_select()
-									
-									uni.showToast({
-										icon: 'none',
-										title: '增加成功'
-									});
+									this.data_select()
+									uni.$utils.toast('增加成功')
 								}
-								// 其它状态
-								this.checkCode(res.data.code,res.data.msg)
 							},
 							fail: (err) => {
-								// console.log(res);
+								console.log(res);
 							}
 						})
 					})

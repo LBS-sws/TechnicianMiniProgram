@@ -268,24 +268,28 @@
 				// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&ct=" + ct
 				// 	});
 				// }
-				if (this.service.status == 2 && this.service.start_time == '00:00:00' || this.service.start_time == 'null') {
+				console.log('签到时间:',this.service.start_date,this.service.start_time)
+				if(this.service.status == 3)
+				{
 					uni.navigateTo({
-						url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-							.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
 					})
 				}
-				if(this.service.status == 3 || this.service.status == 2 && this.service.start_time != '00:00:00' || this.service.start_time == 'null' )
+				if(this.service.status == 2)
 				{
-					if(this.service.CustomerType == 203 ||this.service.CustomerType == 249){
-						uni.setStorageSync('ct', 1);
-						var ct = 1 ;
-					}else{
-						uni.setStorageSync('ct', 0);
-						var ct = 0 ;
+					if(this.service.start_time && this.service.start_time !='00:00:00')
+					{
+						uni.navigateTo({
+							url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+						})
 					}
-					uni.navigateTo({
-						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&ct=" + ct
-					});
+					if(!this.service.start_time || this.service.start_time == '00:00:00')
+					{
+						uni.navigateTo({
+							url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+								.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+						})
+					}
 				}
 			},
 			// 点击拨打电话
