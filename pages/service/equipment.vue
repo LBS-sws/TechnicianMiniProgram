@@ -82,7 +82,7 @@
 		<view style="display: block; text-align: center;" v-if="loading">
 			<cl-loading></cl-loading>
 		</view>
-		<view v-else class="loadingText">没有数据啦!</view>
+		<view v-else class="loadingText">{{loadingText}}</view>
 		<view class="bu">
 			<cl-row>
 				<cl-col span="12" class="hzyl" @tap="hzyl()"><span style=" margin: 0 auto;">汇总预览</span></cl-col>
@@ -122,6 +122,7 @@
 				total:'',		// 总条数
 				loading:false,
 				isLoadMore:true,
+				loadingText:""
 			}
 		},
 		onLoad(index) {
@@ -178,15 +179,17 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
-						// console.log(res.data.data)
+						
 						if (res.data.code == 200) {
 							this.add_all = res.data.data
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						if(res.data.code == 400)
+						{
+							uni.$utils.toast(res.data.msg)
+						}
 					},
 					fail: (err) => {
-						// console.log(res);
+						console.log(res);
 					}
 				})
 			},
@@ -203,7 +206,7 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
-						// console.log(res.data.data)
+						
 						if (res.data.code == 200) {
 							// 区域
 							if (res.data.data.optionArea.length>0) {
@@ -226,27 +229,29 @@
 								this.equipment_lists = EqList
 							}
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						if(res.data.code == 400)
+						{
+							uni.$utils.toast(res.data.msg)
+						}
 					},
 					fail: (err) => {
-						// console.log(res);
+						console.log(res);
 					}
 				})
 			},
 			but(){
 				var sbStr = uni.getStorageSync('last_id_' + this.jobid)
 				if(sbStr != false){
-					console.log(11111111)
+					
 					var jd = sbStr.split(',')
 					console.log(sbStr)
 					// console.log(jd[jd.length-1])
 					var md = '.content_' + jd[jd.length-1] //this.content_scole
-					console.log(222222222)
+					
 					 setTimeout(()=>{
 						 var view = uni.createSelectorQuery().select(md);
 						 view.boundingClientRect(data => {
-							 console.log(3333333)
+							 
 							 console.log(data)
 						 uni.pageScrollTo({
 						 duration: 300,//过渡时间
@@ -282,14 +287,6 @@
 						if (res.data.code == 200) {
 							if (res.data.data) {
 							
-								// let all = res.data.data.data
-								// all.forEach((item,i)=>{
-								// 	item.label = item.equipment_name
-								// 	item.value = item.equipment_number
-								// 	item.eq_number = item.equipment_number
-								// })
-								// this.all = all
-								
 								this.total = res.data.data.data.total	// 总数
 								
 								let all = res.data.data.data
@@ -301,7 +298,8 @@
 								this.all = this.all.concat(all)
 								if(all.length==0 && this.all.length>0)
 								{
-									// uni.$utils.toast('没有更多数据啦','none',1500)
+									
+									this.loadingText = '数据已经加载完啦！'
 								}
 								
 								this.isLoadMore=false				
@@ -313,10 +311,14 @@
 							}
 							// this.beforupload();
 						}
+						if(res.data.code == 400)
+						{
+							uni.$utils.toast(res.data.msg)
+						}
 						
 					},
 					fail: (err) => {
-						// console.log(res);
+						console.log(res);
 					}
 				})
 			},
@@ -346,8 +348,6 @@
 					},
 			hzyl() {
 				uni.navigateTo({
-					// url: "/pages/service/equipment_hz?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-					// 	'&shortcut_type=' + this.shortcut_type + '&service_type=' + this.service_type
 					url: "/pages/service/equipment_hz?jobid=" + this.jobid + '&jobtype=' + this.jobtype
 				})
 			},
@@ -613,6 +613,7 @@
 				}
 				
 			}
+			//...
 		}
 	}
 </script>
