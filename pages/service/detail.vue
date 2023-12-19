@@ -110,7 +110,7 @@
 		<button class="tj_bu" v-else @tap="start()"> 
 			<view v-if="service.staff">
 				<span v-if="service.status == 2">
-					<span v-if="service.start_time == null">服务签到</span>
+					<span v-if="service.start_time == null || service.start_time == '00:00:00' ">服务签到</span>
 					<span v-else>
 						继续服务
 					</span>
@@ -250,7 +250,7 @@
 			},
 			start() {
 				// 签到
-				if (this.service.start_time == null) {
+				if (this.service.start_time == null || this.service.start_time == '00:00:00') {
 					uni.navigateTo({
 						url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
 							.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
