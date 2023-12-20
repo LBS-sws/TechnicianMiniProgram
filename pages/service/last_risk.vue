@@ -1,9 +1,9 @@
 <template>
 	<view class="content">
-		<view class="noservice" v-if="lastrisks_n.length==0 && lastrisks_y.length==0 ">
+		<!-- <view class="noservice" v-if="lastrisks_n.length==0 && lastrisks_y.length==0 ">
 			没有数据哦~~
-		</view>
-		<view v-else>
+		</view> -->
+		<view>
 			<view class="service">
 				<view class="service_title">未解决问题列表({{lastrisks_n.length}})
 				</view>
@@ -150,18 +150,22 @@
 			this.jobtype = index.jobtype
 			this.shortcut_type = index.shortcut_type
 			this.service_type = index.service_type
-			this.getItems()
+			
+			this.getQ1()
+			this.getQ2()
+			this.getQ3()
+			this.getQ4()
 		},
 		methods: {
-			getItems() {
-				// 未解决
+			// 未解决
+			getQ1(){
 				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					type:3
 				}
 				this.$api.stayQuestion(params).then(res=>{
-					// console.log(res)
+					
 					let list = res.data.data
 					list.forEach((item,i)=>{
 						
@@ -169,43 +173,46 @@
 						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
 						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
 					})
-					// console.log(list)
+					
 					this.lastrisks_n = list
-					
-					
 				}).catch(err=>{
-					// console.log(err)
+					console.log(err)
 				})
-				
-				// 跟进问题
-				let params2 = {
+			},
+			// 跟进问题
+			getQ2()
+			{
+				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					type:2
 				}
-				this.$api.followQuestion(params2).then(res=>{
-					// console.log(res)
-					// this.lastrisks_f = res.data.data || []
+				this.$api.followQuestion(params).then(res=>{
+					// console.log(res.data.data)
+					this.lastrisks_f = res.data.data || []
 					let list = res.data.data
 					list.forEach((item,i)=>{
-						
-						let arr = item.site_photos.split(",")
-						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
-						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+						if(item.site_photos)
+						{
+							let arr = item.site_photos.split(",")
+							let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
+							item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+						}
 					})
+					// console.log(list)
 					this.lastrisks_f = list
 				}).catch(err=>{
 					// console.log(err)
 				})
-				
-				// 已解决问题
-				
-				let params1 = {
+			},
+			// 已解决问题
+			getQ3(){
+				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					type:1
 				}
-				this.$api.resolvedQuestion(params1).then(res=>{
+				this.$api.resolvedQuestion(params).then(res=>{
 					// console.log(res)
 					// this.lastrisks_y = res.data.data || []
 					let list = res.data.data
@@ -217,18 +224,17 @@
 					})
 					this.lastrisks_y = list
 				}).catch(err=>{
-					// console.log(err)
+					console.log(err)
 				})
-				
-				// 确认
-				
-				let params3 = {
+			},
+			// 确认
+			getQ4(){
+				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					type:4
 				}
-				this.$api.verifyQuestion(params3).then(res=>{
-					
+				this.$api.verifyQuestion(params).then(res=>{
 					let list = res.data.data
 					list.forEach((item,i)=>{
 						
@@ -238,86 +244,8 @@
 					})
 					this.lastrisks_g = list
 				}).catch(err=>{
-					// console.log(err)
+					console.log(err)
 				})
-				
-				return false
-				// let params = {
-					
-				// 	job_id: this.jobid,
-				// 	job_type: this.jobtype,
-				// 	type:'1,2,3,4'
-				// }
-				uni.request({
-					url: `${this.$baseUrl}/Risks.Risks/getHistoryRiskList?job_id=1&job_type=1&type=1`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: params,
-					success: (res) => {
-						console.log(res)
-				// 		if (res.data.code == 1) {
-				// 		  this.lastrisks_y = res.data.data.y || [];
-				// 		  this.lastrisks_n = res.data.data.n || [];
-				// 		  this.lastrisks_f = res.data.data.f || [];
-				// 		  this.lastrisks_g = res.data.data.g || [];
-				// 			if (this.lastrisks_y != null) {
-				// 				for (let i = 0; i < this.lastrisks_y.length; i++) {
-				// 					this.lastrisks_y[i]['site_photos'] = this.lastrisks_y[i]['site_photos']
-				// 						.split(",");
-				// 					var site_po = this.lastrisks_y[i]['site_photos'][0].replace(/\"/g, "")
-				// 						.replace(/[\\]/g, '');
-				// 					this.lastrisks_y[i]['site_photos'] = `${this.$baseUrl_imgs}` + site_po;
-				// 				}
-				// 			}
-				// 			if (this.lastrisks_n != null) {
-				// 				for (let i = 0; i < this.lastrisks_n.length; i++) {
-				// 					this.lastrisks_n[i]['site_photos'] = this.lastrisks_n[i]['site_photos']
-				// 						.split(",");
-				// 					var site_po = this.lastrisks_n[i]['site_photos'][0].replace(/\"/g, "")
-				// 						.replace(/[\\]/g, '');
-				// 					this.lastrisks_n[i]['site_photos'] = `${this.$baseUrl_imgs}` + site_po;
-				// 				}
-				// 			}
-				// 			if (this.lastrisks_f != null) {
-				// 				for (let i = 0; i < this.lastrisks_f.length; i++) {
-				// 					this.lastrisks_f[i]['site_photos'] = this.lastrisks_f[i]['site_photos']
-				// 						.split(",");
-				// 					var site_po = this.lastrisks_f[i]['site_photos'][0].replace(/\"/g, "")
-				// 						.replace(/[\\]/g, '');
-				// 					this.lastrisks_f[i]['site_photos'] = `${this.$baseUrl_imgs}` + site_po;
-				// 				}
-				// 			}
-				// 			  //客户待确认列表
-				// 			  if (this.lastrisks_g != null) {
-				// 				for (let i = 0; i < this.lastrisks_g.length; i++) {
-				// 				  this.lastrisks_g[i]['site_photos'] = this.lastrisks_g[i]['site_photos']
-				// 					  .split(",");
-				// 				  var site_po = this.lastrisks_g[i]['site_photos'][0].replace(/\"/g, "")
-				// 					  .replace(/[\\]/g, '');
-				// 				  this.lastrisks_g[i]['site_photos'] = `${this.$baseUrl_imgs}` + site_po;
-				// 				}
-				// 			  }
-				
-				// 		} else {
-				// 					uni.showToast({
-				// 						title: res.data.msg,
-				// 						icon: 'none',
-				// 					});
-				// 					setTimeout(() => {
-				// 						uni.redirectTo({
-				// 							url: "/pages/login/login"
-				// 						});
-				// 					}, 2000)
-				// 		}
-						
-					},
-					fail: (err) => {
-						console.log(res);
-					}
-				});
 			},
 			//风险详情页
 			last_risk_detail(index) {
