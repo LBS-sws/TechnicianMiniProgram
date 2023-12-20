@@ -84,6 +84,7 @@
 				name:'历史任务',
 				daterange: ["2023-01-01", "2023-12-31"],
 				jobs:[],
+				jobid:"",
 				jobtype:"",
 				jobdate:"",
 				servicetype:"",
@@ -116,7 +117,7 @@
 					return false
 				}, 2000);
 			}
-			
+			this.jobid = index.job_id
 			this.jobtype = index.job_type
 			this.jobdate = index.job_date
 			this.servicetype = index.service_type
@@ -144,6 +145,7 @@
 				let param = {
 					startDate:this.jobdate,
 					endDate:this.jobdate,
+					job_id:this.jobid,
 					job_type:this.jobtype,
 					service_type:this.servicetype,
 					page:this.page,
@@ -175,8 +177,7 @@
 								}
 							}
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);
@@ -192,6 +193,7 @@
 				let param = {
 					startDate:this.daterange[0],
 					endDate:this.daterange[1],
+					job_id:this.jobid,
 					job_type:this.val,
 					service_type:this.servicetype,
 					page:this.page,
