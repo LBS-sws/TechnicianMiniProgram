@@ -304,22 +304,13 @@
 							this.imageList[index].result = uploadRes.data.detault_url;
 							this.uploadBase(index + 1);
 						}
-						// if (uploadRes.code != 0) {
-						// 	uni.showToast({
-						// 		title: '上传失败 : ' + uploadRes.msg,
-						// 		icon: 'none'
-						// 	});
-						// 	this.error(index);
-						// 	this.imageList[index].errorInfo = uploadRes.msg;
-						// } else {
-						// 	//上传图片成功
-						// 	// console.log(uploadRes)
-						// 	this.imageList[index].progress = 100;
-						// 	this.imageList[index].url = `${this.$baseUrl_imgs}` + uploadRes.data.file_name;
-						// 	this.imageList[index].result = uploadRes.data.file_name;
-						// 	this.uploadBase(index + 1);
-						// }
-						
+						if(uploadRes.code == 0)
+						{
+							uni.showToast({
+								title: '上传失败 : ' + uploadRes.msg,
+								icon: 'none'
+							})
+						}
 					},
 					fail: e => {
 						uni.showToast({

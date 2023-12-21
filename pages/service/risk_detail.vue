@@ -481,6 +481,7 @@
 
 			// 获取上传或者预览后的图片
 			handleLoaded3(arr) {
+				
 				var imageStr = "";
 				for (var i = 0; i < arr.length; i++) {
 					imageStr += arr[i].result + ",";
