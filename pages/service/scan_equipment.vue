@@ -32,7 +32,6 @@
 					<view class="text-left">设备名称</view>
 					<view class="text-right">{{equipment_name}}</view>
 				</cl-row>
-				<!-- v-if="list.length == 0 || list.length==1" -->
 				<cl-row >
 					<view class="text-left" style="margin-top: 15px;">设备区域</view>
 					<view class="text-right" style="width: 70%;" v-if="areaclick">
@@ -271,12 +270,18 @@ export default {
 								this.use_areas = use_area
 								
 								if(res.data.data.list.length == 1){		// 选中
-									this.equipment_area = res.data.data.list[0].equipment_area
+									
+									if(!res.data.data.list[0].equipment_area)
+									{
+										this.equipment_area = ''
+									}else{
+										this.equipment_area = res.data.data.list[0].equipment_area
+									}
 								}
 								// 多个设备时，禁止选区域，以及设备区域都为空
 								if(res.data.data.list.length > 1){
 									this.disabled = false
-									this.equipment_area = ''// res.data.data.list[0].equipment_area
+									this.equipment_area = ''
 								}
 								
 								// 4.检查数据
