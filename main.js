@@ -61,8 +61,8 @@ Vue.prototype.$version =2
 Vue.prototype.$mapApiKey="2atTyVGiF8KTsdegg7KKSjGTsdINm8gw" //百度地图 appkey
 Vue.prototype.$mapApiUrl="https://api.map.baidu.com/reverse_geocoding/v3" //百度地图apiURl
 
-Vue.prototype.$baseUrl="https://apiuat.lbsapps.cn/api"
-Vue.prototype.$baseUrl_imgs="http://files.lbsapps.cn"
+Vue.prototype.$baseUrl="https://v1.teach.lbsapps.cn/api"
+Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"
 
 // Vue.prototype.$baseUrl="http://localhost:10006/api"
 // Vue.prototype.$baseUrl_imgs="http://localhost:10006"
