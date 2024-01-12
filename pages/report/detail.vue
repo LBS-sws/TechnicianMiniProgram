@@ -236,8 +236,8 @@
 						</view> -->
 						<view class="sign_time">
 							
-							<cl-list v-if="jobtype==1">签到时间：{{basic.job_date}} &nbsp;{{basic.start_time}}</cl-list>
-							<cl-list v-else>签到时间：{{basic.job_date}} &nbsp;{{basic.start_time}}</cl-list>
+							<cl-list v-if="jobtype==1">签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
+							<cl-list v-else>签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
 							<!-- <cl-list>签到地点：江苏省无锡市滨湖区刘唐路2号</cl-list> -->
 						</view>
 					</view>
