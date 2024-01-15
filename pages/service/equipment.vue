@@ -356,11 +356,6 @@
 								return ;
 							}
 							if(res.data.code == 200){
-								// uni.redirectTo({
-								// 	url: "/pages/service/scan_equipment?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-								// 		'&shortcut_type=' + this.shortcut_type + '&service_type=' + this.service_type +
-								// 		'&id=' + this.xz_all +'&ct=' + this.ct
-								// })
 								uni.redirectTo({
 									url: "/pages/service/scan_equipment?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 										'&id=' + ids

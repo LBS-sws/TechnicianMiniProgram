@@ -3,30 +3,7 @@
 		<view class="my_card">
 			<view class="cust_name">
 				{{service.customer.name_zh}}
-				<!-- <span v-if="service.status == 2">
-					<span v-if="service.StartTime == '00:00:00'">
-						<view class="new_card_title_right" style="color: #007AFF;">待服务</view>
-					</span>
-					<span v-else>
-						<view class="new_card_title_right" style="color: #007AFF;">服务中</view>
-					</span>
-				</span>
-				<span v-if="service.Status == 3">
-					<view class="new_card_title_right" style="color: #07C160;">已完成</view>
-				</span>
-				<span v-if="service.Status == -1">
-					<span v-if="service.StartTime == '00:00:00'">
-						<view class="new_card_title_right" style="color: #EE0A24;">未完成</view>
-					</span>
-					<span v-else>
-						<view class="new_card_title_right" style="color: #007AFF;">服务中</view>
-					</span>
-				</span> -->
-				<!-- <span>
-					<span >
-						<view class="new_card_title_right" style="color: #EE0A24;">{{service.service_status}}</view>
-					</span>
-				</span> -->
+				
 				<span v-if="service.status == 2">
 					<span v-if="service.StartTime == '00:00:00'">
 						<view class="new_card_title_right" style="color: #007AFF;">待服务</view>
@@ -54,9 +31,13 @@
 					</cl-col>
 				  <cl-col span="8">
 					<view v-if="jobtype == 1" class="first_job">
-					  {{ service.FirstJob == 1 ? '首次服务' : '常规服务' }}
+					  <!-- {{ service.FirstJob == 1 ? '首次服务' : '常规服务' }} -->
+					  {{service.first_job}}
 					</view>
 					<view v-else-if="jobtype != 1" class="first_job">跟进服务</view>
+				  </cl-col>
+				  <cl-col span="8" v-if="service.customer.customer_type==203 || service.customer.customer_type==250">
+				  	<view class="customer_type">工厂服务</view>
 				  </cl-col>
 				</cl-row>
 				<view>
@@ -363,7 +344,14 @@
 		text-align: center;
 		margin-right: 5px;
 	}
-
+	.customer_type {
+		background-color: #f6a6a6;
+		color: #e01313;
+		border-radius: 8px;
+		padding: 3px 0px;
+		text-align: center;
+		margin-right: 5px;
+	}
 	.service_msg {
 		font-size: 16px;
 		font-weight: bold;

@@ -296,7 +296,7 @@
 			{
 			    "name": "开始服务",
 			    "path": "pages/service/start",
-				"query": "jobid=1&jobtype=1&ct=0"
+				"query": "jobid=209&jobtype=1&ct=0"
 			},
 			{
 			    "name": "服务简报",
@@ -311,7 +311,7 @@
 			{
 			    "name": "设备情况",
 			    "path": "pages/service/equipment",
-				"query": "jobid=105&jobtype=1&ct=0&shortcut_type=undefined&service_type=2"
+				"query": "jobid=209&jobtype=1&ct=0&shortcut_type=undefined&service_type=2"
 			},
 			{
 			    "name": "设备详情",
