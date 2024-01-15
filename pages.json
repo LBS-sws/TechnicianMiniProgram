@@ -276,7 +276,7 @@
 			{
 			    "name": "服务详情",
 			    "path": "pages/service/detail",
-			    "query": "jobtype=1&jobid=104"
+			    "query": "jobtype=1&jobid=209"
 			},
 	        {
 	            "name": "历史任务",
@@ -286,12 +286,12 @@
 			{
 			    "name": "任务详情",
 			    "path": "pages/history/job_detail",
-				"query": "jobid=104&jobtype=1"
+				"query": "jobid=209&jobtype=1"
 			},
 			{
 			    "name": "报告详情",
 			    "path": "pages/history/report_detail",
-				"query": "jobid=104&jobtype=1"
+				"query": "jobid=209&jobtype=1"
 			},
 			{
 			    "name": "开始服务",
@@ -362,7 +362,7 @@
 			{
 			    "name": "服务详情",
 			    "path": "pages/report/detail",
-				"query": "jobid=105&jobtype=1" 
+				"query": "jobid=209&jobtype=1" 
 			},
 			{
 			    "name": "风险跟进",
