@@ -48,7 +48,7 @@
 								<view class="first_job" v-if="item.first_job_flag==1">{{item.first_job}}</view>
 								<view v-else class="first_job">{{item.first_job}}</view>
 							</cl-col>
-							<cl-col span="8" v-if="item.CustomerType==203 || item.CustomerType==249">
+							<cl-col span="8" v-if="item.customer.customer_type==203 || item.customer.customer_type==250">
 								<view class="customer_type">工厂服务</view>
 							</cl-col>
 						</cl-row>
@@ -76,10 +76,7 @@
 				</view>
 			</view>
 		</view>
-		<!-- 跟进单 -->
-		
 		<!-- end -->
-
 	</view>
 </template>
 
@@ -144,7 +141,7 @@ export default {
 		},
 		// 工作单详情
 		job_detail(jobid,type) {
-			if(type == 203 || type==249){
+			if(type == 203 || type==250){
 				uni.setStorageSync('ct', 1);
 				var ct = 1 ;
 			}else{

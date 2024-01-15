@@ -41,7 +41,7 @@
 					<cl-col span="8">
 						<view class="first_job" >{{service.first_job}}</view>
 					</cl-col>
-					<cl-col span="8" v-if="service.service_type==203 || service.service_type==249">
+					<cl-col span="8" v-if="service.customer.customer_type==203 || service.customer.customer_type==250">
 						<view class="customer_type">工厂服务</view>
 					</cl-col>
 				</cl-row>
@@ -93,7 +93,7 @@
 				</view>
 			</span>
 			<!-- 设备布防图 -->
-			<view v-if="service.CustomerType==203 || service.CustomerType==249" class="service_msg" style="color: #12900a;">设备布防图</view>
+			<view v-if="service.customer.customer_type==203 || service.customer.customer_type==250" class="service_msg" style="color: #12900a;">设备布防图</view>
 			<view class="block">
 				<cl-row>
 					<cl-col span="8" v-for="(item,index) in service.set_img" :key="index">
@@ -250,24 +250,6 @@
 			},
 			start() {
 				// 签到
-				// if (this.service.start_time == null || this.service.start_time == '00:00:00') {
-				// 	uni.navigateTo({
-				// 		url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-				// 			.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-				// 	});
-				// } else {
-					
-				// 	if(this.service.CustomerType == 203 ||this.service.CustomerType == 249){
-				// 		uni.setStorageSync('ct', 1);
-				// 		var ct = 1 ;
-				// 	}else{
-				// 		uni.setStorageSync('ct', 0);
-				// 		var ct = 0 ;
-				// 	}
-				// 	uni.navigateTo({
-				// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&ct=" + ct
-				// 	});
-				// }
 				console.log('签到时间:',this.service.start_date,this.service.start_time)
 				if(this.service.status == 3)
 				{
