@@ -480,10 +480,7 @@
 			}else{
 				this.autograph_customer_style = 'transform: rotate(-90deg)';
 			}
-			console.log('this.conversion_flag:')
-			console.log(this.conversion_flag)
-			console.log('this.is_base64:')
-			console.log(this.is_base64)
+			
 			// let that = this
 			// 	uni.$on('getdata',function(data){
 			// 		console.log('监听到事件来自返回的参数：' , data);
@@ -498,13 +495,7 @@
 			}
 			
 			this.getBaseinfo()		// 基础信息
-			this.getBriefing()		// 简报
-			this.getMaterial()		// 物料
-			this.getEquipment()		// 设备
-			this.getRisk()			// 风险跟进
-			this.getPhoto()			// 现场工作照
 			
-			this.getItems()
 			
 			this.show_briefing = true
 			this.show_material = true
@@ -518,8 +509,7 @@
 			uni.$off('startSign_sadd', this.onStartSign_sadd)//销毁监听保存附加签名
 		},
 		methods: {
-			radioChange(e,i)
-			{
+			radioChange(e,i){
 				console.log(e.detail.value)
 				console.log(i)
 				this.questionsData[i].answer = e.detail.value
@@ -537,12 +527,30 @@
 			},
 			// swiper滑动事件
 			change_swiper(e) {
-				// console.log(e)
 				let index = e.target.current || e.detail.current;
 				this.run_tab(index)
 			},
 			// 执行整个tab事件
 			run_tab(index) {
+				
+				if(index==1){
+					this.getBriefing()		// 简报
+				}
+				if(index==2){
+					this.getMaterial()		// 物料
+				}
+				if(index==3){
+					this.getEquipment()		// 设备
+				}
+				if(index==4){
+					this.getRisk()			// 风险跟进
+				}
+				if(index==5){
+					this.getPhoto()			// 现场工作照
+				}
+				if(index==6){
+					this.getItems()			// 签名
+				}
 				// 记录当前滑动的位置
 				this.current_tab = index
 				// 如果点击了第4个以后的,滚动条向右移动屏幕的宽度
