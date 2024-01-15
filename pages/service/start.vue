@@ -125,10 +125,8 @@ import color from 'uview-ui/libs/config/color';
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
 			
-			console.log(index)
+			this.ct = uni.getStorageSync('ct')
 			
-			// this.ct = uni.getStorageSync('ct')
-			// this.data_select();
 		},
 		onShow(index) {
 			// this.showContent: false;
@@ -245,13 +243,13 @@ import color from 'uview-ui/libs/config/color';
 				})
 			},
 			lc(url, shortcut_type) {
-				console.log(url)
+				
 				if (this.service.length == 0) {
 					uni.showToast({
 						title: '数据加载中',
 						icon: 'none',
 					});
-				} else if (this.service.status == '3') { // this.service.finish_time != '00:00:00' || 
+				} else if (this.service.status == '3') {
 					uni.showToast({
 						title: '已完成不能再修改',
 						icon: 'none',
@@ -264,6 +262,7 @@ import color from 'uview-ui/libs/config/color';
 				} else {
 					console.log("客户信息：")
 					console.log(this.custInfo)
+					
 					let new_url = url;
 					if (url === "/pages/service/photo") {
 						uni.removeStorage({
@@ -299,7 +298,7 @@ import color from 'uview-ui/libs/config/color';
 							'&service_type=' + this.service.service_type;
 
 					}
-					console.log(new_url)
+					
 					uni.navigateTo({
 						url: new_url
 					})

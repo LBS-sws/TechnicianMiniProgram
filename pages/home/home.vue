@@ -12,8 +12,8 @@
 			没有任务哦~~
 		</view>
 		<!-- 工作单 -->
-		<view class="datecontent" v-for="(item,index) in jobs">
-			<view class="new_card" @click="job_detail(item.id,item.order_type)">
+		<view class="datecontent" v-for="(item,index) in jobs" :key="index">
+			<view class="new_card" @click="job_detail(index)">
 				<view class="new_card_title">
 					<view class="new_card_title_left">
 						{{item.customer.name_zh}}
@@ -140,14 +140,19 @@ export default {
 			return weekday[wekdate];
 		},
 		// 工作单详情
-		job_detail(jobid,type) {
-			if(type == 203 || type==250){
+		job_detail(index) {
+			
+			// console.log(index)
+			let jobid = this.jobs[index].id
+			let type  = this.jobs[index].order_type
+			if(this.jobs[index].customer.customer_type == 203 || this.jobs[index].customer.customer_type == 250){
 				uni.setStorageSync('ct', 1);
 				var ct = 1 ;
 			}else{
 				uni.setStorageSync('ct', 0);
 				var ct = 0 ;
 			}
+			
 			uni.navigateTo({
 				url: "/pages/service/detail?jobtype=" + type + "&jobid=" + jobid
 			});
