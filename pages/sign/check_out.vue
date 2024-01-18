@@ -31,27 +31,6 @@
 			<!-- upload -->
 			<view class="bg-white" v-if="invoice=='1'">
 				<!-- file -->
-				<!-- <view class="uni-file-picker__container">
-					<view class="file-picker__box" v-for="(item,index) in picturesx" :key="index">
-						<view class="file-picker__box-content">
-							<image :src="item" class="file-image" mode="aspectFill" @click="previewImage(index)">
-							</image>
-							<view class="icon-del-box" @click="delFile(index)">
-								<view class="icon-del"></view>
-								<view class="icon-del rotate"></view>
-							</view>
-						</view>
-					</view>
-					
-					<view class="file-picker__box" @click="upload" v-if="picturesx.length!=3">
-						<view class="file-picker__box-content is-add">
-							<view class="is-add">
-								<view class="icon-add"></view>
-								<view class="icon-add rotate"></view>
-							</view>
-						</view>
-					</view>
-				</view> -->
 				<view class="service_content">
 					<view label="限制上传图片格式/大小">
 						<m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加照片"
@@ -241,78 +220,6 @@
 						}
 					}
 				});
-			},
-			// 上传
-			upload() {
-				let that = this
-				let picture = {}
-				let pictures = this.pictures
-				let picturesx = this.picturesx
-				uni.chooseImage({
-					sourceType: ['camera', 'album'], //拍照或是打开系统相册选择照片
-					count: 1, //最多三张
-					success(res) {
-						if (Array.isArray(res.tempFilePaths)) {
-							//最多选择三张，如果多选删掉前面选择的
-							if (res.tempFilePaths.length === 3) {
-								pictures.length = 0
-							} else if (res.tempFilePaths.length == 2 && pictures.length == 2) {
-								pictures.splice(0, 1)
-							}
-							//把照片的路径放到数组里面
-							res.tempFilePaths.forEach(item => {
-
-								uni.showLoading({
-									title: '上传中...'
-								});
-								uni.uploadFile({
-
-									url: `${that.$baseUrl}/Upload.Upload/image`,
-									header: {
-										'content-type': 'application/x-www-form-urlencoded',
-										'token': uni.getStorageSync('token')
-									},
-									filePath: item,
-									name: 'file',
-									formData: {
-										file:item,
-										type:2
-									},
-									success: (uploadFileRes) => {
-										//console.log(uploadFileRes.data);
-
-										console.log(uploadFileRes.data);
-
-										const res = JSON.parse(uploadFileRes.data)
-										console.log(res)
-										
-										if(res.code==200){
-											// cdn_url	直接预览
-											// detault_url	数据库存字段
-											// time  时间
-										}
-										
-										
-										// let url = `${that.$baseUrl_imgs}/` + res.data.detault_url
-										let url = res.data.detault_url
-										pictures.push(url)
-										that.pictures = pictures
-										
-										let urlx = `${that.$baseUrl_imgs}/` + res.data.detault_url
-										picturesx.push(urlx)
-										that.picturesx = picturesx
-										
-										setTimeout(function() {
-											uni.hideLoading();
-										}, 500);
-									}
-								});
-
-							})
-
-						}
-					}
-				})
 			},
 			// 预览轮播图
 			previewImage: function(index) {
