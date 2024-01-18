@@ -103,7 +103,8 @@ import color from 'uview-ui/libs/config/color';
 				jobtype: '',
 				Staff01: '',
 				custInfo: {},
-				ct:0
+				ct:0,
+				autograph:'',
 			}
 		},
 		onLoad(index) {
@@ -168,6 +169,9 @@ import color from 'uview-ui/libs/config/color';
 						if (res.data.code == 200) {
 							// console.log(res.data.data.data)
 							
+							// 客户签名
+							this.autograph = res.data.data.autograph
+							
 							this.service = res.data.data.data
 							this.custInfo = {
 								address: res.data.data.data.customer.addr,
@@ -176,18 +180,7 @@ import color from 'uview-ui/libs/config/color';
 							
 							if (res.data.data.plateArr) {
 								var list_add = [];
-							// 	for (var i = 0; i < res.data.data.plateArr.length; i++) {
-							// 		if (res.data.data.plateArr[i].choice > 0) {
-							// 			console.log(res.data.data.plateArr[i])
-							// // 			console.log(res.data.data.table_sections[i])
-							// 			// this.list[res.data.data.service_sections[i] - 1].content += "  √";
-							// // 			// this.list[res.data.data.service_sections[i] - 1].color = "#00a015";
-							// 			this.list[res.data.data.plateArr[i]].classType = "success";
-
-							// 		}
-							// 		list_add.push(this.list[i]);
-
-							// 	}
+								
 								let  arr = res.data.data.plateArr
 								arr.forEach((item,i)=>{
 									
@@ -212,7 +205,6 @@ import color from 'uview-ui/libs/config/color';
 										}
 									})
 								})
-								// console.log()
 								
 								this.list = list_add;
 							// } else {
@@ -225,8 +217,6 @@ import color from 'uview-ui/libs/config/color';
 							// 		}
 							}
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
 						
 						
 						//隐藏加载框
@@ -321,7 +311,7 @@ import color from 'uview-ui/libs/config/color';
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
-						.Addr + "&autograph=" + this.service.autograph
+						.Addr + "&autograph=" + this.autograph
 				})
 			}
 		}
