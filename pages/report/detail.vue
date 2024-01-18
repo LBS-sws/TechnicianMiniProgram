@@ -21,37 +21,37 @@
 			<swiper-item>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="客户名称：">
-						<text>{{basic.customer.name_zh}}</text>
+						<text selectable="true">{{basic.customer.name_zh}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="客户地址：">
-						<text>{{basic.customer.addr}}</text>
+						<text selectable="true">{{basic.customer.addr}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="联系人员：">
-						<text>{{basic.contact.contact_name}}</text>
+						<text selectable="true">{{basic.contact.contact_name}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="联系方式：">
-						<text>{{basic.contact.mobile}}</text>
+						<text selectable="true">{{basic.contact.mobile}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="服务类型：">
-						<text>{{basic.service_type_info.service_name}}</text>
+						<text selectable="true">{{basic.service_type_info.service_name}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="服务项目：">
-						<text>{{basic.project}}</text>
+						<text selectable="true">{{basic.project}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="服务时间(开始)：">
-						<text>{{basic.start_date}}  &nbsp; {{basic.start_time}}</text>
+						<text selectable="true">{{basic.start_date}}  &nbsp; {{basic.start_time}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
@@ -61,12 +61,12 @@
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="服务人员：">
-						<text>{{basic.staff.main}}</text> <text>{{basic.staff.other}}</text>
+						<text selectable="true">{{basic.staff.main}}</text> <text selectable="true">{{basic.staff.other}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="设备巡查：">
-						<text>{{basic.equipments}}</text>
+						<text selectable="true">{{basic.equipments}}</text>
 					</cl-list-item>
 				</view>
 			</swiper-item>
@@ -75,13 +75,13 @@
 				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="briefing.content">
 					<view class="service_title">服务内容</view>
 					<view class="service_content">
-						{{briefing.content}}
+						<text selectable="true">{{briefing.content}}</text>
 					</view>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="briefing.proposal">
 					<view class="service_title">跟进与建议</view>
 					<view class="service_content">
-						{{briefing.proposal}}
+						<text selectable="true">{{briefing.proposal}}</text>
 					</view>
 				</view>
 			</swiper-item>

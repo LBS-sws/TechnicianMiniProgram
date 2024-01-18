@@ -50,42 +50,42 @@
 			</view>
 			<view>
 				<cl-icon name="cl-icon-my" style="margin-right: 6px;color: #007AFF;"></cl-icon>
-				<span style="color: #9c9595;">{{service.contact.contact_name}}</span>
+				<span style="color: #9c9595;"><text selectable="true">{{service.contact.contact_name}}</text></span>
 			</view>
 			<view @tap="makePhone()">
 				<cl-icon name="cl-icon-keyboard-9" style="margin-right: 6px;color: #007AFF;"></cl-icon>
-				<span style="color: #9c9595;">{{service.contact.mobile}}</span>
+				<span style="color: #9c9595;"><text selectable="true">{{service.contact.mobile}}</text></span>
 			</view>
 			<view @tap="makePhoneb()">
 				<cl-icon name="cl-icon-keyboard-9" style="margin-right: 6px;color: #007AFF;"></cl-icon>
-				<span style="color: #9c9595;">{{service.contact.tel}}</span>
+				<span style="color: #9c9595;"><text selectable="true">{{service.contact.tel}}</text></span>
 			</view>
 			<view>
 				<cl-icon name="cl-icon-map" style="margin-right: 6px;color: #007AFF;"></cl-icon>
-				<span style="color: #9c9595;">{{service.customer.addr}}</span>
+				<span style="color: #9c9595;"><text selectable="true">{{service.customer.addr}}</text></span>
 			</view>
 			<!-- 任务信息 -->
 			<view class="service_msg">服务信息</view>
 			<view class="v_magin">
-				项目：<span style="color: black;">{{service.project}}</span>
+				项目：<span style="color: black;"><text selectable="true">{{service.project}}</text></span>
 			</view>
 			<view class="v_magin">
-				时间：<span style="color: black;">{{service.job_date}} &nbsp;
-					{{service.job_start_time}}-{{service.job_end_time}}</span>
+				时间：<text selectable="true"><span style="color: black;">{{service.job_date}} &nbsp;
+					{{service.job_start_time}}-{{service.job_end_time}}</span></text>
 			</view>
 			<view class="v_magin">
-				人员：<span style="color: black;">{{service.staff.main}}</span>
+				人员：<span style="color: black;"><text selectable="true">{{service.staff.main}}</text></span>
 			</view class="v_magin">
 			<view class="v_magin">
-				协作：<span style="color: black;">{{service.staff.other}}</span>
+				协作：<span style="color: black;"><text selectable="true">{{service.staff.other}}</text></span>
 			</view class="v_magin">
 			<span v-if="service.type==1">
 				<view>
-					设备：<span style="color: black;">{{service.Watchdog}}</span>
+					设备：<span style="color: black;"><text selectable="true">{{service.Watchdog}}</text></span>
 				</view>
 			</span>
 			<view class="v_magin">
-				要求：<span style="color: black;"><span>{{service.remarks}}</span></span>
+				要求：<span style="color: black;"><span><text selectable="true">{{service.remarks}}</text></span></span>
 			</view>
 			<span v-if="service.type==1">
 				<view @tap="update_remarks" class="v_magin">

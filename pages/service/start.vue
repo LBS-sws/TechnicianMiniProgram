@@ -2,22 +2,22 @@
 	<view class="content" v-if="showContent">
 		<view class="my_card">
 			<view class="cust_name">
-				{{service.customer.name_zh}}
+				<text selectable="true">{{service.customer.name_zh}}</text>
 			</view>
 			<view class="v_magin">
 				服务次数：<span style="color: black;">{{service.count}}次</span>
 			</view>
 			<view class="v_magin">
-				服务人员：<span style="color: black;">{{service.customer.name_zh}}</span>
+				服务人员：<span style="color: black;"><text selectable="true">{{service.customer.name_zh}}</text></span>
 			</view>
 			<view class="v_magin">
-				联系人员：<span style="color: black;">{{service.contact_name}}</span>
+				联系人员：<span style="color: black;"><text selectable="true">{{service.contact_name}}</text></span>
 			</view>
 			<view class="v_magin">
-				联系电话：<span style="color: black;">{{service.tel}}</span>
+				联系电话：<span style="color: black;"><text selectable="true">{{service.tel}}</text></span>
 			</view>
 			<view class="v_magin">
-				联系地址：<span style="color: black;">{{service.customer.addr}}</span>
+				联系地址：<span style="color: black;"><text selectable="true">{{service.customer.addr}}</text></span>
 			</view>
 			<!-- 流程 -->
 			<cl-divider>

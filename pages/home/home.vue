@@ -16,7 +16,7 @@
 			<view class="new_card" @click="job_detail(index)">
 				<view class="new_card_title">
 					<view class="new_card_title_left">
-						{{item.customer.name_zh}}
+						<text selectable="true">{{item.customer.name_zh}}</text>
 					</view>
 					<span v-if="item.status == 2">
 						<span v-if="item.job_start_time == '00:00:00'">
@@ -42,7 +42,7 @@
 					<view>
 						<cl-row>
 							<cl-col span="8">
-								<view class="service_name">{{item.service_type_info.service_name}}</view>
+								<view class="service_name"><text selectable="true">{{item.service_type_info.service_name}}</text></view>
 							</cl-col>
 							<cl-col span="8">
 								<view class="first_job" v-if="item.first_job_flag==1">{{item.first_job}}</view>
@@ -57,15 +57,15 @@
 					</view>
 					<view>
 						<span class="content_t">日期:</span>
-						{{item.job_date}}
+						<text selectable="true">{{item.job_date}}</text>
 					</view>
 					<view>
 						<span class="content_t">时间:</span>
-						{{item.job_start_time}}-{{item.job_end_time}}
+						<text selectable="true">{{item.job_start_time}}-{{item.job_end_time}}</text>
 					</view>
 					<view>
 						<span class="content_t">地址:</span>
-						{{item.customer.addr}}
+						<text selectable="true">{{item.customer.addr}}</text>
 					</view>
 					<view style="display: flex;height: 20px;" v-if="item.customer_grade!=null">
 						<span style="margin-left:10px;">客户点评:</span>
