@@ -36,7 +36,7 @@
 				<cl-col span="12" @tap="report()">
 					<view class="jc">检查报告</view>
 				</cl-col>
-				<cl-col v-if="service.status==2" span="12" @tap="check_out()">
+				<cl-col v-if="service.finish_time=='00:00:00'" span="12" @tap="check_out()">
 					<view class="qc">签出离店</view>
 				</cl-col>
 				<cl-col v-else span="12">

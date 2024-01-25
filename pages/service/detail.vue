@@ -251,14 +251,14 @@
 			start() {
 				// 签到
 				console.log('签到时间:',this.service.start_date,this.service.start_time)
-				if(this.service.status == 3)
-				{
-					uni.navigateTo({
-						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-					})
-				}
-				if(this.service.status == 2)
-				{
+				// if(this.service.status == 3 || this.service.status == -1)
+				// {
+				// 	uni.navigateTo({
+				// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+				// 	})
+				// }
+				// if(this.service.status == 2)
+				// {
 					if(this.service.start_time && this.service.start_time !='00:00:00')
 					{
 						uni.navigateTo({
@@ -272,7 +272,7 @@
 								.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
 						})
 					}
-				}
+				// }
 			},
 			// 点击拨打电话
 			makePhone() {
