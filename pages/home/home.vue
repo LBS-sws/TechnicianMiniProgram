@@ -142,7 +142,6 @@ export default {
 		// 工作单详情
 		job_detail(index) {
 			
-			// console.log(index)
 			let jobid = this.jobs[index].id
 			let type  = this.jobs[index].order_type
 			if(this.jobs[index].customer.customer_type == 203 || this.jobs[index].customer.customer_type == 250){

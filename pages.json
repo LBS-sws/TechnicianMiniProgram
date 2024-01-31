@@ -326,12 +326,12 @@
 			{
 			    "name": "风险跟进",
 			    "path": "pages/service/risk",
-				"query": "jobid=105&jobtype=1" 
+				"query": "jobid=209&jobtype=1" 
 			},
 			{
 			    "name": "风险跟进",
 			    "path": "pages/service/risk_detail",
-				"query": "jobid=1&jobtype=1&id=3" 
+				"query": "jobid=209&jobtype=1&id=13" 
 			},
 			{
 			    "name": "风险历史",

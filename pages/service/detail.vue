@@ -70,8 +70,7 @@
 				项目：<span style="color: black;"><text selectable="true">{{service.project}}</text></span>
 			</view>
 			<view class="v_magin">
-				时间：<text selectable="true"><span style="color: black;">{{service.job_date}} &nbsp;
-					{{service.job_start_time}}-{{service.job_end_time}}</span></text>
+				时间：<text selectable="true">{{service.job_date}} {{service.job_start_time}}-{{service.job_end_time}}</text>
 			</view>
 			<view class="v_magin">
 				人员：<span style="color: black;"><text selectable="true">{{service.staff.main}}</text></span>

@@ -185,6 +185,7 @@
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
 			
+			this.ct = uni.getStorageSync('ct')
 			this.data_select()
 			
 		},
@@ -323,6 +324,15 @@
 						return false;
 					}
 				}
+				if(this.ct == 1){
+					if(this.risk_area==''){
+						uni.showToast({
+							icon: 'none',
+							title: `工厂区域必填`
+						});
+						return false;
+					}
+				}
 				
 				uni.showLoading({
 					title: "正在保存"
@@ -388,12 +398,23 @@
 			},
 			// 保存
 			save() {
-				if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
-					uni.showToast({
-						icon: 'none',
-						title: `没上传现场照(⊙_⊙)?`
-					});
-					return false;
+				if(this.ct == 0){
+					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
+						uni.showToast({
+							icon: 'none',
+							title: `没上传现场照(⊙_⊙)?`
+						});
+						return false;
+					}
+				}
+				if(this.ct == 1){
+					if(this.risk_area==''){
+						uni.showToast({
+							icon: 'none',
+							title: `工厂区域必填`
+						});
+						return false;
+					}
 				}
 				
 				uni.showLoading({
