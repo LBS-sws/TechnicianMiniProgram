@@ -261,21 +261,16 @@
 									this.take_steps = res.data.data.risk.take_steps // 采取措施
 
 									var photoStr = res.data.data.risk.site_photos ?? [];
-									// console.log(photoStr)
-
-									if(photoStr != ''){
-										var strArr = photoStr.split(",")
-										if (strArr.length > 0 || photoStr != '') {
-										
-											strArr.forEach((item,i)=>{
-												
-												let imgurl = '/' + item
-												imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
-												this.init_photos[i] = imgurl
-											})
-											// console.log(this.init_photos)
-											this.$refs.upload3.setItems(this.init_photos);
-										}
+									
+									if(photoStr.length>0){
+										photoStr.forEach((item,i)=>{
+											
+											let imgurl = '/' + item
+											imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
+											this.init_photos[i] = imgurl
+										})
+										// console.log(this.init_photos)
+										this.$refs.upload3.setItems(this.init_photos);
 									}
 								}
 
