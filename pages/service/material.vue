@@ -13,7 +13,7 @@
 			<cl-row>
 				<view class="dosage">{{item.dosage}}{{item.unit}}</view>
 			</cl-row>
-			<cl-row>
+			<cl-row v-if="item.use_area">
 				<view class="use_area">{{item.use_area}}</view>
 			</cl-row>
 		</view>
