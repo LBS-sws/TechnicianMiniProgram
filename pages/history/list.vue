@@ -82,11 +82,10 @@
 		data() {
 			return {
 				name:'历史任务',
-				daterange: ["2023-01-01", "2023-12-31"],
+				daterange: ["2023-01-02", "2023-12-31"],
 				jobs:[],
 				jobid:"",
 				jobtype:"",
-				jobdate:"",
 				servicetype:"",
 				list:[
 					{
@@ -104,6 +103,8 @@
 				total:'',		// 总条数
 				loading:false,
 				isLoadMore:true,
+				beginDate:"",
+				endDate:"",
 			};
 		},
 		onLoad(index) {
@@ -117,9 +118,10 @@
 					return false
 				}, 2000);
 			}
+			this.getCurrentMonthFirst();
+			
 			this.jobid = index.job_id
 			this.jobtype = index.job_type
-			this.jobdate = index.job_date
 			this.servicetype = index.service_type
 			this.getList()
 		},
@@ -140,11 +142,18 @@
 		     }
 		},
 		methods: {
+			getCurrentMonthFirst(){
+				var date = new Date();
+			    date.setDate(1);
+			    this.beginDate = date.toISOString().slice(0, 10)
+			    this.endDate = new Date().toISOString().slice(0, 10)
+				this.daterange = [this.beginDate,this.endDate]
+			},                
 			// 列表
 			getList() {	
 				let param = {
-					startDate:this.jobdate,
-					endDate:this.jobdate,
+					startDate:this.beginDate,
+					endDate:this.endDate,
 					job_id:this.jobid,
 					job_type:this.jobtype,
 					service_type:this.servicetype,

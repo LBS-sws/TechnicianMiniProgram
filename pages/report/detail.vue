@@ -1008,12 +1008,24 @@
 				// 		sorce++;//服务评分 此处是为兼容旧版
 				// 	}
 				// }
+				console.log('this.questionsDatathis.questionsData',this.questionsData)
+				let shouldContinue = true;  
 				this.questionsData.forEach((item,i)=>{
+					if(item.answer == ''){
+						uni.showToast({
+							title: '请为本次的服务进行评价！',
+							icon: 'none',
+						});
+						shouldContinue = false;
+						return
+					}
 					if(item.answer ==1 ){
 						sorce++;
 					}
 				})
-				
+				if(shouldContinue ==false){
+					return
+				}
 				let qe = []
 				this.questionsData.forEach((item,i)=>{
 					qe.push({"id":item.id,"question_score":item.question_score,"type":"radio","status":item.status,"answer":item.answer})
