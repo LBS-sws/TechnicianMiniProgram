@@ -3,4 +3,4 @@ dist/*
 Technician/unpackage/*
 node_modules/*
 main.js
-
+unpackage/*
