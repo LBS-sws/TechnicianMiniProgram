@@ -488,7 +488,9 @@ var _default = {
               _this2.typeid = res.data.data.list[0].equipment_type;
               var selectArr = [];
               if (res.data.data.list[0].equipment_type == 2) {
-                var selectList = res.data.data.check_option;
+                // let selectList = res.data.data.check_option
+                var selectList = Object.entries(res.data.data.check_option); //  对象转数组
+
                 selectList.forEach(function (itemx, index) {
                   var arr_arr = [];
                   itemx.forEach(function (item, i) {
