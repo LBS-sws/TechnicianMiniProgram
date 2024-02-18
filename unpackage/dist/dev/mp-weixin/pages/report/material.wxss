@@ -1,0 +1,10 @@
+
+.item{ margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;
+}
+.item .thumb{}
+.item .thumb image{ width: 100%;}
+.item .date{ font-size: 14px; padding: 0 10px;
+}
+.item .title{ font-size: 18px; padding: 0 10px;
+}
+

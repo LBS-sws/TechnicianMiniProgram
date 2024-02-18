@@ -1,0 +1,23 @@
+
+.card_u {
+	background-color: #FFFFFF;
+	margin-top: 14px;
+}
+.title {
+	border-bottom: 1px solid #e0dcdc;
+	font-size: 17px;
+	padding: 10px;
+	height: 25px;
+}
+.block {
+	padding: 10px;
+	font-size: 16px;
+}
+.cl-list-item__label {
+    padding: 0 20rpx 0 0;
+    font-size: 34rpx;
+}
+cl-list-item text{
+	font-size: 16px;
+}
+

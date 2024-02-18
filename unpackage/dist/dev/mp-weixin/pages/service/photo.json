@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "现场工作照",
+  "usingComponents": {
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-image": "/cl-uni/components/cl-image/cl-image"
+  }
+}

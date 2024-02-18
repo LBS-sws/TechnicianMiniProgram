@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "服务详情",
+  "usingComponents": {
+    "cl-confirm": "/cl-uni/components/cl-confirm/cl-confirm",
+    "cl-input": "/cl-uni/components/cl-input/cl-input",
+    "cl-toast": "/cl-uni/components/cl-toast/cl-toast",
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-row": "/cl-uni/components/cl-row/cl-row",
+    "cl-col": "/cl-uni/components/cl-col/cl-col",
+    "cl-image": "/cl-uni/components/cl-image/cl-image"
+  }
+}

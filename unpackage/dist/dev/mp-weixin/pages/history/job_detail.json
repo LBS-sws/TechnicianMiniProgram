@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "任务详情",
+  "usingComponents": {
+    "cl-row": "/cl-uni/components/cl-row/cl-row",
+    "cl-col": "/cl-uni/components/cl-col/cl-col",
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-image": "/cl-uni/components/cl-image/cl-image"
+  }
+}

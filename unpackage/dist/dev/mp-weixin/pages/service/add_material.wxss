@@ -1,0 +1,162 @@
+
+.content {
+	margin-bottom: 50px;
+}
+.del {
+	z-index: 9999;
+	position: fixed;
+	bottom: 10%;
+	right: 15px
+}
+.new_card {
+	background-color: #FFFFFF;
+	border-radius: 10px;
+	padding-bottom: 1px;
+	margin: 10px 0px;
+}
+.new_card_title {
+	border-bottom: 1px solid #e0dcdc;
+	font-size: 19px;
+	font-weight: bold;
+	padding: 10px;
+	height: 30px;
+}
+.xh {
+	color: #007AFF;
+	font-weight: bold;
+	font-size: 21px;
+	margin-right: 5px;
+}
+.new_card_title_left {
+	float: left;
+}
+.new_card_title_right {
+	font-size: 20px;
+	float: right;
+	position: relative;
+	top: -6px;
+}
+.new_card_content {
+	margin: 10px;
+	font-size: 17px;
+	color: #7b7070;
+}
+.new_card_content1 view {
+	margin-bottom: 10px;
+}
+.tj_bu {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+	line-height: 50px;
+	background-color: #007AFF;
+	color: #FFFFFF;
+	font-size: 20px;
+}
+.jh {
+	color: red;
+	margin-left: 5px;
+}
+.text-left {
+	float: left;
+}
+.text-right {
+	float: right;
+}
+.cl-input.is-border {
+	border: 0rpx solid #dcdfe6;
+}
+.dcts {
+	color: #9c9c9c;
+	font-size: 14px;
+}
+.bu {
+	background-color: #007AFF;
+	color: #FFFFFF;
+	height: 50px;
+	text-align: center;
+	border-top: 1px solid #f5f2f2;
+	font-size: 19px;
+	font-weight: bold;
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+	line-height: 50px;
+	z-index: 9;
+}
+.cl-select {
+	position: relative;
+	width: 100%;
+	padding-left: 20rpx;
+	padding-right: 60rpx;
+	font-size: 32rpx;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+.cl-textarea textarea {
+	font-size: 32rpx;
+	width: 100%;
+	box-sizing: border-box;
+	font-size: 32rpx;
+}
+.cl-input__inner {
+	height: 100%;
+	flex: 1;
+	font-size: 32rpx;
+	border: 0;
+	padding: 0;
+	outline: none;
+	background-color: transparent;
+}
+.cl-checkbox {
+	display: inline-block;
+	line-height: 40rpx;
+	font-size: 30rpx;
+	transition: all 0.3s;
+}
+.cl-textarea {
+	border: 1rpx solid #dcdfe6;
+	border-radius: 8rpx;
+	width: 100%;
+	box-sizing: border-box;
+	background-color: #fff;
+	position: relative;
+	padding: 10rpx 10rpx 10rpx 16rpx;
+	line-height: 36rpx;
+	margin-top: 10px;
+}
+
+/* new */
+.content {
+	padding: 10px;
+}
+.service {
+	padding-bottom: 15px;
+}
+.jh {
+	color: red;
+	margin-left: 5px;
+}
+.service_title {
+	/* color: #03A9F4; */
+	font-size: 18px;
+	font-weight: bold;
+}
+.text-green.data-v-2ee6bce8 {
+	color: #12900a;
+}
+page {
+	background-color: #FFFFFF;
+}
+.service_content {
+	margin: 8px 0px;
+}
+.service_content view {
+	margin: 3px 0px;
+}
+.lz {
+	margin: 10px 0px;
+}
+

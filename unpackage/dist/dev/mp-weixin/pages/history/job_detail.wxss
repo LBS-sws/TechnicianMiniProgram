@@ -1,0 +1,118 @@
+
+.new_card {
+	background-color: #fff;
+	border-radius: 10px;
+	padding-bottom: 10px;
+	margin: 10px 0px 60px 0px;
+}
+.new_card_title {
+	border-bottom: 1px solid #e0dcdc;
+	font-size: 19px;
+	font-weight: bold;
+	padding: 10px;
+	height: 30px;
+	color: #38393a;
+	/* padding-bottom: 30px */
+}
+.xh {
+	color: #007AFF;
+	font-weight: bold;
+	font-size: 25px;
+	margin: 3px;
+}
+.new_card_title_left {
+	float: left;
+	width: 80%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.new_card_title_right {
+	font-size: 17px;
+	float: right;
+	position: absolute;
+	right: 20px;
+	top: 70px;
+}
+.new_card_content {
+	margin: 10px;
+	font-size: 17px;
+	color: #7b7070;
+}
+.new_card_content view {
+	margin-bottom: 10px;
+}
+.tj_bu {
+	margin: 20px;
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+	line-height: 50px;
+	background-color: #007AFF;
+	color: #FFFFFF;
+	border-radius: 15px;
+	z-index: 9999;
+	font-weight: bold;
+	font-size: 18px;
+}
+.history {
+	z-index: 9999;
+	position: fixed;
+	bottom: 13%;
+	right: 20px;
+}
+
+/* new */
+.content {
+	/* background-image: url(../../static/images/my.png); */
+	padding: 50px 10px;
+	height: 5%;
+	background-color: #0e8cf1;
+	color: #6b6464;
+}
+.my_card {
+	background-color: #fff;
+	border-radius: 10px;
+	padding-bottom: 10px;
+	margin: 10px 0px;
+	padding: 10px;
+}
+.cust_name {
+	font-size: 20px;
+	font-weight: bold;
+}
+.service_title {
+	margin: 10px 0px;
+}
+.service_name {
+	background-color: #c6ecc0;
+	color: #12900a;
+	border-radius: 8px;
+	padding: 3px 0px;
+	text-align: center;
+	margin-right: 5px;
+}
+.first_job {
+	background-color: #cbe8ff;
+	color: #0876f1;
+	border-radius: 8px;
+	padding: 3px 0px;
+	text-align: center;
+	margin-right: 5px;
+}
+.customer_type {
+	background-color: #f6a6a6;
+	color: #e01313;
+	border-radius: 8px;
+	padding: 3px 0px;
+	text-align: center;
+	margin-right: 5px;
+}
+.service_msg {
+	font-size: 16px;
+	font-weight: bold;
+	color: #2196F3;
+	padding: 15px 0px 5px 0px;
+}
+

@@ -1,0 +1,17 @@
+{
+  "navigationBarTitleText": "风险跟进",
+  "usingComponents": {
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-confirm": "/cl-uni/components/cl-confirm/cl-confirm",
+    "cl-checkbox-group": "/cl-uni/components/cl-checkbox-group/cl-checkbox-group",
+    "cl-checkbox": "/cl-uni/components/cl-checkbox/cl-checkbox",
+    "cl-radio-group": "/cl-uni/components/cl-radio-group/cl-radio-group",
+    "cl-radio": "/cl-uni/components/cl-radio/cl-radio",
+    "cl-col": "/cl-uni/components/cl-col/cl-col",
+    "cl-input": "/cl-uni/components/cl-input/cl-input",
+    "m-upload": "/components/m-upload/m-upload",
+    "ld-select": "/components/ld-select/ld-select",
+    "cl-textarea": "/cl-uni/components/cl-textarea/cl-textarea",
+    "new-upload": "/components/new-upload/new-upload"
+  }
+}

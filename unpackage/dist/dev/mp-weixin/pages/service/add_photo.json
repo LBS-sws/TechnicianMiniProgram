@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "新增工作照",
+  "usingComponents": {
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-confirm": "/cl-uni/components/cl-confirm/cl-confirm",
+    "m-upload": "/components/m-upload/m-upload",
+    "ld-select": "/components/ld-select/ld-select",
+    "cl-textarea": "/cl-uni/components/cl-textarea/cl-textarea",
+    "new-upload": "/components/new-upload/new-upload"
+  }
+}

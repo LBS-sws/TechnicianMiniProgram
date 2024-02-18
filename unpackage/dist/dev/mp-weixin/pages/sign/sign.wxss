@@ -1,0 +1,55 @@
+@charset "UTF-8";
+/* COOL-UNI 颜色变量 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.signin.data-v-10dbb326 .field-cell .cell-field .van-cell {
+  padding: 0;
+}
+.signin.data-v-10dbb326 .field-cell .van-cell__value {
+  display: flex;
+  align-items: center;
+}
+.signin.data-v-10dbb326 .field-cell .van-cell__value .location {
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+}
+.signin .signin-area.data-v-10dbb326 {
+  padding-top: 200rpx;
+  text-align: center;
+}
+.signin .signin-area.data-v-10dbb326 .signin-btn .van-button {
+  width: 260rpx;
+  height: 260rpx;
+  box-shadow: 0px 12rpx 30rpx 0px rgba(25, 137, 250, 0.34);
+  background-color: #007AFF;
+}
+.signin .signin-area.data-v-10dbb326 .signin-btn .label {
+  font-size: 30rpx;
+  line-height: 42rpx;
+  color: #fff;
+}
+.signin .signin-area.data-v-10dbb326 .signin-btn .time {
+  font-size: 40rpx;
+  line-height: 56rpx;
+}
+.signin .signin-area .signin-result.data-v-10dbb326 {
+  color: #999;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

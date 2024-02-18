@@ -1,0 +1,353 @@
+@charset "UTF-8";
+/* COOL-UNI 颜色变量 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.new_card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding-bottom: 10px;
+}
+.new_card_title {
+  border-bottom: 1px solid #e0dcdc;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+  height: 30px;
+}
+.xh {
+  color: #007AFF;
+  font-weight: bold;
+  font-size: 20px;
+  margin-right: 5px;
+}
+.new_card_title_left {
+  float: left;
+}
+.new_card_title_right {
+  font-size: 20px;
+  color: #d0cece;
+  float: right;
+}
+.new_card_content {
+  margin: 10px;
+  font-size: 15px;
+}
+.new_card_content ._span {
+  color: #5e6165;
+}
+.sign_content {
+  border-bottom: 1px solid #eeeeee;
+  padding: 10px;
+}
+.sign_title {
+  text-align: left;
+  font-size: 18px;
+  padding: 0px 15px 10px 15px;
+  color: #504f4f;
+}
+.sign_time {
+  text-align: left;
+  font-size: 13px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+}
+.sign_qm {
+  /*flex 布局*/
+  display: flex;
+  /*实现垂直居中*/
+  align-items: center;
+  /*实现水平居中*/
+  justify-content: center;
+}
+.block {
+  display: flow-root;
+}
+.block cl-image {
+  width: 22%;
+  float: left;
+  margin: 5px;
+}
+.tab-h {
+  height: 80rpx;
+  width: 100%;
+  line-height: 80rpx;
+  background: #f7f7f7;
+  font-size: 18px;
+  white-space: nowrap;
+}
+.tab-item {
+  padding: 0 36rpx;
+  display: inline-block;
+}
+.tab-bar-active {
+  font-weight: bold;
+  color: #007aff;
+}
+.hr {
+  height: 1rpx;
+  background-color: #FFFFFF;
+}
+.swiper {
+  height: 1300rpx;
+  text-align: center;
+}
+.swiper-item {
+  height: 1300rpx;
+  line-height: 500rpx;
+}
+.service_title {
+  text-align: left;
+  font-size: 18px;
+  padding: 10px 15px;
+  color: #504f4f;
+}
+.service_content {
+  font-size: 16px;
+  background-color: #eeeeee;
+  /* height: 30px; */
+  padding: 10px;
+  text-align: center;
+  margin: 0 10px;
+  border-radius: 5px;
+  /*flex 布局*/
+  display: flex;
+  /*实现垂直居中*/
+  align-items: center;
+  /*实现水平居中*/
+  justify-content: center;
+}
+.material_title {
+  text-align: left;
+  font-size: 17px;
+  padding: 10px 15px;
+  padding: 10px 15px;
+  color: #b91306;
+}
+.risk {
+  background-color: #FFFFFF;
+  font-size: 15px;
+  /* height: 120px; */
+  padding: 10px 0px 0px 0px;
+  border-bottom: 1px solid #eeeeee;
+}
+.risk cl-list {
+  line-height: 16px;
+}
+.risk ._img {
+  height: 100px;
+  width: 130px;
+  border-radius: 10px;
+}
+.risk ._span {
+  font-weight: bold;
+  color: #b91306;
+}
+.fx {
+  margin-bottom: 5px;
+  width: 90px;
+  height: 22px;
+  font-size: 14px;
+  border-radius: 5px;
+  text-align: center;
+  background-color: #EEEEEE;
+}
+.gj {
+  margin-bottom: 5px;
+  width: 90px;
+  height: 22px;
+  font-size: 12px;
+  border-radius: 5px;
+  text-align: center;
+  background-color: #EEEEEE;
+}
+.photo {
+  background-color: #FFFFFF;
+}
+.sign-review {
+  background-color: #FFFFFF;
+}
+.sign_content {
+  border-bottom: 1px solid #eeeeee;
+  padding: 10px;
+}
+.sign_title {
+  text-align: left;
+  font-size: 18px;
+  padding: 0px 15px 10px 15px;
+  color: #504f4f;
+}
+.sign_time {
+  text-align: left;
+  font-size: 16px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+}
+.sign_qm {
+  /*flex 布局*/
+  display: flex;
+  /*实现垂直居中*/
+  align-items: center;
+  /*实现水平居中*/
+  justify-content: center;
+}
+.page-content {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  font-size: 14px;
+}
+.title {
+  flex: none;
+  position: relative;
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+  padding-left: 20px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.btn-group {
+  flex: 1 1 auto;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  background-color: #eee;
+  font-size: 14px;
+}
+.btn {
+  height: 40px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  padding: 0 10px;
+  margin: 10px;
+  overflow: hidden;
+  box-shadow: 1px 2px 3px rgba(100, 100, 100, 0.5);
+}
+.mycontent {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+}
+.add {
+  z-index: 9999;
+  position: fixed;
+  bottom: 10%;
+  right: 15px;
+}
+.eblock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+.eblock cl-image {
+  width: -1%;
+  float: left;
+  margin: 5px;
+}
+.placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #eee;
+}
+.cl-list-item__label {
+  padding: 0 20rpx 0 0;
+  font-size: 32rpx;
+}
+cl-list-item text {
+  font-size: 16px;
+}
+.t-td {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 14rpx;
+  border-top: 1px #d0dee5 solid;
+  border-left: 1px #d0dee5 solid;
+  text-align: center;
+  color: #555c60;
+  font-size: 30rpx;
+  /* font-size: 30rpx; */
+}
+.download {
+  z-index: 9999;
+  position: fixed;
+  bottom: 10%;
+  right: 15px;
+}
+.review_popup {
+  box-sizing: border-box;
+  padding: 0 24rpx 24rpx;
+}
+.review_popup .review_popup_title {
+  text-align: center;
+  padding: 24rpx;
+  font-size: 45rpx;
+}
+.review_popup .review_popup_box {
+  padding-inline: 40rpx;
+  margin-bottom: 24rpx;
+}
+.review_popup .review_popup_box .review_popup_box_entitle {
+  font-size: 35rpx;
+  color: #201f1f;
+  text-indent: 1rem;
+}
+.review_popup .review_popup_box .review_popup_box_radio {
+  margin-top: 20rpx;
+  display: inline-block;
+  width: 100%;
+}
+.review_popup .review_popup_box .review_popup_box_radio > view {
+  width: 45%;
+  float: left;
+}
+.review_popup .review_popup_button {
+  padding-top: 24rpx;
+}
+.review_popup .review_popup_button .cl-button {
+  width: 100%;
+  height: 70rpx;
+}
+.u-modal__content__text {
+  font-size: 17px !important;
+  line-height: 27px;
+}
+.u-modal__content {
+  padding-left: 0;
+  padding-right: 0;
+}
+
