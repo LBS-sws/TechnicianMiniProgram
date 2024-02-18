@@ -290,7 +290,10 @@ export default {
 								let selectArr = []
 								if(res.data.data.list[0].equipment_type ==2)
 								{
-									let selectList = res.data.data.check_option
+									
+									// let selectList = res.data.data.check_option
+									let selectList = Object.entries(res.data.data.check_option)		//  对象转数组
+									
 									selectList.forEach((itemx,index)=>{
 										let arr_arr = []
 										itemx.forEach((item,i)=>{
