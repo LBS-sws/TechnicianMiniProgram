@@ -92,13 +92,10 @@
 				</view>
 			</span>
 			<!-- 设备布防图 -->
-			<view v-if="service.customer.customer_type==203 || service.customer.customer_type==250" class="service_msg" style="color: #12900a;">设备布防图</view>
+			<view class="service_msg" style="color: #12900a;">设备布防图</view>
 			<view class="block">
 				<cl-row>
-					<cl-col span="8" v-for="(item,index) in service.set_img" :key="index">
-						<cl-image size="200rpx" :src="item" :preview-list="service.set_img">
-						</cl-image>
-					</cl-col>
+					<cl-col span="8" v-for="(item, index) in service.tech_attachment" :key="index">					    <cl-image size="200rpx" :src="fileUrl + '/' + item.file_path" :preview-list="service.tech_attachment.map(att => fileUrl + '/' + att.file_path)">					    </cl-image>					</cl-col>
 				</cl-row>
 			</view>
 		</view>
@@ -152,6 +149,7 @@
 				TechRemarks: '',
 				Remarks: '',
 				acknowledged: false,
+				fileUrl:''
 			}
 		},
 		onLoad(index) {
@@ -170,7 +168,7 @@
 					return false
 				}, 2000);
 			}
-			
+			this.fileUrl = this.$baseUrl_imgs
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
 		},
