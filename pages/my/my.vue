@@ -77,32 +77,18 @@ export default {
 								method: 'GET',
 								data: {},
 								success: (res) => {
-									// console.log(res)
-									// if (res.data.code == 200) {
-										
-									// 	uni.showToast({
-									// 		title: "成功退出",
-									// 		icon: 'none',
-									// 	});
-									// 	setTimeout(() => {
-									// 		uni.reLaunch({
-									// 				url:"/pages/login/login"
-									// 		})
-									// 	}, 2000);
-									// }else{
-										console.log(res.data.code)
-										uni.showToast({
-											title: res.data.msg,
-											icon: 'none',
-										});
-										if (res.data.code == 200) {
-											uni.clearStorageSync()
-											uni.reLaunch({
-												url:"/pages/login/login"
-											})
-										}
-										
-									// }
+									// console.log(res.data.code)
+									setTimeout(()=>{
+										uni.clearStorageSync()
+										uni.reLaunch({
+											url:"/pages/login/login"
+										})
+									},1500)
+
+									uni.showToast({
+										title: res.data.msg,
+										icon: 'none',
+									});	
 								},
 								fail: (err) => {
 									// console.log('error' + res);
