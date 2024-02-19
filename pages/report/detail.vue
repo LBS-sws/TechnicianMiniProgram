@@ -504,6 +504,8 @@
 			this.show_equipment = true
 			this.show_risk = true
 			this.show_photo = true
+			
+			this.getItems()
 		},
 		//页面销毁
 		beforeDestroy() {
@@ -660,7 +662,7 @@
 					// 客户签名
 					if(res.data.cust.customer_signature_url)
 					{
-						this.autograph_customer_signature = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url
+						this.autograph_customer_signature = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url+'?t=1'
 					}
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add)

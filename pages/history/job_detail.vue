@@ -190,12 +190,12 @@
 					method: 'GET',
 					data: params,
 					success: (res) => {
+						this.checkCode(res.data.code,res.data.msg)	// 400、401处理
+						
 						if (res.data.code == 200) {
 							this.service = res.data.data
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
-
+						
 					},
 					fail: (err) => {
 						console.log(res);

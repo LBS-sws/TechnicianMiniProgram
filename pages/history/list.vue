@@ -217,6 +217,8 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
+						this.checkCode(res.data.code,res.data.msg)	// 400、401处理
+						
 						if (res.data.code == 200) {
 							if(res.data.data.data)
 							{
@@ -225,8 +227,7 @@
 								this.jobs = []
 							}
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);

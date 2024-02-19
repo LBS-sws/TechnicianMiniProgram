@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "历史风险",
-  "usingComponents": {
-    "cl-row": "/cl-uni/components/cl-row/cl-row",
-    "cl-col": "/cl-uni/components/cl-col/cl-col",
-    "cl-list": "/cl-uni/components/cl-list/cl-list"
-  }
-}

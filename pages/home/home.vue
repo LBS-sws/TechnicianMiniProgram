@@ -163,10 +163,11 @@ export default {
 			}
 			
 			this.$api.dayOrderList(params).then(res=>{
+				// console.log(res)
+				this.checkCode(res.code,res.msg)	// 400、401处理
+				
 				if(res.code == 200) {
 					this.jobs = res.data
-				}else{
-					uni.$utils.toast(res.msg)
 				}
 			}).catch(err=>{
 				console.log(err)
@@ -177,13 +178,11 @@ export default {
 			let params = {}
 
 			this.$api.dayCount(params).then(res=>{
+				this.checkCode(res.code,res.msg)	// 400、401处理
 				if(res.code == 200) {
-					// this.jobs = res.data
 					this.dotLists = res.data
 					this.isShowContent = true
 					uni.hideLoading()
-				}else{
-					uni.$utils.toast(res.msg)
 				}
 			}).catch(err=>{
 				console.log(err)

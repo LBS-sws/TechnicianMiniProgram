@@ -1,1 +1,0 @@
-<view><block wx:for="{{papersData}}" wx:for-item="item" wx:for-index="index" wx:key="index"><view class="item"><view class="title">{{"证明名称："+item.papersname}}</view><view class="date">{{"生效日期："+item.startDate}}</view><view class="date">{{"截止日期："+item.endDate}}</view><view class="thumb"><image src="{{item.img}}" mode="widthFix"></image></view></view></block></view>

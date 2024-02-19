@@ -92,13 +92,10 @@
 				</view>
 			</span>
 			<!-- 设备布防图 -->
-			<view v-if="service.customer.customer_type==203 || service.customer.customer_type==250" class="service_msg" style="color: #12900a;">设备布防图</view>
+			<view class="service_msg" style="color: #12900a;">设备布防图</view>
 			<view class="block">
 				<cl-row>
-					<cl-col span="8" v-for="(item,index) in service.set_img" :key="index">
-						<cl-image size="200rpx" :src="item" :preview-list="service.set_img">
-						</cl-image>
-					</cl-col>
+					<cl-col span="8" v-for="(item, index) in service.tech_attachment" :key="index">					    <cl-image size="200rpx" :src="fileUrl + '/' + item.file_path" :preview-list="service.tech_attachment.map(att => fileUrl + '/' + att.file_path)">					    </cl-image>					</cl-col>
 				</cl-row>
 			</view>
 		</view>
@@ -109,7 +106,9 @@
 		<button class="tj_bu" v-else @tap="start()"> 
 			<view v-if="service.staff">
 				<span v-if="service.status == 2">
-					<span v-if="service.start_time == null || service.start_time == '00:00:00' ">服务签到</span>
+					<span v-if="service.start_time == null || service.start_time == '00:00:00'">
+						<span v-if="staffOther == service.staff.main">服务签到</span>
+					</span>
 					<span v-else>
 						继续服务
 					</span>
@@ -152,6 +151,8 @@
 				TechRemarks: '',
 				Remarks: '',
 				acknowledged: false,
+				fileUrl:'',
+				staffOther:''
 			}
 		},
 		onLoad(index) {
@@ -170,11 +171,13 @@
 					return false
 				}, 2000);
 			}
-			
+			this.fileUrl = this.$baseUrl_imgs
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
 		},
 		onShow(index) {
+			
+			this.staffOther = uni.getStorageSync('staffname')
 			this.service.Status = 0;
 			this.data_select()
 		},
@@ -214,6 +217,7 @@
 					method: 'GET',
 					data: params,
 					success: (res) => {
+						this.checkCode(res.data.code,res.data.msg)	// 400、401处理
 						
 						if (res.data.code == 200) {
 							this.service = res.data.data;
@@ -228,8 +232,8 @@
 							}
 							uni.hideLoading();
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
+						
 					},
 					fail: (err) => {
 						//隐藏加载框
@@ -250,28 +254,19 @@
 			start() {
 				// 签到
 				console.log('签到时间:',this.service.start_date,this.service.start_time)
-				// if(this.service.status == 3 || this.service.status == -1)
-				// {
-				// 	uni.navigateTo({
-				// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-				// 	})
-				// }
-				// if(this.service.status == 2)
-				// {
-					if(this.service.start_time && this.service.start_time !='00:00:00')
-					{
-						uni.navigateTo({
-							url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-						})
-					}
-					if(!this.service.start_time || this.service.start_time == '00:00:00')
-					{
-						uni.navigateTo({
-							url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-								.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-						})
-					}
-				// }
+				if(this.service.start_time && this.service.start_time !='00:00:00')
+				{
+					uni.navigateTo({
+						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+					})
+				}
+				if(!this.service.start_time || this.service.start_time == '00:00:00')
+				{
+					uni.navigateTo({
+						url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+							.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+					})
+				}
 			},
 			// 点击拨打电话
 			makePhone() {

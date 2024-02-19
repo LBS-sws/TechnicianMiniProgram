@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "服务简报",
-  "usingComponents": {
-    "cl-row": "/cl-uni/components/cl-row/cl-row",
-    "ld-select": "/components/ld-select/ld-select",
-    "cl-textarea": "/cl-uni/components/cl-textarea/cl-textarea"
-  }
-}

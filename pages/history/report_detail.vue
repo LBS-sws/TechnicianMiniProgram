@@ -652,17 +652,13 @@
 					// 员工签名
 					if(res.data.main[0])
 					{
-						// console.log(res.data.main[0])
 						this.autograph_employee01_signature = `${this.$baseUrl_imgs}/` + res.data.main[0]
 					}
-					
-					
+
 					// 客户签名
 					if(res.data.cust.customer_signature_url)
 					{
 						this.autograph_customer_signature = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url
-						
-						// console.log(res.data.cust.customer_signature_url)
 					}
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add)
@@ -692,11 +688,11 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
+						this.checkCode(res.data.code,res.data.msg) // 400、401
+						
 						if (res.data.code == 200) {
-							// if (res.data.data) {
-								this.basic = res.data.data
-							// }
-							// console.log(res.data)
+							
+							this.basic = res.data.data
 							
 							// 点评列表
 							let questionsData = res.data.data.questionnaire
@@ -705,10 +701,8 @@
 								item.options = this.radioData
 							})
 							this.questionsData = questionsData
-							// this.startSign_sData.questions = questionsData
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);
@@ -730,14 +724,12 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
+						this.checkCode(res.data.code,res.data.msg) // 400、401
+						
 						if (res.data.code == 200) {
-							// if (res.data.data) {
-								this.briefing = res.data.data
-							// }
-							// console.log(res.data)
+							this.briefing = res.data.data
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);
@@ -759,14 +751,11 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
+						this.checkCode(res.data.code,res.data.msg) // 400、401
+						
 						if (res.data.code == 200) {
-							// if (res.data.data) {
-								this.material = res.data.data.data
-							// }
-							// console.log(res.data)
+							this.material = res.data.data.data
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
 					},
 					fail: (err) => {
 						console.log(res);
@@ -788,14 +777,12 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
+						
+						this.checkCode(res.data.code,res.data.msg) // 400、401
+						
 						if (res.data.code == 200) {
-							// if (res.data.data) {
-								this.equipment = res.data.data
-							// }
-							// console.log(res.data)
+							this.equipment = res.data.data
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
 					},
 					fail: (err) => {
 						console.log(res);
@@ -819,21 +806,17 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
+						this.checkCode(res.data.code,res.data.msg) // 400、401
+						
 						if (res.data.code == 200) {
-							// if (res.data.data) {
-								
-								let list = res.data.data.data
-								list.forEach((item,i)=>{
-									let photoArr = item.site_photos.split(",")
-									item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
-								})
-								
-								this.risk = list
-							// }
-							console.log(res.data.data.data)
+							let list = res.data.data.data
+							list.forEach((item,i)=>{
+								let photoArr = item.site_photos.split(",")
+								item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
+							})
+							this.risk = list
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
 					},
 					fail: (err) => {
 						console.log(res);
@@ -857,6 +840,9 @@
 					method: 'GET',
 					data: param,
 					success: (res) => {
+						// 其它状态
+						this.checkCode(res.data.code,res.data.msg)
+						
 						if (res.data.code == 200) {
 							
 							let list = res.data.data.data
@@ -866,15 +852,9 @@
 								item.site_photos.forEach((itemx,index)=>{
 									item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
 								})
-								
 							})
-							
-							// console.log(list)
-							
 							this.photo = list
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
 					},
 					fail: (err) => {
 						console.log(res);
@@ -931,7 +911,7 @@
 					title: "数据加载中..."
 				});
 				let param = {
-					// staffid: uni.getStorageSync('staffid'),
+					
 					job_id: this.jobid,
 					job_type: this.jobtype,
 				}
@@ -946,7 +926,7 @@
 					responseType: "arraybuffer", //注意这里的responseType
 					success: (result) => {
 						var fileManager = uni.getFileSystemManager();
-						// var FilePath = `${wx.env.USER_DATA_PATH}/${this.basic.CustomerName}-${this.jobid}-${this.basic.JobDate}.pdf`;
+						
 						var FilePath = `${wx.env.USER_DATA_PATH}/${this.basic.customer.name_zh}-${this.jobid}-${this.basic.job_date}.pdf`;
 						fileManager.writeFile({
 							filePath: FilePath,
@@ -998,16 +978,6 @@
 				let that = this
 				var sorce = 0;
 				
-				
-				
-				// for (let i in this.questionsData) {
-				// 	if(this.questionsData[i]['answer']!==0 && this.questionsData[i]['answer']!==1){
-				// 		uni.showToast({title: '请完成点评',icon: 'none',})
-				// 		return false
-				// 	}else if(this.questionsData[i]['answer'] == 1){
-				// 		sorce++;//服务评分 此处是为兼容旧版
-				// 	}
-				// }
 				this.questionsData.forEach((item,i)=>{
 					if(item.answer ==1 ){
 						sorce++;
@@ -1024,7 +994,7 @@
 					customer_id:this.basic.customer_id,
 					job_id:this.jobid,
 					job_type:this.jobtype,
-					question:JSON.stringify(qe), //JSON.stringify(that.questionsData),
+					question:JSON.stringify(qe),
 					// staff_id:3306
 				}
 				

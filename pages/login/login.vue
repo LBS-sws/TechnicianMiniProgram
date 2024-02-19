@@ -53,13 +53,16 @@
 		},
 		onLoad() {
 			let token = uni.getStorageSync('token')
-			console.log('login')
+			
 			if(token)
 			{
 				uni.switchTab({
 					url: "/pages/home/home"
 				})
 			}
+		},
+		onShow() {
+			
 		},
 		methods: {
 			//账号密码点击登录
