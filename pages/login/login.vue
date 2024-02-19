@@ -53,7 +53,7 @@
 		},
 		onLoad() {
 			let token = uni.getStorageSync('token')
-			console.log('login')
+			
 			if(token)
 			{
 				uni.switchTab({

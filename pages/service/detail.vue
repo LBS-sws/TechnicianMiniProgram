@@ -217,6 +217,7 @@
 					method: 'GET',
 					data: params,
 					success: (res) => {
+						this.checkCode(res.data.code,res.data.msg)	// 400、401处理
 						
 						if (res.data.code == 200) {
 							this.service = res.data.data;
@@ -231,8 +232,8 @@
 							}
 							uni.hideLoading();
 						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
+						
+						
 					},
 					fail: (err) => {
 						//隐藏加载框
@@ -253,28 +254,19 @@
 			start() {
 				// 签到
 				console.log('签到时间:',this.service.start_date,this.service.start_time)
-				// if(this.service.status == 3 || this.service.status == -1)
-				// {
-				// 	uni.navigateTo({
-				// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-				// 	})
-				// }
-				// if(this.service.status == 2)
-				// {
-					if(this.service.start_time && this.service.start_time !='00:00:00')
-					{
-						uni.navigateTo({
-							url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-						})
-					}
-					if(!this.service.start_time || this.service.start_time == '00:00:00')
-					{
-						uni.navigateTo({
-							url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-								.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-						})
-					}
-				// }
+				if(this.service.start_time && this.service.start_time !='00:00:00')
+				{
+					uni.navigateTo({
+						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+					})
+				}
+				if(!this.service.start_time || this.service.start_time == '00:00:00')
+				{
+					uni.navigateTo({
+						url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+							.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+					})
+				}
 			},
 			// 点击拨打电话
 			makePhone() {

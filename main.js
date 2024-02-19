@@ -23,7 +23,7 @@ Vue.config.productionTip = false;
 Vue.prototype.checkLogin = function(backpage,backtype){
 	
 	var token = uni.getStorageSync('token');
-	console.log(token)
+	// console.log(token)
 	
 	if(token==''){
 		uni.redirectTo({
@@ -34,15 +34,29 @@ Vue.prototype.checkLogin = function(backpage,backtype){
 	return [token];
 }
 
-// 判断code  this.checkCode(400,'请登录')
+// 判断返回状态 200、400、401
 Vue.prototype.checkCode = function(code, msg){
+	console.log('1111111')
 	// token 过期
-	if(code!=200)
-	{
+	if(code == 400){
 		uni.showToast({
 			title:msg,
 			icon:'none'
 		})
+	}
+	// 单点登录
+	if(code == 401){
+		
+		uni.showToast({
+			title:msg,
+			icon:'none'
+		})
+		uni.clearStorageSync()	// 清除所有缓存信息
+		setTimeout(()=>{
+			uni.navigateTo({
+				url:'/pages/login/login'
+			})
+		},1500)
 	}
 }
 
