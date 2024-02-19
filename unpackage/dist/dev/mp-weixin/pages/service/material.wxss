@@ -1,0 +1,55 @@
+
+.add {
+	z-index: 9999;
+	position: fixed;
+	bottom: 10%;
+	right: 15px
+}
+.list {
+	background-color: #FFFFFF;
+	margin: 10px;
+	font-size: 17px;
+	color: #7b7070;
+	border-radius: 10px;
+	padding: 10px;
+}
+.list ._span {
+	color: #000000;
+}
+.noservice {
+	text-align: center;
+	margin-top: 20%;
+	color: #a5a6a7;
+	font-size: 17px;
+}
+
+/* new */
+.content_t {
+	color: #6b6464;
+	margin: 10px;
+}
+.material_name {
+	background-color: #c6ecc0;
+	color: #12900a;
+	border-radius: 8px;
+	padding: 3px;
+	text-align: center;
+	margin: 2px
+}
+.dosage {
+	background-color: #cbe8ff;
+	color: #0876f1;
+	border-radius: 8px;
+	padding: 3px;
+	text-align: center;
+	margin: 2px
+}
+.use_area {
+	background-color: #f7cfcc;
+	color: #ec1505;
+	border-radius: 8px;
+	padding: 3px;
+	text-align: center;
+	margin: 2px
+}
+

@@ -1,0 +1,114 @@
+
+.content {
+		/* width: 98%;
+		margin: 0px 1%; */
+}
+.chaxun {
+		margin-top: 10rpx;
+		background-color: #FFFFFF;
+		border-radius: 10rpx;
+		border: 1px solid #d8d3d3;
+}
+.add_data {
+		border-right: 1px solid rgb(216, 211, 211);
+		height: 35px;
+}
+.ys_data {
+		text-align: center;
+		margin: 7px 10px;
+		font-size: 14px;
+}
+.cl-select__value {
+	    display: inline-block;
+	    height: 70rpx;
+	    width: 100%;
+	    overflow: hidden;
+}
+.datec {
+		background-color: #FFFFFF;
+}
+.datecontent {
+		margin: 10px;
+}
+.dateshow {
+		font-size: 16px;
+		margin: 10px;
+}
+.new_card {
+		background-color: #fff;
+		border-radius: 10px;
+		padding-bottom: 10px;
+		margin-bottom: 10px;
+}
+.new_card_title {
+	    border-bottom: 1px solid #e0dcdc;
+	    font-size: 18px;
+	    font-weight: bold;
+	    padding: 10px;
+	    height: 25px;
+}
+.new_card_title_left {
+		float: left;
+		width: 80%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+.new_card_title_right {
+		font-size: 17px;
+		float: right;
+}
+.new_card_content {
+		margin: 10px;
+		font-size: 16px;
+		color: #7b7070;
+}
+.new_card_content view {
+		margin-bottom: 5px;
+}
+.noservice {
+		text-align: center;
+		margin-top: 20%;
+		color: #a5a6a7;
+		font-size: 17px
+}
+
+	/* new */
+.content_t {
+		color: #6b6464;
+		margin: 10px;
+}
+.service_name {
+		background-color: #c6ecc0;
+		color: #12900a;
+		border-radius: 8px;
+		padding: 3px 0px;
+		text-align: center;
+		margin-right: 5px;
+}
+.first_job {
+		background-color: #cbe8ff;
+		color: #0876f1;
+		border-radius: 8px;
+		padding: 3px 0px;
+		text-align: center;
+		margin-right: 5px;
+}
+
+	/* new */
+.content {
+		/* background-image: url(../../static/images/my.png); */
+		padding: 50px 5px;
+		height: 5%;
+		background-color: #0e8cf1;
+		color: #6b6464;
+}
+.cl-card__container{ padding:  20rpx 0;}
+.cl-button{ padding: 0 20rpx;}
+.loadingText{
+	text-align: center;
+	font-size: 24rpx;
+	color: #666;
+	padding: 10rpx 0;
+}
+

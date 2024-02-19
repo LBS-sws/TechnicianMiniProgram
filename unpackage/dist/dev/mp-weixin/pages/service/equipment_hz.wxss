@@ -1,0 +1,91 @@
+
+.new_card {
+	background-color:#fff;
+	border-radius:10px;
+	padding-bottom:10px;
+	margin:10px 0px;
+}
+.new_card_title {
+	border-bottom:1px solid #e0dcdc;
+	font-size:18px;
+	font-weight:bold;
+	padding:10px;
+	height:30px;
+}
+.xh {
+	color:#007AFF;
+	font-weight:bold;
+	font-size:20px;
+	margin-right:5px;
+}
+.new_card_title_left {
+	float:left;
+}
+.new_card_title_right {
+	font-size:20px;
+	color:#d0cece;
+	float:right;
+}
+.new_card_content {
+	margin:10px;
+	font-size:15px;
+}
+.new_card_content ._span {
+	color:#5e6165;
+}
+.tj_bu {
+	position:relative;
+	bottom:0px;
+	background-color:#007AFF;
+	color:#FFFFFF;
+	z-index:9999;
+}
+.lcx {
+	background-color:#fff;
+	border-radius:10px;
+	padding-bottom:10px;
+	margin:10px 0px;
+	padding-top:10px;
+}
+.tab-h {
+	height:80rpx;
+	width:100%;
+	line-height:80rpx;
+	background:#f7f7f7;
+	font-size:16px;
+	white-space:nowrap;
+}
+.tab-item {
+	padding:0 36rpx;
+	display:inline-block;
+}
+.tab-bar-active {
+	font-weight:bold;
+	color:#007aff;
+}
+/* new */
+.content {
+	padding:10px;
+}
+.service {
+	padding-bottom:15px;
+}
+.service_title {
+	/* color:#03A9F4;
+	*/
+		font-size:18px;
+	font-weight:bold;
+}
+.text-green.data-v-2ee6bce8 {
+	color:#12900a;
+}
+page {
+	background-color:#FFFFFF;
+}
+.service_content {
+	margin:8px 0px;
+}
+.service_content view {
+	margin:3px 0px;
+}
+

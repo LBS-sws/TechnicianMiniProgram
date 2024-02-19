@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "开始服务",
+  "usingComponents": {
+    "cl-divider": "/cl-uni/components/cl-divider/cl-divider",
+    "cl-timeline": "/cl-uni/components/cl-timeline/cl-timeline",
+    "cl-timeline-item": "/cl-uni/components/cl-timeline-item/cl-timeline-item",
+    "cl-row": "/cl-uni/components/cl-row/cl-row",
+    "cl-col": "/cl-uni/components/cl-col/cl-col"
+  }
+}

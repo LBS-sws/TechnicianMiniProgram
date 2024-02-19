@@ -1,0 +1,80 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/home/home",
+    "pages/my/my",
+    "pages/service/detail",
+    "pages/service/start",
+    "pages/service/briefing",
+    "pages/service/material",
+    "pages/service/add_material",
+    "pages/service/equipment",
+    "pages/service/risk",
+    "pages/service/photo",
+    "pages/report/detail",
+    "pages/report/risk_detail",
+    "pages/sign/sign",
+    "pages/sign/check_out",
+    "pages/sign/select",
+    "pages/sign/search",
+    "pages/service/equipment_hz",
+    "pages/service/equipment_xq",
+    "pages/service/risk_detail",
+    "pages/service/last_risk",
+    "pages/service/last_risk_detail",
+    "pages/service/add_photo",
+    "pages/my/aboutus",
+    "pages/history/list",
+    "pages/history/report_detail",
+    "pages/report/sign",
+    "pages/history/job_detail",
+    "pages/service/scan_equipment",
+    "pages/report/material",
+    "pages/my/demo"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "LBS",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#bdbdbd",
+    "selectedColor": "#1899dc",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "iconPath": "/static/icon/tabbar/risks.png",
+        "selectedIconPath": "/static/icon/tabbar/risks_x.png",
+        "text": "任务"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "iconPath": "/static/icon/tabbar/wode.png",
+        "selectedIconPath": "/static/icon/tabbar/wode_x.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "需要您授权使用位置信息"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "usingComponents": {
+    "van-button": "/wxcomponents/vant/button/index",
+    "van-cell": "/wxcomponents/vant/cell/index",
+    "van-cell-group": "/wxcomponents/vant/cell-group/index",
+    "van-search": "/wxcomponents/vant/search/index",
+    "van-icon": "/wxcomponents/vant/icon/index",
+    "van-field": "/wxcomponents/vant/field/index",
+    "van-loading": "/wxcomponents/vant/loading/index",
+    "van-info": "/wxcomponents/vant/info/index"
+  }
+}

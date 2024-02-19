@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "物料使用",
+  "usingComponents": {
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-row": "/cl-uni/components/cl-row/cl-row"
+  }
+}

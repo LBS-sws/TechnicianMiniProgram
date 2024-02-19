@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "风险跟进",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-tag": "/cl-uni/components/cl-tag/cl-tag",
+    "cl-badge": "/cl-uni/components/cl-badge/cl-badge",
+    "cl-row": "/cl-uni/components/cl-row/cl-row",
+    "cl-col": "/cl-uni/components/cl-col/cl-col",
+    "cl-list": "/cl-uni/components/cl-list/cl-list",
+    "cl-loading": "/cl-uni/components/cl-loading/cl-loading"
+  }
+}

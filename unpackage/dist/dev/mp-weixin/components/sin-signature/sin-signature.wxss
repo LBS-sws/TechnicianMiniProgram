@@ -1,0 +1,102 @@
+@charset "UTF-8";
+/* COOL-UNI 颜色变量 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.signature-wrap {
+  height: 100%;
+  width: 100%;
+}
+.signature-wrap .img-wrap {
+  width: 100%;
+  min-height: 200rpx;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  align-content: center;
+  justify-content: center;
+}
+.signature-wrap .img-wrap image {
+  width: 100%;
+}
+.signature-contain {
+  z-index: 9000;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+.signature-contain .signature-main {
+  background: white;
+  flex-direction: row-reverse;
+  display: flex;
+  align-items: stretch;
+  height: 101%;
+  overflow: scroll;
+}
+.signature-contain .signature-title {
+  font-weight: bold;
+  font-size: 18px;
+  display: flex;
+  padding: 0 20rpx;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  color: #333;
+}
+.signature-contain .signature-title text {
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
+}
+.signature-contain .signature {
+  border: 1px dotted black;
+  border-bottom: 1px dotted black;
+  background: #FFF;
+  margin: 10px 0;
+  width: 90vw;
+  height: 90vh;
+  align-self: center;
+}
+.signature-contain .signature-btns {
+  display: flex;
+  padding: 2px;
+  flex-direction: column;
+}
+.signature-contain .signature-btns .btn {
+  flex-grow: 1;
+  flex-shrink: 0;
+  padding: 20rpx;
+  font-size: 20px;
+  margin: 0;
+  text-align: center;
+  text-decoration: none;
+  height: 30vh;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.signature-contain .signature-btns .btn text {
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
+}
+.signature-contain .signature-btns .btn + .btn {
+  border-top: 1px solid #eee;
+}
+.signature-contain .signature-btns .btn.btn-clear {
+  color: #4cd964;
+}
+.signature-contain .signature-btns .btn.btn-cancel {
+  color: #f0ad4e;
+}
+.signature-contain .signature-btns .btn.btn-ok {
+  color: #007aff;
+}
+

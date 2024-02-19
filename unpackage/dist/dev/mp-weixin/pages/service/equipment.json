@@ -1,0 +1,16 @@
+{
+  "navigationBarTitleText": "设备情况",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-confirm": "/cl-uni/components/cl-confirm/cl-confirm",
+    "cl-scroller": "/cl-uni/components/cl-scroller/cl-scroller",
+    "cl-checkbox-group": "/cl-uni/components/cl-checkbox-group/cl-checkbox-group",
+    "cl-checkbox": "/cl-uni/components/cl-checkbox/cl-checkbox",
+    "cl-input-number": "/cl-uni/components/cl-input-number/cl-input-number",
+    "cl-row": "/cl-uni/components/cl-row/cl-row",
+    "cl-col": "/cl-uni/components/cl-col/cl-col",
+    "cl-select": "/cl-uni/components/cl-select/cl-select",
+    "cl-loading": "/cl-uni/components/cl-loading/cl-loading"
+  }
+}

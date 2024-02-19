@@ -1,0 +1,14 @@
+{
+  "navigationBarTitleText": "新增物料使用",
+  "usingComponents": {
+    "cl-icon": "/cl-uni/components/cl-icon/cl-icon",
+    "cl-confirm": "/cl-uni/components/cl-confirm/cl-confirm",
+    "cl-select": "/cl-uni/components/cl-select/cl-select",
+    "cl-row": "/cl-uni/components/cl-row/cl-row",
+    "cl-input": "/cl-uni/components/cl-input/cl-input",
+    "cl-checkbox-group": "/cl-uni/components/cl-checkbox-group/cl-checkbox-group",
+    "cl-checkbox": "/cl-uni/components/cl-checkbox/cl-checkbox",
+    "cl-textarea": "/cl-uni/components/cl-textarea/cl-textarea",
+    "ld-select": "/components/ld-select/ld-select"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "cl-popup": "/cl-uni/components/cl-popup/cl-popup"
+  },
+  "component": true
+}

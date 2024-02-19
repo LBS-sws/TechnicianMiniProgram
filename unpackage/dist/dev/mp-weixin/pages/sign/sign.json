@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "到店签到",
+  "usingComponents": {
+    "u-notify": "/node-modules/uview-ui/components/u-notify/u-notify"
+  }
+}

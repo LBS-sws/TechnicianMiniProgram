@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "签出离店",
+  "usingComponents": {
+    "cl-message": "/cl-uni/components/cl-message/cl-message",
+    "cl-radio": "/cl-uni/components/cl-radio/cl-radio",
+    "m-upload": "/components/m-upload/m-upload"
+  }
+}
