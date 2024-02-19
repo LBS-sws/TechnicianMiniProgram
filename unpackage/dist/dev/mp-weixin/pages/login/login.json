@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "登录",
-  "usingComponents": {
-    "cl-message": "/cl-uni/components/cl-message/cl-message"
-  }
-}

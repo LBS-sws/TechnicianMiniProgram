@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "我的",
-  "usingComponents": {
-    "cl-list-item": "/cl-uni/components/cl-list-item/cl-list-item",
-    "cl-toast": "/cl-uni/components/cl-toast/cl-toast",
-    "cl-action-sheet": "/cl-uni/components/cl-action-sheet/cl-action-sheet",
-    "cl-confirm": "/cl-uni/components/cl-confirm/cl-confirm"
-  }
-}
