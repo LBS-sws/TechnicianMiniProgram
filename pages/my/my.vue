@@ -90,6 +90,7 @@ export default {
 									// 		})
 									// 	}, 2000);
 									// }else{
+										console.log(res.data.code)
 										uni.showToast({
 											title: res.data.msg,
 											icon: 'none',
@@ -97,7 +98,7 @@ export default {
 										if (res.data.code == 200) {
 											uni.clearStorageSync()
 											uni.reLaunch({
-													url:"/pages/login/login"
+												url:"/pages/login/login"
 											})
 										}
 										
