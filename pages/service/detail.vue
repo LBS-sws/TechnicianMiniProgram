@@ -106,7 +106,9 @@
 		<button class="tj_bu" v-else @tap="start()"> 
 			<view v-if="service.staff">
 				<span v-if="service.status == 2">
-					<span v-if="service.start_time == null || service.start_time == '00:00:00' ">服务签到</span>
+					<span v-if="service.start_time == null || service.start_time == '00:00:00'">
+						<span v-if="staffOther == service.staff.main">服务签到</span>
+					</span>
 					<span v-else>
 						继续服务
 					</span>
@@ -149,7 +151,8 @@
 				TechRemarks: '',
 				Remarks: '',
 				acknowledged: false,
-				fileUrl:''
+				fileUrl:'',
+				staffOther:''
 			}
 		},
 		onLoad(index) {
@@ -173,6 +176,8 @@
 			this.jobtype = index.jobtype
 		},
 		onShow(index) {
+			
+			this.staffOther = uni.getStorageSync('staffname')
 			this.service.Status = 0;
 			this.data_select()
 		},
