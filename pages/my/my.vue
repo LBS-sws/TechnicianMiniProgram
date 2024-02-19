@@ -67,7 +67,6 @@ export default {
 						label: "退出登录",
 						color: "red",
 						click: done => {
-							uni.clearStorageSync()
 							// 请求接口
 							uni.request({
 								url: `${this.$baseUrl}/Staff.Login/logout`,
@@ -78,32 +77,35 @@ export default {
 								method: 'GET',
 								data: {},
 								success: (res) => {
-									console.log(res)
-									if (res.data.code == 200) {
+									// console.log(res)
+									// if (res.data.code == 200) {
 										
+									// 	uni.showToast({
+									// 		title: "成功退出",
+									// 		icon: 'none',
+									// 	});
+									// 	setTimeout(() => {
+									// 		uni.reLaunch({
+									// 				url:"/pages/login/login"
+									// 		})
+									// 	}, 2000);
+									// }else{
+										console.log(res.data.code)
 										uni.showToast({
-											title: "成功退出",
+											title: res.data.msg,
 											icon: 'none',
 										});
-										setTimeout(() => {
+										if (res.data.code == 200) {
+											uni.clearStorageSync()
 											uni.reLaunch({
-													url:"/pages/login/login"
+												url:"/pages/login/login"
 											})
-										}, 2000);
-									}else{
-										uni.showToast({
-											title: "成功退出",
-											icon: 'none',
-										});
-										setTimeout(() => {
-											uni.reLaunch({
-													url:"/pages/login/login"
-											})
-										}, 2000);
-									}
+										}
+										
+									// }
 								},
 								fail: (err) => {
-									console.log('error' + res);
+									// console.log('error' + res);
 									uni.showToast({
 										title: res.data.msg,
 										icon: 'none',

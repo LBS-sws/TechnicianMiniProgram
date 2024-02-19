@@ -1,6 +1,0 @@
-{
-  "usingComponents": {
-    "cl-loading": "/cl-uni/components/cl-loading/cl-loading"
-  },
-  "component": true
-}

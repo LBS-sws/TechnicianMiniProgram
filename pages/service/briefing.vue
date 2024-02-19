@@ -1,6 +1,5 @@
 <template>
 	<view class="content">
-
 		<view class="service">
 			<view class="service_title">服务内容<span class="jh">*</span></view>
 			<view class="lz">
@@ -10,10 +9,8 @@
 						@change="selectChange"></ld-select>
 				</cl-row>
 			</view>
-			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="service_content" count>
-			</cl-textarea>
+			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="service_content" count></cl-textarea>
 		</view>
-
 		<view class="service">
 			<view class="service_title">跟进建议</view>
 			<view class="lz">
@@ -32,7 +29,6 @@
 		</view>
 	</view>
 </template>
-
 <script>
 export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
   const reg = new RegExp(keyWord)
@@ -83,12 +79,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 			this.data_select()
 		},
 		methods: {
-			/**
-			 *搜索开始
-			 * *
-			 */
 			inputFun(data) {
-				// console.log(data.value)
 				this.search_key = data.value;
 				this.clearTimer()
 				if (this.search_key && this.search_key.length > 0) {

@@ -1,1 +1,0 @@
-<view hidden="{{!($slots.default||$slots.$default)}}" class="cl-badge"><slot></slot><block wx:if="{{!hidden&&(content!=0||isDot)}}"><text class="{{[classList]}}">{{content}}</text></block></view>

@@ -86,9 +86,9 @@
 			<view class="v_magin">
 				要求：<span style="color: black;"><span><text selectable="true">{{service.remarks}}</text></span></span>
 			</view>
-			<span v-if="service.type==1">
+			<span>
 				<view @tap="update_remarks" class="v_magin">
-					技术员备注：<span style="color: black;">{{service.tech_remarks.tech_remarks}}</span>&nbsp;
+					技术员备注：<span style="color: black;">{{service.tech_remarks}}</span>&nbsp;
 				</view>
 			</span>
 			<!-- 设备布防图 -->
@@ -276,13 +276,13 @@
 			// 点击拨打电话
 			makePhone() {
 				uni.makePhoneCall({
-					phoneNumber: this.service.Mobile
+					phoneNumber: this.service.contact.mobile
 				});
 			},
 			// 点击拨打电话
 			makePhoneb() {
 				uni.makePhoneCall({
-					phoneNumber: this.service.Tel
+					phoneNumber: this.service.contact.tel
 				});
 			},
 			//历史记录
@@ -295,23 +295,17 @@
 			//修改技术员备注
 			update_remarks() {
 				this.TechRemarks = this.service.TechRemarks;
-				this.$refs.confirm2
-					.open({
-						title: "技术员备注修改"
-					})
-					.then(() => {
+				this.$refs.confirm2.open({title: "技术员备注修改"}).then(() => {
 						uni.showLoading({
 							title: "保存中..."
 						});
 						let params = {
-							staffid: uni.getStorageSync('staffid'),
-							contractnumber: this.service.ContractNumber,
-							customerid: this.service.CustomerID,
-							servicetype: this.service.ServiceType,
-							techremarks: this.TechRemarks
+							tech_remarks: this.TechRemarks,
+							job_id: this.jobid,
+							job_type: this.jobtype
 						}
 						uni.request({
-							url: `${this.$baseUrl}/savetechremarks`,
+							url: `${this.$baseUrl}/Order.Order/updateTeachRemarks`,
 							header: {
 								'content-type': 'application/x-www-form-urlencoded',
 								'token': uni.getStorageSync('token')
@@ -319,16 +313,17 @@
 							method: 'POST',
 							data: params,
 							success: (res) => {
+								console.log('resresresres',res);
 								uni.hideLoading();
-								if (res.data.code == 1) {
+								if (res.data.code == 200) {
 									this.service.TechRemarks = this.TechRemarks;
+									this.service.tech_remarks  = this.TechRemarks;
 									this.$refs.toast.open(
 										this.TechRemarks ? `修改成功！` : "填写为空！"
 									);
 								} else {
 									this.$refs.toast.open("修改失败！");
 								}
-
 							},
 							fail: (err) => {
 								console.log(res);
