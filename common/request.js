@@ -37,7 +37,13 @@ export default (path, data = {}, method = 'GET') => {
 					// 	title: response.data.msg
 					// });
 				}
-
+				if (response.data.code == 401) {
+					uni.clearStorageSync()
+					uni.reLaunch({
+						url:"/pages/login/login"
+					})
+					return false;
+				}
 				resolve(response.data);
 			},
 			fail(err) {
