@@ -61,6 +61,9 @@
 				})
 			}
 		},
+		onShow() {
+			
+		},
 		methods: {
 			//账号密码点击登录
 			submit() {
