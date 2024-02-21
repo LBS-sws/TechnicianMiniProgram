@@ -281,17 +281,18 @@ export default {
 								
 								// 4.检查数据
 								// typeid == 1 input == 2 select
-								this.typeid = res.data.list[0].equipment_type
+								this.typeid = res.data.data.list[0].equipment_type
 								let selectArr = []
-								if(res.data.list[0].equipment_type ==2)
+								if(res.data.data.list[0].equipment_type ==2)
 								{
 									
 									// let selectList = res.data.data.check_option
-									let selectList = Object.entries(res.data.check_option)		//  对象转数组
+									let selectList = Object.entries(res.data.data.check_option)		//  对象转数组
+									console.log(selectList)
 									
 									selectList.forEach((itemx,index)=>{
 										let arr_arr = []
-										itemx.forEach((item,i)=>{
+										itemx[1].forEach((item,i)=>{
 											arr_arr.push({label:item,value:item})
 										})
 										selectArr.push(arr_arr)
