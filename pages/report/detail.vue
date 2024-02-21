@@ -434,12 +434,13 @@
 				/* 点评问题 */
 				question_type:'questions',
 				startSign_sData: {
-					show: false,
+					show: false, // 
 					questions: []
 				},
 				questionsData:[],	// 问题列表
 				radioData:[{t: '是　Yes', v: 1}, {t: '否　No', v: 0}],	// 是、否
 				isShowAdd:false,
+				isdp:false
 			}
 		},
 		onLoad(index) {
@@ -506,6 +507,7 @@
 			this.show_photo = true
 			
 			this.getItems()
+			
 		},
 		//页面销毁
 		beforeDestroy() {
@@ -517,6 +519,9 @@
 				console.log(e.detail.value)
 				console.log(i)
 				this.questionsData[i].answer = e.detail.value
+				
+				console.log(this.questionsData)
+				
 			},
 			goMaterial(e){
 				console.log(e)
@@ -577,12 +582,6 @@
 				});
 			},
 			// 签名
-			// async startSign() {
-			// 	let s = await this.$refs.sig.getSyncSignature();
-			// 	this.autograph_customer_signature = s;
-			// 	// console.log('组件版本', this.$refs.sig.VERSION);
-			// 	console.log('签名数据', s);
-			// },
 			startSign_s() {
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1"
@@ -645,7 +644,7 @@
 				})
 			},
 			getItems(){
-				
+				let that = this
 				/* 6.签名点评 */ 
 				let params6 = {
 					job_id:this.jobid,
@@ -653,6 +652,7 @@
 				}
 				this.$api.getSignature(params6).then(res=>{
 					// console.log(res.data)
+					
 					// 员工签名
 					if(res.data.main[0])
 					{
@@ -670,8 +670,37 @@
 						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url_add
 					}
 					
-					// 客户点评
+					// 客户点评 星星
 					this.autograph_customer_grade = res.data.evaluates.score
+					
+					// 点评过
+					if(res.data.evaluates.question)
+					{
+						let qearr = JSON.parse(res.data.evaluates.question)	// 问题答案
+						console.log('已点评:',qearr)
+						this.isdp = true
+						setTimeout(()=>{
+							
+							let arr = this.startSign_sData.questions
+							//console.log('问题:',arr)
+							
+							arr.forEach((item,i)=>{
+								item.answer = parseInt(qearr[i].answer) //qearr[i].answer
+							})
+							
+							let arr2 = []
+							for (let i in arr) {
+								arr2.push(arr[i])
+							}
+							console.log(arr2)
+							this.questionsData = arr2
+						},500)
+					}else{
+						console.log('没有点评记录')
+						
+						this.questionsData = this.startSign_sData.questions
+					}
+					
 					
 				}).catch(err=>{
 					// console.log(err)
@@ -708,8 +737,8 @@
 								item.answer = ''
 								item.options = this.radioData
 							})
-							this.questionsData = questionsData
-							// this.startSign_sData.questions = questionsData
+							//this.questionsData = questionsData
+							this.startSign_sData.questions = questionsData	// 暂存问题列表
 						}
 						
 						if(res.data.code == 400)
@@ -1000,31 +1029,27 @@
 				let that = this
 				var sorce = 0;
 				
-				
-				
-				// for (let i in this.questionsData) {
-				// 	if(this.questionsData[i]['answer']!==0 && this.questionsData[i]['answer']!==1){
-				// 		uni.showToast({title: '请完成点评',icon: 'none',})
-				// 		return false
-				// 	}else if(this.questionsData[i]['answer'] == 1){
-				// 		sorce++;//服务评分 此处是为兼容旧版
-				// 	}
-				// }
 				console.log('this.questionsDatathis.questionsData',this.questionsData)
+				
 				let shouldContinue = true;  
 				this.questionsData.forEach((item,i)=>{
-					if(item.answer == ''){
-						uni.showToast({
-							title: '请为本次的服务进行评价！',
-							icon: 'none',
-						});
-						shouldContinue = false;
-						return
+					console.log(item.answer)
+					if(!this.isdp){
+						if(item.answer == '' || item.answer =="" || item.answer == undefined || item.answer == null){
+							uni.showToast({
+								title: '请为本次的服务进行评价！',
+								icon: 'none',
+							});
+							shouldContinue = false;
+							return false
+							console.log('null')
+						}
 					}
 					if(item.answer ==1 ){
 						sorce++;
 					}
 				})
+				
 				if(shouldContinue ==false){
 					return
 				}
@@ -1038,8 +1063,7 @@
 					customer_id:this.basic.customer_id,
 					job_id:this.jobid,
 					job_type:this.jobtype,
-					question:JSON.stringify(qe), //JSON.stringify(that.questionsData),
-					// staff_id:3306
+					question:JSON.stringify(qe),
 				}
 				
 				//关闭弹窗
