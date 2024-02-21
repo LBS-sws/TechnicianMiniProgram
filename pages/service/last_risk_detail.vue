@@ -111,37 +111,23 @@
 		methods: {
 			data_select() {
 				let params = {
-					// staffid: uni.getStorageSync('staffid'),
 					job_id:this.jobid,
 					job_type:this.jobtype,
 					id: this.id,
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Risks.Risks/getRiskInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: params,
-					success: (res) => {
-						if (res.data.code == 200) {
-							this.lastrisk = res.data.data.risk
-							console.log(res.data.data.risk)
-								this.lastrisk['site_photos'] = this.lastrisk['site_photos'].split(",");
-								for (let i = 0; i < this.lastrisk['site_photos'].length; i++) {
-									var site_po = this.lastrisk['site_photos'][i].replace(/\"/g, "").replace(/[\\]/g,'');
-									this.lastrisk['site_photos'][i] = `${this.$baseUrl_imgs}/`+site_po;
-								}
-
-							// console.log(this.lastrisk)
-						}
-
-					},
-					fail: (err) => {
-						console.log(res);
+				this.$api.getRiskInfo(params).then(res=>{
+					if (res.code == 200) {
+						this.lastrisk = res.data.risk
+						console.log(res.data.risk)
+							this.lastrisk['site_photos'] = this.lastrisk['site_photos'].split(",");
+							for (let i = 0; i < this.lastrisk['site_photos'].length; i++) {
+								var site_po = this.lastrisk['site_photos'][i].replace(/\"/g, "").replace(/[\\]/g,'');
+								this.lastrisk['site_photos'][i] = `${this.$baseUrl_imgs}/`+site_po;
+							}
 					}
-				});
+				}).catch(err=>{
+					console.log(err)
+				})
 			},
 			previewImg(logourl) {
 				let _this = this;
@@ -154,42 +140,29 @@
 			},
 			save(status) {
 				let params = {
-					// staffid: uni.getStorageSync('staffid'),
-					// job_id: this.jobid,
-					// job_type: this.jobtype,
 					id: this.id,
 					confirm_status:status
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Risks.Risks/editRiskByTeach`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'PUT',
-					data: params,
-					success: (res) => {
-						uni.showToast({
-							title: res.data.msg,
-							icon: 'none'
-						});
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/service/last_risk?jobid=" +
-									this
-									.jobid + '&jobtype=' + this
-									.jobtype +
-									'&shortcut_type=' +
-									this.shortcut_type +
-									'&service_type=' + this
-									.service_type
-							})
-						}, 2000)
-					},
-					fail: (err) => {
-						console.log(res);
-					}
-				});
+				this.$api.editRiskByTeach(params).then(res=>{
+					uni.showToast({
+						title: res.msg,
+						icon: 'none'
+					});
+					setTimeout(() => {
+						uni.redirectTo({
+							url: "/pages/service/last_risk?jobid=" +
+								this
+								.jobid + '&jobtype=' + this
+								.jobtype +
+								'&shortcut_type=' +
+								this.shortcut_type +
+								'&service_type=' + this
+								.service_type
+						})
+					}, 2000)
+				}).catch(err=>{
+					console.log(err)
+				})
 			}
 		}
 	}

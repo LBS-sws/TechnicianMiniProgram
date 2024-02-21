@@ -25,35 +25,17 @@ export default {
 	methods: {
 		companyInfo(){
 			let params = {}
-			uni.request({
-				url: `${this.$baseUrl}/Content.Content/about`,
-				header: {
-					'content-type': 'application/x-www-form-urlencoded',
-					'token': uni.getStorageSync('token')
-				},
-				method: 'GET',
-				data: params,
-				success: (res) => {
-					if (res.data.code == 200) {
-						console.log(res)
-						this.content = res.data.data.content
-					}
-					if(res.data.code == 400) {
-						uni.showToast({
-							title: res.data.msg,
-							icon: 'none',
-						});
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/login/login"
-							});
-						}, 2000)
-					}
-			
-				},
-				fail: (err) => {
-					console.log(err.errMsg);
+			this.$api.about(params).then(res=>{
+				if (res.code == 200) {
+					this.content = res.data.content
+				}else{
+					uni.showToast({
+						title: res.msg,
+						icon: 'none',
+					});
 				}
+			}).catch(err=>{
+				console.log(err)
 			})
 		}
 	}

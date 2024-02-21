@@ -116,71 +116,29 @@ export default {
 			})
 		},
 	methods: {
-			// ...mapMutations(['SET_SELECTED_SEARCH']),
-			//开始服务签到
 			handleSignin() {
-				
-				// if (!this.location.curLocation) {
-				// 	// this.getLocation()
-				// } else {
-					clearInterval(this.timerInterval)
-					this.signin.count++
-					this.getTime(new Date())
-					console.log('签到数据：', this.formData)
-					//签到成功调用接口
-					// this.sign_success(this.getDate(), this.signin.time)
-					
-					let params = {
-						job_id: this.jobid,
-						job_type: this.jobtype,
-					}
-					
-					uni.request({
-						url: `${this.$baseUrl}/Order.Order/orderSignIn`,
-						header: {
-							'content-type': 'application/x-www-form-urlencoded',
-							'token': uni.getStorageSync('token')
-						},
-						method: 'GET',
-						data: params,
-						success: (res) => {
-							
-							if (res.data.code == 200) {
-								this.signin.isSignin = true
-								uni.showToast({
-									title: '签到成功',
-									icon: 'success'
-								})
-								
-								uni.redirectTo({
-									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-								})
-								// setTimeout(function() {
-								// 	console.log(this.jobid)
-								// 	console.log(this.jobtype)
-								// 	return false
-								// 	uni.redirectTo({
-								// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-								// 	})
-								// 	// uni.navigateTo({
-								// 	// 	url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-								// 	// })
-								// }, 2000);
-							} else {
-								uni.showToast({
-									title: res.data.msg,
-									icon: 'fail'
-								})
-							}
-					
-						},
-						fail: (err) => {
-							console.log(res);
-						}
+				clearInterval(this.timerInterval)
+				this.signin.count++
+				this.getTime(new Date())
+				let params = {
+					job_id: this.jobid,
+					job_type: this.jobtype,
+				}
+				this.$api.orderSignIn(params).then(res=>{
+					this.signin.isSignin = true
+					uni.showToast({
+						title: '签到成功',
+						icon: 'success'
 					})
-					
-					
-				// }
+					uni.redirectTo({
+						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+					})
+				}).catch(err=>{
+					uni.showToast({
+						title: res.data.msg,
+						icon: 'fail'
+					})
+				})
 			},
 			// 获取当前时间时分秒
 			getTime(time) {
@@ -308,48 +266,6 @@ export default {
 						this.location.error = true
 					}
 				});
-			},
-			sign_success(signdate, starttime) {
-				let params = {
-					staffid: uni.getStorageSync('staffid'),
-					jobid: this.jobid,
-					jobtype: this.jobtype,
-					signdate: signdate,
-					starttime: starttime
-				}
-				uni.request({
-					url: `${this.$baseUrl}/jobsign`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: params,
-					success: (res) => {
-						console.log(res);
-						if (res.data.code == 1) {
-							uni.showToast({
-								title: '签到成功',
-								icon: 'success'
-							})
-							// setTimeout(function() {
-							uni.redirectTo({
-								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this
-									.jobtype
-							})
-							// }, 2000);
-						} else {
-							uni.showToast({
-								title: res.data.msg,
-								icon: 'fail'
-							})
-						}
-
-					},
-					fail: (err) => {
-						console.log(res);
-					}
-				})
 			}
 		}
 }

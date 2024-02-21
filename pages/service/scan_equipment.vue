@@ -219,39 +219,34 @@ export default {
 			},
 			// 详情
 			data_select() {
-				let param = {}
-				uni.request({
-					url: `${this.$baseUrl}/Equipment.Equipment/getEqInfo?job_type=` + this.jobtype + "&job_id=" + this.jobid + "&ids=" + this.id,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						console.log(res.data.data)
-						if (res.data.code == 200) {
-							if (res.data.data) {
+				let params = {
+					job_type: this.jobtype,
+					job_id: this.jobid,
+					ids: this.id,
+				}
+				this.$api.getEqInfo(params).then(res=>{
+						if (res.code == 200) {
+							if (res.data) {
 								// 1.设备名称
-								this.equipment_name = res.data.data.eq_name	
+								this.equipment_name = res.data.eq_name	
 								
 								// 2.设备编号
 								var equipmentNumber = '';
 								// 单个
-								if(res.data.data.list.length == 1)
+								if(res.data.list.length == 1)
 								{
-									this.eq_mark = res.data.data.list[0]['equipment_number']	// 设备标识
-									this.eq_mark_num = res.data.data.list[0]['number']			// 设备编号
-									this.equipment_number = res.data.data.list[0]['number']
+									this.eq_mark = res.data.list[0]['equipment_number']	// 设备标识
+									this.eq_mark_num = res.data.list[0]['number']			// 设备编号
+									this.equipment_number = res.data.list[0]['number']
 								}
 								// 多个
 								
-								if(res.data.data.list.length>1){
-									for(let i=0;i<res.data.data.list.length;i++){
+								if(res.data.list.length>1){
+									for(let i=0;i<res.data.list.length;i++){
 										if(equipmentNumber == ''){
-											equipmentNumber = res.data.data.list[i]['equipment_number'] + res.data.data.list[i]['number']
+											equipmentNumber = res.data.list[i]['equipment_number'] + res.data.data.list[i]['number']
 										}else{
-											equipmentNumber = equipmentNumber + ',' +res.data.data.list[i]['equipment_number'] + res.data.data.list[i]['number']
+											equipmentNumber = equipmentNumber + ',' +res.data.list[i]['equipment_number'] + res.data.list[i]['number']
 										}
 									}
 									this.eq_mark_num = equipmentNumber
@@ -262,37 +257,37 @@ export default {
 								
 								
 								// 3.设备区域
-								let use_area = res.data.data.use_area	//  数组
+								let use_area = res.data.use_area	//  数组
 								use_area.forEach((item,i)=>{
 									item.label = item.use_area
 									item.value = item.use_area
 								})
 								this.use_areas = use_area
 								
-								if(res.data.data.list.length == 1){		// 选中
+								if(res.data.list.length == 1){		// 选中
 									
-									if(!res.data.data.list[0].equipment_area)
+									if(!res.data.list[0].equipment_area)
 									{
 										this.equipment_area = ''
 									}else{
-										this.equipment_area = res.data.data.list[0].equipment_area
+										this.equipment_area = res.data.list[0].equipment_area
 									}
 								}
 								// 多个设备时，禁止选区域，以及设备区域都为空
-								if(res.data.data.list.length > 1){
+								if(res.data.list.length > 1){
 									this.disabled = false
 									this.equipment_area = ''
 								}
 								
 								// 4.检查数据
 								// typeid == 1 input == 2 select
-								this.typeid = res.data.data.list[0].equipment_type
+								this.typeid = res.data.list[0].equipment_type
 								let selectArr = []
-								if(res.data.data.list[0].equipment_type ==2)
+								if(res.data.list[0].equipment_type ==2)
 								{
 									
 									// let selectList = res.data.data.check_option
-									let selectList = Object.entries(res.data.data.check_option)		//  对象转数组
+									let selectList = Object.entries(res.data.check_option)		//  对象转数组
 									
 									selectList.forEach((itemx,index)=>{
 										let arr_arr = []
@@ -305,14 +300,14 @@ export default {
 									this.selectList = selectArr
 								}
 								// 单个设备
-								if(res.data.data.list.length == 1){
+								if(res.data.list.length == 1){
 									// 检查数据没有值时
-									if(res.data.data.list[0].check_datas == null)
+									if(res.data.list[0].check_datas == null)
 									{
-										let check_targt_arr = res.data.data.check_handle.check_targt	
+										let check_targt_arr = res.data.check_handle.check_targt	
 										let check_targt_array = []
 										check_targt_arr.forEach((item,i)=>{
-											if(res.data.data.list[0].equipment_type==1){
+											if(res.data.list[0].equipment_type==1){
 												check_targt_array.push({label:item,value:0})
 											}else{
 												check_targt_array.push({label:item,value:'',select:selectArr[i]})
@@ -320,17 +315,17 @@ export default {
 										})
 										this.check_datas = check_targt_array
 									}else{
-										this.check_datas = res.data.data.list[0].check_datas
+										this.check_datas = res.data.list[0].check_datas
 									}
 								}
 								
-								if(res.data.data.list.length > 1){
+								if(res.data.list.length > 1){
 									// 多个设备 - 检查数据 默认数量都设置为1
-									let check_datas_arr = res.data.data.check_handle.check_targt
+									let check_datas_arr = res.data.check_handle.check_targt
 									let check_datas_array = []
 									check_datas_arr.forEach((item,i)=>{
 										
-										if(res.data.data.list[0].equipment_type==1){
+										if(res.data.list[0].equipment_type==1){
 											
 											check_datas_array.push({label:item,value:0})
 										}else{
@@ -344,39 +339,39 @@ export default {
 								
 								
 								// 5.检查与处理
-								let check_handles = res.data.data.check_handle.check_handles	// 数组
+								let check_handles = res.data.check_handle.check_handles	// 数组
 								let check_handles_arr = []
 								check_handles.forEach((item,i)=>{
 									check_handles_arr.push({label:item,value:item})
 								})
 								this.check_handles = check_handles_arr
 								
-								if(res.data.data.list.length == 1){
-									this.check_handle = res.data.data.list[0].check_handle			// 选中
+								if(res.data.list.length == 1){
+									this.check_handle = res.data.list[0].check_handle			// 选中
 								}
 								
 								
 								// 6.补充说明
-								if(res.data.data.list.length == 1){
-									this.more_info = res.data.data.list[0].more_info
-									if(res.data.data.list[0].more_info == "null")
+								if(res.data.list.length == 1){
+									this.more_info = res.data.list[0].more_info
+									if(res.data.list[0].more_info == "null")
 									{
 										this.more_info = ''
 									}else{
-										this.more_info = res.data.data.list[0].more_info
+										this.more_info = res.data.list[0].more_info
 									}
 								}
 								
-								this.list = res.data.data.list		// 数组
+								this.list = res.data.list		// 数组
 								
-								if(res.data.data.list.length>5)
+								if(res.data.list.length>5)
 								{
 									this.showmore = 1
 									this.all_equipment_number = equipmentNumber
 								}
 						
 								// 快捷语数组
-								let shortcuts = res.data.data.shortcutContents 	
+								let shortcuts = res.data.shortcutContents 	
 								let shortcutsArr = []
 								shortcuts.forEach((item,i)=>{
 									shortcutsArr.push({label:item,value:item})
@@ -385,12 +380,10 @@ export default {
 								this.shortcutsOld = shortcutsArr
 							}
 						} 
-						
-					},
-					fail: (err) => {
-						console.log(res);
-					}
+				}).catch(err=>{
+					console.log(err)
 				})
+				
 			},
 			scanCode() {
 				uni.scanCode({
@@ -483,62 +476,50 @@ export default {
 				}
 				// console.log(this.check_handle)
 				// return false
+				
+				
 				let params = {
-					
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					equipment_name: this.equipment_name,
 					equipment_area: this.equipment_area,
 					check_datas: JSON.stringify(this.check_datas),
 					check_handle: check_handle,
-					// site_photos: this.upload_site_photos,
 					more_info: this.more_info,
-					eq_number: this.eq_mark_num
+					eq_number: this.eq_mark_num,
+					ids:ids
 				}
-				
-				uni.request({
-					url: `${this.$baseUrl}/Equipment.Equipment/editEq?ids=`+ids,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'PUT',
-					data: params,
-					success: (res) => {
-						uni.hideLoading();
-						uni.showToast({
-							title: res.data.msg,
-							icon: 'none'
-						});
-						if(res.data.code == 200)
-						{
-							setTimeout(() => {
-								uni.redirectTo({
-									url: "/pages/service/equipment?jobid=" +
-										this
-										.jobid + '&jobtype=' + this
-										.jobtype +
-										'&shortcut_type=' +
-										this.shortcut_type +
-										'&service_type=' + this
-										.service_type + '&ct=' + this
-										.ct
-								})
-							}, 1000)
-						}
-						if(res.data.code == 400)
-						{
-							uni.showToast({
-								title: res.data.msg,
-								icon: 'none'
+				this.$api.editEq(params).then(res=>{
+					uni.hideLoading();
+					uni.showToast({
+						title: res.msg,
+						icon: 'none'
+					});
+					if(res.code == 200){
+						setTimeout(() => {
+							uni.redirectTo({
+								url: "/pages/service/equipment?jobid=" +
+									this
+									.jobid + '&jobtype=' + this
+									.jobtype +
+									'&shortcut_type=' +
+									this.shortcut_type +
+									'&service_type=' + this
+									.service_type + '&ct=' + this
+									.ct
 							})
-							return false
-						}
-					},
-					fail: (err) => {
-						console.log(res);
+						}, 1000)
 					}
-				});
+					if(res.code == 400){
+						uni.showToast({
+							title: res.msg,
+							icon: 'none'
+						})
+						return false
+					}
+				}).catch(err=>{
+					console.log(err)
+				})
 			},
 			savex() {
 				var imgs = JSON.parse(JSON.stringify(this.site_photos))

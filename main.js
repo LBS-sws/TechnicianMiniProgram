@@ -44,20 +44,6 @@ Vue.prototype.checkCode = function(code, msg){
 			icon:'none'
 		})
 	}
-	// 单点登录
-	if(code == 401){
-		
-		uni.showToast({
-			title:msg,
-			icon:'none'
-		})
-		uni.clearStorageSync()	// 清除所有缓存信息
-		setTimeout(()=>{
-			uni.navigateTo({
-				url:'/pages/login/login'
-			})
-		},1500)
-	}
 }
 
 App.mpType = "app";
@@ -75,7 +61,7 @@ Vue.prototype.$version =2
 Vue.prototype.$mapApiKey="2atTyVGiF8KTsdegg7KKSjGTsdINm8gw" //百度地图 appkey
 Vue.prototype.$mapApiUrl="https://api.map.baidu.com/reverse_geocoding/v3" //百度地图apiURl
 
-Vue.prototype.$baseUrl="https://apiuat.lbsapps.cn/api"   //api.technician.com   apiuat.lbsapps.cn   v1.teach.lbsapps.cn
+Vue.prototype.$baseUrl="https://api.technician.com/api"   //api.technician.com   apiuat.lbsapps.cn   v1.teach.lbsapps.cn
 Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"
 
 // Vue.prototype.$baseUrl="http://localhost:10006/api"

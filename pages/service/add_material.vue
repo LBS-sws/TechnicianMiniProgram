@@ -196,81 +196,54 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					clearTimeout(this.timer)
 				}
 			},
-			/**
-			 *搜索结束
-			 * *
-			 */
 			selectChange(val) {
 				this.matters_needing_attention = val
 			},
 			data_select() {
-				//查询是否存在以及所有选项
-				let param = {}
-				uni.request({
-					url: `${this.$baseUrl}/Materials.Materials/getMaterialsInfo?job_id=` + this.jobid + "&job_type=" + this.jobtype + "&id=" + this.id,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							// console.log(res.data.data)
-							
-							if (res.data.data) {
-								
-								let material_lists = res.data.data.materialLists	// 地区使用的物料清单
-								material_lists.forEach((item,i)=>{
-									item.label = item.name
-									item.value = item.name
-								})
-								this.material_lists = material_lists
-							
-								this.targets = res.data.data.materialTargets	     // 靶标
-								this.usemodes = res.data.data.materialUsemodes       // 使用方式
-								this.useareas = res.data.data.materialUseareas		 // 使用区域
-								
-								// 快捷语内容
-								let shortcuts = []			
-								if(res.data.data.shortcutContents.length>0)
-								{
-									res.data.data.shortcutContents.forEach((item,i)=>{
-										shortcuts.push({label:item,value:item})
-									})
-								}
-								this.shortcuts = shortcuts
-								this.shortcutsOld = shortcuts
-								
-								if (this.id>0)
-								{
-									this.material = res.data.data.material.material_name
-									this.registration_no = res.data.data.material.material_registration_no
-									this.active_ingredient = res.data.data.material.material_active_ingredient
-									this.ratio = res.data.data.material.material_ratio
-									this.unit = res.data.data.material.unit
-									this.target = res.data.data.material.targets.split(',')
-									this.usemode = res.data.data.material.use_mode.split(',')
-									this.usearea = res.data.data.material.use_area.split(',')
-									this.processing_space = res.data.data.material.processing_space	// 处理空间
-									this.dosage = res.data.data.material.dosage						// 药物用量
-									this.matters_needing_attention = res.data.data.material.matters_needing_attention	// 注意事项
-									
-								}
-							}
-							
-							
-							if(res.data.code == 400)
-							{
-								uni.$utils.toast("消息")
-							}
-							
+				let params = {
+					job_id: this.jobid,
+					job_type: this.jobtype,
+					id: this.id,
+				}
+				this.$api.getMaterialsInfo(params).then(res=>{
+					if (res.data) {
+						let material_lists = res.data.materialLists	// 地区使用的物料清单
+						material_lists.forEach((item,i)=>{
+							item.label = item.name
+							item.value = item.name
+						})
+						this.material_lists = material_lists
+						this.targets = res.data.materialTargets	     // 靶标
+						this.usemodes = res.data.materialUsemodes       // 使用方式
+						this.useareas = res.data.materialUseareas		 // 使用区域
+						// 快捷语内容
+						let shortcuts = []			
+						if(res.data.shortcutContents.length>0){
+							res.data.shortcutContents.forEach((item,i)=>{
+								shortcuts.push({label:item,value:item})
+							})
 						}
-
-					},
-					fail: (err) => {
-						console.log(res);
+						this.shortcuts = shortcuts
+						this.shortcutsOld = shortcuts
+						if (this.id>0){
+							this.material = res.data.material.material_name
+							this.registration_no = res.data.material.material_registration_no
+							this.active_ingredient = res.data.material.material_active_ingredient
+							this.ratio = res.data.material.material_ratio
+							this.unit = res.data.material.unit
+							this.target = res.data.material.targets.split(',')
+							this.usemode = res.data.material.use_mode.split(',')
+							this.usearea = res.data.material.use_area.split(',')
+							this.processing_space = res.data.material.processing_space	// 处理空间
+							this.dosage = res.data.material.dosage						// 药物用量
+							this.matters_needing_attention = res.data.material.matters_needing_attention	// 注意事项
+						}
 					}
+					if(res.code == 400){
+						uni.$utils.toast("消息")
+					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			change_material(e) {
@@ -285,9 +258,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 			},
 			// 保存
 			save() {
-				
-				if (!this.material)
-				{
+				if (!this.material){
 					uni.showToast({
 						title: '信息填写不全',
 						icon: 'none',
@@ -298,7 +269,6 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						title: "保存中..."
 					});
 					let params = {
-						
 						id: this.id,
 						job_id: this.jobid,
 						job_type: this.jobtype,
@@ -314,69 +284,41 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						matters_needing_attention: this.matters_needing_attention,
 						unit: this.unit,
 					}
-					if(this.id == 0)
-					{
-						uni.request({
-							url: `${this.$baseUrl}/Materials.Materials/addMaterials`,
-							header: {
-								'content-type': 'application/x-www-form-urlencoded',
-								'token': uni.getStorageSync('token')
-							},
-							method: 'POST',
-							data: params,
-							success: (res) => {
-								if(res.data.code == 200)
-								{
-									uni.hideLoading();
-									uni.showToast({
-										title: res.data.msg,
-										icon: 'none'
-									});
-									setTimeout(() => {
-										uni.redirectTo({
-											url: "/pages/service/material?jobid=" +this.jobid + '&jobtype=' + this.jobtype
-										})
-									}, 2000)
-								}
-								if(res.data.code == 400)
-								{
-									uni.showToast({
-										title: res.data.msg,
-										icon: 'none'
-									});
-								}
-							},
-							fail: (err) => {
-								console.log(res);
-							}
+					if(this.id == 0){
+						this.$api.addMaterials(params).then(res=>{
+							uni.hideLoading();
+							uni.showToast({
+								title: res.msg,
+								icon: 'none'
+							});
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/material?jobid=" +this.jobid + '&jobtype=' + this.jobtype
+								})
+							}, 2000)
+						}).catch(err=>{
+							uni.showToast({
+								title: res.msg,
+								icon: 'none'
+							});
 						})
 					}
-					if(this.id != 0)
-					{
-						uni.request({
-							url: `${this.$baseUrl}/Materials.Materials/editMaterials?id=` + this.id,
-							header: {
-								'content-type': 'application/x-www-form-urlencoded',
-								'token': uni.getStorageSync('token')
-							},
-							method: 'PUT',
-							data: params,
-							success: (res) => {
-								uni.hideLoading();
-								uni.showToast({
-									title: res.data.msg,
-									icon: 'none'
-								});
+					if(this.id != 0){
+						this.$api.editMaterials(params).then(res=>{
+							uni.hideLoading();
+							uni.showToast({
+								title: res.msg,
+								icon: 'none'
+							});
+							if(res.code == 200){
 								setTimeout(() => {
 									uni.redirectTo({
 										url: "/pages/service/material?jobid=" +this.jobid + '&jobtype=' + this.jobtype
 									})
 								}, 2000)
-						
-							},
-							fail: (err) => {
-								console.log(res);
 							}
+						}).catch(err=>{
+							console.log(err)
 						})
 					}
 					
@@ -398,36 +340,26 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 								});
 								return;
 							} else {
-								console.log('接口调试中')
-								let param = {}
-								uni.request({
-									url: `${this.$baseUrl}/Materials.Materials/delMaterials?id=`+ this.id,
-									header: {
-										'content-type': 'application/x-www-form-urlencoded',
-										'token': uni.getStorageSync('token')
-									},
-									method: 'DELETE',
-									data: param,
-									success: (res) => {
-										if (res.data.code == 200) {
-											uni.showToast({
-												icon: 'none',
-												title: '删除成功'
-											});
-											setTimeout(() => {
-												uni.redirectTo({
-													url: "/pages/service/material?jobid=" +
-														this
-														.jobid + '&jobtype=' + this
-														.jobtype
-												})
-											}, 2000)
-
-										}
-									},
-									fail: (err) => {
-										console.log(res);
+								let params = {
+									id: this.id
+								}
+								this.$api.delMaterials(params).then(res=>{
+									uni.showToast({
+										icon: 'none',
+										title: res.msg
+									});
+									if (res.code == 200) {
+										setTimeout(() => {
+											uni.redirectTo({
+												url: "/pages/service/material?jobid=" +
+													this
+													.jobid + '&jobtype=' + this
+													.jobtype
+											})
+										}, 2000)
 									}
+								}).catch(err=>{
+									console.log(err)
 								})
 							}
 						} else {

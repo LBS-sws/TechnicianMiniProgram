@@ -113,26 +113,12 @@ import color from 'uview-ui/libs/config/color';
 				mask: true,
 				showContent: false
 			});
-			// var loginRes = this.checkLogin();
-			// if (!loginRes) {
-			// 	uni.showToast({
-			// 		title: "请先登录",
-			// 		icon: 'none',
-			// 	});
-			// 	setTimeout(() => {
-			// 		return false
-			// 	}, 2000);
-			// }
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
-			
 			this.ct = uni.getStorageSync('ct')
-			
 		},
 		onShow(index) {
-			// this.showContent: false;
 			this.service = [];
-		
 			showContent: false;
 			uni.showLoading({
 				title: '加载中...',
@@ -140,100 +126,53 @@ import color from 'uview-ui/libs/config/color';
 			});
 			this.data_select();
 		},
-		// onReady() {
-		// 	showContent: false
-		// 	uni.showLoading({
-		// 		title: '加载中...',
-		// 		mask: true,
-		// 	});
-		// },
-
 		methods: {
 			data_select() {
-				
 				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
 				}
-				
 				this.showContent = false;
-				uni.request({
-					url: `${this.$baseUrl}/Order.Order/orderStart`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: params,
-					success: (res) => {
-						if (res.data.code == 200) {
-							// console.log(res.data.data.data)
-							
-							// 客户签名
-							this.autograph = res.data.data.autograph
-							
-							this.service = res.data.data.data
-							this.custInfo = {
-								address: res.data.data.data.customer.addr,
-								customer: res.data.data.data.customer.name_zh
-							}
-							
-							if (res.data.data.plateArr) {
-								var list_add = [];
-								
-								let  arr = res.data.data.plateArr
-								arr.forEach((item,i)=>{
-									
-									// console.log(item)
-									this.list.forEach((itemx,index)=>{
-										if(item.name == itemx.content)
-										{
-											
-											if(item.choice==1)
-											{
-												itemx.classType = 'success'
-											}
-											// console.log(itemx)
-											list_add.push({
-												classType:itemx.classType, 
-												color:itemx.color, 
-												content:itemx.content,
-												icon:itemx.icon,
-												shortcut_type:item.shortcut_type,
-												url:itemx.url,
-											})
-										}
-									})
-								})
-								
-								this.list = list_add;
-							// } else {
-							// 	for (var i = 0; i < res.data.data.table_sections.length; i++)
-							// 		if (res.data.data.table_sections[i] > 0) {
-							// 			// this.list[i].content += "  √";
-							// 			// this.list[i].color += "#00a015";
-							// 			this.list[i].classType = "success";
-							// 			// htmls = '<uni-tag text="标签" type="primary" />';
-							// 		}
-							}
-						}
-						
-						
-						//隐藏加载框
-						setTimeout(() => {
-							uni.hideLoading();
-						}, 100)
-						this.showContent = true;
-					},
-					fail: (err) => {
-						//隐藏加载框
-						this.showContent = true;
-						uni.hideLoading();
+				this.$api.orderStart(params).then(res=>{
+					this.autograph = res.data.autograph
+					this.service = res.data.data
+					this.custInfo = {
+						address: res.data.data.customer.addr,
+						customer: res.data.data.customer.name_zh
 					}
+					if (res.data.plateArr) {
+						var list_add = [];
+						let  arr = res.data.plateArr
+						arr.forEach((item,i)=>{
+							this.list.forEach((itemx,index)=>{
+								if(item.name == itemx.content){
+									if(item.choice==1){
+										itemx.classType = 'success'
+									}
+									list_add.push({
+										classType:itemx.classType, 
+										color:itemx.color, 
+										content:itemx.content,
+										icon:itemx.icon,
+										shortcut_type:item.shortcut_type,
+										url:itemx.url,
+									})
+								}
+							})
+						})
+						this.list = list_add;
+					}
+					//隐藏加载框
+					setTimeout(() => {
+						uni.hideLoading();
+					}, 100)
+					this.showContent = true;
+				}).catch(err=>{
+					this.showContent = true;
+					uni.hideLoading();
 				})
 			},
 			lc(url, shortcut_type) {
-				
 				if (this.service.length == 0) {
 					uni.showToast({
 						title: '数据加载中',
@@ -244,11 +183,6 @@ import color from 'uview-ui/libs/config/color';
 						title: '已完成不能再修改',
 						icon: 'none',
 					});
-				// } else if (this.service.Staff01 != this.Staff01) {
-				// 	uni.showToast({
-				// 		title: '协作人员不能修改',
-				// 		icon: 'none',
-				// 	});
 				} else {
 					console.log("客户信息：")
 					console.log(this.custInfo)
@@ -270,14 +204,12 @@ import color from 'uview-ui/libs/config/color';
 							}
 						});
 						// 回调式  $on 与 $emit 进行页面通讯
-
 						uni.$on('send', () => {
 							uni.$emit("custInfo", this.custInfo)
 							// 传参 或 传递一个对象 uni.$emit("cardMsg", {})
 							console.log('发送数据');
 							console.log('start:')
 						})
-						
 						new_url = url +'?jobid=' + this.jobid +'&jobtype=' + this.jobtype
 					} else {
 						new_url = url +
@@ -288,7 +220,6 @@ import color from 'uview-ui/libs/config/color';
 							'&service_type=' + this.service.service_type;
 
 					}
-					
 					uni.navigateTo({
 						url: new_url
 					})

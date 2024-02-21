@@ -137,7 +137,6 @@
 	</view>
 	</view>
 </template>
-
 <script>
 	export default {
 		data() {
@@ -176,7 +175,6 @@
 			this.jobtype = index.jobtype
 		},
 		onShow(index) {
-			
 			this.staffOther = uni.getStorageSync('staffname')
 			this.service.Status = 0;
 			this.data_select()
@@ -208,38 +206,20 @@
 					id: this.jobid,
 					job_type: this.jobtype
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Order.Order/getOrderInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: params,
-					success: (res) => {
-						this.checkCode(res.data.code,res.data.msg)	// 400、401处理
-						
-						if (res.data.code == 200) {
-							this.service = res.data.data;
-							//隐藏加载框
-							this.showContent = true;
-							if (this.service.remarks && !this.acknowledged && this.service.status != 3) { // 判断 acknowledged 的值
-								this.showConfirmationDialog('客户要求提示', this.service.remarks, () => {
-								  this.acknowledged = true; // 用户已知晓
-								}, () => {
-								  uni.navigateBack();
-								});
-							}
-							uni.hideLoading();
-						}
-						
-						
-					},
-					fail: (err) => {
-						//隐藏加载框
-						uni.hideLoading();
-						console.log(res);
+				this.$api.getOrderInfo(params).then(res=>{
+					this.service = res.data;
+					this.showContent = true;
+					if (this.service.remarks && !this.acknowledged && this.service.status != 3) { // 判断 acknowledged 的值
+						this.showConfirmationDialog('客户要求提示', this.service.remarks, () => {
+						  this.acknowledged = true; // 用户已知晓
+						}, () => {
+						  uni.navigateBack();
+						});
 					}
+					uni.hideLoading();
+				}).catch(err=>{
+					uni.hideLoading();
+					console.log(err)
 				})
 			},
 			previewImg(logourl) {
@@ -254,14 +234,12 @@
 			start() {
 				// 签到
 				console.log('签到时间:',this.service.start_date,this.service.start_time)
-				if(this.service.start_time && this.service.start_time !='00:00:00')
-				{
+				if(this.service.start_time && this.service.start_time !='00:00:00'){
 					uni.navigateTo({
 						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
 					})
 				}
-				if(!this.service.start_time || this.service.start_time == '00:00:00')
-				{
+				if(!this.service.start_time || this.service.start_time == '00:00:00'){
 					uni.navigateTo({
 						url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
 							.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
@@ -291,49 +269,31 @@
 			update_remarks() {
 				this.TechRemarks = this.service.TechRemarks;
 				this.$refs.confirm2.open({title: "技术员备注修改"}).then(() => {
-						uni.showLoading({
-							title: "保存中..."
-						});
-						let params = {
-							tech_remarks: this.TechRemarks,
-							job_id: this.jobid,
-							job_type: this.jobtype
-						}
-						uni.request({
-							url: `${this.$baseUrl}/Order.Order/updateTeachRemarks`,
-							header: {
-								'content-type': 'application/x-www-form-urlencoded',
-								'token': uni.getStorageSync('token')
-							},
-							method: 'POST',
-							data: params,
-							success: (res) => {
-								console.log('resresresres',res);
-								uni.hideLoading();
-								if (res.data.code == 200) {
-									this.service.TechRemarks = this.TechRemarks;
-									this.service.tech_remarks  = this.TechRemarks;
-									this.$refs.toast.open(
-										this.TechRemarks ? `修改成功！` : "填写为空！"
-									);
-								} else {
-									this.$refs.toast.open("修改失败！");
-								}
-							},
-							fail: (err) => {
-								console.log(res);
-							}
-						})
-
-					})
-					.catch(() => {
-						this.$refs.toast.open("关闭成功");
+					uni.showLoading({
+						title: "保存中..."
 					});
+					let params = {
+						tech_remarks: this.TechRemarks,
+						job_id: this.jobid,
+						job_type: this.jobtype
+					}
+					this.$api.updateTeachRemarks(params).then(res=>{
+						uni.hideLoading();
+						this.service.TechRemarks = this.TechRemarks;
+						this.service.tech_remarks  = this.TechRemarks;
+						this.$refs.toast.open(
+							this.TechRemarks ? `修改成功！` : "填写为空！"
+						);
+					}).catch(err=>{
+						console.log(err)
+					})
+				}).catch(() => {
+					this.$refs.toast.open("关闭成功");
+				});
 			}
 		}
 	}
 </script>
-
 <style>
 	.new_card {
 		background-color: #fff;

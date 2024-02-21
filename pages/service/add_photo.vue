@@ -105,8 +105,6 @@
 
 			// 获取快捷语
 			this.getshortcuts()
-			
-			console.log(`${this.$baseUrl}`)
 		},
 		methods: {
 			
@@ -154,50 +152,31 @@
 			},
 			// 详情
 			getItem() {
-				let that = this
-				let param = {
+				let params = {
 					id: this.id,
 				}
-				uni.request({
-					url: `${this.$baseUrl}/SiteWorkPhotos.SiteWorkPhotos/getSiteWorkPhotosInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							if (res.data.data) {
-								// console.log(res.data.data)
-	
-								var strArr = res.data.data.site_photos ?? [];	
-								if (strArr.length > 0) {
-										
-									strArr.forEach((item,i)=>{
-										
-									let imgurl = '/' + item
-										imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
-										this.init_photos[i] = imgurl
-									})
-							
-									this.$refs.upload3.setItems(this.init_photos);
-								}
-								
-								that.remarks = res.data.data.remarks
+				this.$api.getSiteWorkPhotosInfo(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							var strArr = res.data.site_photos ?? [];	
+							if (strArr.length > 0) {
+								strArr.forEach((item,i)=>{
+								let imgurl = '/' + item
+									imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
+									this.init_photos[i] = imgurl
+								})
+								this.$refs.upload3.setItems(this.init_photos);
 							}
-						}else{
-							if(res.data.code == 400)
-							{
-								uni.$utils.toast(res.data.msg)
-								return false
-							}
+							this.remarks = res.data.remarks
 						}
-
-					},
-					fail: (err) => {
-						console.log(res);
+					}else{
+						if(res.code == 400){
+							uni.$utils.toast(res.msg)
+							return false
+						}
 					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			onBeforeUpload(file, index) {
@@ -235,46 +214,30 @@
 			},
 			//查询快捷语
 			getshortcuts() {
-
 				let params = {
 					job_type: this.jobtype,
 					job_id: this.jobid
 				}
-				uni.request({
-					url: `${this.$baseUrl}/SiteWorkPhotos.SiteWorkPhotos/getShortcutContents`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: params,
-					success: (res) => {
-						if (res.data.code == 200) {
-							// console.log(res.data.data)
-
-							let shortcuts = res.data.data
-							let shortcutsArr = []
-							shortcuts.forEach((item, i) => {
-								shortcutsArr.push({
-									label: item.content,
-									value: item.content
-								})
+				this.$api.getShortcutContents(params).then(res=>{
+					if (res.code == 200) {
+						let shortcuts = res.data
+						let shortcutsArr = []
+						shortcuts.forEach((item, i) => {
+							shortcutsArr.push({
+								label: item.content,
+								value: item.content
 							})
-							// console.log(shortcutsArr)
-
-							this.shortcuts = shortcutsArr
-							this.shortcutsOld = shortcutsArr
-
-						} else {
-							uni.showToast({
-								title: res.msg
-							});
-						}
-					},
-					fail: (err) => {
-						console.log(res);
+						})
+						this.shortcuts = shortcutsArr
+						this.shortcutsOld = shortcutsArr
+					} else {
+						uni.showToast({
+							title: res.msg
+						});
 					}
-				});
+				}).catch(err=>{
+					console.log(err)
+				})
 			},
 			// 删除
 			del() {
@@ -286,35 +249,28 @@
 						action
 					}) => {
 						if (action == 'confirm') {
-							let param = {
+							let params = {
 								id: this.id
 							}
-							uni.request({
-								url: `${this.$baseUrl}/SiteWorkPhotos.SiteWorkPhotos/delSiteWorkPhotos`,
-								header: {
-									'content-type': 'application/x-www-form-urlencoded',
-									'token': uni.getStorageSync('token')
-								},
-								method: 'DELETE',
-								data: param,
-								success: (res) => {
-									if (res.data.code == 200) {
-										uni.showToast({
-											icon: 'none',
-											title: '删除成功'
-										});
-										setTimeout(() => {
-											uni.redirectTo({
-												url: "/pages/service/photo?jobid=" +
-													this.jobid + '&jobtype=' + this
-													.jobtype
-											})
-										}, 1000)
-									}
-								},
-								fail: (err) => {
-									console.log(res);
+							this.$api.delSiteWorkPhotos(params).then(res=>{
+								if (res.code == 200) {
+									uni.showToast({
+										icon: 'none',
+										title: '删除成功'
+									});
+									setTimeout(() => {
+										uni.redirectTo({
+											url: "/pages/service/photo?jobid=" +
+												this.jobid + '&jobtype=' + this
+												.jobtype
+										})
+									}, 1000)
 								}
+							}).catch(err=>{
+								uni.showToast({
+									icon: 'none',
+									title: '取消成功'
+								});
 							})
 						} else {
 							uni.showToast({
@@ -344,49 +300,36 @@
 				var log = require('log.js')
 				log.info('点击了保存现场工作照。。。')
 				log.info('param', param)
-				uni.request({
-					url: `${this.$baseUrl}/SiteWorkPhotos.SiteWorkPhotos/addSiteWorkPhotos`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: param,
-					success: (res) => {
-
-						if (res.data.code == 200) {
-							if (res.data.data) {
-								log.info('保存现场工作照-成功')
-								log.info('param', param)
-								this.id = res.data.data
-								this.del_index = []
-								uni.hideLoading();
-								uni.showToast({
-									title: '保存成功',
-								})
-								setTimeout(() => {
-									uni.redirectTo({
-										url: "/pages/service/photo?jobid=" + this.jobid +
-											'&jobtype=' + this.jobtype
-									})
-								}, 100)
-							}
-						}else{
-							uni.$utils.toast(res.data.msg)
-							return false
-						}
-					},
-					fail: (err) => {
-
-						uni.showToast({
-							icon: 'error',
-							title: err.errMsg
-						});
-						setTimeout(function() {
+				this.$api.addSiteWorkPhotos(param).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							log.info('保存现场工作照-成功')
+							log.info('param', param)
+							this.id = res.data
+							this.del_index = []
 							uni.hideLoading();
-						}, 2000);
-					},
-
+							uni.showToast({
+								title: '保存成功',
+							})
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/photo?jobid=" + this.jobid +
+										'&jobtype=' + this.jobtype
+								})
+							}, 100)
+						}
+					}else{
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					uni.showToast({
+						icon: 'error',
+						title: err.errMsg
+					});
+					setTimeout(function() {
+						uni.hideLoading();
+					}, 2000);
 				})
 
 			},
@@ -411,48 +354,39 @@
 				var log = require('log.js')
 				log.info('点击了保存现场工作照。。。')
 				log.info('param', param)
-				uni.request({
-					url: `${this.$baseUrl}/SiteWorkPhotos.SiteWorkPhotos/editSiteWorkPhotos`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'PUT',
-					data: param,
-					success: (res) => {
-
-						if (res.data.code == 200) {
-							if (res.data.data) {
-								log.info('保存现场工作照-成功')
-								log.info('param', param)
-								this.id = res.data.data
-
-								this.del_index = []
-								uni.hideLoading();
-								uni.showToast({
-									title: '保存成功',
-								})
-								setTimeout(() => {
-									uni.redirectTo({
-										url: "/pages/service/photo?jobid=" + this.jobid +'&jobtype=' + this.jobtype
-									})
-								}, 1000)
-							}
-						}else{
-							uni.$utils.toast(res.data.msg)
-							return false
-						}
-
-					},
-					fail: (err) => {
-						uni.showToast({
-							icon: 'error',
-							title: err.errMsg
-						});
-						setTimeout(function() {
+				
+				
+				
+				this.$api.editSiteWorkPhotos(param).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							log.info('保存现场工作照-成功')
+							log.info('param', param)
+							this.id = res.data
+					
+							this.del_index = []
 							uni.hideLoading();
-						}, 2000);
-					},
+							uni.showToast({
+								title: '保存成功',
+							})
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/photo?jobid=" + this.jobid +'&jobtype=' + this.jobtype
+								})
+							}, 1000)
+						}
+					}else{
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					uni.showToast({
+						icon: 'error',
+						title: err.errMsg
+					});
+					setTimeout(function() {
+						uni.hideLoading();
+					}, 2000);
 				})
 			}
 		}

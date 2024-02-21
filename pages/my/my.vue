@@ -67,39 +67,24 @@ export default {
 						label: "退出登录",
 						color: "red",
 						click: done => {
-							// 请求接口
-							uni.request({
-								url: `${this.$baseUrl}/Staff.Login/logout`,
-								header: {
-									'content-type': 'application/x-www-form-urlencoded',
-									'token': uni.getStorageSync('token')
-								},
-								method: 'GET',
-								data: {},
-								success: (res) => {
-									// console.log(res.data.code)
-									setTimeout(()=>{
-										uni.clearStorageSync()
-										uni.reLaunch({
-											url:"/pages/login/login"
-										})
-									},1500)
-
-									uni.showToast({
-										title: res.data.msg,
-										icon: 'none',
-									});	
-								},
-								fail: (err) => {
-									// console.log('error' + res);
-									uni.showToast({
-										title: res.data.msg,
-										icon: 'none',
-									});
-								}
+							let params = {}
+							this.$api.logout(params).then(res=>{
+								setTimeout(()=>{
+									uni.clearStorageSync()
+									uni.reLaunch({
+										url:"/pages/login/login"
+									})
+								},1500)
+								uni.showToast({
+									title: res.msg,
+									icon: 'none',
+								});	
+							}).catch(err=>{
+								uni.showToast({
+									title: res.msg,
+									icon: 'none',
+								});
 							})
-							
-							
 						}
 					}
 				],

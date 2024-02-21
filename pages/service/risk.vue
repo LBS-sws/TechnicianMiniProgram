@@ -137,53 +137,31 @@ export default {
 			})
 		},
 		data_select() {
-			
 			let params = {
 				page:this.page,
 				limit:this.limit,
 				job_id: this.jobid,
 				job_type: this.jobtype,
 			}
-			uni.request({
-				url: `${this.$baseUrl}/Risks.Risks/list`,
-				header: {
-					'content-type': 'application/x-www-form-urlencoded',
-					'token': uni.getStorageSync('token')
-				},
-				method: 'GET',
-				data: params,
-				success: (res) => {
-					if (res.data.code == 200) {
-						
-						this.total = res.data.data.data.total	// 总数
-						
-						let list = res.data.data.data.data		// 分页
-						list.forEach((item,i)=>{
-							let photoArr = item.site_photos.split(",")
-							item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
-						})
-						
-						this.risks = this.risks.concat(list)
-						
-						
-						this.risk_total	 = res.data.data.assess_count	// 风险评估数
-						
-						this.isLoadMore=false				
-						setTimeout(()=>{
-							this.isLoadMore = true
-							this.loading = false
-						},1000)
-						
-						// 风险历史记录
-						// this.dotNum = res.data.data.history_count
-						// console.log(this.dotNum)
-						
-					}
-				},
-				fail: (err) => {
-					console.log(res);
+			this.$api.risksList(params).then(res=>{
+				if (res.data.code == 200) {
+					this.total = res.data.data.data.total	// 总数
+					let list = res.data.data.data.data		// 分页
+					list.forEach((item,i)=>{
+						let photoArr = item.site_photos.split(",")
+						item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
+					})
+					this.risks = this.risks.concat(list)
+					this.risk_total	 = res.data.data.assess_count	// 风险评估数
+					this.isLoadMore=false				
+					setTimeout(()=>{
+						this.isLoadMore = true
+						this.loading = false
+					},1000)
 				}
-			});
+			}).catch(err=>{
+				console.log(err)
+			})
 		},
 		dotAlert() {
 

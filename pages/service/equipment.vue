@@ -166,74 +166,54 @@
 		},
 		methods: {
 			optionEqAdd(){
-				let param = {}
-				uni.request({
-					url: `${this.$baseUrl}/Equipment.Equipment/optionEqAdd?job_type=` + this.jobtype + "&job_id=" + this.jobid,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						
-						if (res.data.code == 200) {
-							this.add_all = res.data.data
-						}
-						if(res.data.code == 400)
-						{
-							uni.$utils.toast(res.data.msg)
-						}
-					},
-					fail: (err) => {
-						console.log(res);
+				let params = {
+					job_type: this.jobtype,
+					job_id: this.jobid,
+				}
+				this.$api.optionEqAdd(params).then(res=>{
+					if (res.code == 200) {
+						this.add_all = res.data
 					}
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+					}
+				}).catch(err=>{
+					console.log(err)
 				})
+				
 			},
 			// 筛选 所有区域 所有设备
 			optionEq(){
-				let param = {}
-				
-				uni.request({
-					url: `${this.$baseUrl}/Equipment.Equipment/optionEq?job_type=` + this.jobtype + "&job_id=" + this.jobid,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						
-						if (res.data.code == 200) {
-							// 区域
-							if (res.data.data.optionArea.length>0) {
-								let Area = res.data.data.optionArea
-								let AreaList = []
-								Area.forEach((item,i)=>{
-									AreaList.push({label:item.equipment_area,value:item.equipment_area})
-								})
-								AreaList.unshift({ label: '全部区域', value: '' })
-								this.equipment_area_lists = AreaList
-							}
-							if(res.data.data.optionEq.length>0){
-								// 设备
-								let eq = res.data.data.optionEq
-								let EqList = []
-								eq.forEach((item,i)=>{
-									EqList.push({label:item.equipment_name,value:item.equipment_type_id})
-								})
-								EqList.unshift({ label: '全部设备', value: '' })
-								this.equipment_lists = EqList
-							}
+				let params = {
+					job_type: this.jobtype,
+					job_id: this.jobid,
+				}
+				this.$api.optionEq(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data.optionArea.length>0) {
+							let Area = res.data.optionArea
+							let AreaList = []
+							Area.forEach((item,i)=>{
+								AreaList.push({label:item.equipment_area,value:item.equipment_area})
+							})
+							AreaList.unshift({ label: '全部区域', value: '' })
+							this.equipment_area_lists = AreaList
 						}
-						if(res.data.code == 400)
-						{
-							uni.$utils.toast(res.data.msg)
+						if(res.data.optionEq.length>0){
+							let eq = res.data.optionEq
+							let EqList = []
+							eq.forEach((item,i)=>{
+								EqList.push({label:item.equipment_name,value:item.equipment_type_id})
+							})
+							EqList.unshift({ label: '全部设备', value: '' })
+							this.equipment_lists = EqList
 						}
-					},
-					fail: (err) => {
-						console.log(res);
 					}
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			but(){
@@ -262,8 +242,7 @@
 			},
 			// 设备列表
 			data_select() {
-				
-				let param = {
+				let params = {
 					job_type:this.jobtype,
 					job_id:this.jobid,
 					equipment_area:this.equipment_area,
@@ -271,53 +250,23 @@
 					page:this.page,
 					limit:this.limit
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Equipment.Equipment/list`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						console.log(res.data.data)
-						if (res.data.code == 200) {
-							if (res.data.data) {
-							
-								// this.total = res.data.data.data.total	// 总数
-								
-								let all = res.data.data
-								all.forEach((item,i)=>{
-									item.label = item.equipment_name
-									item.value = item.equipment_number
-									item.eq_number = item.equipment_number
-								})
-								this.all = all
-								// this.all = this.all.concat(all)
-								// if(all.length==0 && this.all.length>0)
-								// {
-									
-								// 	this.loadingText = '数据已经加载完啦！'
-								// }
-								
-								// this.isLoadMore=false				
-								// setTimeout(()=>{
-								// 	this.isLoadMore = true
-								// 	this.loading = false
-								// },1000)
-							
-							}
-							
+				this.$api.equipmentList(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							let all = res.data
+							all.forEach((item,i)=>{
+								item.label = item.equipment_name
+								item.value = item.equipment_number
+								item.eq_number = item.equipment_number
+							})
+							this.all = all
 						}
-						if(res.data.code == 400)
-						{
-							uni.$utils.toast(res.data.msg)
-						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
 					}
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			hzyl() {
@@ -335,36 +284,27 @@
 					return;
 				} else {
 					let ids = this.xz_all.join(",")
-					// console.log(ids)
-					// return false
-					let url = `${this.$baseUrl}/Equipment.Equipment/getEqInfo?job_type=` + this.jobtype + "&job_id=" + this.jobid + "&ids=" + ids;
-					let param = {}
-					uni.request({
-						url:url,
-						header: {
-							'content-type': 'application/x-www-form-urlencoded',
-							'token': uni.getStorageSync('token')
-						},
-						method: 'GET',
-						data: param,
-						success: (res) => {
-							if (res.data.code == 400) {
-								uni.showToast({
-									icon: 'none',
-									title: res.data.msg
-								})
-								return ;
-							}
-							if(res.data.code == 200){
-								uni.redirectTo({
-									url: "/pages/service/scan_equipment?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-										'&id=' + ids
-								})
-							}
-						},
-						fail: (err) => {
-							// console.log(err);
+					let params = {
+						job_type: this.jobtype,
+						job_id: this.jobid,
+						ids:ids
+					}
+					this.$api.getEqInfo(params).then(res=>{
+						if (res.code == 400) {
+							uni.showToast({
+								icon: 'none',
+								title: res.msg
+							})
+							return ;
 						}
+						if(res.code == 200){
+							uni.redirectTo({
+								url: "/pages/service/scan_equipment?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+									'&id=' + ids
+							})
+						}
+					}).catch(err=>{
+						console.log(err)
 					})
 				}
 			},
@@ -444,45 +384,35 @@
 						// console.log(res);
 					}
 				})
+				
+				
+				
+				
 			},
 			// 新增设备
 			add() {
-				
 				this.$refs["add_confirm"]
 					.open({
 						title: "增加服务设备",
 						width: "95%",
 					})
 					.then(() => {
-						
-						let param = {
+						let params = {
 							ids: this.add_eq,
 							number: this.add_number,
 							job_id: this.jobid,
 							job_type: this.jobtype,
 						}
-						uni.request({
-							url: `${this.$baseUrl}/Equipment.Equipment/addEq`,
-							header: {
-								'content-type': 'application/x-www-form-urlencoded',
-								'token': uni.getStorageSync('token')
-							},
-							method: 'POST',
-							data: param,
-							success: (res) => {
-								if (res.data.code == 200) {
-									this.add_number = 1;
-									// this.page = 1;
-									
-									this.optionEq()
-									this.optionEqAdd()
-									this.data_select()
-									uni.$utils.toast('增加成功')
-								}
-							},
-							fail: (err) => {
-								console.log(res);
+						this.$api.addEq(params).then(res=>{
+							if (res.code == 200) {
+								this.add_number = 1;
+								this.optionEq()
+								this.optionEqAdd()
+								this.data_select()
+								uni.$utils.toast('增加成功')
 							}
+						}).catch(err=>{
+							console.log(err)
 						})
 					})
 					.catch(() => {
@@ -491,7 +421,6 @@
 			},
 			// 删除设备
 			del() {
-				// console.log(this.xz_all)
 				this.$refs["del_confirm"].open({
 					title: "提示",
 					message: "确认删除？",
@@ -507,31 +436,20 @@
 								return;
 							} else {
 								let ids = this.xz_all.join(",")
-								// console.log(ids)
-								
-								let param = {}
-								uni.request({
-									url: `${this.$baseUrl}/Equipment.Equipment/delEq?ids=` + ids,
-									header: {
-										'content-type': 'application/x-www-form-urlencoded',
-										'token': uni.getStorageSync('token')
-									},
-									method: 'DELETE',
-									data: param,
-									success: (res) => {
-										if (res.data.code == 200) {
-											this.xz_all = ''
-											this.data_select()
-											uni.showToast({
-												icon: 'none',
-												title: '删除成功'
-											});
-										}
-										
-									},
-									fail: (err) => {
-										// console.log(res);
+								let params = {
+									ids:ids
+								}
+								this.$api.delEq(params).then(res=>{
+									if (res.code == 200) {
+										this.xz_all = ''
+										this.data_select()
+										uni.showToast({
+											icon: 'none',
+											title: '删除成功'
+										});
 									}
+								}).catch(err=>{
+									console.log(err)
 								})
 							}
 

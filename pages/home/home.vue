@@ -79,7 +79,6 @@
 		<!-- end -->
 	</view>
 </template>
-
 <script>
 import zzxCalendar from "@/components/zzx-calendar/zzx-calendar.vue"
 export default {
@@ -102,10 +101,8 @@ export default {
 			icon: 'none',
 			mask: true
 		})
-		
 		var token = uni.getStorageSync('token')
 		var loginRes = this.checkLogin();
-		
 		if (!loginRes) {
 			uni.showToast({
 				title: "请先登录",
@@ -131,7 +128,6 @@ export default {
 			this.Data = e.fullDate;
 			this.Week = this.getWek(e.fullDate);
 			this.getjobs();
-			// this.getJobTotal();
 		},
 		getWek(day) {
 			var dateObject = new Date(day);
@@ -141,7 +137,6 @@ export default {
 		},
 		// 工作单详情
 		job_detail(index) {
-			
 			let jobid = this.jobs[index].id
 			let type  = this.jobs[index].order_type
 			if(this.jobs[index].customer.customer_type == 203 || this.jobs[index].customer.customer_type == 250){
@@ -151,7 +146,6 @@ export default {
 				uni.setStorageSync('ct', 0);
 				var ct = 0 ;
 			}
-			
 			uni.navigateTo({
 				url: "/pages/service/detail?jobtype=" + type + "&jobid=" + jobid
 			});
@@ -161,7 +155,6 @@ export default {
 			let params = {
 				jobdate: this.Data
 			}
-			
 			this.$api.dayOrderList(params).then(res=>{
 				// console.log(res)
 				this.checkCode(res.code,res.msg)	// 400、401处理
@@ -176,7 +169,6 @@ export default {
 		// 统计
 		getJobTotal() {
 			let params = {}
-
 			this.$api.dayCount(params).then(res=>{
 				this.checkCode(res.code,res.msg)	// 400、401处理
 				if(res.code == 200) {
@@ -188,26 +180,21 @@ export default {
 				console.log(err)
 			})
 		}
-		//...
 	}
 }
 </script>
-
 <style>
 	.datec {
 		background-color: #FFFFFF;
 		border-radius: 15px;
 	}
-
 	.datecontent {
 		margin: 10px 5px;
 	}
-
 	.dateshow {
 		font-size: 18px;
 		margin: 10px;
 	}
-
 	.new_card {
 		background-color: #FFFFFF;
 		border-radius: 10px;
@@ -215,7 +202,6 @@ export default {
 		margin-bottom: 10px;
 
 	}
-
 	.new_card_title {
 		border-bottom: 1px solid #e0dcdc;
 		font-size: 18px;
@@ -223,7 +209,6 @@ export default {
 		padding: 10px 5px;
 		height: 25px;
 	}
-
 	.new_card_title_left {
 		float: left;
 		width: 80%;
@@ -231,37 +216,27 @@ export default {
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
-
 	.new_card_title_right {
 		font-size: 17px;
 		float: right;
 	}
-
 	.new_card_content {
 		margin: 10px 5px;
 		font-size: 16px;
-		/* color: #7b7070; */
 	}
-
 	.new_card_content view {
 		margin-bottom: 5px;
 	}
-
 	.noservice {
 		text-align: center;
 		margin-top: 20%;
 		color: #a5a6a7;
 		font-size: 17px;
 	}
-
-	/* 字体 */
-
-	/* new */
 	.content_t {
 		color: #6b6464;
 		margin: 10px;
 	}
-
 	.service_name {
 		background-color: #c6ecc0;
 		color: #12900a;
@@ -270,7 +245,6 @@ export default {
 		text-align: center;
 		margin-right: 5px;
 	}
-
 	.first_job {
 		background-color: #cbe8ff;
 		color: #0876f1;
@@ -279,7 +253,6 @@ export default {
 		text-align: center;
 		margin-right: 5px;
 	}
-
 	.customer_type {
 		background-color: #f6a6a6;
 		color: #e01313;
@@ -288,10 +261,7 @@ export default {
 		text-align: center;
 		margin-right: 5px;
 	}
-
-	/* new */
 	.content {
-		/* background-image: url(../../static/images/my.png); */
 		padding: 50px 5px;
 		height: 5%;
 		background-color: #0e8cf1;

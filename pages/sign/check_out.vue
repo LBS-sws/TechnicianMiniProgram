@@ -411,9 +411,6 @@
 			sign_success(signdate, starttime) {
 				let pics = this.upload_site_photos
 				let str = '';
-				// if (pics.length > 0) {
-				// 	str = pics.join(", ");
-				// }
 				let is_invoice = this.invoice
 				let params = {
 					job_id: this.jobid,
@@ -421,44 +418,25 @@
 					pics: this.upload_site_photos,
 					is_invoice:is_invoice,
 				}
-				// console.log(params)
-				
-				// return false
-				
-				uni.request({
-					url: `${this.$baseUrl}/Order.Order/orderSignOut`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: params,
-					success: (res) => {
-						console.log(res);
-						uni.hideLoading();
-						if (res.data.code == 200) {
-							uni.showToast({
-								title: '签离成功',
-								icon: 'success'
-							})
-							
-							// 超 直接返回上一页
-							uni.navigateBack();
-							// }, 1000);
-						} else {
-							uni.showToast({
-								title: res.data.msg,
-								icon: 'fail'
-							})
-						}
-
-					},
-					fail: (err) => {
+				this.$api.orderSignOut(params).then(res=>{
+					uni.hideLoading();
+					if (res.code == 200) {
 						uni.showToast({
-							title: err,
+							title: '签离成功',
+							icon: 'success'
+						})
+						uni.navigateBack();
+					} else {
+						uni.showToast({
+							title: res.msg,
 							icon: 'fail'
 						})
 					}
+				}).catch(err=>{
+					uni.showToast({
+						title: err,
+						icon: 'fail'
+					})
 				})
 			}
 		},

@@ -27,7 +27,6 @@ export default (path, data = {}, method = 'GET') => {
 			success(response) {
 				// console.log('%c响应拦截：', ' background:green', response);
 				if (response.data.code === 400) {
-					
 					// logout()
 				}
 				if (response.data.code == 200) {
@@ -38,11 +37,17 @@ export default (path, data = {}, method = 'GET') => {
 					// });
 				}
 				if (response.data.code == 401) {
-					uni.clearStorageSync()
-					uni.reLaunch({
-						url:"/pages/login/login"
-					})
-					return false;
+					uni.showToast({
+						title: response.data.msg,
+						icon: 'none',
+					});	
+					setTimeout(()=>{
+						uni.clearStorageSync()
+						uni.reLaunch({
+							url:"/pages/login/login"
+						})
+						return false;
+					},1500)
 				}
 				resolve(response.data);
 			},

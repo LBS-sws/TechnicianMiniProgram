@@ -181,25 +181,10 @@
 					job_type:this.jobtype,
 					id:this.jobid
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Order.Order/getOrderInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: params,
-					success: (res) => {
-						this.checkCode(res.data.code,res.data.msg)	// 400、401处理
-						
-						if (res.data.code == 200) {
-							this.service = res.data.data
-						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
-					}
+				this.$api.getOrderInfo(params).then(res=>{
+					this.service = res.data
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			previewImg(logourl) {

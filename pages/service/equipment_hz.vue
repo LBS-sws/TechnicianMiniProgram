@@ -64,30 +64,21 @@ export default {
 		},
 		methods: {
 			data_select() {
-				let param = {}
-				uni.request({
-					url: `${this.$baseUrl}/Report.Report/getEqInfo?job_type=` + this.jobtype +"&job_id=" + this.jobid,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							console.log(res.data.data)
-							if (res.data.data) {
-								this.list = res.data.data
-							}
+				let params = {
+					job_type: this.jobtype,
+					job_id: this.jobid,
+				}
+				this.$api.getReportEqInfo(params).then(res=>{
+					if (res.code == 200) {
+						console.log(res.data)
+						if (res.data) {
+							this.list = res.data
 						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
 					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
-			//...
 		}
 }
 </script>

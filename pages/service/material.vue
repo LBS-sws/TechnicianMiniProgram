@@ -52,32 +52,14 @@
 		},
 		methods: {
 			data_select() {
-				//查询是否存在
-				let param = {
+				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Materials.Materials/index`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							if (res.data.data) {
-								// console.log(res.data.data)
-								this.materials = res.data.data
-							}
-						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
-					},
-					fail: (err) => {
-						console.log(res);
-					}
+				this.$api.getMaterials(params).then(res=>{
+					this.materials = res.data
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			add(id) {

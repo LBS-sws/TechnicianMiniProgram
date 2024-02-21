@@ -64,42 +64,27 @@
 		methods: {
 			// 列表
 			getList() {
-				
-				let param = {
+				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
 				}
-				uni.request({
-					url: `${this.$baseUrl}/SiteWorkPhotos.SiteWorkPhotos/list`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							if (res.data.data) {
-								console.log(res.data.data)
-								
-								let list = res.data.data.data
-								list.forEach((item,i)=>{
-									// console.log(item.site_photos)
-									// 处理图片地址
-									item.site_photos.forEach((itemx,index)=>{
-										item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
-									})
-									
+				this.$api.SiteWorkPhotosList(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							let list = res.data.data
+							list.forEach((item,i)=>{
+								// console.log(item.site_photos)
+								// 处理图片地址
+								item.site_photos.forEach((itemx,index)=>{
+									item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
 								})
-								this.photos = list
 								
-							}
+							})
+							this.photos = list
 						}
-
-					},
-					fail: (err) => {
-						console.log(res);
 					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			previewImg(logourl) {
@@ -112,8 +97,6 @@
 				});
 			},
 			add(id) {
-				console.log("photo:")
-				console.log(this.custInfo)
 				uni.redirectTo({
 					url: "/pages/service/add_photo?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 						'&shortcut_type=' + this.shortcut_type + '&service_type=' + this.service_type + '&id=' +

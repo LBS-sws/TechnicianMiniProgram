@@ -76,7 +76,6 @@
 		<!-- end -->
 	</view>
 </template>
-
 <script>
 	export default {
 		data() {
@@ -119,7 +118,6 @@
 				}, 2000);
 			}
 			this.getCurrentMonthFirst();
-			
 			this.jobid = index.job_id
 			this.jobtype = index.job_type
 			this.servicetype = index.service_type
@@ -127,8 +125,6 @@
 		},
 		//	上拉触底函数
 		onReachBottom(){
-			console.log('触发')
-			
 		     if(this.isLoadMore){  //此处判断，上锁，防止重复请求
 				if(this.total< this.limit * this.page){
 					this.loading = false
@@ -151,7 +147,7 @@
 			},                
 			// 列表
 			getList() {	
-				let param = {
+				let params = {
 					startDate:this.beginDate,
 					endDate:this.endDate,
 					job_id:this.jobid,
@@ -160,37 +156,16 @@
 					page:this.page,
 					limit:this.limit
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Order.Order/searchOrder`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							if (res.data.data.length>0) {
-								if(res.data.data.data.length>0)
-								{
-									this.total = res.data.data.total
-									
-									this.jobs = this.jobs.concat(res.data.data.data)
-									
-									this.isLoadMore=false
-									
-									setTimeout(()=>{
-										this.isLoadMore = true
-										this.loading = false
-									},1000)
-								}
-							}
+				this.$api.searchOrder(params).then(res=>{
+					if (res.data.length>0) {
+						if(res.data.data.length>0){
+							this.total = res.data.data.total
+							this.jobs = this.jobs.concat(res.data.data)
+							this.isLoadMore=false
 						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
 					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			open() {
@@ -199,7 +174,7 @@
 			// 搜索 this.daterange 为选中的开始日期和结束日期
 			search() {
 				this.loading = false
-				let param = {
+				let params = {
 					startDate:this.daterange[0],
 					endDate:this.daterange[1],
 					job_id:this.jobid,
@@ -208,30 +183,14 @@
 					page:this.page,
 					limit:this.limit
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Order.Order/searchOrder`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						this.checkCode(res.data.code,res.data.msg)	// 400、401处理
-						
-						if (res.data.code == 200) {
-							if(res.data.data.data)
-							{
-								this.jobs = res.data.data.data
-							}else{
-								this.jobs = []
-							}
-						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
+				this.$api.searchOrder(params).then(res=>{
+					if(res.data.data){
+						this.jobs = res.data.data
+					}else{
+						this.jobs = []
 					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			job_detail(e) {

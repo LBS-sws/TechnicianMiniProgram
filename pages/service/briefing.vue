@@ -127,52 +127,33 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 			},
 			// 获取 服务内容、跟进建议 以及填写的内容
 			data_select() {
-				let param = {
+				let params = {
 					job_type:this.jobtype,
 					job_id:this.jobid,
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Briefings.Briefings/getBriefingsInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							
-							let listContent = []
-							let listProposal = []
-							if(res.data.data.shortcutContents.length>0)
+				this.$api.getBriefingsInfo(params).then(res=>{
+					let listContent = []
+					let listProposal = []
+					if(res.data.shortcutContents.length>0)
+					{
+						res.data.shortcutContents.forEach((item,i)=>{
+							if(item.type == 0)
 							{
-								res.data.data.shortcutContents.forEach((item,i)=>{
-									if(item.type == 0)
-									{
-										listContent.push({value: item.content, label: item.content})
-									}
-									if(item.type==1){
-										listProposal.push({value: item.content, label: item.content})
-									}
-								})
+								listContent.push({value: item.content, label: item.content})
 							}
-							
-							this.contentData = listContent
-							this.proposalData = listProposal
-							
-							// 久值用于恢复
-							this.contentDataOld = listContent
-							this.proposalDataOld = listProposal
-							
-							this.service_content = res.data.data.data.content
-							this.service_proposal = res.data.data.data.proposal
-						}
-						// 其它状态
-						this.checkCode(res.data.code,res.data.msg)
-					},
-					fail: (err) => {
-						console.log(res);
+							if(item.type==1){
+								listProposal.push({value: item.content, label: item.content})
+							}
+						})
 					}
+					this.contentData = listContent
+					this.proposalData = listProposal
+					this.contentDataOld = listContent
+					this.proposalDataOld = listProposal
+					this.service_content = res.data.data.content
+					this.service_proposal = res.data.data.proposal
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			save() {
@@ -192,35 +173,14 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						content: this.service_content,
 						proposal: this.service_proposal
 					}
-					uni.request({
-						url: `${this.$baseUrl}/Briefings.Briefings/editBriefings`,
-						header: {
-							'content-type': 'application/x-www-form-urlencoded',
-							'token': uni.getStorageSync('token')
-						},
-						method: 'POST',
-						data: params,
-						success: (res) => {
-							if(res.data.code == 200)
-							{
-								uni.hideLoading();
-								uni.showToast({
-									title: res.data.msg,
-									icon: 'none'
-								});
-							}
-							if(res.data.code == 400)
-							{
-								uni.hideLoading();
-								uni.showToast({
-									title: res.data.msg,
-									icon: 'none'
-								});
-							}
-						},
-						fail: (err) => {
-							console.log(res);
-						}
+					this.$api.editBriefings(params).then(res=>{
+						uni.hideLoading();
+						uni.showToast({
+							title: res.msg,
+							icon: 'none'
+						});
+					}).catch(err=>{
+						console.log(err)
 					})
 				}
 			},
