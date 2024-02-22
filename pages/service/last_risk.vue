@@ -213,7 +213,7 @@
 					type:1
 				}
 				this.$api.resolvedQuestion(params).then(res=>{
-					// console.log(res)
+					// console.log(res.data)
 					// this.lastrisks_y = res.data.data || []
 					let list = res.data.data
 					list.forEach((item,i)=>{

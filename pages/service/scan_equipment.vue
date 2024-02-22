@@ -148,7 +148,7 @@ export default {
 			check_datas: [],
 			check_handle: [],//'',
 			check_handles: '',
-			more_info: [],
+			more_info: '',
 			end_site_photos: '',
 			start_site_photos: '',
 			upload_site_photos: '',
@@ -364,7 +364,10 @@ export default {
 									{
 										this.more_info = ''
 									}else{
-										this.more_info = JSON.parse(res.data.data.list[0].more_info)
+										if(res.data.data.list[0].more_info){
+											this.more_info = JSON.parse(res.data.data.list[0].more_info)
+										}
+										
 									}
 								}
 								
@@ -476,6 +479,11 @@ export default {
 					check_handle = this.check_handle.join(',')
 				}
 				
+				let more_info = ''
+				if(this.more_info.length>0){
+					more_info = JSON.stringify(this.more_info)
+				}
+				
 				let params = {
 					
 					job_id: this.jobid,
@@ -485,7 +493,7 @@ export default {
 					check_datas: JSON.stringify(this.check_datas),
 					check_handle: check_handle,
 					// site_photos: this.upload_site_photos,
-					more_info: JSON.stringify(this.more_info),
+					more_info: more_info,
 					eq_number: this.eq_mark_num
 				}
 				
