@@ -54,10 +54,12 @@
 						{{lastrisk.take_steps}}
 					</view>
 				</view>
+				<view class="claer" style="width: 100%; height: 202rpx;"></view>
+				
 			</cl-scroller>
+			
 		</swiper-item>
-
-
+		
 		<!-- 按钮 -->
 		<view class="bu">
 			<cl-row v-if="lastrisk.status==0 || lastrisk.confirm_status == 1">
@@ -116,14 +118,18 @@
 					id: this.id,
 				}
 				this.$api.getRiskInfo(params).then(res=>{
+					// console.log(res)
 					if (res.code == 200) {
-						this.lastrisk = res.data.risk
-						console.log(res.data.risk)
-							this.lastrisk['site_photos'] = this.lastrisk['site_photos'].split(",");
+						
+						if(res.data.risk){
+							this.lastrisk = res.data.risk
+							// this.lastrisk['site_photos'] = this.lastrisk['site_photos'].split(",")
 							for (let i = 0; i < this.lastrisk['site_photos'].length; i++) {
 								var site_po = this.lastrisk['site_photos'][i].replace(/\"/g, "").replace(/[\\]/g,'');
 								this.lastrisk['site_photos'][i] = `${this.$baseUrl_imgs}/`+site_po;
 							}
+						}
+						
 					}
 				}).catch(err=>{
 					console.log(err)

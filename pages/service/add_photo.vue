@@ -167,7 +167,7 @@
 								})
 								this.$refs.upload3.setItems(this.init_photos);
 							}
-							this.remarks = res.data.remarks
+							this.remarks = JSON.parse(res.data.remarks)
 						}
 					}else{
 						if(res.code == 400){
@@ -292,7 +292,7 @@
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					site_photos: this.upload_site_photos,
-					remarks: this.remarks,
+					remarks: JSON.stringify(this.remarks),
 				}
 				uni.showLoading({
 					title: '正在保存'
@@ -346,7 +346,7 @@
 				let param = {
 					id: this.id,
 					site_photos:this.upload_site_photos,
-					remarks: this.remarks,
+					remarks: JSON.stringify(this.remarks),
 				}
 				uni.showLoading({
 					title: '正在保存'

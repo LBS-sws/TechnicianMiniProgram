@@ -233,10 +233,10 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 							this.unit = res.data.material.unit
 							this.target = res.data.material.targets.split(',')
 							this.usemode = res.data.material.use_mode.split(',')
-							this.usearea = res.data.material.use_area.split(',')
+							this.usearea = JSON.parse(res.data.material.use_area.split(','))
 							this.processing_space = res.data.material.processing_space	// 处理空间
 							this.dosage = res.data.material.dosage						// 药物用量
-							this.matters_needing_attention = res.data.material.matters_needing_attention	// 注意事项
+							this.matters_needing_attention = JSON.parse(res.data.material.matters_needing_attention)	// 注意事项
 						}
 					}
 					if(res.code == 400){
@@ -278,13 +278,13 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						material_ratio: this.ratio,
 						targets: this.target,
 						use_mode: this.usemode,
-						use_area: this.usearea,
+						use_area: JSON.stringify(this.usearea),
 						dosage: this.dosage,
 						processing_space: this.processing_space,
-						matters_needing_attention: this.matters_needing_attention,
+						matters_needing_attention: JSON.stringify(this.matters_needing_attention),	// 注意事项
 						unit: this.unit,
 					}
-					console.log('this.matters_needing_attention',this.matters_needing_attention)
+					
 					if(this.id == 0){
 						this.$api.addMaterials(params).then(res=>{
 							uni.hideLoading();
