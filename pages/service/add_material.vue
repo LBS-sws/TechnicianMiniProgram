@@ -268,6 +268,11 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					uni.showLoading({
 						title: "保存中..."
 					});
+					let matters_needing_attention = ''
+					if(this.matters_needing_attention.length>0){
+						matters_needing_attention = JSON.stringify(this.service_proposal)
+					}
+					
 					let params = {
 						id: this.id,
 						job_id: this.jobid,
@@ -281,7 +286,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						use_area: JSON.stringify(this.usearea),
 						dosage: this.dosage,
 						processing_space: this.processing_space,
-						matters_needing_attention: JSON.stringify(this.matters_needing_attention),	// 注意事项
+						matters_needing_attention: matters_needing_attention,	// 注意事项
 						unit: this.unit,
 					}
 					

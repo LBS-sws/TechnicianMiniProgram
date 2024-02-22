@@ -58,6 +58,9 @@
 				}
 				this.$api.getMaterials(params).then(res=>{
 					this.materials = res.data
+					this.materials.forEach((item,i)=>{
+						item.use_area = JSON.parse(item.use_area)
+					})
 				}).catch(err=>{
 					console.log(err)
 				})

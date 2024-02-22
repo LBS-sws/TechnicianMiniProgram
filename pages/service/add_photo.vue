@@ -288,11 +288,17 @@
 					uni.showToast({icon: 'none', title: `没选择工作照(⊙_⊙)?`});
 				    return false;
 				}
+				
+				let remarks = ''
+				if(this.remarks.length>0){
+					remarks = JSON.stringify(this.remarks)
+				}
+				
 				let param = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					site_photos: this.upload_site_photos,
-					remarks: JSON.stringify(this.remarks),
+					remarks: remarks,
 				}
 				uni.showLoading({
 					title: '正在保存'
