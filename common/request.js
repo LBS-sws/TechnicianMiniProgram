@@ -41,13 +41,11 @@ export default (path, data = {}, method = 'GET') => {
 						title: response.data.msg,
 						icon: 'none',
 					});	
-					setTimeout(()=>{
-						uni.clearStorageSync()
-						uni.reLaunch({
-							url:"/pages/login/login"
-						})
-						return false;
-					},1500)
+					uni.clearStorageSync()
+					uni.reLaunch({
+						url:"/pages/login/login"
+					})
+					return false;
 				}
 				resolve(response.data);
 			},

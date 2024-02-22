@@ -284,6 +284,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						matters_needing_attention: this.matters_needing_attention,
 						unit: this.unit,
 					}
+					console.log('this.matters_needing_attention',this.matters_needing_attention)
 					if(this.id == 0){
 						this.$api.addMaterials(params).then(res=>{
 							uni.hideLoading();
