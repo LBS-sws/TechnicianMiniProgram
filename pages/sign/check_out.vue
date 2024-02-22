@@ -179,37 +179,25 @@
 								});
 								return;
 							} else {
-								let param = {
+								let params = {
 									id: this.id,
 								}
-								uni.request({
-									url: `${this.$baseUrl}/Risks.Risks/delRisk`,
-									header: {
-										'content-type': 'application/x-www-form-urlencoded',
-										'token': uni.getStorageSync('token')
-									},
-									method: 'DELETE',
-									data: param,
-									success: (res) => {
-										if (res.data.code == 200) {
-											uni.showToast({
-												icon: 'none',
-												title: '删除成功'
-											});
-											setTimeout(() => {
-												uni.redirectTo({
-													url: "/pages/service/risk?jobid=" +
-														this.jobid + '&jobtype=' +
-														this.jobtype
-												})
-											}, 2000)
-										}
-										// 其它状态
-										this.checkCode(res.data.code, res.data.msg)
-									},
-									fail: (err) => {
-										console.log(res);
+								this.$api.delRisk(params).then(res=>{
+									if (res.code == 200) {
+										uni.showToast({
+											icon: 'none',
+											title: '删除成功'
+										});
+										setTimeout(() => {
+											uni.redirectTo({
+												url: "/pages/service/risk?jobid=" +
+													this.jobid + '&jobtype=' +
+													this.jobtype
+											})
+										}, 2000)
 									}
+								}).catch(err=>{
+									console.log(err)
 								})
 							}
 						} else {

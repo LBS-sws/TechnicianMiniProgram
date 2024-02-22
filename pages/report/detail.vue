@@ -707,208 +707,109 @@
 				})
 			},
 			getBaseinfo(){
-				
-				let param = {
+				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Report.Report/baseInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							if (res.data.data) {
-								this.basic = res.data.data
-								if(res.data.data.staff.main == this.Staff01)
-								{
-									this.isShowAdd = true
-								}
+				this.$api.ReportBaseInfo(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							this.basic = res.data
+							if(res.data.staff.main == this.Staff01)
+							{
+								this.isShowAdd = true
 							}
-							// console.log(res.data)
-							
-							// 点评列表
-							let questionsData = res.data.data.questionnaire
-							questionsData.forEach((item,i)=>{
-								item.answer = ''
-								item.options = this.radioData
-							})
-							//this.questionsData = questionsData
-							this.startSign_sData.questions = questionsData	// 暂存问题列表
 						}
-						
-						if(res.data.code == 400)
-						{
-							uni.$utils.toast(res.data.msg)
-							return false
-						}
-					},
-					fail: (err) => {
-						console.log(res);
+						let questionsData = res.data.questionnaire
+						questionsData.forEach((item,i)=>{
+							item.answer = ''
+							item.options = this.radioData
+						})
+						this.startSign_sData.questions = questionsData	// 暂存问题列表
 					}
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			// 1.服务简报
 			getBriefing(){
-				let param = {
+				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Report.Report/getBriefingsInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							// if (res.data.data) {
-								this.briefing = res.data.data
-							// }
-						
-						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
+				this.$api.getReportBriefingsInfo(params).then(res=>{
+					if (res.code == 200) {
+						this.briefing = res.data
 					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			// 2.物料使用
 			getMaterial(){
-				let param = {
+				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Report.Report/getMaterialsInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							// if (res.data.data) {
-								this.material = res.data.data.data
-							// }
-							// console.log(res.data)
-						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
-					}
+				this.$api.getReportMaterialsInfo(params).then(res=>{
+					this.material = res.data.data
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			// 3.设备情况
 			getEquipment(){
-				let param = {
+				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Report.Report/getEqInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							// if (res.data.data) {
-								this.equipment = res.data.data
-							// }
-							// console.log(res.data)
-						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
-					}
+				this.$api.getReportEqInfo(params).then(res=>{
+					this.equipment = res.data
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			// 4.风险跟进
 			getRisk(){
-				let param = {
+				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype,
 					limit:100,
 					page:1
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Report.Report/getRisksInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							// if (res.data.data) {
-								
-								let list = res.data.data.data
-								list.forEach((item,i)=>{
-									let photoArr = item.site_photos.split(",")
-									item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
-								})
-								
-								this.risk = list
-							// }
-							// console.log(res.data.data.data)
-						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
-					}
+				this.$api.getReportRisksInfo(params).then(res=>{
+					let list = res.data.data
+					list.forEach((item,i)=>{
+						let photoArr = item.site_photos.split(",")
+						item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
+					})
+					this.risk = list
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			// 5.现场工作照
 			getPhoto(){
-				let param = {
+				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype,
 					limit:100,
 					page:1
 				}
-				uni.request({
-					url: `${this.$baseUrl}/Report.Report/getSiteWorkPhotosInfo`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'GET',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 200) {
-							
-							let list = res.data.data.data
-							list.forEach((item,i)=>{
-								// console.log(item.site_photos)
-								// 处理图片地址
-								item.site_photos.forEach((itemx,index)=>{
-									item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
-								})
-								
-							})
-							
-							this.photo = list
-						}
-						
-					},
-					fail: (err) => {
-						console.log(res);
-					}
+				this.$api.getReportSiteWorkPhotosInfo(params).then(res=>{
+					let list = res.data.data
+					list.forEach((item,i)=>{
+						item.site_photos.forEach((itemx,index)=>{
+							item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
+						})
+					})
+					this.photo = list
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 			//保存客户点评星级、客户签名
