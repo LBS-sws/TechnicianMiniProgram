@@ -332,10 +332,10 @@
 			let params = {
 				job_id: this.jobid,
 				job_type: this.jobtype,
-				risk_targets: this.risk_targets.join(','),
-				risk_types: this.risk_types.join(','),
+				risk_targets: this.risk_targets, // .join(',')
+				risk_types: this.risk_types, // .join(',')
 				risk_rank: this.risk_rank,
-				risk_label: this.risk_label.join(','),
+				risk_label: this.risk_label, // .join(',')
 				site_photos: this.upload_site_photos,
 				risk_description: JSON.stringify(this.risk_description),
 				risk_proposal: risk_proposal,
@@ -403,14 +403,14 @@
 				id: this.id,
 				job_id: this.jobid,
 				job_type: this.jobtype,
-				risk_targets: this.risk_targets.join(','),
-				risk_types: this.risk_types.join(','),
+				risk_targets: this.risk_targets,  // .join(',')
+				risk_types: this.risk_types,  // .join(',')
 				risk_rank: this.risk_rank,
-				risk_label: this.risk_label.join(','),
+				risk_label: this.risk_label,  //.join(',')
 				site_photos: this.upload_site_photos,
 				risk_description: JSON.stringify(this.risk_description),
 				risk_proposal: this.risk_proposal,
-				take_steps: take_steps,
+				take_steps: this.take_steps,
 				risk_area: this.risk_area,
 			}
 			this.$api.editRisk(params).then(res=>{
