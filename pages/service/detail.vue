@@ -88,7 +88,7 @@
 			</view>
 			<span>
 				<view @tap="update_remarks" class="v_magin">
-					技术员备注：<span style="color: black;">{{service.tech_remarks}}</span>&nbsp;
+					技术员备注：<span style="color: black;" v-if="service.tech_remarks!=null">{{service.tech_remarks}}</span>&nbsp;
 				</view>
 			</span>
 			<!-- 设备布防图 -->
