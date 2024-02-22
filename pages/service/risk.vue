@@ -305,7 +305,7 @@ export default {
 
 	.fx {
 		margin-bottom: 5px;
-		width: 90px;
+		width: 103px;
 		height: 22px;
 		font-size: 14px;
 		border-radius: 5px;

@@ -292,11 +292,13 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 								title: res.msg,
 								icon: 'none'
 							});
-							setTimeout(() => {
-								uni.redirectTo({
-									url: "/pages/service/material?jobid=" +this.jobid + '&jobtype=' + this.jobtype
-								})
-							}, 2000)
+							if(res.code == 200){
+								setTimeout(() => {
+									uni.redirectTo({
+										url: "/pages/service/material?jobid=" +this.jobid + '&jobtype=' + this.jobtype
+									})
+								}, 2000)
+							}
 						}).catch(err=>{
 							uni.showToast({
 								title: res.msg,
