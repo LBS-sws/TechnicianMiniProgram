@@ -268,9 +268,11 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					uni.showLoading({
 						title: "保存中..."
 					});
+					console.log(this.matters_needing_attention)
+					
 					let matters_needing_attention = ''
 					if(this.matters_needing_attention.length>0){
-						matters_needing_attention = JSON.stringify(this.service_proposal)
+						matters_needing_attention = JSON.stringify(this.matters_needing_attention)
 					}
 					
 					let params = {
