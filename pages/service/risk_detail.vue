@@ -242,14 +242,14 @@
 							this.ranks = res.data.riskRanks
 							this.labels = res.data.riskLabel
 							if (this.id>0) {
-								this.risk_targets = res.data.risk.risk_targets.split(',') // 靶标
-								this.risk_types = res.data.risk.risk_types.split(',') // 风险类别
-								this.risk_rank = res.data.risk.risk_rank // 风险等级
-								this.risk_label = res.data.risk.risk_label.split(',') // 风险标签
-								this.risk_area = res.data.risk.risk_area // 风险区域
-								this.risk_description = res.data.risk.risk_description // 风险描述
-								this.risk_proposal = res.data.risk.risk_proposal // 整改建议
-								this.take_steps = res.data.risk.take_steps // 采取措施
+								this.risk_targets = res.data.risk.risk_targets.split(',') 	// 靶标
+								this.risk_types = res.data.risk.risk_types.split(',') 		// 风险类别
+								this.risk_rank = res.data.risk.risk_rank 					// 风险等级
+								this.risk_label = res.data.risk.risk_label.split(',') 		// 风险标签
+								this.risk_area = res.data.risk.risk_area 					// 风险区域
+								this.risk_description = JSON.parse(res.data.risk.risk_description) 		// 风险描述
+								this.risk_proposal = JSON.parse(res.data.risk.risk_proposal) 			// 整改建议
+								this.take_steps = JSON.parse(res.data.risk.take_steps) 					// 采取措施
 								var photoStr = res.data.risk.site_photos ?? [];
 								if(photoStr.length>0){
 									photoStr.forEach((item,i)=>{
@@ -323,14 +323,14 @@
 			let params = {
 				job_id: this.jobid,
 				job_type: this.jobtype,
-				risk_targets: this.risk_targets,
-				risk_types: this.risk_types,
+				risk_targets: this.risk_targets.join(','),
+				risk_types: this.risk_types.join(','),
 				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,
+				risk_label: this.risk_label.join(','),
 				site_photos: this.upload_site_photos,
-				risk_description: this.risk_description,
-				risk_proposal: this.risk_proposal,
-				take_steps: this.take_steps,
+				risk_description: JSON.stringify(this.risk_description),
+				risk_proposal: JSON.stringify(this.risk_proposal),
+				take_steps: JSON.stringify(this.take_steps),
 				risk_area: this.risk_area,
 			}
 			this.$api.addRisk(params).then(res=>{
@@ -395,14 +395,14 @@
 				id: this.id,
 				job_id: this.jobid,
 				job_type: this.jobtype,
-				risk_targets: this.risk_targets,
-				risk_types: this.risk_types,
+				risk_targets: this.risk_targets.join(','),
+				risk_types: this.risk_types.join(','),
 				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,
+				risk_label: this.risk_label.join(','),
 				site_photos: this.upload_site_photos,
-				risk_description: this.risk_description,
-				risk_proposal: this.risk_proposal,
-				take_steps: this.take_steps,
+				risk_description: JSON.stringify(this.risk_description),
+				risk_proposal: JSON.stringify(this.risk_proposal),
+				take_steps: JSON.stringify(this.take_steps),
 				risk_area: this.risk_area,
 			}
 			this.$api.editRisk(params).then(res=>{
