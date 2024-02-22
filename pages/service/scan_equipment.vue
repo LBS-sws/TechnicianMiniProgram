@@ -364,7 +364,7 @@ export default {
 									{
 										this.more_info = ''
 									}else{
-										this.more_info = res.data.data.list[0].more_info
+										this.more_info = JSON.parse(res.data.data.list[0].more_info)
 									}
 								}
 								
@@ -460,13 +460,6 @@ export default {
 				    return item.id
 				}).join(',')
 				
-				// console.log(this.equipment_name)	// 设备名称
-				// console.log(this.equipment_number)	// 设备编号
-				// console.log(this.equipment_area)	// 区域
-				// console.log(this.check_datas) 		// JSON.stringify(this.check_datas)
-				// console.log(this.check_handle.join(','))
-				// console.log(this.more_info)
-				
 				//验证是否是中文
 				
 				var pattern = new RegExp("[\u4E00-\u9FA5]+");
@@ -477,13 +470,12 @@ export default {
 					return false
 				}
 				let check_handle = ''
-				// if(this.check_handle != null && this.check_handle  != undefined && this.check_handle !='')
+				
 				if(!!this.check_handle)
 				{
 					check_handle = this.check_handle.join(',')
 				}
-				// console.log(this.check_handle)
-				// return false
+				
 				let params = {
 					
 					job_id: this.jobid,
@@ -493,7 +485,7 @@ export default {
 					check_datas: JSON.stringify(this.check_datas),
 					check_handle: check_handle,
 					// site_photos: this.upload_site_photos,
-					more_info: this.more_info,
+					more_info: JSON.stringify(this.more_info),
 					eq_number: this.eq_mark_num
 				}
 				

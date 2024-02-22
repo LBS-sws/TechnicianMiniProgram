@@ -146,12 +146,15 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 							}
 						})
 					}
+					console.log(listContent)
+					console.log(listProposal)
+					
 					this.contentData = listContent
 					this.proposalData = listProposal
 					this.contentDataOld = listContent
 					this.proposalDataOld = listProposal
-					this.service_content = res.data.data.content
-					this.service_proposal = res.data.data.proposal
+					this.service_content = JSON.parse(res.data.data.content)
+					this.service_proposal = JSON.parse(res.data.data.proposal)
 				}).catch(err=>{
 					console.log(err)
 				})
@@ -170,8 +173,8 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					let params = {
 						job_id: this.jobid,
 						job_type: this.jobtype,
-						content: this.service_content,
-						proposal: this.service_proposal
+						content: JSON.stringify(this.service_content),
+						proposal: JSON.stringify(this.service_proposal)
 					}
 					this.$api.editBriefings(params).then(res=>{
 						uni.hideLoading();
