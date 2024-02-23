@@ -78,7 +78,7 @@
 								item.site_photos.forEach((itemx,index)=>{
 									item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
 								})
-								item.remarks = JSON.parse(item.remarks)
+								item.remarks = item.remarks
 							})
 							this.photos = list
 						}

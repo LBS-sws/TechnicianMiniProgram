@@ -332,10 +332,10 @@
 			let params = {
 				job_id: this.jobid,
 				job_type: this.jobtype,
-				risk_targets: this.risk_targets.join(','),
-				risk_types: this.risk_types.join(','),
+				risk_targets: this.risk_targets, // .join(',')
+				risk_types: this.risk_types, // .join(',')
 				risk_rank: this.risk_rank,
-				risk_label: this.risk_label.join(','),
+				risk_label: this.risk_label, // .join(',')
 				site_photos: this.upload_site_photos,
 				risk_description: JSON.stringify(this.risk_description),
 				risk_proposal: risk_proposal,
@@ -398,30 +398,19 @@
 				uni.showLoading({
 					title: "正在保存"
 				});
-
-			
-			
-			let risk_proposal = ''
-			if(this.risk_proposal.length>0){
-				risk_proposal = JSON.stringify(this.risk_proposal)
-			}
-			let take_steps = ''
-			if(this.take_steps.length>0){
-				take_steps = JSON.stringify(this.take_steps)
-			}
-			
+				
 			let params = {
 				id: this.id,
 				job_id: this.jobid,
 				job_type: this.jobtype,
-				risk_targets: this.risk_targets.join(','),
-				risk_types: this.risk_types.join(','),
+				risk_targets: this.risk_targets,  // .join(',')
+				risk_types: this.risk_types,  // .join(',')
 				risk_rank: this.risk_rank,
-				risk_label: this.risk_label.join(','),
+				risk_label: this.risk_label,  //.join(',')
 				site_photos: this.upload_site_photos,
 				risk_description: JSON.stringify(this.risk_description),
-				risk_proposal: risk_proposal,
-				take_steps: take_steps,
+				risk_proposal: this.risk_proposal,
+				take_steps: this.take_steps,
 				risk_area: this.risk_area,
 			}
 			this.$api.editRisk(params).then(res=>{

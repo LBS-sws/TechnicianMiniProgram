@@ -360,7 +360,7 @@ export default {
 									this.more_info = ''
 								}else{
 									if(res.data.list[0].more_info){
-										this.more_info = JSON.parse(res.data.list[0].more_info)
+										this.more_info = res.data.list[0].more_info
 									}
 									
 								}
@@ -471,20 +471,14 @@ export default {
 					check_handle = this.check_handle.join(',')
 				}
 				
-				let more_info = ''
-				if(this.more_info.length>0){
-					more_info = JSON.stringify(this.more_info)
-				}
-				
-			
 				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
 					equipment_name: this.equipment_name,
 					equipment_area: this.equipment_area,
-					check_datas: JSON.stringify(this.check_datas),
+					check_datas: this.check_datas,
 					check_handle: check_handle,
-					more_info: more_info,
+					more_info: this.more_info,
 					eq_number: this.eq_mark_num,
 					ids:ids
 				}
@@ -599,7 +593,7 @@ export default {
 							job_type: this.jobtype,
 							equipment_name: this.equipment_name,
 							equipment_area: this.equipment_area,
-							check_datas: JSON.stringify(this.check_datas),
+							check_datas: this.check_datas,
 							check_handle: this.check_handle,
 							site_photos: this.upload_site_photos,
 							more_info: this.more_info,
