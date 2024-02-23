@@ -247,9 +247,9 @@
 								this.risk_rank = res.data.risk.risk_rank 					// 风险等级
 								this.risk_label = res.data.risk.risk_label.split(',') 		// 风险标签
 								this.risk_area = res.data.risk.risk_area 					// 风险区域
-								this.risk_description = JSON.parse(res.data.risk.risk_description) 		// 风险描述
-								this.risk_proposal = JSON.parse(res.data.risk.risk_proposal) 			// 整改建议
-								this.take_steps = JSON.parse(res.data.risk.take_steps) 					// 采取措施
+								this.risk_description = res.data.risk.risk_description 		// 风险描述
+								this.risk_proposal = res.data.risk.risk_proposal 			// 整改建议
+								this.take_steps = res.data.risk.take_steps 					// 采取措施
 								var photoStr = res.data.risk.site_photos ?? [];
 								if(photoStr.length>0){
 									photoStr.forEach((item,i)=>{
@@ -337,7 +337,7 @@
 				risk_rank: this.risk_rank,
 				risk_label: this.risk_label, // .join(',')
 				site_photos: this.upload_site_photos,
-				risk_description: JSON.stringify(this.risk_description),
+				risk_description: this.risk_description,
 				risk_proposal: risk_proposal,
 				take_steps: take_steps,
 				risk_area: this.risk_area,
@@ -408,7 +408,7 @@
 				risk_rank: this.risk_rank,
 				risk_label: this.risk_label,  //.join(',')
 				site_photos: this.upload_site_photos,
-				risk_description: JSON.stringify(this.risk_description),
+				risk_description: this.risk_description,
 				risk_proposal: this.risk_proposal,
 				take_steps: this.take_steps,
 				risk_area: this.risk_area,
