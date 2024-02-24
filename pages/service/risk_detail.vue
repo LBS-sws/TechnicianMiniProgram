@@ -408,7 +408,11 @@
 				risk_rank: this.risk_rank,
 				risk_label: this.risk_label,  //.join(',')
 				site_photos: this.upload_site_photos,
+
 				risk_description: this.risk_description,
+
+				// risk_description: JSON.stringify(this.risk_description),
+
 				risk_proposal: this.risk_proposal,
 				take_steps: this.take_steps,
 				risk_area: this.risk_area,
