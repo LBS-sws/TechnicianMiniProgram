@@ -435,7 +435,8 @@
 					questions: []
 				},
 				questionsData:[],	// 问题列表
-				radioData:[{t: '是　Yes', v: 1}, {t: '否　No', v: 0}]	// 是、否
+				radioData:[{t: '是　Yes', v: 1}, {t: '否　No', v: 0}]	,// 是、否
+				current:0
 			}
 		},
 		onLoad(index) {
@@ -524,11 +525,16 @@
 			change_tab(e) {
 				let index = e.target.dataset.current || e.currentTarget.dataset.current;
 				this.run_tab(index)
+				this.current = index
 			},
 			// swiper滑动事件
 			change_swiper(e) {
 				let index = e.target.current || e.detail.current;
+				if(this.current == index){
+					return false
+				}
 				this.run_tab(index)
+				this.current = index
 			},
 			// 执行整个tab事件
 			run_tab(index) {
