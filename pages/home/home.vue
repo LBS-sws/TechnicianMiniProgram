@@ -167,6 +167,11 @@ export default {
 		},
 		// 统计
 		getJobTotal(ym = '') {
+			if(ym==''){
+				var currentYear = new Date().getFullYear() 
+				var currentMonth = new Date().getMonth() + 1 
+				var ym = currentYear + '-' + currentMonth
+			}
 			let params = {month:ym}
 			this.$api.dayCount(params).then(res=>{
 				this.checkCode(res.code,res.msg)	// 400、401处理

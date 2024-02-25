@@ -14,7 +14,7 @@
 			<view class="cust_name">
 				{{service.customer.name_zh}}
 				<span v-if="service.status == 2">
-					<span v-if="service.job_start_time == '00:00:00'">
+					<span v-if="service.start_time == '00:00:00'">
 						<view class="new_card_title_right" style="color: #007AFF;">{{service.service_status}}</view>
 					</span>
 					<span v-else>
@@ -25,7 +25,7 @@
 					<view class="new_card_title_right" style="color: #07C160;">{{service.service_status}}</view>
 				</span>
 				<span v-if="service.status == -1">
-					<span v-if="service.job_start_time == '00:00:00'">
+					<span v-if="service.start_time == '00:00:00'">
 						<view class="new_card_title_right" style="color: #EE0A24;">{{service.service_status}}</view>
 					</span>
 					<span v-else>
@@ -232,19 +232,34 @@
 				});
 			},
 			start() {
-				// 签到
-				console.log('签到时间:',this.service.start_date,this.service.start_time)
-				if(this.service.start_time && this.service.start_time !='00:00:00'){
-					uni.navigateTo({
-						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-					})
+				let params = {
+					job_id:this.jobid,
+					job_type:this.jobtype
 				}
-				if(!this.service.start_time || this.service.start_time == '00:00:00'){
-					uni.navigateTo({
-						url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-							.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-					})
-				}
+				this.$api.CheckData(params).then(res=>{
+					if (res.code == -1) {
+						uni.showToast({
+							icon: 'none',
+							title: res.msg
+						});
+						return ;
+					} else {
+						console.log('签到时间:',this.service.start_date,this.service.start_time)
+						if(this.service.start_time && this.service.start_time !='00:00:00'){
+							uni.navigateTo({
+								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+							})
+						}
+						if(!this.service.start_time || this.service.start_time == '00:00:00'){
+							uni.navigateTo({
+								url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+							})
+						}
+					}
+				}).catch(err=>{
+					console.log(err)
+				})
 			},
 			// 点击拨打电话
 			makePhone() {

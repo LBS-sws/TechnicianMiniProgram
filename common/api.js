@@ -142,7 +142,9 @@ export default {
 	editEq(params){
 		  return request("/Equipment.Equipment/editEq?ids=" + params.ids, params, 'PUT')
 	},
-	
+	CheckData(params){
+		  return request("/Order.Order/CheckData", params, 'GET')
+	},
 	
 	
 	// 未解决问题
