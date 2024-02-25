@@ -254,7 +254,7 @@
 								if(photoStr.length>0){
 									photoStr.forEach((item,i)=>{
 										
-										let imgurl = '/' + item
+										let imgurl = item
 										imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
 										this.init_photos[i] = imgurl
 									})
@@ -376,6 +376,7 @@
 			},
 			// 保存
 			save() {
+				
 				if(this.ct == 0){
 					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
 						uni.showToast({
@@ -469,7 +470,7 @@
 
 			// 获取上传或者预览后的图片
 			handleLoaded3(arr) {
-				
+				console.log('arrarrarrarr',arr)
 				var imageStr = "";
 				for (var i = 0; i < arr.length; i++) {
 					imageStr += arr[i].result + ",";
@@ -479,6 +480,7 @@
 					imageStr = imageStr.substr(0, imageStr.length - 1);
 				}
 				// console.log(imageStr);
+				console.log('imageStrimageStrimageStr',imageStr)
 				this.upload_site_photos = imageStr
 			},
 			// 删除

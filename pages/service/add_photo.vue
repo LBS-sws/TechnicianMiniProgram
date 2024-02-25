@@ -161,7 +161,7 @@
 							var strArr = res.data.site_photos ?? [];	
 							if (strArr.length > 0) {
 								strArr.forEach((item,i)=>{
-								let imgurl = '/' + item
+								let imgurl = item
 									imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
 									this.init_photos[i] = imgurl
 								})
