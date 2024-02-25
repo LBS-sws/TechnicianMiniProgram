@@ -116,6 +116,7 @@ export default {
 	onShow(index) {
 		this.getjobs();
 		this.getJobTotal();
+		
 	},
 	methods: {
 		// 滑动月份触发事件
@@ -124,6 +125,7 @@ export default {
 		},
 		// 点击日 - 事件
 		datechange(e) {
+			console.log('点击日 - 事件',e)
 			this.Data = e.fullDate;
 			this.Week = this.getWek(e.fullDate);
 			this.getjobs();
