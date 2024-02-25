@@ -120,8 +120,7 @@ export default {
 	methods: {
 		// 滑动月份触发事件
 		monthchange(e){
-			console.log(e)
-			this.getJobTotal();
+			this.getJobTotal(e);
 		},
 		// 点击日 - 事件
 		datechange(e) {
@@ -167,8 +166,8 @@ export default {
 			})
 		},
 		// 统计
-		getJobTotal() {
-			let params = {}
+		getJobTotal(ym = '') {
+			let params = {month:ym}
 			this.$api.dayCount(params).then(res=>{
 				this.checkCode(res.code,res.msg)	// 400、401处理
 				if(res.code == 200) {

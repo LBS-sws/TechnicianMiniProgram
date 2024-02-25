@@ -275,7 +275,7 @@
 				  this.initDate(d);
 			  }
 			  // console.log('pre',this.currentMonth)
-			  this.$emit('change-month', this.currentMonth);
+			  this.$emit('change-month', this.currentYear +'-' +  this.currentMonth);
 			},
 			//  下一个
 			daysNext () {
@@ -288,7 +288,7 @@
 					this.initDate(d);
 				 }
 				 // console.log('next',this.currentMonth)
-				 this.$emit('change-month', this.currentMonth);
+				 this.$emit('change-month', this.currentYear +'-' + this.currentMonth);
 			},
 			changeMode() {
 				const premode = this.weekMode;
