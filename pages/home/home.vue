@@ -3,10 +3,10 @@
 		<view class="datec">
 			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists"></zzx-calendar>
 		</view>
-		<view class="dateshow">
-			<!-- <span style="margin-right: 10px;">{{Data}}</span>
-			<span>{{Week}}</span> -->
-		</view>
+		<!-- <view class="dateshow">
+			<span style="margin-right: 10px;">{{Data}}</span>
+			<span>{{Week}}</span>
+		</view> -->
 		<!-- 内容 -->
 		<view class="noservice" v-if="jobs.length==0">
 			没有任务哦~~
@@ -18,24 +18,8 @@
 					<view class="new_card_title_left">
 						<text selectable="true">{{item.customer.name_zh}}</text>
 					</view>
-					<span v-if="item.status == 2">
-						<span v-if="item.job_start_time == '00:00:00'">
-							<view class="new_card_title_right" style="color: #007AFF;">{{item.service_status}}</view>
-						</span>
-						<span v-else>
-							<view class="new_card_title_right" style="color: #007AFF;">{{item.service_status}}</view>
-						</span>
-					</span>
-					<span v-if="item.status == 3">
-						<view class="new_card_title_right" style="color: #07C160;">{{item.service_status}}</view>
-					</span>
-					<span v-if="item.status == -1">
-						<span v-if="item.job_start_time == '00:00:00'">
-							<view class="new_card_title_right" style="color: #EE0A24;">{{item.service_status}}</view>
-						</span>
-						<span v-else>
-							<view class="new_card_title_right" style="color: #007AFF;">{{item.service_status}}</view>
-						</span>
+					<span>
+						<view class="new_card_title_right" :style="{ color: item.service_status.color }">{{item.service_status.status}}</view>
 					</span>
 				</view>
 				<view class="new_card_content">
@@ -95,28 +79,9 @@ export default {
 			isShowContent: false,
 		};
 	},
-	onLoad() {
-		uni.showLoading({
-			title: "加载中...",
-			icon: 'none',
-			mask: true
-		})
-		var token = uni.getStorageSync('token')
-		var loginRes = this.checkLogin();
-		if (!loginRes) {
-			uni.showToast({
-				title: "请先登录",
-				icon: 'none',
-			});
-			setTimeout(() => {
-				return false
-			}, 2000);
-		}
-	},
 	onShow(index) {
 		this.getjobs();
 		this.getJobTotal();
-		
 	},
 	methods: {
 		// 滑动月份触发事件
@@ -140,13 +105,6 @@ export default {
 		job_detail(index) {
 			let jobid = this.jobs[index].id
 			let type  = this.jobs[index].order_type
-			if(this.jobs[index].customer.customer_type == 203 || this.jobs[index].customer.customer_type == 250){
-				uni.setStorageSync('ct', 1);
-				var ct = 1 ;
-			}else{
-				uni.setStorageSync('ct', 0);
-				var ct = 0 ;
-			}
 			uni.navigateTo({
 				url: "/pages/service/detail?jobtype=" + type + "&jobid=" + jobid
 			});
@@ -157,9 +115,6 @@ export default {
 				jobdate: this.Data
 			}
 			this.$api.dayOrderList(params).then(res=>{
-				// console.log(res)
-				this.checkCode(res.code,res.msg)	// 400、401处理
-				
 				if(res.code == 200) {
 					this.jobs = res.data
 				}
@@ -176,7 +131,6 @@ export default {
 			}
 			let params = {month:ym}
 			this.$api.dayCount(params).then(res=>{
-				this.checkCode(res.code,res.msg)	// 400、401处理
 				if(res.code == 200) {
 					this.dotLists = res.data
 					this.isShowContent = true

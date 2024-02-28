@@ -31,16 +31,16 @@
 				</cl-timeline-item>
 			</cl-timeline>
 		</view>
-		<view class="tj_bu_y" v-if="service.main_staff">
+		<view class="tj_bu_y" v-if="service.main_staff == loginStaff">
 			<cl-row gutter="20">
 				<cl-col span="12" @tap="report()">
 					<view class="jc">检查报告</view>
 				</cl-col>
-				<cl-col v-if="service.status != 3 && service.finish_time!='00:00:00'" span="12" @tap="check_out()">
-					<view class="qc">签出离店</view>
-				</cl-col>
-				<cl-col v-else span="12">
+				<cl-col v-if="service.status == 3" span="12" >
 					<view class="qc">已签离店</view>
+				</cl-col>
+				<cl-col v-else span="12" @tap="check_out()">
+					<view class="qc">签出离店</view>
 				</cl-col>
 			</cl-row>
 		</view>
@@ -105,6 +105,7 @@ import color from 'uview-ui/libs/config/color';
 				custInfo: {},
 				ct:0,
 				autograph:'',
+				loginStaff:'',
 			}
 		},
 		onLoad(index) {
@@ -116,6 +117,7 @@ import color from 'uview-ui/libs/config/color';
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
 			this.ct = uni.getStorageSync('ct')
+			this.loginStaff = uni.getStorageSync('staffname')
 		},
 		onShow(index) {
 			this.service = [];

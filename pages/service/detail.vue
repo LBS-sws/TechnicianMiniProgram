@@ -4,7 +4,6 @@
 			<cl-input v-model="TechRemarks" placeholder="请输入"></cl-input>
 		</cl-confirm>
 		<cl-toast ref="toast"></cl-toast>
-		<!-- 历史记录 -->
 		<view>
 			<view class="history" @tap="history">
 				<cl-icon name="cl-icon-eye-open" color="#007AFF" :size="80"></cl-icon>
@@ -13,25 +12,7 @@
 		<view class="my_card">
 			<view class="cust_name">
 				{{service.customer.name_zh}}
-				<span v-if="service.status == 2">
-					<span v-if="service.start_time == '00:00:00'">
-						<view class="new_card_title_right" style="color: #007AFF;">{{service.service_status}}</view>
-					</span>
-					<span v-else>
-						<view class="new_card_title_right" style="color: #007AFF;">{{service.service_status}}</view>
-					</span>
-				</span>
-				<span v-if="service.status == 3">
-					<view class="new_card_title_right" style="color: #07C160;">{{service.service_status}}</view>
-				</span>
-				<span v-if="service.status == -1">
-					<span v-if="service.start_time == '00:00:00'">
-						<view class="new_card_title_right" style="color: #EE0A24;">{{service.service_status}}</view>
-					</span>
-					<span v-else>
-						<view class="new_card_title_right" style="color: #007AFF;">{{service.service_status}}</view>
-					</span>
-				</span>
+				<view class="new_card_title_right" :style="{ color: service.service_status.color }">{{service.service_status.status}}</view>
 			</view>
 			<view class="service_title">
 				<cl-row>
@@ -50,15 +31,15 @@
 			</view>
 			<view>
 				<cl-icon name="cl-icon-my" style="margin-right: 6px;color: #007AFF;"></cl-icon>
-				<span style="color: #9c9595;"><text selectable="true">{{service.contact.contact_name}}</text></span>
+				<span style="color: #9c9595;"><text selectable="true">{{service.contact_name}}</text></span>
 			</view>
 			<view @tap="makePhone()">
 				<cl-icon name="cl-icon-keyboard-9" style="margin-right: 6px;color: #007AFF;"></cl-icon>
-				<span style="color: #9c9595;"><text selectable="true">{{service.contact.mobile}}</text></span>
+				<span style="color: #9c9595;"><text selectable="true">{{service.mobile}}</text></span>
 			</view>
 			<view @tap="makePhoneb()">
 				<cl-icon name="cl-icon-keyboard-9" style="margin-right: 6px;color: #007AFF;"></cl-icon>
-				<span style="color: #9c9595;"><text selectable="true">{{service.contact.tel}}</text></span>
+				<span style="color: #9c9595;"><text selectable="true">{{service.tel}}</text></span>
 			</view>
 			<view>
 				<cl-icon name="cl-icon-map" style="margin-right: 6px;color: #007AFF;"></cl-icon>
@@ -74,10 +55,10 @@
 			</view>
 			<view class="v_magin">
 				人员：<span style="color: black;"><text selectable="true">{{service.staff.main}}</text></span>
-			</view class="v_magin">
+			</view>
 			<view class="v_magin">
 				协作：<span style="color: black;"><text selectable="true">{{service.staff.other}}</text></span>
-			</view class="v_magin">
+			</view>
 			<span v-if="service.type==1">
 				<view>
 					设备：<span style="color: black;"><text selectable="true">{{service.Watchdog}}</text></span>
@@ -99,38 +80,9 @@
 				</cl-row>
 			</view>
 		</view>
-		<!-- 按钮 -->
-		<button class="tj_bu" v-if="service.status == 0">
-			<span>加载中</span>
-		</button>
-		<button class="tj_bu" v-else @tap="start()"> 
-			<view v-if="service.staff">
-				<span v-if="service.status == 2">
-					<span v-if="service.start_time == null || service.start_time == '00:00:00'">
-						<span v-if="staffOther == service.staff.main">服务签到</span>
-					</span>
-					<span v-else>
-						继续服务
-					</span>
-				</span>
-				<span v-if="service.status == -1">
-					<span v-if="service.start_time == null">服务未完成</span>
-					<span v-else>继续服务</span>
-				</span>
-				<span v-if="service.status == 3">服务已完成</span>
-			</view>
-			<view v-else>
-				<view v-if="service.status == 2">
-					<span v-if="service.start_time == null">等待服务人员签到</span>
-					<span v-else>
-						查看服务报告
-					</span>
-				</view>
-				<span v-if="service.status == -1">
-					<span v-if="service.start_time == null">等待服务人员完成</span>
-					<span v-else>查看服务报告</span>
-				</span>
-				<span v-if="service.status == 3">查看服务报告</span>
+		<button class="tj_bu" @tap="start()"> 
+			<view>
+				<span>{{service_button}}</span>
 			</view>
 		</button>
 	</view>
@@ -151,25 +103,11 @@
 				Remarks: '',
 				acknowledged: false,
 				fileUrl:'',
-				staffOther:''
+				staffOther:'',
+				service_button:''
 			}
 		},
 		onLoad(index) {
-			//显示加载框
-			uni.showLoading({
-				title: '加载中...',
-				mask: true
-			});
-			var loginRes = this.checkLogin();
-			if (!loginRes) {
-				uni.showToast({
-					title: "请先登录",
-					icon: 'none',
-				});
-				setTimeout(() => {
-					return false
-				}, 2000);
-			}
 			this.fileUrl = this.$baseUrl_imgs
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
@@ -216,20 +154,42 @@
 						  uni.navigateBack();
 						});
 					}
+					if(res.data.staff.main == uni.getStorageSync('staffname')){
+						if(res.data.status == -1 && res.data.start_time == null){
+							this.service_button = '服务未完成';
+						}else{
+							this.service_button = '继续服务';
+						}
+						if(res.data.status == 2 && res.data.start_time == null){
+							this.service_button = '服务签到';
+						}
+						if(res.data.status == 2 && res.data.start_time != null){
+							this.service_button = '继续服务';
+						}
+						if(res.data.status == 3){
+							this.service_button = '服务已完成';
+						}
+					}else{
+						if(res.data.status == -1 && res.data.start_time == null){
+							this.service_button = '等待服务人员完成';
+						}else{
+							this.service_button = '查看服务报告';
+						}
+						if(res.data.status == 2 && res.data.start_time == null){
+							this.service_button = '等待服务人员签到';
+						}
+						if(res.data.status == 2 && res.data.start_time != null){
+							this.service_button = '查看服务报告';
+						}
+						if(res.data.status == 3){
+							this.service_button = '查看服务报告';
+						}
+					}
 					uni.hideLoading();
 				}).catch(err=>{
 					uni.hideLoading();
 					console.log(err)
 				})
-			},
-			previewImg(logourl) {
-				let _this = this;
-				let imgsArray = [];
-				imgsArray[0] = logourl
-				uni.previewImage({
-					current: 0,
-					urls: imgsArray
-				});
 			},
 			start() {
 				let params = {
@@ -244,17 +204,22 @@
 						});
 						return ;
 					} else {
-						console.log('签到时间:',this.service.start_date,this.service.start_time)
-						if(this.service.start_time && this.service.start_time !='00:00:00'){
+						if(this.service.start_time != null){
 							uni.navigateTo({
 								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
 							})
-						}
-						if(!this.service.start_time || this.service.start_time == '00:00:00'){
-							uni.navigateTo({
-								url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-							})
+						}else{
+							if (this.service.staff.main == uni.getStorageSync('staffname')) {
+								uni.navigateTo({
+									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+										.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+								})
+							}else{
+								uni.showToast({
+									icon: 'none',
+									title: '等待服务人员签到！'
+								});
+							}
 						}
 					}
 				}).catch(err=>{
