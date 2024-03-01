@@ -126,7 +126,7 @@
 							// this.lastrisk['site_photos'] = this.lastrisk['site_photos'].split(",")
 							for (let i = 0; i < this.lastrisk['site_photos'].length; i++) {
 								var site_po = this.lastrisk['site_photos'][i].replace(/\"/g, "").replace(/[\\]/g,'');
-								this.lastrisk['site_photos'][i] = `${this.$baseUrl_imgs}/`+site_po;
+								this.lastrisk['site_photos'][i] = `${this.$baseUrl_imgs}`+site_po;
 							}
 						}
 						

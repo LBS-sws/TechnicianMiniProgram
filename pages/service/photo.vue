@@ -76,7 +76,7 @@
 								// console.log(item.site_photos)
 								// 处理图片地址
 								item.site_photos.forEach((itemx,index)=>{
-									item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
+									item.site_photos[index] = `${this.$baseUrl_imgs}` + itemx
 								})
 								item.remarks = item.remarks
 							})

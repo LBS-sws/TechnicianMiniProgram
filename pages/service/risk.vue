@@ -153,7 +153,7 @@ export default {
 						if(item.site_photos != null){
 							photoArr = item.site_photos.split(",")
 						}
-						item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
+						item.img = `${this.$baseUrl_imgs}` + photoArr[0]
 						console.log(item.img)
 					})
 					

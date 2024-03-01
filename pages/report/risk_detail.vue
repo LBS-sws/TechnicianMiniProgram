@@ -113,7 +113,7 @@
 							let photos = []
 							arr.forEach((item,i)=>{
 								
-								let img = `${this.$baseUrl_imgs}/` + item
+								let img = `${this.$baseUrl_imgs}` + item
 								photos.push(img)
 							})
 							console.log(photos)

@@ -171,7 +171,7 @@
 						
 						let arr = item.site_photos.split(",")
 						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
-						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+						item.site_photos = `${this.$baseUrl_imgs}` + site_po
 					})
 					
 					this.lastrisks_n = list
@@ -196,7 +196,7 @@
 						{
 							let arr = item.site_photos.split(",")
 							let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
-							item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+							item.site_photos = `${this.$baseUrl_imgs}` + site_po
 						}
 					})
 					// console.log(list)
@@ -220,7 +220,7 @@
 						
 						let arr = item.site_photos.split(",")
 						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
-						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+						item.site_photos = `${this.$baseUrl_imgs}` + site_po
 					})
 					this.lastrisks_y = list
 				}).catch(err=>{
@@ -240,7 +240,7 @@
 						
 						let arr = item.site_photos.split(",")
 						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
-						item.site_photos = `${this.$baseUrl_imgs}/` + site_po
+						item.site_photos = `${this.$baseUrl_imgs}` + site_po
 					})
 					this.lastrisks_g = list
 				}).catch(err=>{

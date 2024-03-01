@@ -184,7 +184,7 @@
 								<cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
 								<cl-list v-if="ct==1"><span>风险区域：</span>{{item.risk_area}}</cl-list>
 								<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
+								<cl-list><span>跟进时间：</span>{{item.follow_times}}</cl-list>
 								<cl-row>
 									<cl-col span="12">
 										<view class="fx">风险等级：{{item.risk_rank}}</view>
@@ -656,18 +656,18 @@
 					// 员工签名
 					if(res.data.staff_sign_urls[0])
 					{
-						this.autograph_employee01_signature = `${this.$baseUrl_imgs}/` + res.data.staff_sign_urls[0]
+						this.autograph_employee01_signature = `${this.$baseUrl_imgs}` + res.data.staff_sign_urls[0]
 					}
 					
 					// 客户签名
 					if(res.data.cust.customer_signature_url)
 					{
-						this.autograph_customer_signature = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url+'?t=1'
+						this.autograph_customer_signature = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url+'?t=1'
 					}
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add)
 					{
-						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url_add
+						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url_add
 					}
 					
 					// 客户点评 星星
@@ -785,7 +785,7 @@
 					let list = res.data.data
 					list.forEach((item,i)=>{
 						let photoArr = item.site_photos.split(",")
-						item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
+						item.img = `${this.$baseUrl_imgs}` + photoArr[0]
 					})
 					this.risk = list
 				}).catch(err=>{
@@ -804,7 +804,7 @@
 					let list = res.data.data
 					list.forEach((item,i)=>{
 						item.site_photos.forEach((itemx,index)=>{
-							item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
+							item.site_photos[index] = `${this.$baseUrl_imgs}` + itemx
 						})
 					})
 					this.photo = list

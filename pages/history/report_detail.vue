@@ -658,18 +658,18 @@
 					// 员工签名
 					if(res.data.main[0])
 					{
-						this.autograph_employee01_signature = `${this.$baseUrl_imgs}/` + res.data.main[0]
+						this.autograph_employee01_signature = `${this.$baseUrl_imgs}` + res.data.main[0]
 					}
 
 					// 客户签名
 					if(res.data.cust.customer_signature_url)
 					{
-						this.autograph_customer_signature = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url
+						this.autograph_customer_signature = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url
 					}
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add)
 					{
-						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}/` + res.data.cust.customer_signature_url_add
+						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url_add
 					}
 					
 					// 客户点评
@@ -744,7 +744,7 @@
 					let list = res.data.data
 					list.forEach((item,i)=>{
 						let photoArr = item.site_photos.split(",")
-						item.img = `${this.$baseUrl_imgs}/` + photoArr[0]
+						item.img = `${this.$baseUrl_imgs}` + photoArr[0]
 					})
 					this.risk = list
 				}).catch(err=>{
@@ -765,7 +765,7 @@
 						// console.log(item.site_photos)
 						// 处理图片地址
 						item.site_photos.forEach((itemx,index)=>{
-							item.site_photos[index] = `${this.$baseUrl_imgs}/` + itemx
+							item.site_photos[index] = `${this.$baseUrl_imgs}` + itemx
 						})
 					})
 					this.photo = list

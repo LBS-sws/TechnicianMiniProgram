@@ -300,7 +300,7 @@
 						if(uploadRes.code == 200)
 						{
 							this.imageList[index].progress = 100;
-							this.imageList[index].url = `${this.$baseUrl_imgs}/` + uploadRes.data.detault_url;
+							this.imageList[index].url = `${this.$baseUrl_imgs}` + uploadRes.data.detault_url;
 							this.imageList[index].result = uploadRes.data.detault_url;
 							this.uploadBase(index + 1);
 						}
