@@ -1,7 +1,7 @@
 <template>
 	<view class="content" v-if="showContent">
 		<cl-confirm ref="confirm2" style="margin-bottom: -10px;">
-			<cl-input v-model="TechRemarks" placeholder="请输入"></cl-input>
+			<cl-textarea  v-model="TechRemarks" placeholder="请输入" style="text-align: left;">></cl-textarea>
 		</cl-confirm>
 		<cl-toast ref="toast"></cl-toast>
 		<view>
@@ -229,13 +229,13 @@
 			// 点击拨打电话
 			makePhone() {
 				uni.makePhoneCall({
-					phoneNumber: this.service.contact.mobile
+					phoneNumber: this.service.mobile
 				});
 			},
 			// 点击拨打电话
 			makePhoneb() {
 				uni.makePhoneCall({
-					phoneNumber: this.service.contact.tel
+					phoneNumber: this.service.tel
 				});
 			},
 			//历史记录
@@ -406,7 +406,6 @@
 		margin: 2px 0px;
 		line-height: 55rpx;
 	}
-
 
   .uni-modal {
     background-color: #fff;

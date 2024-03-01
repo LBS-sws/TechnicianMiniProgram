@@ -8,13 +8,10 @@
 		<view class="handCenter">
 			<canvas class="handWriting" disable-scroll="true" :style="{width:width +'px',height:height +'px'}"
 				canvas-id="mycanvas" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
-
 			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:height +'rpx',height:width +'rpx'}"
 				class="canvsborder"></canvas>
-
 		</view>
 	</view>
-
 </template>
 <script>
 	var x = 20;
@@ -41,30 +38,24 @@
 				is_main:0
 			}
 		},
-		mounted() {},
-
 		onLoad(option) {
 			that = this;
 			console.log(option);
 			this.jobid = option.jobid
 			this.jobtype = option.jobtype
 			this.is_main = option.is_main
-
 			this.ctx = uni.createCanvasContext('mycanvas', this); //创建绘图对象
 			//设置画笔样式
 			this.ctx.lineWidth = 3;
 			this.ctx.lineCap = 'round';
 			this.ctx.lineJoin = 'round';
-
 			uni.getSystemInfo({
 				success: function(res) {
-					console.log(res);
 					that.width = res.windowWidth * 0.8;
 					that.height = res.windowHeight * 0.95;
 				}
 			});
 		},
-
 		methods: {
 			//触摸开始，获取到起点
 			touchstart: function(e) {
@@ -74,16 +65,11 @@
 					X: startX,
 					Y: startY
 				};
-
-				/* **************************************************
-				              #由于uni对canvas的实现有所不同，这里需要把起点存起来
-				           * **************************************************/
+				/* *******由于uni对canvas的实现有所不同，这里需要把起点存起来**********/
 				this.points.push(startPoint);
-
 				//每次触摸开始，开启新的路径
 				this.ctx.beginPath();
 			},
-
 			//触摸移动，获取到路径点
 			touchmove: function(e) {
 				let moveX = e.changedTouches[0].x;
@@ -99,7 +85,6 @@
 				}
 				tempPoint.push(movePoint);
 			},
-
 			// 触摸结束，将未绘制的点清空防止对后续路径产生干扰
 			touchend: function() {
 				this.points = [];
@@ -110,7 +95,7 @@
 			        #   1.为保证笔迹实时显示，必须在移动的同时绘制笔迹
 			        #   2.为保证笔迹连续，每次从路径集合中区两个点作为起点（moveTo）和终点(lineTo)
 			        #   3.将上一次的终点作为下一次绘制的起点（即清除第一个点）
-			        ************************************************ */
+			************************************************ */
 			draw: function() {
 				let point1 = this.points[0];
 				let point2 = this.points[1];
@@ -120,21 +105,17 @@
 				this.ctx.stroke();
 				this.ctx.draw(true);
 			},
-
 			handleCancel() {
 				uni.navigateBack({
 					delta: 1
 				});
 			},
-
 			//清空画布
 			handleReset: function() {
-				console.log('handleReset');
 				that.ctx.clearRect(0, 0, that.width, that.height);
 				that.ctx.draw(true);
 				tempPoint = [];
 			},
-
 			//将签名笔迹上传到服务器，并将返回来的地址存到本地
 			handleConfirm: function() {
 				if (tempPoint.length == 0) {
@@ -145,7 +126,6 @@
 					});
 					return;
 				}
-
 				uni.canvasToTempFilePath({
 					canvasId: 'mycanvas',
 					success: function(res) {
@@ -164,21 +144,15 @@
 								success: function(res) {
 									//这是签名图片文件的本地临时地址
 									let path = res.tempFilePath;
-									console.log(path)
 									uni.showLoading({
 										title: '保存中...'
 									})
-									console.log(path)
-									// console.log(res.tempFilePath, 'canvas生成图片地址')
-									// const path = res.tempFilePath
 									const formData = {
 										job_id: that.jobid,
 										job_type: that.jobtype,
 										is_main: that.is_main,
 										file: path
 									}
-									// console.log('post参数：', formData)
-									// return false
 									uni.uploadFile({
 										url: `${that.$baseUrl}/Sign.Sign/uploadSign`,
 										name: 'file',
@@ -189,9 +163,7 @@
 										filePath: path,
 										success: (res) => {
 											let data = JSON.parse(res.data)
-											uni.$emit('startSign_s', data
-												.code)
-
+											uni.$emit('startSign_s', data.code)
 											uni.hideLoading()
 											console.log(res, '上传结果')
 											if (data.code == 200) {

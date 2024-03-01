@@ -3,7 +3,6 @@
 		<view class="download" @tap="download()" v-if="current_tab==0">
 			<cl-icon name="cl-icon-cloud-download" color="#007AFF" :size="80"></cl-icon>
 		</view>
-		
 		<view>
 			<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1)">
 				<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
@@ -227,15 +226,9 @@
 							
 						></u-modal>
 					</view>
-
 					<view class="sign_content">
 						<view class="sign_title">现场签到</view>
-						<!-- <view class="block">
-							<cl-image size="300rpx" :src="sign_phone" :preview-list="[sign_phone]">
-							</cl-image>
-						</view> -->
 						<view class="sign_time">
-							
 							<cl-list v-if="jobtype==1">签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
 							<cl-list v-else>签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
 							<!-- <cl-list>签到地点：江苏省无锡市滨湖区刘唐路2号</cl-list> -->
@@ -291,7 +284,6 @@
 								<cl-button @tap="startSign_sadd">附加签名</cl-button>
 							</cl-col>
 						</cl-row>
-
 					</view>
 					<view class="sign_content">
 						<view class="sign_title">客户点评</view>
@@ -300,7 +292,6 @@
 				</cl-scroller>
 			</swiper-item>
 		</swiper>
-
 		<!-- 点评弹窗  -->
 		<u-modal
 			position="center"
@@ -471,7 +462,7 @@
 				}
 			});
 			
-			
+			this.getBaseinfo()
 		},
 		onShow: function () {
 			
@@ -499,7 +490,7 @@
 			}else{
 				this.autograph_customer_style = 'transform: rotate(-90deg)';
 			}
-			this.getBaseinfo()		// 基础信息
+			
 			
 			this.show_briefing = true
 			this.show_material = true
@@ -507,7 +498,7 @@
 			this.show_risk = true
 			this.show_photo = true
 			
-			this.getItems()
+			// this.getItems()
 			
 		},
 		//页面销毁
@@ -663,9 +654,9 @@
 					// console.log(res.data)
 					
 					// 员工签名
-					if(res.data.main[0])
+					if(res.data.staff_sign_urls[0])
 					{
-						this.autograph_employee01_signature = `${this.$baseUrl_imgs}/` + res.data.main[0]
+						this.autograph_employee01_signature = `${this.$baseUrl_imgs}/` + res.data.staff_sign_urls[0]
 					}
 					
 					// 客户签名
@@ -822,57 +813,55 @@
 				})
 			},
 			//保存客户点评星级、客户签名
-			save_autograph(){
-				return false
-				uni.showLoading({
-					title: "保存中..."
-				});
-				let param = {
-					staffid: uni.getStorageSync('staffid'),
-					job_id: this.jobid,
-					job_type: this.jobtype,
-					employee01_signature:this.autograph_employee01_signature,
-					employee02_signature:this.autograph_employee02_signature,
-					employee03_signature:this.autograph_employee03_signature,
-					customer_signature:this.autograph_customer_signature,
-					// customer_grade:this.autograph_customer_grade //现流程中，这里不是最新数据,点评后才是最新数据，因此点评后后台会再次更新评分数据😑
-				}
-				uni.request({
-					url: `${this.$baseUrl}/saveautograph`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: param,
-					success: (res) => {
-						uni.hideLoading();
-						if (res.data.code == 1) {
-							uni.showToast({
-								title: '签名提交成功！',
-								icon: 'none',
-							});
+			// save_autograph(){
+			// 	return false
+			// 	uni.showLoading({
+			// 		title: "保存中..."
+			// 	});
+			// 	let param = {
+			// 		staffid: uni.getStorageSync('staffid'),
+			// 		job_id: this.jobid,
+			// 		job_type: this.jobtype,
+			// 		employee01_signature:this.autograph_employee01_signature,
+			// 		employee02_signature:this.autograph_employee02_signature,
+			// 		employee03_signature:this.autograph_employee03_signature,
+			// 		customer_signature:this.autograph_customer_signature,
+			// 		// customer_grade:this.autograph_customer_grade //现流程中，这里不是最新数据,点评后才是最新数据，因此点评后后台会再次更新评分数据😑
+			// 	}
+			// 	uni.request({
+			// 		url: `${this.$baseUrl}/saveautograph`,
+			// 		header: {
+			// 			'content-type': 'application/x-www-form-urlencoded',
+			// 			'token': uni.getStorageSync('token')
+			// 		},
+			// 		method: 'POST',
+			// 		data: param,
+			// 		success: (res) => {
+			// 			uni.hideLoading();
+			// 			if (res.data.code == 1) {
+			// 				uni.showToast({
+			// 					title: '签名提交成功！',
+			// 					icon: 'none',
+			// 				});
 				
-						} else {
-							uni.showToast({
-								title: res.data.msg,
-								icon: 'none',
-							});
-						}
+			// 			} else {
+			// 				uni.showToast({
+			// 					title: res.data.msg,
+			// 					icon: 'none',
+			// 				});
+			// 			}
 				
-					},
-					fail: (err) => {
-						console.log(res);
-					}
-				})
-			},
+			// 		},
+			// 		fail: (err) => {
+			// 			console.log(res);
+			// 		}
+			// 	})
+			// },
 			download() {
-				
 				uni.showLoading({
 					title: "数据加载中..."
 				});
 				let param = {
-					// staffid: uni.getStorageSync('staffid'),
 					job_id: this.jobid,
 					job_type: this.jobtype,
 				}
@@ -900,13 +889,13 @@
 									showMenu: true,
 									fileType: "pdf",
 									success: result => {
-			              //隐藏加载状态
+										//隐藏加载状态
 										uni.hideLoading();
 										console.log("打开文档成功");
 									},
 									fail: err => {
 										console.log("打开文档失败", err);
-			              //隐藏加载状态
+										//隐藏加载状态
 										uni.hideLoading();
 										uni.showToast({
 											title: '打开文档失败',
@@ -938,9 +927,7 @@
 			submitStartSign_sDialog() {
 				let that = this
 				var sorce = 0;
-				
 				console.log('this.questionsDatathis.questionsData',this.questionsData)
-				
 				let shouldContinue = true;  
 				this.questionsData.forEach((item,i)=>{
 					console.log(item.answer)
@@ -959,7 +946,6 @@
 						sorce++;
 					}
 				})
-				
 				if(shouldContinue ==false){
 					return
 				}
@@ -967,42 +953,27 @@
 				this.questionsData.forEach((item,i)=>{
 					qe.push({"id":item.id,"question_score":item.question_score,"type":"radio","status":item.status,"answer":item.answer})
 				})
-				
 				let param = {
-					
 					customer_id:this.basic.customer_id,
 					job_id:this.jobid,
 					job_type:this.jobtype,
 					question:JSON.stringify(qe),
 				}
-				
 				//关闭弹窗
 				this.startSign_sData.show = false
-
 				// 提交点评到后台
-				uni.request({
-					url: `${that.$baseUrl}/Report.Report/saveEvaluates`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: param,
-					success: (res) => {
-						let msg = '已提交点评，感谢您的反馈！'
-						if(res.data.code == 200){
-							that.autograph_customer_grade = sorce;//服务评分 此处是为兼容旧版
-						}
-						
-						uni.showToast({
-							title: msg || res.data.msg,
-							icon: 'none',
-						});
-						
-					},
-					fail: (err) => {
-						console.log(res);
+				this.$api.saveEvaluates(param).then(res=>{
+					let msg = '已提交点评，感谢您的反馈！'
+					if(res.data.code == 200){
+						that.autograph_customer_grade = sorce;//服务评分 此处是为兼容旧版
 					}
+					uni.showToast({
+						title: msg || res.data.msg,
+						icon: 'none',
+					});
+					this.getItems()
+				}).catch(err=>{
+					console.log('err',err)
 				})
 			},
 		}

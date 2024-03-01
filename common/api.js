@@ -145,7 +145,9 @@ export default {
 	CheckData(params){
 		  return request("/Order.Order/CheckData", params, 'GET')
 	},
-	
+	saveEvaluates(params){
+		  return request("/Report.Report/saveEvaluates", params, 'POST')
+	},
 	
 	// 未解决问题
 	stayQuestion(params) {
