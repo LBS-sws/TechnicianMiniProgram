@@ -76,7 +76,11 @@
 			<view class="service_msg" style="color: #12900a;">设备布防图</view>
 			<view class="block">
 				<cl-row>
-					<cl-col span="8" v-for="(item, index) in service.tech_attachment" :key="index">					    <cl-image size="200rpx" :src="fileUrl + '/' + item.file_path" :preview-list="service.tech_attachment.map(att => fileUrl + '/' + att.file_path)">					    </cl-image>					</cl-col>
+					
+					<cl-col span="8" v-if="service.tech_attachment" v-for="(item, index) in service.tech_attachment" :key="index">
+					    <cl-image size="200rpx" :src="fileUrl + '/' + item.file_path" :preview-list="service.tech_attachment.map(att => fileUrl + '/' + att.file_path)">
+					    </cl-image>
+					</cl-col>
 				</cl-row>
 			</view>
 		</view>
@@ -104,7 +108,8 @@
 				acknowledged: false,
 				fileUrl:'',
 				staffOther:'',
-				service_button:''
+				service_button:'',
+				tech_attachment:[]
 			}
 		},
 		onLoad(index) {
