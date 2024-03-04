@@ -156,18 +156,18 @@
 								{{item.equipment_name}}({{item.use_count}}/{{item.total_count}})
 							</view>
 						</view>
-						<view class="new_card_content" v-if="item.table_data.length>0">
-							<t-table>
-								<t-tr>
-									<t-th v-for="(table_title, index_t) in item.table_title" :key="index_t">{{table_title}}</t-th>
-								</t-tr>
-								<t-tr v-if="JSON.stringify(item.content)!='{}'"
-									v-for="(contents, index_cs) in item.table_data" :key="index_cs">
-									<t-td v-for="(content, index_c) in contents" :key="index_c">
-										<text v-if="content !='null'">{{content}}</text>
-									</t-td>
-								</t-tr>
-							</t-table>
+						<view class="new_card_content" v-if="item.table_data.length > 0">
+						    <t-table>
+						        <t-tr>
+						            <t-th v-for="(table_title, index_t) in item.table_title" :key="index_t">{{table_title}}</t-th>
+						        </t-tr>
+						        <t-tr v-if="JSON.stringify(item.content) != '{}'"
+						            v-for="(contents, index_cs) in item.table_data" :key="index_cs">
+						            <t-td v-for="(content, index_c) in contents" :key="index_c">
+						                <text v-if="content !== 'null' && content !== '' && content !== null">{{content}}</text>
+						            </t-td>
+						        </t-tr>
+						    </t-table>
 						</view>
 					</view>
 				</cl-scroller>
