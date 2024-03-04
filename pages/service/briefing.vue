@@ -153,8 +153,8 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					this.proposalData = listProposal
 					this.contentDataOld = listContent
 					this.proposalDataOld = listProposal
-					this.service_content = res.data.data.content
-					this.service_proposal = res.data.data.proposal
+					this.service_content = res.data.data.content.split(",")
+					this.service_proposal = res.data.data.proposal.split(",")
 				}).catch(err=>{
 					console.log(err)
 				})

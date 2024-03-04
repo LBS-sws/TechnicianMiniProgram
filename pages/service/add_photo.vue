@@ -167,7 +167,7 @@
 								})
 								this.$refs.upload3.setItems(this.init_photos);
 							}
-							this.remarks = res.data.remarks
+							this.remarks = res.data.remarks.split(",")
 						}
 					}else{
 						if(res.code == 400){

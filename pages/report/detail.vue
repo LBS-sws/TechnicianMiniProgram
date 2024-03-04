@@ -239,19 +239,7 @@
 						<cl-row>
 							<cl-col span="8">
 								<view class="eblock">
-								<cl-image size="200rpx" :src="autograph_employee01_signature" :preview-list="[autograph_employee01_signature]">
-								</cl-image>
-								</view>
-							</cl-col>
-							<cl-col span="8" v-if="autograph_employee02_signature!=''">
-								<view class="eblock">
-								<cl-image size="200rpx" :src="autograph_employee02_signature" :preview-list="[autograph_employee02_signature]">
-								</cl-image>
-								</view>
-							</cl-col>
-							<cl-col span="8" v-if="autograph_employee03_signature!=''">
-								<view class="eblock">
-								<cl-image size="200rpx" :src="autograph_employee03_signature" :preview-list="[autograph_employee03_signature]">
+								<cl-image size="200rpx" v-for="(img_url, index) in staff_signature" :key="index" :src="img_url" :preview-list="[img_url]">
 								</cl-image>
 								</view>
 							</cl-col>
@@ -397,9 +385,8 @@
 				equipment:[],	// add
 				risk: [],
 				photo: [],
+				staff_signature:[],
 				autograph_employee01_signature:'',
-				autograph_employee02_signature:'',
-				autograph_employee03_signature:'',
 				autograph_customer_signature:'',
 				autograph_customer_signature_add:'',
 				autograph_customer_style_add:'',
@@ -600,12 +587,9 @@
 				})
 			},
 			// 保存签名时
-			onStartSign_s(code) {
-				if (code === 1) {
-					//提交客户签名与服务评分
-					this.save_autograph();// 此处是为兼容旧版
-				} else {
-					console.log("保存签名失败")
+			onStartSign_s(is_main) {
+				if(is_main==0){
+					this.getItems()
 				}
 			},
 			//保存附加签名时
@@ -651,22 +635,18 @@
 					job_type:this.jobtype,
 				}
 				this.$api.getSignature(params6).then(res=>{
-					// console.log(res.data)
-					
 					// 员工签名
-					if(res.data.staff_sign_urls[0])
-					{
-						this.autograph_employee01_signature = `${this.$baseUrl_imgs}` + res.data.staff_sign_urls[0]
+					if(this.staff_signature == ''){
+						res.data.staff_sign_urls.forEach((item, index) => {
+							this.staff_signature.push(`${this.$baseUrl_imgs}` + item)
+						})
 					}
-					
 					// 客户签名
-					if(res.data.cust.customer_signature_url)
-					{
+					if(res.data.cust.customer_signature_url){
 						this.autograph_customer_signature = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url+'?t=1'
 					}
 					// 客户附加签名
-					if(res.data.cust.customer_signature_url_add)
-					{
+					if(res.data.cust.customer_signature_url_add){
 						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url_add
 					}
 					
@@ -812,51 +792,6 @@
 					console.log(err)
 				})
 			},
-			//保存客户点评星级、客户签名
-			// save_autograph(){
-			// 	return false
-			// 	uni.showLoading({
-			// 		title: "保存中..."
-			// 	});
-			// 	let param = {
-			// 		staffid: uni.getStorageSync('staffid'),
-			// 		job_id: this.jobid,
-			// 		job_type: this.jobtype,
-			// 		employee01_signature:this.autograph_employee01_signature,
-			// 		employee02_signature:this.autograph_employee02_signature,
-			// 		employee03_signature:this.autograph_employee03_signature,
-			// 		customer_signature:this.autograph_customer_signature,
-			// 		// customer_grade:this.autograph_customer_grade //现流程中，这里不是最新数据,点评后才是最新数据，因此点评后后台会再次更新评分数据😑
-			// 	}
-			// 	uni.request({
-			// 		url: `${this.$baseUrl}/saveautograph`,
-			// 		header: {
-			// 			'content-type': 'application/x-www-form-urlencoded',
-			// 			'token': uni.getStorageSync('token')
-			// 		},
-			// 		method: 'POST',
-			// 		data: param,
-			// 		success: (res) => {
-			// 			uni.hideLoading();
-			// 			if (res.data.code == 1) {
-			// 				uni.showToast({
-			// 					title: '签名提交成功！',
-			// 					icon: 'none',
-			// 				});
-				
-			// 			} else {
-			// 				uni.showToast({
-			// 					title: res.data.msg,
-			// 					icon: 'none',
-			// 				});
-			// 			}
-				
-			// 		},
-			// 		fail: (err) => {
-			// 			console.log(res);
-			// 		}
-			// 	})
-			// },
 			download() {
 				uni.showLoading({
 					title: "数据加载中..."

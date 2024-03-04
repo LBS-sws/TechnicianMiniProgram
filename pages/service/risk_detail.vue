@@ -247,9 +247,9 @@
 								this.risk_rank = res.data.risk.risk_rank 					// 风险等级
 								this.risk_label = res.data.risk.risk_label.split(',') 		// 风险标签
 								this.risk_area = res.data.risk.risk_area 					// 风险区域
-								this.risk_description = res.data.risk.risk_description 		// 风险描述
-								this.risk_proposal = res.data.risk.risk_proposal 			// 整改建议
-								this.take_steps = res.data.risk.take_steps 					// 采取措施
+								this.risk_description = res.data.risk.risk_description.split(',') 		// 风险描述
+								this.risk_proposal = res.data.risk.risk_proposal.split(',') 			// 整改建议
+								this.take_steps = res.data.risk.take_steps.split(',') 					// 采取措施
 								var photoStr = res.data.risk.site_photos ?? [];
 								if(photoStr.length>0){
 									photoStr.forEach((item,i)=>{
@@ -320,14 +320,14 @@
 					title: "正在保存"
 				});
 			
-			let risk_proposal = ''
-			if(this.risk_proposal.length>0){
-				risk_proposal = JSON.stringify(this.risk_proposal)
-			}
-			let take_steps = ''
-			if(this.take_steps.length>0){
-				take_steps = JSON.stringify(this.take_steps)
-			}
+			// let risk_proposal = ''
+			// if(this.risk_proposal.length>0){
+			// 	risk_proposal = JSON.stringify(this.risk_proposal)
+			// }
+			// let take_steps = ''
+			// if(this.take_steps.length>0){
+			// 	take_steps = JSON.stringify(this.take_steps)
+			// }
 			
 			let params = {
 				job_id: this.jobid,
@@ -338,8 +338,8 @@
 				risk_label: this.risk_label, // .join(',')
 				site_photos: this.upload_site_photos,
 				risk_description: this.risk_description,
-				risk_proposal: risk_proposal,
-				take_steps: take_steps,
+				risk_proposal: this.risk_proposal,
+				take_steps: this.take_steps,
 				risk_area: this.risk_area,
 			}
 			this.$api.addRisk(params).then(res=>{

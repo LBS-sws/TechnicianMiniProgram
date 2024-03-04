@@ -355,12 +355,11 @@ export default {
 							// 6.补充说明
 							if(res.data.list.length == 1){
 								this.more_info = res.data.list[0].more_info
-								if(res.data.list[0].more_info == "null")
-								{
+								if(res.data.list[0].more_info == "null"){
 									this.more_info = ''
 								}else{
 									if(res.data.list[0].more_info){
-										this.more_info = res.data.list[0].more_info
+										this.more_info = res.data.list[0].more_info.split(",")
 									}
 									
 								}

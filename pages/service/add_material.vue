@@ -236,7 +236,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 							this.usearea = res.data.material.use_area.split(',')
 							this.processing_space = res.data.material.processing_space	// 处理空间
 							this.dosage = res.data.material.dosage						// 药物用量
-							this.matters_needing_attention = res.data.material.matters_needing_attention	// 注意事项
+							this.matters_needing_attention = res.data.material.matters_needing_attention.split(",")	// 注意事项
 						}
 					}
 					if(res.code == 400){

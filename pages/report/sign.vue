@@ -163,7 +163,7 @@
 										filePath: path,
 										success: (res) => {
 											let data = JSON.parse(res.data)
-											uni.$emit('startSign_s', data.code)
+											uni.$emit('startSign_s', that.is_main)
 											uni.hideLoading()
 											console.log(res, '上传结果')
 											if (data.code == 200) {
