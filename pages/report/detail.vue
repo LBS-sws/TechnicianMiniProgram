@@ -184,7 +184,7 @@
 								<cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
 								<cl-list v-if="ct==1"><span>风险区域：</span>{{item.risk_area}}</cl-list>
 								<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.follow_times}}</cl-list>
+								<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
 								<cl-row>
 									<cl-col span="12">
 										<view class="fx">风险等级：{{item.risk_rank}}</view>

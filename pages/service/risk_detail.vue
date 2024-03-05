@@ -23,6 +23,32 @@
 				</cl-checkbox-group>
 			</view>
 		</view>
+		
+		<view v-if="customer_type==248 || customer_type==249 || customer_type==139 && service_type == 2" class="service">
+			<view class="service_title">现场发现<span class="jh">*</span></view>
+			<view class="service_other">
+				<view v-for="(item,i) in checkdata" :key="i">
+					
+					<view class="num_c item-ui" v-if="item.type=='1'">
+						<view class="label"><text class="rq">{{item.label}}</text></view>
+						<view class=""><cl-input-number :input=true :max=1000000 v-model="item.value" style="margin-left: 10px;"></cl-input-number></view>
+					</view>
+					<view class="num_c item-ui"  v-if="item.type=='2'">
+						<view  class="label"><text class="rq">{{item.label}}</text></view>
+						<view class="label">
+							<cl-select v-model="checkdata[i].value" :options="check.selects" placeholder="请选择"></cl-select>
+						</view>
+					 </view>
+					<view class="num_c item-ui"  v-if="item.type=='3'">
+					  	<view class="label"><text class="rq">{{item.label}}</text></view>
+					  	<view>
+					  		<input type="text" v-model="item.value" class="input-ui" style="" placeholder="请输入" />
+					  	</view>
+					</view>
+				</view>
+				
+			</view>
+		</view>
 		<view class="service">
 			<view class="service_title">风险等级<span class="jh">*</span></view>
 			<view class="service_content">
@@ -159,13 +185,32 @@
 				upPicUrl: `${this.$baseUrl}/Upload.Upload/image`,
 				init_photos: [],
 				headerUpload: {
-					// 'content-type': 'application/x-www-form-urlencoded',
 					'token': uni.getStorageSync('token')
 				},
 				ct: 0,
 				risk_area: '',
 				formData: {
 					type:1
+				},
+				customer_type:'',
+				checkdata:[],
+				check:{
+					ls_number:0,
+					ls_select:'',
+					zl_number:0,
+					zl_select:'',
+					fc_number:0,
+					fc_text:'',
+					selects:[
+						{
+							label: "有",
+							value: '1'
+						},
+						{
+							label: "无",
+							value: '0'
+						}
+					]
 				},
 			}
 		},
@@ -237,10 +282,21 @@
 				this.$api.getRiskInfo(params).then(res=>{
 					if (res.code == 200) {
 						if (res.data) {
+							
+							
 							this.targets = res.data.riskTargets
 							this.types = res.data.riskTypes
 							this.ranks = res.data.riskRanks
 							this.labels = res.data.riskLabel
+							
+							this.customer_type = res.data.customer_type
+							this.service_type = res.data.service_type
+							
+						
+							// 现场发现
+							if(this.id==0){
+								this.checkdata = res.data.service_data
+							}
 							if (this.id>0) {
 								this.risk_targets = res.data.risk.risk_targets.split(',') 	// 靶标
 								this.risk_types = res.data.risk.risk_types.split(',') 		// 风险类别
@@ -261,10 +317,15 @@
 									// console.log(this.init_photos)
 									this.$refs.upload3.setItems(this.init_photos);
 								}
+								
+								if(res.data.risk.risk_data){
+									// console.log(JSON.parse(res.data.risk.risk_data))
+									this.checkdata = JSON.parse(res.data.risk.risk_data)
+								}
 							}
 							// 快捷语  一维数组转二维数组
 							let shortcutContents = res.data.shortcutContents
-							console.log(shortcutContents)
+							
 							let shortcutArr = []
 							shortcutContents.forEach((item, i) => {
 								shortcutArr.push({
@@ -320,27 +381,25 @@
 					title: "正在保存"
 				});
 			
-			// let risk_proposal = ''
-			// if(this.risk_proposal.length>0){
-			// 	risk_proposal = JSON.stringify(this.risk_proposal)
-			// }
-			// let take_steps = ''
-			// if(this.take_steps.length>0){
-			// 	take_steps = JSON.stringify(this.take_steps)
-			// }
+			let checkdata = '';
+			if(this.checkdata.length>0){
+				checkdata = JSON.stringify(this.checkdata)
+			}
 			
 			let params = {
 				job_id: this.jobid,
 				job_type: this.jobtype,
-				risk_targets: this.risk_targets, // .join(',')
-				risk_types: this.risk_types, // .join(',')
+				risk_targets: this.risk_targets,
+				risk_types: this.risk_types,
 				risk_rank: this.risk_rank,
-				risk_label: this.risk_label, // .join(',')
+				risk_label: this.risk_label,
 				site_photos: this.upload_site_photos,
 				risk_description: this.risk_description,
 				risk_proposal: this.risk_proposal,
 				take_steps: this.take_steps,
 				risk_area: this.risk_area,
+				check_datas: JSON.stringify(this.checkdata),
+				customer_type: this.customer_type
 			}
 			this.$api.addRisk(params).then(res=>{
 				if (res.code == 200) {
@@ -353,8 +412,7 @@
 						uni.$utils.toast("保存成功")
 						setTimeout(() => {
 							uni.redirectTo({
-								url: "/pages/service/risk?jobid=" + this.jobid +
-									'&jobtype=' + this.jobtype
+								url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
 							})
 						}, 2000)
 					}
@@ -399,24 +457,25 @@
 				uni.showLoading({
 					title: "正在保存"
 				});
-				
+				let checkdata = '';
+				if(this.checkdata.length>0){
+					checkdata = JSON.stringify(this.checkdata)
+				}
 			let params = {
 				id: this.id,
 				job_id: this.jobid,
 				job_type: this.jobtype,
-				risk_targets: this.risk_targets,  // .join(',')
-				risk_types: this.risk_types,  // .join(',')
+				risk_targets: this.risk_targets,
+				risk_types: this.risk_types,
 				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,  //.join(',')
+				risk_label: this.risk_label,
 				site_photos: this.upload_site_photos,
-
 				risk_description: this.risk_description,
-
-				// risk_description: JSON.stringify(this.risk_description),
-
 				risk_proposal: this.risk_proposal,
 				take_steps: this.take_steps,
 				risk_area: this.risk_area,
+				check_datas: JSON.stringify(this.checkdata),
+				customer_type:this.customer_type
 			}
 			this.$api.editRisk(params).then(res=>{
 				if (res.code == 200) {
@@ -536,6 +595,40 @@
 </script>
 
 <style lang="scss">
+.item-ui{
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin-bottom: 30rpx;
+	.label{
+		min-width: 284rpx;
+		height: 42rpx;
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		font-size: 32rpx;
+		.rq{
+			position: relative;
+		}
+		.rq::after{
+			content:'*';
+			width: 10rpx;
+			height: 10rpx;
+			position: absolute;
+			top: 50%;
+			right: -20rpx;
+			color: red;
+			margin-top: -15rpx;
+		}
+	}
+	.input-ui{
+		border: 1rpx solid #eee; width: 200rpx; margin-left: 20rpx;
+		height: 70rpx;
+		line-height: 70rpx;
+		width: 320rpx;
+		padding-left: 20rpx;
+	}
+}
 	.content {
 		/* padding: 0 21rpx; */
 		margin-top: 21rpx;
