@@ -5,7 +5,7 @@
 				<view style="background-color: #FFFFFF;">
 					<view style="border-bottom: 1px solid #eeeeee;">
 						<cl-list-item label="跟进时间：">
-							<text>{{risk.creat_time}}</text>
+							<text>{{risk.follow_date}}</text>
 						</cl-list-item>
 					</view>
 					<view style="border-bottom: 1px solid #eeeeee;">
