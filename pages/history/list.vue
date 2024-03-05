@@ -194,9 +194,12 @@
 				})
 			},
 			job_detail(e) {
+				// uni.navigateTo({
+				// 	url: "/pages/history/job_detail?jobid=" + e.id +"&jobtype="+ e.type
+				// })
 				uni.navigateTo({
-					url: "/pages/history/job_detail?jobid=" + e.id +"&jobtype="+ e.type
-				})
+					url: "/pages/service/detail?jobtype=" + e.type + "&jobid=" + e.id
+				});
 			},
 			//...
 		}
