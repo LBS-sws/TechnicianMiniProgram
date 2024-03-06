@@ -24,7 +24,7 @@
 			</view>
 		</view>
 		
-		<view v-if="customer_type==248 || customer_type==249 || customer_type==139 && service_type == 2" class="service">
+		<view v-if="customer_type==1 && service_type == 2" class="service">
 			<view class="service_title">现场发现<span class="jh">*</span></view>
 			<view class="service_other">
 				<view v-for="(item,i) in checkdata" :key="i">
@@ -399,7 +399,8 @@
 				take_steps: this.take_steps,
 				risk_area: this.risk_area,
 				check_datas: JSON.stringify(this.checkdata),
-				customer_type: this.customer_type
+				customer_type: this.customer_type,
+				service_type:this.service_type
 			}
 			this.$api.addRisk(params).then(res=>{
 				if (res.code == 200) {
@@ -475,7 +476,8 @@
 				take_steps: this.take_steps,
 				risk_area: this.risk_area,
 				check_datas: JSON.stringify(this.checkdata),
-				customer_type:this.customer_type
+				customer_type:this.customer_type,
+				service_type:this.service_type
 			}
 			this.$api.editRisk(params).then(res=>{
 				if (res.code == 200) {
