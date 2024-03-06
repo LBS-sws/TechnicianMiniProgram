@@ -25,17 +25,17 @@
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="客户地址：">
-						<text selectable="true">{{basic.customer.addr}}</text>
+						<text selectable="true">{{basic.addr}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="联系人员：">
-						<text selectable="true">{{basic.contact.contact_name}}</text>
+						<text selectable="true">{{basic.contact_name}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">
 					<cl-list-item label="联系方式：">
-						<text selectable="true">{{basic.contact.mobile}}</text>
+						<text selectable="true">{{basic.mobile}}</text>
 					</cl-list-item>
 				</view>
 				<view style="border-bottom: 1px solid #eeeeee;">

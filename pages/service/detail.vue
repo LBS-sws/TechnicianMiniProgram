@@ -43,7 +43,7 @@
 			</view>
 			<view>
 				<cl-icon name="cl-icon-map" style="margin-right: 6px;color: #007AFF;"></cl-icon>
-				<span style="color: #9c9595;"><text selectable="true">{{service.customer.addr}}</text></span>
+				<span style="color: #9c9595;"><text selectable="true">{{service.addr}}</text></span>
 			</view>
 			<!-- 任务信息 -->
 			<view class="service_msg">服务信息</view>
