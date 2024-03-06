@@ -22,8 +22,8 @@
 					<cl-col span="8">
 						<view class="first_job" >{{service.first_job}}</view>
 					</cl-col>
-					<cl-col span="8" v-if="service.customer.customer_type==203 || service.customer.customer_type==250">
-						<view class="customer_type">工厂服务</view>
+					<cl-col span="8" v-if="service.customer.customer_type_text">
+						<view class="customer_type">{{service.customer.customer_type_text}}</view>
 					</cl-col>
 				</cl-row>
 				<view>

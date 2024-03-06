@@ -32,8 +32,8 @@
 								<view class="first_job" v-if="item.first_job_flag==1">{{item.first_job}}</view>
 								<view v-else class="first_job">{{item.first_job}}</view>
 							</cl-col>
-							<cl-col span="8" v-if="item.customer.customer_type==203 || item.customer.customer_type==250">
-								<view class="customer_type">工厂服务</view>
+							<cl-col span="8"  v-if="item.customer.customer_type_text">
+								<view class="customer_type">{{item.customer.customer_type_text}}</view>
 							</cl-col>
 						</cl-row>
 						<view>

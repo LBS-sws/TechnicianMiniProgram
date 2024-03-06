@@ -467,7 +467,7 @@ export default {
 				
 				if(!!this.check_handle)
 				{
-					check_handle = this.check_handle.join(',')
+					check_handle = this.check_handle
 				}
 				
 				let params = {
