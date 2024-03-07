@@ -44,34 +44,31 @@
 		</view>
 		<view class="all jjBtn">
 			<cl-checkbox-group v-model="xz_all" border >
-				
-				<!-- <cl-checkbox v-for="(item,index) in all" :key="index" v-bind:label="item.value" :class="'content_' + item.value" > -->
-				<cl-checkbox v-for="(item,index) in all" :key="index" v-bind:label="item.id" :class="'content_' + item.value" >
-					<!-- <view v-if="item.check_datas!=null" class="eq_isnull_color" > -->
+				<cl-checkbox v-for="(item,index) in all" :key="index" v-bind:label="item.id" :class="'content_' + item.id" >
 					<view v-if="item.choose > 0" class="eq_isnull_color" >
-						<span v-if="ct>0">
+						<!-- <span v-if="ct>0">
 							{{item.eq_number}}
 						</span>
 						<span v-if="item.number<9">
-							0{{item.number}}
+							{{item.number}}
 						</span>
 						<span v-else>
 							{{item.number}}
-						</span>
-						&nbsp;{{item.label}}
+						</span> -->
+						{{item.number}}&nbsp;{{item.label}}
 					</view>
 					<view v-else>
-						<span v-if="ct>0">
+						<!-- <span v-if="ct>0">
 							{{item.eq_number}}
 						</span>
 						
 						<span v-if="item.number<9">
-							0{{item.number}}
+							{{item.number}}
 						</span>
 						<span v-else>
 							{{item.number}}
-						</span>
-						&nbsp;{{item.label}}
+						</span> -->
+						{{item.number}}&nbsp;{{item.label}}
 					</view>
 				</cl-checkbox>
 			</cl-checkbox-group>

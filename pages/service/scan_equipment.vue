@@ -481,6 +481,7 @@ export default {
 					eq_number: this.eq_mark_num,
 					ids:ids
 				}
+				uni.setStorageSync('last_id_' + this.jobid,this.id)
 				this.$api.editEq(params).then(res=>{
 					uni.hideLoading();
 					uni.showToast({
@@ -513,127 +514,127 @@ export default {
 					console.log(err)
 				})
 			},
-			savex() {
-				var imgs = JSON.parse(JSON.stringify(this.site_photos))
-				if (this.equipment_area == '' || this.check_datas == '') {
-					uni.showToast({
-						title: '信息填写不全',
-						icon: 'none',
-					});
-					return;
-				} else if (imgs.length > 4) {
-					uni.showToast({
-						title: '图片最多四张',
-						icon: 'none',
-					});
-					return;
-				} else {
-					uni.showLoading({
-						title: "保存中..."
-					});
-					//图片上传
-					if (this.id > 0) {
-						//上传部分
-						for (let i = 0; i < imgs.length; i++) {
-							for (let j = 0; j < this.start_site_photos.length; j++) {
-								if (imgs[i] == this.start_site_photos[j]) { //如果是id相同的，那么a[ j ].id == b[ i ].id
-									imgs.splice(imgs[i], 1);
-								}
-							}
-						}
-					}
-					//剩余部分
-					if (this.end_site_photos.length > 0) {
-						this.upload_site_photos = this.end_site_photos
-					}
-					for (var i = 0; i < imgs.length; i++) {
-						uni.uploadFile({
-							url: `${this.$baseUrl}/upload/imgswx?version=${this.$version}`, // 后端api接口
-							filePath: imgs[i], // uni.chooseImage函数调用后获取的本地文件路劲
-							name: 'file', //后端通过'file'获取上传的文件对象
-							header: {
-								'content-type': 'multipart/form-data',
-								'token': uni.getStorageSync('token')
-							},
-							success: (res) => {
-								var res = JSON.parse(result.data)
-								if (res.code === 0) {
-									var images_data = res.data.file_name;
-									if (this.upload_site_photos == '') {
-										this.upload_site_photos = images_data;
-									} else {
-										this.upload_site_photos = this.upload_site_photos + ',' + images_data;
-									}
-								} else {
-									uni.showToast({
-										title: res.msg,
-										icon: 'none',
-									});
-								}
+			// savex() {
+			// 	var imgs = JSON.parse(JSON.stringify(this.site_photos))
+			// 	if (this.equipment_area == '' || this.check_datas == '') {
+			// 		uni.showToast({
+			// 			title: '信息填写不全',
+			// 			icon: 'none',
+			// 		});
+			// 		return;
+			// 	} else if (imgs.length > 4) {
+			// 		uni.showToast({
+			// 			title: '图片最多四张',
+			// 			icon: 'none',
+			// 		});
+			// 		return;
+			// 	} else {
+			// 		uni.showLoading({
+			// 			title: "保存中..."
+			// 		});
+			// 		//图片上传
+			// 		if (this.id > 0) {
+			// 			//上传部分
+			// 			for (let i = 0; i < imgs.length; i++) {
+			// 				for (let j = 0; j < this.start_site_photos.length; j++) {
+			// 					if (imgs[i] == this.start_site_photos[j]) { //如果是id相同的，那么a[ j ].id == b[ i ].id
+			// 						imgs.splice(imgs[i], 1);
+			// 					}
+			// 				}
+			// 			}
+			// 		}
+			// 		//剩余部分
+			// 		if (this.end_site_photos.length > 0) {
+			// 			this.upload_site_photos = this.end_site_photos
+			// 		}
+			// 		for (var i = 0; i < imgs.length; i++) {
+			// 			uni.uploadFile({
+			// 				url: `${this.$baseUrl}/upload/imgswx?version=${this.$version}`, // 后端api接口
+			// 				filePath: imgs[i], // uni.chooseImage函数调用后获取的本地文件路劲
+			// 				name: 'file', //后端通过'file'获取上传的文件对象
+			// 				header: {
+			// 					'content-type': 'multipart/form-data',
+			// 					'token': uni.getStorageSync('token')
+			// 				},
+			// 				success: (res) => {
+			// 					var res = JSON.parse(result.data)
+			// 					if (res.code === 0) {
+			// 						var images_data = res.data.file_name;
+			// 						if (this.upload_site_photos == '') {
+			// 							this.upload_site_photos = images_data;
+			// 						} else {
+			// 							this.upload_site_photos = this.upload_site_photos + ',' + images_data;
+			// 						}
+			// 					} else {
+			// 						uni.showToast({
+			// 							title: res.msg,
+			// 							icon: 'none',
+			// 						});
+			// 					}
 
 
-							},
-							fail: (err) => {
-								console.log('uploadImage fail', err);
-								uni.showModal({
-									content: err.errMsg,
-									showCancel: false
-								});
-							}
-						});
+			// 				},
+			// 				fail: (err) => {
+			// 					console.log('uploadImage fail', err);
+			// 					uni.showModal({
+			// 						content: err.errMsg,
+			// 						showCancel: false
+			// 					});
+			// 				}
+			// 			});
 
-					}
-					setTimeout(() => {
-						//保存信息
-						let params = {
-							staffid: uni.getStorageSync('staffid'),
-							id: this.id,
-							job_id: this.jobid,
-							job_type: this.jobtype,
-							equipment_name: this.equipment_name,
-							equipment_area: this.equipment_area,
-							check_datas: this.check_datas,
-							check_handle: this.check_handle,
-							site_photos: this.upload_site_photos,
-							more_info: this.more_info,
-							eq_mark_num:this.eq_mark_num
-						}
-						uni.setStorageSync('last_id_' + this.jobid,this.id)
-						uni.request({
-							url: `${this.$baseUrl}/Saveequipment`,
-							header: {
-								'content-type': 'application/x-www-form-urlencoded',
-								'token': uni.getStorageSync('token')
-							},
-							method: 'POST',
-							data: params,
-							success: (res) => {
-								uni.hideLoading();
-								uni.showToast({
-									title: res.data.msg,
-									icon: 'none'
-								});
-								setTimeout(() => {
-									uni.redirectTo({
-										url: "/pages/service/equipment?jobid=" +
-											this
-											.jobid + '&jobtype=' + this
-											.jobtype +
-											'&shortcut_type=' +
-											this.shortcut_type +
-											'&service_type=' + this
-											.service_type + '&ct=' + this
-											.ct
-									})
-								}, 1000)
-							},
-							fail: (err) => {
-								console.log(res);
-							}
-						});
-					}, 1000)
-				}
-			}
+			// 		}
+			// 		setTimeout(() => {
+			// 			//保存信息
+			// 			let params = {
+			// 				staffid: uni.getStorageSync('staffid'),
+			// 				id: this.id,
+			// 				job_id: this.jobid,
+			// 				job_type: this.jobtype,
+			// 				equipment_name: this.equipment_name,
+			// 				equipment_area: this.equipment_area,
+			// 				check_datas: this.check_datas,
+			// 				check_handle: this.check_handle,
+			// 				site_photos: this.upload_site_photos,
+			// 				more_info: this.more_info,
+			// 				eq_mark_num:this.eq_mark_num
+			// 			}
+			// 			uni.setStorageSync('last_id_' + this.jobid,this.id)
+			// 			uni.request({
+			// 				url: `${this.$baseUrl}/Saveequipment`,
+			// 				header: {
+			// 					'content-type': 'application/x-www-form-urlencoded',
+			// 					'token': uni.getStorageSync('token')
+			// 				},
+			// 				method: 'POST',
+			// 				data: params,
+			// 				success: (res) => {
+			// 					uni.hideLoading();
+			// 					uni.showToast({
+			// 						title: res.data.msg,
+			// 						icon: 'none'
+			// 					});
+			// 					setTimeout(() => {
+			// 						uni.redirectTo({
+			// 							url: "/pages/service/equipment?jobid=" +
+			// 								this
+			// 								.jobid + '&jobtype=' + this
+			// 								.jobtype +
+			// 								'&shortcut_type=' +
+			// 								this.shortcut_type +
+			// 								'&service_type=' + this
+			// 								.service_type + '&ct=' + this
+			// 								.ct
+			// 						})
+			// 					}, 1000)
+			// 				},
+			// 				fail: (err) => {
+			// 					console.log(res);
+			// 				}
+			// 			});
+			// 		}, 1000)
+			// 	}
+			// }
 	}
 }
 </script>

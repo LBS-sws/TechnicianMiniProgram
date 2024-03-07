@@ -59,9 +59,9 @@
 			<view class="v_magin">
 				协作：<span style="color: black;"><text selectable="true">{{service.staff.other}}</text></span>
 			</view>
-			<span v-if="service.type==1">
+			<span v-if="service.order_type==1">
 				<view>
-					设备：<span style="color: black;"><text selectable="true">{{service.Watchdog}}</text></span>
+					设备：<span style="color: black;"><text selectable="true">{{service.equipments}}</text></span>
 				</view>
 			</span>
 			<view class="v_magin">
