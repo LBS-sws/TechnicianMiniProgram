@@ -249,11 +249,18 @@
 						<view class="sign_title">客户签名<span style="font-size: 12px;color: #999999;"></span></view>
 						<cl-row>
 							<cl-col span="16">
-								<view class="eblock">
-								<cl-image size="300rpx" :style="autograph_customer_style" :src="autograph_customer_signature">
-								</cl-image> 
+								<view class="eblock" >
+									
+									<span v-if="autograph_customer_signature !=''">
+										<cl-image size="300rpx" :style="autograph_customer_style" :src="autograph_customer_signature+ '?t=' + new Date().getTime()" >
+										</cl-image> 
+									</span>
+									<span v-else>
+										<cl-image size="300rpx"  :style="autograph_customer_style" :src="autograph_customer_signature" >
+										</cl-image> 
+									</span>
+								
 								</view>
-								<!-- <Signature ref="sig" v-model="autograph_customer_signature"></Signature> -->
 							</cl-col>
 							<cl-col span="8" class="sign_qm">
 								<!-- <cl-button @tap="startSign">签名</cl-button> -->
@@ -264,8 +271,14 @@
 						<cl-row>
 							<cl-col span="16">
 								<view class="eblock">
-								<cl-image size="300rpx" :style="autograph_customer_style_add" :src="autograph_customer_signature_add">
-								</cl-image> 
+									<span v-if="autograph_customer_signature_add !=''">
+										<cl-image size="300rpx" :style="autograph_customer_style_add" :src="autograph_customer_signature_add+ '?t=' + new Date().getTime()" >
+										</cl-image> 
+									</span>
+									<span v-else>
+										<cl-image size="300rpx" :style="autograph_customer_style_add" :src="autograph_customer_signature_add">
+										</cl-image>
+									</span>
 								</view>
 							</cl-col>
 							<cl-col span="8" class="sign_qm">
@@ -458,12 +471,12 @@
 			var currPage = pages[pages.length - 1]; //当前页面
 			let datas = currPage.data.customer_signature;
 			this.autograph_customer_signature = currPage.data.customer_signature;
-			this.is_base64 = currPage.data.is_base64;
-			if(this.conversion_flag == 0 && this.is_base64 == 0 || this.conversion_flag == 1 && this.is_base64 == 0){
-				this.autograph_customer_style = '';
-			}else{
-				this.autograph_customer_style = 'transform: rotate(-90deg)';
-			}
+			// this.is_base64 = currPage.data.is_base64;
+			// if(this.conversion_flag == 0 && this.is_base64 == 0 || this.conversion_flag == 1 && this.is_base64 == 0){
+			// 	this.autograph_customer_style = '';
+			// }else{
+			// 	this.autograph_customer_style = '';//transform: rotate(-90deg)';
+			// }
 			
 			// let that = this
 			// 	uni.$on('getdata',function(data){
@@ -471,12 +484,12 @@
 			// 	})
 			let datas_add = currPage.data.customer_signature_add;
 			this.autograph_customer_signature_add = currPage.data.customer_signature_add;
-			this.is_base64 = currPage.data.is_base64;
-			if(this.conversion_flag == 0 && this.is_base64 == 0 || this.conversion_flag == 1 && this.is_base64 == 0){
-				this.autograph_customer_style = '';
-			}else{
-				this.autograph_customer_style = 'transform: rotate(-90deg)';
-			}
+			// this.is_base64 = currPage.data.is_base64;
+			// if(this.conversion_flag == 0 && this.is_base64 == 0 || this.conversion_flag == 1 && this.is_base64 == 0){
+			// 	this.autograph_customer_style = '';
+			// }else{
+			// 	this.autograph_customer_style = 'transform: rotate(-90deg)';
+			// }
 			
 			
 			this.show_briefing = true
@@ -589,7 +602,9 @@
 			// 保存签名时
 			onStartSign_s(is_main) {
 				if(is_main==0){
-					this.getItems()
+					if(this.autograph_customer_signature == undefined || this.autograph_customer_signature_add == undefined){
+						this.getItems()
+					}
 				}
 			},
 			//保存附加签名时
@@ -643,7 +658,7 @@
 					}
 					// 客户签名
 					if(res.data.cust.customer_signature_url){
-						this.autograph_customer_signature = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url+'?t=1'
+						this.autograph_customer_signature = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url
 					}
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add){
@@ -906,7 +921,11 @@
 						title: msg || res.data.msg,
 						icon: 'none',
 					});
-					this.getItems()
+					console.log('this.autograph_customer_signature',this.autograph_customer_signature)
+					console.log('this.autograph_customer_signature_add',this.autograph_customer_signature_add)
+					if(this.autograph_customer_signature == undefined || this.autograph_customer_signature_add == undefined){
+						this.getItems()
+					}
 				}).catch(err=>{
 					console.log('err',err)
 				})
