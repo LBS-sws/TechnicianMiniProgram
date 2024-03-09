@@ -250,16 +250,8 @@
 						<cl-row>
 							<cl-col span="16">
 								<view class="eblock" >
-									
-									<span v-if="autograph_customer_signature !=''">
-										<cl-image size="300rpx" :style="autograph_customer_style" :src="autograph_customer_signature+ '?t=' + new Date().getTime()" >
-										</cl-image> 
-									</span>
-									<span v-else>
-										<cl-image size="300rpx"  :style="autograph_customer_style" :src="autograph_customer_signature" >
-										</cl-image> 
-									</span>
-								
+									<cl-image size="300rpx"  :style="autograph_customer_style" :src="autograph_customer_signature" >
+									</cl-image> 
 								</view>
 							</cl-col>
 							<cl-col span="8" class="sign_qm">
@@ -271,14 +263,8 @@
 						<cl-row>
 							<cl-col span="16">
 								<view class="eblock">
-									<span v-if="autograph_customer_signature_add !=''">
-										<cl-image size="300rpx" :style="autograph_customer_style_add" :src="autograph_customer_signature_add+ '?t=' + new Date().getTime()" >
-										</cl-image> 
-									</span>
-									<span v-else>
-										<cl-image size="300rpx" :style="autograph_customer_style_add" :src="autograph_customer_signature_add">
-										</cl-image>
-									</span>
+									<cl-image size="300rpx" :style="autograph_customer_style_add" :src="autograph_customer_signature_add">
+									</cl-image>
 								</view>
 							</cl-col>
 							<cl-col span="8" class="sign_qm">
@@ -311,11 +297,10 @@
 					<view class="review_popup_box_entitle">　　{{itemx.en_question}}</view>
 					<radio-group @change="radioChange($event,i)">
 						<label class="uni-list-cell uni-list-cell-pd" v-for="(item, index) in itemx.options" :key="item.v">
-							<radio :value="item.v" :checked="item.v === itemx.answer" />{{item.t}}
+							<radio :value="item.v" :checked="item.v == itemx.answer" />{{item.t}}
 						</label>
 					</radio-group>
 				</view>
-				
 			</view>
 		</u-modal>
 	</view>
@@ -461,45 +446,21 @@
 					this.screen_width = res.screenWidth
 				}
 			});
-			
 			this.getBaseinfo()
 		},
 		onShow: function () {
-			
 			var that = this;
 			var pages = getCurrentPages();
 			var currPage = pages[pages.length - 1]; //当前页面
 			let datas = currPage.data.customer_signature;
 			this.autograph_customer_signature = currPage.data.customer_signature;
-			// this.is_base64 = currPage.data.is_base64;
-			// if(this.conversion_flag == 0 && this.is_base64 == 0 || this.conversion_flag == 1 && this.is_base64 == 0){
-			// 	this.autograph_customer_style = '';
-			// }else{
-			// 	this.autograph_customer_style = '';//transform: rotate(-90deg)';
-			// }
-			
-			// let that = this
-			// 	uni.$on('getdata',function(data){
-			// 		console.log('监听到事件来自返回的参数：' , data);
-			// 	})
 			let datas_add = currPage.data.customer_signature_add;
 			this.autograph_customer_signature_add = currPage.data.customer_signature_add;
-			// this.is_base64 = currPage.data.is_base64;
-			// if(this.conversion_flag == 0 && this.is_base64 == 0 || this.conversion_flag == 1 && this.is_base64 == 0){
-			// 	this.autograph_customer_style = '';
-			// }else{
-			// 	this.autograph_customer_style = 'transform: rotate(-90deg)';
-			// }
-			
-			
 			this.show_briefing = true
 			this.show_material = true
 			this.show_equipment = true
 			this.show_risk = true
 			this.show_photo = true
-			
-			// this.getItems()
-			
 		},
 		//页面销毁
 		beforeDestroy() {
@@ -508,12 +469,7 @@
 		},
 		methods: {
 			radioChange(e,i){
-				console.log(e.detail.value)
-				console.log(i)
 				this.questionsData[i].answer = e.detail.value
-				
-				console.log(this.questionsData)
-				
 			},
 			goMaterial(e){
 				console.log(e)
@@ -530,7 +486,6 @@
 			},
 			// swiper滑动事件
 			change_swiper(e) {
-				
 				let index = e.target.current || e.detail.current;
 				if(this.current == index){
 					return false
@@ -542,7 +497,6 @@
 			// 执行整个tab事件
 			run_tab(index) {
 				// console.log(index)
-				
 				if(index==1){
 					this.getBriefing()		// 简报
 				}
@@ -586,13 +540,11 @@
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1"
 				})
-
 				//显示点评弹窗
 				let timer = setTimeout(() => {
 					this.startSign_sData.show = true
 					clearTimeout(timer);
 				}, 1000);
-				
 			},
 			startSign_sadd() {
 				uni.navigateTo({ 
@@ -600,11 +552,11 @@
 				})
 			},
 			// 保存签名时
-			onStartSign_s(is_main) {
-				if(is_main==0){
-					if(this.autograph_customer_signature == undefined || this.autograph_customer_signature_add == undefined){
-						this.getItems()
-					}
+			onStartSign_s(data) {
+				if(data.is_main == '1'){
+					this.autograph_customer_signature = `${this.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
+				}else{
+					this.autograph_customer_signature_add = `${this.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
 				}
 			},
 			//保存附加签名时
@@ -637,7 +589,6 @@
 						console.log(res);
 					},
 					fail(err) {
-						// errMsg: "navigateTo:fail page "pages/index/pages/test/test" is not found"
 						console.log(err);
 					}
 				})
@@ -658,31 +609,24 @@
 					}
 					// 客户签名
 					if(res.data.cust.customer_signature_url){
-						this.autograph_customer_signature = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url
+						this.autograph_customer_signature = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url + '?t=' + new Date().getTime()
 					}
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add){
-						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url_add
+						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url_add + '?t=' + new Date().getTime()
 					}
-					
 					// 客户点评 星星
 					this.autograph_customer_grade = res.data.evaluates.score
-					
 					// 点评过
-					if(res.data.evaluates.question)
-					{
+					if(res.data.evaluates.question){
 						let qearr = JSON.parse(res.data.evaluates.question)	// 问题答案
 						console.log('已点评:',qearr)
 						this.isdp = true
 						setTimeout(()=>{
-							
 							let arr = this.startSign_sData.questions
-							//console.log('问题:',arr)
-							
 							arr.forEach((item,i)=>{
 								item.answer = parseInt(qearr[i].answer) //qearr[i].answer
 							})
-							
 							let arr2 = []
 							for (let i in arr) {
 								arr2.push(arr[i])
@@ -691,12 +635,8 @@
 							this.questionsData = arr2
 						},500)
 					}else{
-						console.log('没有点评记录')
-						
 						this.questionsData = this.startSign_sData.questions
 					}
-					
-					
 				}).catch(err=>{
 					// console.log(err)
 				})
@@ -877,7 +817,6 @@
 			submitStartSign_sDialog() {
 				let that = this
 				var sorce = 0;
-				console.log('this.questionsDatathis.questionsData',this.questionsData)
 				let shouldContinue = true;  
 				this.questionsData.forEach((item,i)=>{
 					console.log(item.answer)
@@ -914,18 +853,14 @@
 				// 提交点评到后台
 				this.$api.saveEvaluates(param).then(res=>{
 					let msg = '已提交点评，感谢您的反馈！'
-					if(res.data.code == 200){
-						that.autograph_customer_grade = sorce;//服务评分 此处是为兼容旧版
+					if(res.code == 200){
+						console.log('sorce2',sorce)
+						this.autograph_customer_grade = sorce;//服务评分 此处是为兼容旧版
 					}
 					uni.showToast({
 						title: msg || res.data.msg,
 						icon: 'none',
 					});
-					console.log('this.autograph_customer_signature',this.autograph_customer_signature)
-					console.log('this.autograph_customer_signature_add',this.autograph_customer_signature_add)
-					if(this.autograph_customer_signature == undefined || this.autograph_customer_signature_add == undefined){
-						this.getItems()
-					}
 				}).catch(err=>{
 					console.log('err',err)
 				})

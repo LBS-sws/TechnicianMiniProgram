@@ -163,7 +163,12 @@
 										filePath: path,
 										success: (res) => {
 											let data = JSON.parse(res.data)
-											uni.$emit('startSign_s', that.is_main)
+											if(that.is_main == '1'){
+												uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url})
+											}else{
+												uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url_add})
+											}
+											
 											uni.hideLoading()
 											console.log(res, '上传结果')
 											if (data.code == 200) {
