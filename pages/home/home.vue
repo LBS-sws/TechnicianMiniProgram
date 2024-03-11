@@ -51,10 +51,10 @@
 						<span class="content_t">地址:</span>
 						<text selectable="true">{{item.customer.addr}}</text>
 					</view>
-					<view style="display: flex;height: 20px;" v-if="item.customer_grade!=null">
+					<view style="display: flex;height: 20px;" v-if="item.customer_grade.score!=''">
 						<span style="margin-left:10px;">客户点评:</span>
 						<view style="margin-left:10px;">
-							<u-rate :count="3" v-model="item.customer_grade" active-color="#ffc800" inactive-color="#dadada" gutter="3" readonly touchable="false"></u-rate>
+							<u-rate :count="3" v-model="item.customer_grade.score" active-color="#ffc800" inactive-color="#dadada" gutter="3" readonly touchable="false"></u-rate>
 						</view>
 					</view>
 				</view>

@@ -469,6 +469,8 @@
 		},
 		methods: {
 			radioChange(e,i){
+				console.log('eeee',e)
+				console.log('iiii',i)
 				this.questionsData[i].answer = e.detail.value
 			},
 			goMaterial(e){
@@ -657,7 +659,7 @@
 						}
 						let questionsData = res.data.questionnaire
 						questionsData.forEach((item,i)=>{
-							item.answer = ''
+							item.answer = '0'
 							item.options = this.radioData
 						})
 						this.startSign_sData.questions = questionsData	// 暂存问题列表
@@ -819,9 +821,9 @@
 				var sorce = 0;
 				let shouldContinue = true;  
 				this.questionsData.forEach((item,i)=>{
-					console.log(item.answer)
+					console.log('请为本次的服务进行评价',item)
 					if(!this.isdp){
-						if(item.answer == '' || item.answer =="" || item.answer == undefined || item.answer == null){
+						if(item.answer == ''){
 							uni.showToast({
 								title: '请为本次的服务进行评价！',
 								icon: 'none',
