@@ -183,6 +183,13 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 							title: res.msg,
 							icon: 'none'
 						});
+						setTimeout(()=>{
+							uni.navigateBack({
+							  delta: 1,
+							  animationType: 'pop-out',
+							  animationDuration: 200
+							});
+						},2500)
 					}).catch(err=>{
 						console.log(err)
 					})

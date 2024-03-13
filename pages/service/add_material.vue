@@ -70,18 +70,20 @@
 						<cl-textarea placeholder="请输入" v-model="usearea" count></cl-textarea>
 					</view>
 				</cl-row>
-				<cl-row style="color: #000000;">
-					<view class="text-left">处理空间/面积</view>
-					<view class="text-right" style="height: 0px;">
-						<cl-input v-model="processing_space" placeholder="例:50平" style="text-align: right;"></cl-input>
+				<cl-row style="color: #000000;" class="more-item">
+					<view class="item-l">处理空间/面积</view>
+					<view class="item-l" style="">
+						<cl-input v-model="processing_space" placeholder="例:50" style="text-align: right;">
+							<text slot="append" style="margin-top: 3px;font-size: 16px;">平</text>
+						</cl-input>
 					</view>
 				</cl-row>
-				<cl-row style="color: #000000;">
-					<view class="text-left">药物用量</view>
-					<view class="text-right" style="height: 10px;">
-						<cl-input v-model="dosage" placeholder="请输入" style="text-align: right;"><text slot="append"
-								style="margin-top: 10px;font-size: 16px;">{{unit}}</text></cl-input>
-
+				<cl-row style="color: #000000;" class="more-item">
+					<view class="item-l">药物用量</view>
+					<view class="item-l" style="">
+						<cl-input v-model="dosage" placeholder="请输入" style="text-align: right;">
+							<text slot="append" style="margin-top: 3px;font-size: 16px;">{{unit}}</text>
+						</cl-input>
 					</view>
 				</cl-row>
 			</view>
@@ -573,5 +575,20 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 
 	.lz {
 		margin: 10px 0px;
+	}
+.more-item{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	
+}
+.more-item .cl-row{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+}
+.more-item .item-l{
+		width: 50%;
 	}
 </style>

@@ -926,4 +926,10 @@
 	.bg-white {
 		background: #fff;
 	}
+.cl-input.is-border {
+	border: 1rpx solid #dcdfe6;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
 </style>
