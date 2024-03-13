@@ -627,17 +627,19 @@
 						setTimeout(()=>{
 							let arr = this.startSign_sData.questions
 							arr.forEach((item,i)=>{
-								item.answer = parseInt(qearr[i].answer) //qearr[i].answer
+								item.answer = qearr[i].answer
 							})
-							let arr2 = []
-							for (let i in arr) {
-								arr2.push(arr[i])
-							}
-							console.log(arr2)
-							this.questionsData = arr2
+							// let arr2 = []
+							// for (let i in arr) {
+							// 	arr2.push(arr[i])
+							// }
+							console.log(arr)
+							this.questionsData = arr
+							console.log('点击签名的时候----点评过',this.questionsData)
 						},500)
 					}else{
 						this.questionsData = this.startSign_sData.questions
+						console.log('点击签名的时候----没点评过',this.questionsData)
 					}
 				}).catch(err=>{
 					// console.log(err)
@@ -659,7 +661,7 @@
 						}
 						let questionsData = res.data.questionnaire
 						questionsData.forEach((item,i)=>{
-							item.answer = '0'
+							item.answer = null
 							item.options = this.radioData
 						})
 						this.startSign_sData.questions = questionsData	// 暂存问题列表
@@ -668,6 +670,7 @@
 						uni.$utils.toast(res.msg)
 						return false
 					}
+					console.log('this.startSign_sData.questions',this.startSign_sData.questions)
 				}).catch(err=>{
 					console.log(err)
 				})
@@ -822,8 +825,8 @@
 				let shouldContinue = true;  
 				this.questionsData.forEach((item,i)=>{
 					console.log('请为本次的服务进行评价',item)
-					if(!this.isdp){
-						if(item.answer == ''){
+					// if(!this.isdp){
+						if(item.answer == null){
 							uni.showToast({
 								title: '请为本次的服务进行评价！',
 								icon: 'none',
@@ -832,7 +835,7 @@
 							return false
 							console.log('null')
 						}
-					}
+					// }
 					if(item.answer ==1 ){
 						sorce++;
 					}
