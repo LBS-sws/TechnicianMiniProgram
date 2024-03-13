@@ -189,7 +189,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 							  animationType: 'pop-out',
 							  animationDuration: 200
 							});
-						},2500)
+						},1500)
 					}).catch(err=>{
 						console.log(err)
 					})
