@@ -157,12 +157,13 @@
 			this.getQ4()
 		},
 		methods: {
+			// type1已解决 type2未解决 type3 跟进 type4客户确认
 			// 未解决
 			getQ1(){
 				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
-					type:3
+					type:2 // 3
 				}
 				this.$api.stayQuestion(params).then(res=>{
 					
@@ -185,7 +186,7 @@
 				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
-					type:2
+					type:3 // 2
 				}
 				this.$api.followQuestion(params).then(res=>{
 					// console.log(res.data.data)
@@ -242,7 +243,7 @@
 						let site_po = arr[0].replace(/\"/g, "").replace(/[\\]/g, '');
 						item.site_photos = `${this.$baseUrl_imgs}` + site_po
 					})
-					this.lastrisks_g = list
+					// this.lastrisks_g = list	暂时不展示
 				}).catch(err=>{
 					console.log(err)
 				})

@@ -147,6 +147,7 @@
 			save(status) {
 				let params = {
 					id: this.id,
+					job_id:this.jobid,
 					confirm_status:status
 				}
 				this.$api.editRiskByTeach(params).then(res=>{
