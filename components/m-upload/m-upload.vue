@@ -291,7 +291,7 @@
 					url: this.url,
 					filePath: this.imageList[index].url,
 					name: 'file' || this.fileName,
-					// formData: this.formData,
+					formData: this.formData,
 					header: this.header,
 					success: res => {
 						// console.log(res)

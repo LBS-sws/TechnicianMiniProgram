@@ -74,11 +74,11 @@
 					count: 0, // 签到时间
 					isSignin: false //是否签到
 				},
-				formData: {
-					signAddress: '', // 签到地址
-					longitude: '', // 经度
-					latitude: '' // 维度
-				},
+				// formData: {
+				// 	signAddress: '', // 签到地址
+				// 	longitude: '', // 经度
+				// 	latitude: '' // 维度
+				// },
 				location: {
 					loading: true,
 					error: false,
@@ -103,7 +103,7 @@
 					'token': uni.getStorageSync('token')
 				},
 				formData: {
-					type:1
+					type:2
 				},
 			}
 		},
@@ -256,10 +256,8 @@
 					uni.showLoading({
 						title: "签离中..."
 					});
-					clearInterval(this.timerInterval)
-					this.signin.count++
-					this.signin.isSignin = true
 					this.getTime(new Date())
+					// this.signin.count++
 					console.log('签离数据：', this.formData)
 					//签离成功调用接口
 					this.sign_success(this.getDate(), this.signin.time)
@@ -409,16 +407,22 @@
 				this.$api.orderSignOut(params).then(res=>{
 					uni.hideLoading();
 					if (res.code == 200) {
+						this.signin.isSignin = true
+						this.signin.count++
+						clearInterval(this.timerInterval)
+						
 						uni.showToast({
 							title: '签离成功',
 							icon: 'success'
 						})
 						uni.navigateBack();
 					} else {
-						uni.showToast({
-							title: res.msg,
-							icon: 'fail'
-						})
+					this.$refs["message"].open({
+						type: "warn",
+						duration: 2000,
+						top: "200rpx",
+						message: res.msg,
+					});
 					}
 				}).catch(err=>{
 					uni.showToast({
