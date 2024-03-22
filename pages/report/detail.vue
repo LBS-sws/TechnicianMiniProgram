@@ -339,7 +339,7 @@
 					},
 					{
 						id: 'briefing',
-						tit: '服务简报'
+						tit: '服务简报',
 					},
 					{
 						id: 'material',
@@ -418,6 +418,7 @@
 				isShowAdd:false,
 				isdp:false,
 				current:0,
+				bk:[] // 板块
 			}
 		},
 		onLoad(index) {
@@ -440,6 +441,11 @@
 			this.shortcut_type = index.shortcut_type
 			this.service_type = index.service_type
 			this.Staff01 = uni.getStorageSync('staffname')
+			
+			this.bk = index.bk.split('_').map(el => +el);
+			// this.bk = [1,2,3,5]
+			// console.log(index.bk.split('_').map(el => +el))
+			
 			// 首次获取屏幕宽度
 			uni.getSystemInfo({
 				success: (res) => {
@@ -456,6 +462,25 @@
 			this.autograph_customer_signature = currPage.data.customer_signature;
 			let datas_add = currPage.data.customer_signature_add;
 			this.autograph_customer_signature_add = currPage.data.customer_signature_add;
+			
+			this.bk.forEach((item,i)=>{
+				// console.log(item)
+				if(item == 1){
+					 this.show_briefing = true
+				}
+				if(item == 2){
+					this.show_material = true
+				}
+				if(item == 3){
+					this.show_equipment = true
+				}
+				if(item == 4){
+					this.show_risk = true
+				}
+				if(item == 5){
+					this.show_photo = true
+				}
+			})
 			// this.show_briefing = true
 			// this.show_material = true
 			// this.show_equipment = true
@@ -469,12 +494,11 @@
 		},
 		methods: {
 			radioChange(e,i){
-				console.log('eeee',e)
-				console.log('iiii',i)
+				
 				this.questionsData[i].answer = e.detail.value
 			},
 			goMaterial(e){
-				console.log(e)
+				// console.log(e)
 				uni.navigateTo({
 					url:'/pages/report/material?id='+e,
 				})
@@ -488,6 +512,7 @@
 			},
 			// swiper滑动事件
 			change_swiper(e) {
+				
 				let index = e.target.current || e.detail.current;
 				if(this.current == index){
 					return false
@@ -498,38 +523,40 @@
 			},
 			// 执行整个tab事件
 			run_tab(index) {
-				console.log(index)
-				console.log(this.tab_bar[index])
+				console.log('执行整个tab事件',index)
+				console.log('this.tab_bar[index]',this.tab_bar[index])
 				// this.show_briefing = true
 				// this.show_material = true
 				// this.show_equipment = true
 				// this.show_risk = true
 				// this.show_photo = true
-				if(this.tab_bar[index].id == 'basic'){
+				if(index == 0){
 					this.getBriefing()		// 基础
+					
 				}
-				if(this.tab_bar[index].id == 'briefing'){
+				if(this.tab_bar[index].data == '1'){
 					this.getBriefing()		// 简报
-					this.show_briefing = true
+					
 				}
-				if(this.tab_bar[index].id == 'material'){
+				if(this.tab_bar[index].data == '2'){
 					this.getMaterial()		// 物料
-					this.show_material = true
+					
 				}
-				if(this.tab_bar[index].id == 'equipment'){
+				if(this.tab_bar[index].data == '3'){
 					this.getEquipment()		// 设备
-					this.show_equipment = true
+					
 				}
-				if(this.tab_bar[index].id == 'risk'){
+				if(this.tab_bar[index].data == '4'){
 					this.getRisk()			// 风险跟进
-					this.show_risk = true
+					
 				}
-				if(this.tab_bar[index].id == 'photo'){
+				if(this.tab_bar[index].data == '5'){
 					this.getPhoto()			// 现场工作照
-					this.show_photo = true
+					
 				}
-				if(this.tab_bar[index].id == 'autograph'){
+				if(this.tab_bar[index].data == '6'){
 					this.getItems()			// 签名
+					
 				}
 				// 记录当前滑动的位置
 				this.current_tab = index
@@ -637,24 +664,20 @@
 					if(res.data.evaluates.question){
 						let qearr = JSON.parse(res.data.evaluates.question)	// 问题答案
 
-						console.log('已点评:',qearr)
+						// console.log('已点评:',qearr)
 						this.isdp = true
 						setTimeout(()=>{
 							let arr = this.startSign_sData.questions
 							arr.forEach((item,i)=>{
 								item.answer = qearr[i].answer
 							})
-							// let arr2 = []
-							// for (let i in arr) {
-							// 	arr2.push(arr[i])
-							// }
-							console.log(arr)
+							
 							this.questionsData = arr
-							console.log('点击签名的时候----点评过',this.questionsData)
+							// console.log('点击签名的时候----点评过',this.questionsData)
 						},500)
 					}else{
 						this.questionsData = this.startSign_sData.questions
-						console.log('点击签名的时候----没点评过',this.questionsData)
+						// console.log('点击签名的时候----没点评过',this.questionsData)
 					}
 				}).catch(err=>{
 					// console.log(err)
@@ -668,32 +691,29 @@
 				this.$api.ReportBaseInfo(params).then(res=>{
 					if (res.code == 200) {
 						if (res.data) {
-							console.log(res.data.bk)
-							let bk = res.data.bk
-							
-							
-							
+							// console.log(res.data.bk)
+							let bk = this.bk
 							let arr = []
-							arr.push({id: 'basic',tit: '基础信息'})
+							arr.push({id: 'basic',tit: '基础信息', data:0})
 							bk.forEach((item,i)=>{
 								if(item=='1'){
-									arr.push({id: 'briefing', tit: '服务简报'})
+									arr.push({id: 'briefing', tit: '服务简报', data:1})
 								}
 								if(item=='2'){
-									arr.push({id: 'material', tit: '物料使用'})
+									arr.push({id: 'material', tit: '物料使用',data:2})
 								}
 								if(item=='3'){
-									arr.push({id: 'equipment',tit: '设备情况'})
+									arr.push({id: 'equipment',tit: '设备情况',data:3})
 								}
 								if(item=='4'){
-									arr.push({id: 'risk', tit: '风险跟进'})
+									arr.push({id: 'risk', tit: '风险跟进',data:4})
 								}
 								if(item=='5'){
-									arr.push({id: 'photo',tit: '现场工作照'})
+									arr.push({id: 'photo',tit: '现场工作照',data:5})
 								}
 							})
-							arr.push({id: 'autograph',tit: '签名点评'})
-							console.log(arr)
+							arr.push({id: 'autograph',tit: '签名点评', data:6})
+							console.log('arrarr',arr)
 							this.tab_bar = arr
 							
 							this.basic = res.data
