@@ -653,6 +653,34 @@
 				this.$api.ReportBaseInfo(params).then(res=>{
 					if (res.code == 200) {
 						if (res.data) {
+							console.log(res.data.bk)
+							let bk = res.data.bk
+							
+							
+							
+							let arr = []
+							arr.push({id: 'basic',tit: '基础信息'})
+							bk.forEach((item,i)=>{
+								if(item=='1'){
+									arr.push({id: 'briefing', tit: '服务简报'})
+								}
+								if(item=='2'){
+									arr.push({id: 'material', tit: '物料使用'})
+								}
+								if(item=='3'){
+									arr.push({id: 'equipment',tit: '设备情况'})
+								}
+								if(item=='4'){
+									arr.push({id: 'risk', tit: '风险跟进'})
+								}
+								if(item=='5'){
+									arr.push({id: 'photo',tit: '现场工作照'})
+								}
+							})
+							arr.push({id: 'autograph',tit: '签名点评'})
+							console.log(arr)
+							this.tab_bar = arr
+							
 							this.basic = res.data
 							if(res.data.staff.main == this.Staff01)
 							{
