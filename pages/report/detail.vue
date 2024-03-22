@@ -456,11 +456,11 @@
 			this.autograph_customer_signature = currPage.data.customer_signature;
 			let datas_add = currPage.data.customer_signature_add;
 			this.autograph_customer_signature_add = currPage.data.customer_signature_add;
-			this.show_briefing = true
-			this.show_material = true
-			this.show_equipment = true
-			this.show_risk = true
-			this.show_photo = true
+			// this.show_briefing = true
+			// this.show_material = true
+			// this.show_equipment = true
+			// this.show_risk = true
+			// this.show_photo = true
 		},
 		//页面销毁
 		beforeDestroy() {
@@ -483,7 +483,7 @@
 			change_tab(e) {
 				let index = e.target.dataset.current || e.currentTarget.dataset.current;
 				this.run_tab(index)
-				console.log('1')
+				
 				this.current = index
 			},
 			// swiper滑动事件
@@ -493,28 +493,42 @@
 					return false
 				}
 				this.run_tab(index)
-				console.log('2')
+				
 				this.current = index
 			},
 			// 执行整个tab事件
 			run_tab(index) {
-				// console.log(index)
-				if(index==1){
+				console.log(index)
+				console.log(this.tab_bar[index])
+				// this.show_briefing = true
+				// this.show_material = true
+				// this.show_equipment = true
+				// this.show_risk = true
+				// this.show_photo = true
+				if(this.tab_bar[index].id == 'basic'){
+					this.getBriefing()		// 基础
+				}
+				if(this.tab_bar[index].id == 'briefing'){
 					this.getBriefing()		// 简报
+					this.show_briefing = true
 				}
-				if(index==2){
+				if(this.tab_bar[index].id == 'material'){
 					this.getMaterial()		// 物料
+					this.show_material = true
 				}
-				if(index==3){
+				if(this.tab_bar[index].id == 'equipment'){
 					this.getEquipment()		// 设备
+					this.show_equipment = true
 				}
-				if(index==4){
+				if(this.tab_bar[index].id == 'risk'){
 					this.getRisk()			// 风险跟进
+					this.show_risk = true
 				}
-				if(index==5){
+				if(this.tab_bar[index].id == 'photo'){
 					this.getPhoto()			// 现场工作照
+					this.show_photo = true
 				}
-				if(index==6){
+				if(this.tab_bar[index].id == 'autograph'){
 					this.getItems()			// 签名
 				}
 				// 记录当前滑动的位置
@@ -622,6 +636,7 @@
 					// 点评过
 					if(res.data.evaluates.question){
 						let qearr = JSON.parse(res.data.evaluates.question)	// 问题答案
+
 						console.log('已点评:',qearr)
 						this.isdp = true
 						setTimeout(()=>{
@@ -776,6 +791,7 @@
 						})
 					})
 					this.photo = list
+					console.log(this.photo)
 				}).catch(err=>{
 					console.log(err)
 				})
