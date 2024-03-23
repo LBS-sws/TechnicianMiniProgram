@@ -107,12 +107,11 @@
 					success: (res) => {
 						// if (res.data.code == 1) {
 							this.risk = res.data.data.risk
-							let arr = this.risk['site_photos'].split(",");
-							console.log(arr)
+							let arr = this.risk['site_photos']; //.split(",");
+							// console.log(arr)
 							
 							let photos = []
 							arr.forEach((item,i)=>{
-								
 								let img = `${this.$baseUrl_imgs}` + item
 								photos.push(img)
 							})
