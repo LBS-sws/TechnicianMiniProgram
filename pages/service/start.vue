@@ -106,6 +106,7 @@ import color from 'uview-ui/libs/config/color';
 				ct:0,
 				autograph:'',
 				loginStaff:'',
+				bk:''
 			}
 		},
 		onLoad(index) {
@@ -162,6 +163,14 @@ import color from 'uview-ui/libs/config/color';
 								}
 							})
 						})
+						
+						// 传值板块
+						let bk = arr.map((item) =>{
+						　　　return item.key
+						　});
+						// console.log(bk)
+						this.bk = bk.join("_");
+						
 						this.list = list_add;
 					}
 					//隐藏加载框
@@ -236,7 +245,7 @@ import color from 'uview-ui/libs/config/color';
 				} else {
 					uni.navigateTo({
 						url: "/pages/report/detail?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-							'&service_type=' + this.service.service_type
+							'&service_type=' + this.service.service_type + '&bk=' + this.bk
 					})
 				}
 			},
