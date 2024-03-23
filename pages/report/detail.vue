@@ -250,7 +250,7 @@
 						<cl-row>
 							<cl-col span="16">
 								<view class="eblock" >
-									<cl-image size="300rpx"  :style="autograph_customer_style" :src="autograph_customer_signature" >
+									<cl-image size="300rpx" mode="aspectFit"  :style="autograph_customer_style" :src="autograph_customer_signature" >
 									</cl-image> 
 								</view>
 							</cl-col>
