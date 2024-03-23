@@ -178,7 +178,7 @@
 					startDate:this.daterange[0],
 					endDate:this.daterange[1],
 					job_id:this.jobid,
-					job_type:this.val,
+					job_type:this.jobtype,
 					service_type:this.servicetype,
 					page:this.page,
 					limit:this.limit
