@@ -80,6 +80,12 @@ export default {
 		};
 	},
 	onShow(index) {
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份是从0开始的，所以要加1  
+		const date = String(now.getDate()).padStart(2, '0');  
+		let todayISOString = `${year}-${month}-${date}`;   
+		this.Data = todayISOString
 		this.getjobs();
 		this.getJobTotal();
 	},
@@ -111,13 +117,9 @@ export default {
 		},
 		// 列表
 		getjobs() {
-			const now = new Date();  
-			const year = now.getFullYear();
-			const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份是从0开始的，所以要加1  
-			const date = String(now.getDate()).padStart(2, '0');  
-			let todayISOString = `${year}-${month}-${date}`;   
+			
 			let params = {
-				jobdate: todayISOString
+				jobdate: this.Data //todayISOString
 			}
 			this.$api.dayOrderList(params).then(res=>{
 				if(res.code == 200) {
