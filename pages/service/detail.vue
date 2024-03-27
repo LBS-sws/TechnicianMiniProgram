@@ -79,10 +79,15 @@
 			<view class="block">
 				<cl-row>
 					
-					<cl-col span="8" v-if="service.tech_attachment" v-for="(item, index) in service.tech_attachment" :key="index">
+					<!-- <cl-col span="8" v-if="service.tech_attachment" v-for="(item, index) in service.tech_attachment" :key="index">
 					    <cl-image size="200rpx" :src="fileUrl + '/' + item.file_path" :preview-list="service.tech_attachment.map(att => fileUrl + '/' + att.file_path)">
 					    </cl-image>
-					</cl-col>
+					</cl-col> -->
+					<view>
+						<view v-if="service.tech_attachment" v-for="(item, index) in service.tech_attachment" :key="index" class="item-img">
+							<image :src="fileUrl + '/' + item.file_path"  @click="previewImage(index)"></image>
+						</view>
+					</view>
 				</cl-row>
 			</view>
 		</view>
@@ -125,6 +130,22 @@
 			this.data_select()
 		},
 		methods: {
+			//预览轮播图
+			previewImage:function(index){
+				
+				var i = this.service.tech_attachment
+				
+				var ix = []
+				i.forEach((item,i)=>{
+					item.src = this.fileUrl + item.file_path
+					ix.push(this.fileUrl + item.file_path)
+				})
+				
+				uni.previewImage({
+					current:index, 
+					urls:ix
+				})
+			},
 			showConfirmationDialog(title, content, onConfirm, onCancel) {
 				uni.showModal({
 				  title: title,
@@ -463,4 +484,12 @@
     background-color: #EE0A24;
     color: #fff;
   }
+.item-img{
+	width:200rpx;
+	height: 200rpx;
+	overflow: hidden;
+}
+.item-img image{
+	width: 100%;
+}
 </style>
