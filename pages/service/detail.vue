@@ -1,7 +1,7 @@
 <template>
 	<view class="content" v-if="showContent">
 		<cl-confirm ref="confirm2" style="margin-bottom: -10px;">
-			<cl-textarea  v-model="TechRemarks" placeholder="请输入" style="text-align: left;">></cl-textarea>
+			<cl-textarea  v-model="TechRemarks" placeholder="请输入" style="text-align: left;"> </cl-textarea>
 		</cl-confirm>
 		<cl-toast ref="toast"></cl-toast>
 		<view>
@@ -254,7 +254,7 @@
 			},
 			//修改技术员备注
 			update_remarks() {
-				this.TechRemarks = this.service.TechRemarks;
+				this.TechRemarks = this.service.tech_remarks;
 				this.$refs.confirm2.open({title: "技术员备注修改"}).then(() => {
 					uni.showLoading({
 						title: "保存中..."
@@ -265,12 +265,18 @@
 						job_type: this.jobtype
 					}
 					this.$api.updateTeachRemarks(params).then(res=>{
-						uni.hideLoading();
-						this.service.TechRemarks = this.TechRemarks;
-						this.service.tech_remarks  = this.TechRemarks;
-						this.$refs.toast.open(
-							this.TechRemarks ? `修改成功！` : "填写为空！"
-						);
+						if(res.code == 200){
+							uni.hideLoading();
+							// this.TechRemarks = this.TechRemarks;
+							this.service.tech_remarks  = this.TechRemarks;
+						}
+						uni.showToast({
+							icon: 'none',
+							title: res.msg
+						});
+						// this.$refs.toast.open(
+						// 	this.TechRemarks ? `修改成功！` : "填写为空！"
+						// );
 					}).catch(err=>{
 						console.log(err)
 					})
