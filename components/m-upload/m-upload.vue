@@ -17,6 +17,12 @@
 				<text class="s-add-list-reup-icon s-icons icon-retry"></text>
 				<text class="s-add-list-reup-text">{{ item.errorInfo }}</text>
 			</view>
+			
+			<view class="s-add-list-reup-su" @tap.stop="retry" :data-index="index" v-if="item.usuccess">
+				<text class="s-add-list-reup-icon-su s-icons icon-retry"></text>
+				<text class="s-add-list-reup-text-su">{{ item.successInfo }}</text>
+			</view>
+			
 		</view>
 		<view class="s-add-list-items s-add-list-btn" :style="{
 				height: size[0],
@@ -89,7 +95,7 @@
 			// 进度条颜色
 			progressColor: {
 				type: String,
-				default: "#2079ff"
+				default: "#00aa7f"
 			},
 			// 进度条背景颜色
 			progressBgColor: {
@@ -124,7 +130,8 @@
 		data() {
 			return {
 				imageList: [],
-				upDate: false
+				upDate: false,
+				successInfo:'ok'
 			};
 		},
 		watch: {
@@ -215,7 +222,8 @@
 													url: compressRes
 														.tempFilePath,
 													progress: 0,
-													error: false
+													error: false,
+													usuccess:false
 												});
 											}
 										});
@@ -225,7 +233,8 @@
 								this.imageList.push({
 									url: res.tempFilePaths[i],
 									progress: 0,
-									error: false
+									error: false,
+									usuccess:false
 								}); // 不压缩，直接添加到imageList中
 							}
 						}
@@ -303,6 +312,8 @@
 							this.imageList[index].url = `${this.$baseUrl_imgs}` + uploadRes.data.detault_url;
 							this.imageList[index].result = uploadRes.data.detault_url;
 							this.uploadBase(index + 1);
+							this.usuccess(index);
+							this.imageList[index].successInfo = '上传成功';
 						}
 						if(uploadRes.code == 0)
 						{
@@ -335,6 +346,12 @@
 				this.imageList[index].error = true;
 				this.uploadBase(index + 1);
 				this.$emit('uploaderror');
+			},
+			// 上传成功
+			usuccess(index) {
+				this.upDate = false;
+				this.imageList[index].usuccess = true;
+				this.uploadBase(index + 1);
 			},
 			// 设置默认值
 			setItems(items) {
@@ -400,7 +417,7 @@
 		z-index: 15;
 		right: 10rpx;
 		top: 0;
-		color: #888888;
+		color: #d3d3d3;
 	}
 
 	.upload-progress {
@@ -444,6 +461,27 @@
 		font-size: 30rpx;
 		line-height: 30rpx;
 	}
+	
+	
+	.s-add-list-reup-icon-su {
+		text-align: center;
+		width: 100%;
+		color: #ffffff;
+		display: block;
+		font-size: 80rpx;
+		line-height: 100rpx;
+	}
+	
+	.s-add-list-reup-text-su {
+		text-align: center;
+		width: 100%;
+		color: #00aa7f;
+		display: block;
+		font-weight: bold;
+		font-size: 30rpx;
+		line-height: 30rpx;
+	}
+	
 
 	.s-add-list-img {
 		width: 100%;
