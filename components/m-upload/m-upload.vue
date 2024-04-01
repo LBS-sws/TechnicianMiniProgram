@@ -17,12 +17,10 @@
 				<text class="s-add-list-reup-icon s-icons icon-retry"></text>
 				<text class="s-add-list-reup-text">{{ item.errorInfo }}</text>
 			</view>
-			
 			<view class="s-add-list-reup-su" @tap.stop="retry" :data-index="index" v-if="item.usuccess">
 				<text class="s-add-list-reup-icon-su s-icons icon-retry"></text>
 				<text class="s-add-list-reup-text-su">{{ item.successInfo }}</text>
 			</view>
-			
 		</view>
 		<view class="s-add-list-items s-add-list-btn" :style="{
 				height: size[0],
@@ -459,9 +457,22 @@
 		display: block;
 		font-weight: bold;
 		font-size: 30rpx;
-		line-height: 30rpx;
 	}
 	
+	
+	.s-add-list-reup-su {
+		position: absolute;
+		z-index: 3;
+		left: 0;
+		top: 0rpx;
+		width: 222rpx;
+		height: 222rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: rgba(154, 154, 154, 0.3);
+		flex-direction: column;
+	}
 	
 	.s-add-list-reup-icon-su {
 		text-align: center;
@@ -478,11 +489,9 @@
 		color: #00aa7f;
 		display: block;
 		font-weight: bold;
-		font-size: 30rpx;
-		line-height: 30rpx;
+		font-size: 25rpx;
 	}
 	
-
 	.s-add-list-img {
 		width: 100%;
 		height: 100%;
