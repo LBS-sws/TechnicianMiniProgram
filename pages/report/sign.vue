@@ -52,7 +52,8 @@
 			uni.getSystemInfo({
 				success: function(res) {
 					that.width = res.windowWidth * 0.8;
-					that.height = res.windowHeight * 0.95;
+					// that.height = res.windowHeight * 0.95;
+					that.height = res.windowHeight * 1;
 				}
 			});
 		},
@@ -213,7 +214,7 @@
 									});
 								}
 							});
-						}, 500);
+						}, 1500);
 					},
 					fail: (err) => {
 						uni.showToast({
