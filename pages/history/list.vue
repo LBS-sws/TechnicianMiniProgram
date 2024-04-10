@@ -2,26 +2,24 @@
 	<view class="content">
 		<cl-card label="按时间条件查询">
 			<cl-row>
-				<cl-col span="6">
+				<!-- <cl-col span="6">
 					<veiw>
 						<cl-select v-model="val" :options="list"></cl-select>
 					</veiw>
-				</cl-col>
-				<cl-col span="13">
+				</cl-col> -->
+				<cl-col span="19">
 					<!-- 日期 -->
 					<view style="margin-top: 5px;"><cl-text :margin="[0, 0, 0, 20]" :value="daterange.join('~')" @tap="open"></cl-text></view>
 
 					<cl-calendar ref="calendar" type="daterange" v-model="daterange" />
 				</cl-col>
-				<cl-col span="3">
+				<cl-col span="5">
 					<cl-button type="primary" icon="cl-icon-search" @tap="search()">查询</cl-button>
 				</cl-col>
 			</cl-row>
 		</cl-card>
 		<!-- 内容 -->
-		<!-- <view class="noservice" v-if="jobs.length==0">
-			没有任务哦~~
-		</view> -->
+		
 		<!-- 工作单 -->
 		<view class="datecontent" v-for="(item,index) in jobs" v-if="jobs.length>0">
 			<view class="new_card" @click="job_detail(item)">
@@ -77,6 +75,7 @@
 	</view>
 </template>
 <script>
+import dayjs from 'dayjs';
 	export default {
 		data() {
 			return {
@@ -104,6 +103,7 @@
 				isLoadMore:true,
 				beginDate:"",
 				endDate:"",
+				customer_id:""
 			};
 		},
 		onLoad(index) {
@@ -121,7 +121,13 @@
 			this.jobid = index.job_id
 			this.jobtype = index.job_type
 			this.servicetype = index.service_type
+			this.customer_id = index.customer_id
 			this.getList()
+			
+			
+		},
+		created(){
+
 		},
 		//	上拉触底函数
 		onReachBottom(){
@@ -141,8 +147,14 @@
 			getCurrentMonthFirst(){
 				var date = new Date();
 			    date.setDate(1);
-			    this.beginDate = date.toISOString().slice(0, 10)
-			    this.endDate = new Date().toISOString().slice(0, 10)
+				// console.log(date);
+			    // this.beginDate = date.toISOString().slice(0, 10)
+			    // this.endDate = new Date().toISOString().slice(0, 10)
+				// this.daterange = [this.beginDate,this.endDate]
+				
+				const today = dayjs()
+				this.endDate = dayjs().format("YYYY-MM-DD") // 结束日期
+				this.beginDate = today.subtract(90,'day').format('YYYY-MM-DD')  // 开始日期
 				this.daterange = [this.beginDate,this.endDate]
 			},                
 			// 列表
@@ -153,17 +165,45 @@
 					job_id:this.jobid,
 					job_type:this.jobtype,
 					service_type:this.servicetype,
+					customer_id:this.customer_id,
 					page:this.page,
 					limit:this.limit
 				}
 				this.$api.searchOrder(params).then(res=>{
-					if (res.data.length>0) {
-						if(res.data.data.length>0){
-							this.total = res.data.data.total
-							this.jobs = this.jobs.concat(res.data.data)
-							this.isLoadMore=false
+					console.log(res.data)
+					// if (res.data.length>0) {
+					// 	if(res.data.data.length>0){
+					// 		this.total = res.data.data.total
+					// 		this.jobs = this.jobs.concat(res.data.data)
+					// 		this.isLoadMore=false
+					// 	}
+					// }
+					if (res.data.order_list.length == 0 && res.data.follow_list.length == 0){
+					   console.log("数组为空")
+					   this.loading = false
+					   return false
+					}
+					// 工作单
+					let job_order = []
+					if(res.data.order_list.data){
+						if(res.data.order_list.data.length>0){
+							job_order = res.data.order_list.data
 						}
 					}
+					
+					// 跟进单
+					let follow_order = []
+					if(res.data.follow_list.data){
+						if(res.data.follow_list.data.length>0){
+							follow_order = res.data.follow_list.data
+						}
+					}
+					
+					const mergedArray = job_order.concat(follow_order);
+					console.log(mergedArray);
+					this.total = res.data.order_list.total
+					this.jobs = this.jobs.concat(mergedArray)
+					
 				}).catch(err=>{
 					console.log(err)
 				})
@@ -180,15 +220,43 @@
 					job_id:this.jobid,
 					job_type:this.val,
 					service_type:this.servicetype,
+					customer_id:this.customer_id,
 					page:this.page,
 					limit:this.limit
 				}
 				this.$api.searchOrder(params).then(res=>{
-					if(res.data.data){
-						this.jobs = res.data.data
-					}else{
-						this.jobs = []
+					console.log(res)
+					
+					// if(res.data.data){
+					// 	this.jobs = res.data.data
+					// }else{
+					// 	this.jobs = []
+					// }
+					if (res.data.order_list.length == 0 && res.data.follow_list.length == 0){
+					   console.log("数组为空")
+					   this.loading = false
+					   return false
 					}
+					// 工作单
+					let job_order = []
+					if(res.data.order_list.data){
+						if(res.data.order_list.data.length>0){
+							job_order = res.data.order_list.data
+						}
+					}
+					
+					// 跟进单
+					let follow_order = []
+					if(res.data.follow_list.data){
+						if(res.data.follow_list.data.length>0){
+							follow_order = res.data.follow_list.data
+						}
+					}
+					
+					const mergedArray = job_order.concat(follow_order);
+					console.log(mergedArray);
+					this.total = res.data.order_list.total
+					this.jobs = this.jobs.concat(mergedArray)
 				}).catch(err=>{
 					console.log(err)
 				})

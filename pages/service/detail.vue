@@ -270,7 +270,7 @@
 			history() {
 				uni.redirectTo({
 					url: "/pages/history/list?job_type=" + this.jobtype + "&job_date=" + this.service.job_date + "&service_type=" + this.service.service_type
-					+ "&job_id=" + this.jobid
+					+ "&job_id=" + this.jobid + "&customer_id=" + this.service.customer.customer_id
 				})
 			},
 			//修改技术员备注
