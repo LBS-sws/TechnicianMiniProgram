@@ -232,8 +232,10 @@ import dayjs from 'dayjs';
 					// }else{
 					// 	this.jobs = []
 					// }
+					
+					// 没有数据
 					if (res.data.order_list.length == 0 && res.data.follow_list.length == 0){
-					   console.log("数组为空")
+					   
 					   this.loading = false
 					   return false
 					}
@@ -254,9 +256,10 @@ import dayjs from 'dayjs';
 					}
 					
 					const mergedArray = job_order.concat(follow_order);
-					console.log(mergedArray);
+					// console.log(mergedArray);
 					this.total = res.data.order_list.total
-					this.jobs = this.jobs.concat(mergedArray)
+					this.jobs = []
+					this.jobs = mergedArray
 				}).catch(err=>{
 					console.log(err)
 				})
