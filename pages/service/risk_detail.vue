@@ -386,6 +386,17 @@
 					}
 				})
 				
+			
+			const str = this.upload_site_photos;
+			const substr = "undefined";
+			if (str.includes(substr)) {
+				uni.showToast({
+					icon: 'none',
+					title: `有上传失败的图片请重新上传!`
+				});
+				return false;
+			}
+			
 				uni.showLoading({
 					title: "正在保存"
 				});
@@ -478,7 +489,7 @@
 			if (str.includes(substr)) {
 				uni.showToast({
 					icon: 'none',
-					title: `有上传失败的图片请重新上传!`
+					title: `有上传失败的图片请重新上传`
 				});
 				return false;
 			}
