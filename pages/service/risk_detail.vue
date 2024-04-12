@@ -377,6 +377,15 @@
 					}
 				}
 				
+				let photoArr = this.upload_site_photos.split(',')
+				photoArr.forEach((item,i)=>{
+					let no = i+1
+					if(item=='' || item==undefined || item=='undefined'){
+						uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
+						return false
+					}
+				})
+				
 				uni.showLoading({
 					title: "正在保存"
 				});
@@ -455,13 +464,29 @@
 					}
 				}
 				
-				uni.showLoading({
-					title: "正在保存"
-				});
+				
+				
 				let checkdata = '';
 				if(this.checkdata.length>0){
 					checkdata = JSON.stringify(this.checkdata)
 				}
+				
+			// 验证图片里面是否有失败图片
+			let photoArr = this.upload_site_photos.split(',')
+			const str = this.upload_site_photos;
+			const substr = "undefined";
+			if (str.includes(substr)) {
+				uni.showToast({
+					icon: 'none',
+					title: `有上传失败的图片请重新上传!`
+				});
+				return false;
+			}
+			
+			
+			uni.showLoading({
+				title: "正在保存"
+			});	
 			let params = {
 				id: this.id,
 				job_id: this.jobid,
@@ -833,99 +858,8 @@
 	}
 
 	// 自定义上传样式
-	.uni-file-picker__container {
-		display: flex;
-		box-sizing: border-box;
-		flex-wrap: wrap;
-		margin: -5px;
+	
 
-		.file-picker__box {
-			position: relative;
-			width: 33.3%;
-			height: 0;
-			padding-top: 33.33%;
-			box-sizing: border-box;
-
-			.file-picker__box-content {
-				position: absolute;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
-				margin: 5px;
-				border: 1px #eee solid;
-				border-radius: 5px;
-				overflow: hidden;
-			}
-
-			.file-picker__box-content {
-				border-width: 1px;
-				border-style: solid;
-				border-color: #eee;
-				border-radius: 3px;
-			}
-
-			.is-add {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-
-				.icon-add {
-					width: 50px;
-					height: 5px;
-					background-color: #f1f1f1;
-					border-radius: 2px;
-				}
-
-				.rotate {
-					position: absolute;
-					-webkit-transform: rotate(90deg);
-					transform: rotate(90deg);
-				}
-			}
-
-		}
-	}
-
-	// 图片
-	.file-image {
-		width: 100%;
-		height: 100%;
-	}
-
-	// 删除图标
-	.icon-del-box {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		position: absolute;
-		top: 3px;
-		right: 3px;
-		height: 26px;
-		width: 26px;
-		border-radius: 50%;
-		background-color: rgba(0, 0, 0, 0.5);
-		z-index: 2;
-		-webkit-transform: rotate(-45deg);
-		transform: rotate(-45deg);
-
-		.icon-del {
-			width: 15px;
-			height: 2px;
-			background-color: #fff;
-			border-radius: 2px;
-		}
-
-		.rotate {
-			position: absolute;
-			-webkit-transform: rotate(90deg);
-			transform: rotate(90deg);
-		}
-	}
-
-	.bg-white {
-		background: #fff;
-	}
 .cl-input.is-border {
 	border: 1rpx solid #dcdfe6;
 	display: flex;
