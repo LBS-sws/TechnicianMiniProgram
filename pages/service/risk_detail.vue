@@ -405,7 +405,7 @@
 			if(this.checkdata.length>0){
 				checkdata = JSON.stringify(this.checkdata)
 			}
-			
+			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 			let params = {
 				job_id: this.jobid,
 				job_type: this.jobtype,
@@ -498,6 +498,7 @@
 			uni.showLoading({
 				title: "正在保存"
 			});	
+			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 			let params = {
 				id: this.id,
 				job_id: this.jobid,

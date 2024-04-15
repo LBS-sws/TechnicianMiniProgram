@@ -298,7 +298,7 @@
 						return false
 					}
 				})
-				
+				this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 				let param = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
@@ -363,7 +363,7 @@
 					}
 				})
 				
-				// this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+				this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 				let param = {
 					id: this.id,
 					site_photos:this.upload_site_photos,
