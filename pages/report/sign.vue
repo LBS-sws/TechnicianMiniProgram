@@ -35,7 +35,8 @@
 				height: 0,
 				jobid:'',
 				jobtype:'',
-				is_main:0
+				is_main:0,
+				status:'',
 			}
 		},
 		onLoad(option) {
@@ -44,6 +45,7 @@
 			this.jobid = option.jobid
 			this.jobtype = option.jobtype
 			this.is_main = option.is_main
+			this.status = option.status
 			this.ctx = uni.createCanvasContext('mycanvas', this); //创建绘图对象
 			//设置画笔样式
 			this.ctx.lineWidth = 3;
@@ -56,6 +58,10 @@
 					that.height = res.windowHeight * 1;
 				}
 			});
+		},
+		created() {
+			console.log(this.status)
+			
 		},
 		methods: {
 			//触摸开始，获取到起点
@@ -175,6 +181,32 @@
 											if (data.code == 200) {
 												// 上传成功
 												console.log('上传成功')
+												
+												if(that.status==3){
+													
+													
+													let formData = {
+														'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
+														'send':1,
+														'sync':1
+													}
+													setTimeout(()=>{
+														uni.request({
+														    url: `${that.$baseUrl}/Order.Order/makePdf`,
+														    header: {
+														    	'token': uni.getStorageSync('token'),
+																'Content-type':'application/x-www-form-urlencoded'
+														    },
+															method:'POST',
+														    data: formData,
+														    success: (res) => {
+														        console.log(res.data);
+														        console.log('更新')
+														    }
+														});
+													},500)
+												}
+												
 											} else {
 												// 上传失败
 												uni.showToast({

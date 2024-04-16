@@ -581,7 +581,7 @@
 			// 签名
 			startSign_s() {
 				uni.navigateTo({ 
-					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1"
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1" + "&status=" + this.basic.status
 				})
 				//显示点评弹窗
 				let timer = setTimeout(() => {
