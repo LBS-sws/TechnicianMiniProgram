@@ -160,83 +160,85 @@
 										is_main: that.is_main,
 										file: path
 									}
-									uni.uploadFile({
-										url: `${that.$baseUrl}/Sign.Sign/uploadSign`,
-										name: 'file',
-										header: {
-											'token': uni.getStorageSync('token'),
-										},
-										formData: formData,
-										filePath: path,
-										success: (res) => {
-											let data = JSON.parse(res.data)
-											if(that.is_main == '1'){
-												uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url})
-											}else{
-												uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url_add})
-											}
-											
-											uni.hideLoading()
-											console.log(res, '上传结果')
-											if (data.code == 200) {
-												// 上传成功
-												console.log('上传成功')
-												
-												if(that.status==3){
-													
-													
-													let formData = {
-														'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
-														'send':1,
-														'sync':1
-													}
-													setTimeout(()=>{
-														uni.request({
-														    url: `${that.$baseUrl}/Order.Order/makePdf`,
-														    header: {
-														    	'token': uni.getStorageSync('token'),
-																'Content-type':'application/x-www-form-urlencoded'
-														    },
-															method:'POST',
-														    data: formData,
-														    success: (res) => {
-														        console.log(res.data);
-														        console.log('更新')
-														    }
-														});
-													},500)
+									setTimeout(()=>{
+										uni.uploadFile({
+											url: `${that.$baseUrl}/Sign.Sign/uploadSign`,
+											name: 'file',
+											header: {
+												'token': uni.getStorageSync('token'),
+											},
+											formData: formData,
+											filePath: path,
+											success: (res) => {
+												let data = JSON.parse(res.data)
+												if(that.is_main == '1'){
+													uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url})
+												}else{
+													uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url_add})
 												}
 												
-											} else {
-												// 上传失败
+												uni.hideLoading()
+												console.log(res, '上传结果')
+												if (data.code == 200) {
+													// 上传成功
+													console.log('上传成功')
+													
+													if(that.status==3){
+														
+														
+														let formData = {
+															'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
+															'send':1,
+															'sync':1
+														}
+														setTimeout(()=>{
+															uni.request({
+															    url: `${that.$baseUrl}/Order.Order/makePdf`,
+															    header: {
+															    	'token': uni.getStorageSync('token'),
+																	'Content-type':'application/x-www-form-urlencoded'
+															    },
+																method:'POST',
+															    data: formData,
+															    success: (res) => {
+															        console.log(res.data);
+															        console.log('更新')
+															    }
+															});
+														},500)
+													}
+													
+												} else {
+													// 上传失败
+													uni.showToast({
+														title: data
+															.msg,
+														icon: 'error',
+														duration: 2000
+													})
+												}
+												// Pass data back to the previous page
+												const pages =
+											getCurrentPages();
+												const prevPage = pages[pages
+													.length - 2];
+												prevPage.setData({
+													data: data,
+													is_new: 1
+												});
+												uni.navigateBack({
+													delta: 1
+												});
+											},
+											fail: (err) => {
 												uni.showToast({
-													title: data
-														.msg,
+													title: err.errMsg,
 													icon: 'error',
 													duration: 2000
-												})
+												});
 											}
-											// Pass data back to the previous page
-											const pages =
-										getCurrentPages();
-											const prevPage = pages[pages
-												.length - 2];
-											prevPage.setData({
-												data: data,
-												is_new: 1
-											});
-											uni.navigateBack({
-												delta: 1
-											});
-										},
-										fail: (err) => {
-											uni.showToast({
-												title: err.errMsg,
-												icon: 'error',
-												duration: 2000
-											});
-										}
-									});
+										});
+									},1500)
 								},
 								fail: (err) => {
 									uni.showToast({
