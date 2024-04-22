@@ -3,7 +3,7 @@
 		<view class="sigh-btns">
 			<button class="btn cancel-btn" @tap="handleCancel">取 消</button>
 			<button class="btn reset-btn" @tap="handleReset">重 写</button>
-			<button class="btn save-btn" @tap="handleConfirm">确 认</button>
+			<button class="btn save-btn" @tap="handleConfirm" >确 认</button>
 		</view>
 		<view class="handCenter">
 			<canvas class="handWriting" disable-scroll="true" :style="{width:width +'px',height:height +'px'}"
@@ -37,6 +37,7 @@
 				jobtype:'',
 				is_main:0,
 				status:'',
+				disabled:true,
 			}
 		},
 		onLoad(option) {
@@ -133,6 +134,9 @@
 					});
 					return;
 				}
+				if(!this.disabled){
+					return false
+				}
 				uni.canvasToTempFilePath({
 					canvasId: 'mycanvas',
 					success: function(res) {
@@ -191,23 +195,25 @@
 															'send':1,
 															'sync':1
 														}
-														setTimeout(()=>{
-															uni.request({
-															    url: `${that.$baseUrl}/Order.Order/makePdf`,
-															    header: {
-															    	'token': uni.getStorageSync('token'),
-																	'Content-type':'application/x-www-form-urlencoded'
-															    },
-																method:'POST',
-															    data: formData,
-															    success: (res) => {
-															        console.log(res.data);
-															        console.log('更新')
-															    }
-															});
-														},500)
+														// setTimeout(()=>{
+														// 	uni.request({
+														// 	    url: `${that.$baseUrl}/Order.Order/makePdf`,
+														// 	    header: {
+														// 	    	'token': uni.getStorageSync('token'),
+														// 			'Content-type':'application/x-www-form-urlencoded'
+														// 	    },
+														// 		method:'POST',
+														// 	    data: formData,
+														// 	    success: (res) => {
+														// 	        console.log(res.data);
+														// 	        console.log('更新')
+														// 	    }
+														// 	});
+														// },500)
 													}
-													
+													setTimeout(()=>{
+														that.disabled = true
+													},4000)
 												} else {
 													// 上传失败
 													uni.showToast({
@@ -221,7 +227,7 @@
 												const pages =
 											getCurrentPages();
 												const prevPage = pages[pages
-													.length - 2];
+													.length - 1];
 												prevPage.setData({
 													data: data,
 													is_new: 1
