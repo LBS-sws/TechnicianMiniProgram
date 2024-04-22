@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<view class="sigh-btns">
+		<view class="sigh-btns" :class="[disabled?'yes':'no']">
 			<button class="btn cancel-btn" @tap="handleCancel">取 消</button>
 			<button class="btn reset-btn" @tap="handleReset">重 写</button>
 			<button class="btn save-btn" @tap="handleConfirm" >确 认</button>
@@ -134,9 +134,14 @@
 					});
 					return;
 				}
+				console.log('保存')
 				if(!this.disabled){
 					return false
 				}
+				uni.showLoading({
+					title: '保存中...'
+				})
+				this.disabled = false
 				uni.canvasToTempFilePath({
 					canvasId: 'mycanvas',
 					success: function(res) {
@@ -155,9 +160,7 @@
 								success: function(res) {
 									//这是签名图片文件的本地临时地址
 									let path = res.tempFilePath;
-									uni.showLoading({
-										title: '保存中...'
-									})
+									
 									const formData = {
 										job_id: that.jobid,
 										job_type: that.jobtype,
@@ -195,25 +198,25 @@
 															'send':1,
 															'sync':1
 														}
-														// setTimeout(()=>{
-														// 	uni.request({
-														// 	    url: `${that.$baseUrl}/Order.Order/makePdf`,
-														// 	    header: {
-														// 	    	'token': uni.getStorageSync('token'),
-														// 			'Content-type':'application/x-www-form-urlencoded'
-														// 	    },
-														// 		method:'POST',
-														// 	    data: formData,
-														// 	    success: (res) => {
-														// 	        console.log(res.data);
-														// 	        console.log('更新')
-														// 	    }
-														// 	});
-														// },500)
+														setTimeout(()=>{
+															uni.request({
+															    url: `${that.$baseUrl}/Order.Order/makePdf`,
+															    header: {
+															    	'token': uni.getStorageSync('token'),
+																	'Content-type':'application/x-www-form-urlencoded'
+															    },
+																method:'POST',
+															    data: formData,
+															    success: (res) => {
+															        console.log(res.data);
+															        console.log('更新')
+															    }
+															});
+														},500)
 													}
 													setTimeout(()=>{
 														that.disabled = true
-													},4000)
+													},8000)
 												} else {
 													// 上传失败
 													uni.showToast({
@@ -293,6 +296,17 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
+		position: relative;
+	}
+	.sigh-btns.no::after{
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		button:0;
+		height: 100%;
+		background: rgba(255, 255, 255, 0);
 	}
 
 	.btn {
