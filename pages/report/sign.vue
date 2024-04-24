@@ -8,7 +8,7 @@
 		<view class="handCenter">
 			<canvas class="handWriting" disable-scroll="true" :style="{width:width +'px',height:height +'px'}"
 				canvas-id="mycanvas" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
-			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:height +'rpx',height:width +'rpx'}"
+			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:parseInt(height/2)+'px',height:parseInt(width/2)+'px'}"
 				class="canvsborder"></canvas>
 		</view>
 	</view>
@@ -99,10 +99,10 @@
 			},
 
 			/* ***********************************************
-			        #   绘制笔迹
-			        #   1.为保证笔迹实时显示，必须在移动的同时绘制笔迹
-			        #   2.为保证笔迹连续，每次从路径集合中区两个点作为起点（moveTo）和终点(lineTo)
-			        #   3.将上一次的终点作为下一次绘制的起点（即清除第一个点）
+			#   绘制笔迹
+			#   1.为保证笔迹实时显示，必须在移动的同时绘制笔迹
+			#   2.为保证笔迹连续，每次从路径集合中区两个点作为起点（moveTo）和终点(lineTo)
+			#   3.将上一次的终点作为下一次绘制的起点（即清除第一个点）
 			************************************************ */
 			draw: function() {
 				let point1 = this.points[0];
@@ -200,17 +200,17 @@
 														}
 														setTimeout(()=>{
 															uni.request({
-															    url: `${that.$baseUrl}/Order.Order/makePdf`,
-															    header: {
-															    	'token': uni.getStorageSync('token'),
+																url: `${that.$baseUrl}/Order.Order/makePdf`,
+																header: {
+																	'token': uni.getStorageSync('token'),
 																	'Content-type':'application/x-www-form-urlencoded'
-															    },
+																},
 																method:'POST',
-															    data: formData,
-															    success: (res) => {
-															        console.log(res.data);
-															        console.log('更新')
-															    }
+																data: formData,
+																success: (res) => {
+																	console.log(res.data);
+																	console.log('更新')
+																}
 															});
 														},500)
 													}
