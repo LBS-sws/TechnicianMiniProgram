@@ -75,6 +75,7 @@
 	</view>
 </template>
 <script>
+
 import dayjs from 'dayjs';
 	export default {
 		data() {
@@ -144,13 +145,10 @@ import dayjs from 'dayjs';
 		     }
 		},
 		methods: {
+			
 			getCurrentMonthFirst(){
 				var date = new Date();
 			    date.setDate(1);
-				// console.log(date);
-			    // this.beginDate = date.toISOString().slice(0, 10)
-			    // this.endDate = new Date().toISOString().slice(0, 10)
-				// this.daterange = [this.beginDate,this.endDate]
 				
 				const today = dayjs()
 				this.endDate = dayjs().format("YYYY-MM-DD") // 结束日期
@@ -170,14 +168,8 @@ import dayjs from 'dayjs';
 					limit:this.limit
 				}
 				this.$api.searchOrder(params).then(res=>{
-					console.log(res.data)
-					// if (res.data.length>0) {
-					// 	if(res.data.data.length>0){
-					// 		this.total = res.data.data.total
-					// 		this.jobs = this.jobs.concat(res.data.data)
-					// 		this.isLoadMore=false
-					// 	}
-					// }
+					// console.log(res.data)
+					
 					if (res.data.order_list.length == 0 && res.data.follow_list.length == 0){
 					   console.log("数组为空")
 					   this.loading = false
@@ -199,10 +191,14 @@ import dayjs from 'dayjs';
 						}
 					}
 					
-					const mergedArray = job_order.concat(follow_order);
-					console.log(mergedArray);
+					const arrList = job_order.concat(follow_order);
+					arrList.sort(function(a, b) {
+						return b.job_date < a.job_date ? -1 : 1
+					})
+					
+					// console.log(arrList);
 					this.total = res.data.order_list.total
-					this.jobs = this.jobs.concat(mergedArray)
+					this.jobs = this.jobs.concat(arrList)
 					
 				}).catch(err=>{
 					console.log(err)
@@ -227,12 +223,6 @@ import dayjs from 'dayjs';
 				this.$api.searchOrder(params).then(res=>{
 					console.log(res)
 					
-					// if(res.data.data){
-					// 	this.jobs = res.data.data
-					// }else{
-					// 	this.jobs = []
-					// }
-					
 					// 没有数据
 					if (res.data.order_list.length == 0 && res.data.follow_list.length == 0){
 					   
@@ -255,11 +245,16 @@ import dayjs from 'dayjs';
 						}
 					}
 					
-					const mergedArray = job_order.concat(follow_order);
-					// console.log(mergedArray);
+					// const arrList = job_order.concat(follow_order);
+					
+					const arrList = job_order.concat(follow_order);
+					arrList.sort(function(a, b) {
+						return b.job_date < a.job_date ? -1 : 1
+					})
+					
 					this.total = res.data.order_list.total
 					this.jobs = []
-					this.jobs = mergedArray
+					this.jobs = arrList
 				}).catch(err=>{
 					console.log(err)
 				})
