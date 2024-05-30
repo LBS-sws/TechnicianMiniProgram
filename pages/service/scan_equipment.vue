@@ -2,12 +2,13 @@
 	<view class="content" style="margin-bottom: 40px;">
 		<view class="service">
 			<view class="service_content">
-				<!-- <cl-row>
+				<cl-row>
 					<view class="text-left">设备二维码</view>
 					<view class="text-right">
-						<cl-icon name="cl-icon-scan" color="#007AFF" :size="60" class="scan" @tap="scanCode()"></cl-icon>
+						<cl-icon v-if="!hasScanCode" name="cl-icon-scan" color="#007AFF" :size="60" class="scan" @tap="scanCode()"></cl-icon>
+						<view v-else class="scanCode" @tap="scanCode()">更换二维码</view>
 					</view>
-				</cl-row> -->
+				</cl-row>
 				<cl-row>
 					<view class="text-left" >设备编号</view>
 					<view class="text-right" style="width: 70%;">
@@ -15,8 +16,8 @@
 							<cl-col span="12" style="text-align: right;">
 								{{eq_mark}}
 							</cl-col>
-							<cl-col span="12">
-								<cl-input  v-model="eq_mark_num" placeholder="自定义"  />
+							<cl-col span="12" style="height:40rpx">
+								<cl-input  v-model="eq_mark_num" placeholder="自定义" style="height:40rpx;line-height: 40rpx;"/>
 							</cl-col>
 						</view>
 						<view v-if="one_eq == 0">
@@ -161,7 +162,9 @@ export default {
 			eq_mark:'',		// 设备标识
 			eq_mark_num:'', // 设备编号
 			list:[]			,// 储存list
-			selectList:[]
+			selectList:[],
+			hasScanCode: false,
+			scan_id:0
 		}
 	},
 	onLoad(index) {
@@ -177,6 +180,7 @@ export default {
 		}
 		this.jobid = index.jobid
 		this.jobtype = index.jobtype
+		this.scan_id = index.jobtype
 		
 		this.id = index.id
 		// this.ct = uni.getStorageSync('ct')
@@ -232,16 +236,17 @@ export default {
 							
 							// 2.设备编号
 							var equipmentNumber = '';
-							// 单个
-							if(res.data.list.length == 1)
-							{
+							
+							if(res.data.list.length == 1){// 单个
 								this.eq_mark = res.data.list[0]['equipment_number']	// 设备标识
 								this.eq_mark_num = res.data.list[0]['number']			// 设备编号
 								this.equipment_number = res.data.list[0]['number']
-							}
-							// 多个
-							
-							if(res.data.list.length>1){
+								//二维码
+								if(res.data.list[0]['qrcode'] != null){
+									this.scan_id = res.data.list[0]['qrcode']['id'] || ''
+									this.hasScanCode = true
+								}
+							}else if(res.data.list.length>1){// 多个
 								for(let i=0;i<res.data.list.length;i++){
 									if(equipmentNumber == ''){
 										equipmentNumber = res.data.list[i]['equipment_number'] + res.data.list[i]['number']
@@ -388,47 +393,63 @@ export default {
 				})
 			},
 			scanCode() {
+				let that = this
+
 				uni.scanCode({
 					success: async (res) => {
-						if(res.result!=''){
-							let param = {
-								staffid: uni.getStorageSync('staffid'),
-								city: uni.getStorageSync('city'),
-								scan_code: res.result,
-								job_id: this.jobid,
-								job_type: this.jobtype,
-							}
-							uni.request({
-								url: `${this.$baseUrl}/addequipmentbyscan`,
-								header: {
-									'content-type': 'application/x-www-form-urlencoded',
-									'token': uni.getStorageSync('token')
-								},
-								method: 'POST',
-								data: param,
-								success: (res) => {
-									if (res.data.code == 1 && res.data.data!=null) {
-										this.id = res.data.data
-										this.data_select();
-									} else {
-										uni.showToast({
-											icon: 'none',
-											title: res.data.msg
-										});
-									}
-							
-								},
-								fail: (err) => {
-									console.log(res);
-								}
-							})
-						}else{
+						if(res.result==''){
 							uni.showToast({
 								icon: 'none',
 								title: '扫码错误！'
 							});
+							return false;
 						}
 						
+						let queryString = res.result.split('?')[1];
+						if (!queryString) {
+							uni.showToast({
+								icon: 'none',
+								title: 'URL格式错误！'
+							});
+							return false;
+						}
+
+						let queryParams = new URLSearchParams(queryString);
+						if(!queryParams.get('id') || !queryParams.get('city') || !queryParams.get('office_id')){
+							uni.showToast({icon: 'none',title: '无效二维码！'});
+							return false;
+						}else if(queryParams.get('city') != uni.getStorageSync('city')){
+							uni.showToast({icon: 'none',title: '非本地区二维码！'});
+							return false;
+						}
+
+						let params = {
+							scan_id: queryParams.get('id'),
+							city: queryParams.get('city'),
+							office_id: queryParams.get('office_id'),
+							scan_code: res.result,
+							id: that.id,
+							job_id: that.jobid,
+							job_type: that.jobtype,
+						}
+
+						that.hasScanCode = true
+						that.scan_id = params.scan_id
+
+						that.$api.bindQr(params).then(res=>{
+							uni.hideLoading();
+							uni.showToast({title: res.msg,icon: 'none'});
+						}).catch(err=>{
+							console.log(err)
+							uni.showToast({icon: 'none',title: err.msg});
+						})
+
+					},
+					fail: (err) => {
+						uni.showToast({
+							icon: 'none',
+							title: '无效二维码！'
+						});
 					}
 				});
 			},
@@ -791,5 +812,13 @@ page {
 }
 .more{
 	color: #007AFF;
+}
+.scanCode{
+	width: 200rpx;
+	height: 40rpx;
+	color: #FFF;
+	background-color: #007AFF;
+	font-size: 26rpx;
+	text-align: center;
 }
 </style>
