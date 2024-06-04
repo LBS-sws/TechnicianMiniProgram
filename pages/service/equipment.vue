@@ -382,19 +382,23 @@
 						scan_code: scanCode,
 					}
 					that.$api.addEq(params).then(res=>{
-						if (res.code == 200) {
-							uni.$utils.toast('增加成功')
-							that.add_number = 1;
-							
-							that.optionEq()
-							that.optionEqAdd()
-							that.data_select()
-
-							that.xz_all = [res.data.id]
-							that.scan_code = ''
-							that.ckxq()
+						if(res.code != 200){
+							uni.$utils.toast(res.msg)
+							return false
 						}
+
+						uni.$utils.toast('增加成功')
+						that.add_number = 1;
+						
+						that.optionEq()
+						that.optionEqAdd()
+						that.data_select()
+
+						that.xz_all = [res.data.id]
+						that.scan_code = ''
+						that.ckxq()
 					}).catch(err=>{
+						uni.$utils.toast(err.msg)
 						console.log(err)
 					})
 				}).catch(() => {});
