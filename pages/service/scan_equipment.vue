@@ -242,8 +242,8 @@ export default {
 								this.eq_mark_num = res.data.list[0]['number']			// 设备编号
 								this.equipment_number = res.data.list[0]['number']
 								//二维码
-								if(res.data.list[0]['qrcode'] != null){
-									this.scan_id = res.data.list[0]['qrcode']['id'] || ''
+								if(res.data.list[0]['qrcode_id'] != null){
+									this.scan_id = res.data.list[0]['qrcode_id'] || ''
 									this.hasScanCode = true
 								}
 							}else if(res.data.list.length>1){// 多个

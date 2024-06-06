@@ -320,7 +320,7 @@
 						that.xz_all = [] // 清空选中项
 						//遍历当前设备
 						that.all.forEach(item=>{
-							if(item.qrcode!=null && item.qrcode['id'] == scan_id){
+							if(item.qrcode_id!=null && item.qrcode_id == scan_id){
 								that.xz_all = [item.id]
 							}
 						})
