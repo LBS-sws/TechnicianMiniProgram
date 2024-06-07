@@ -5,6 +5,7 @@ import store from './store/index'
 import './styles/index.scss'
 import uView from "uview-ui";
 import "url-search-params-polyfill";
+import Base64 from 'base-64';
 
 import "common/message.js"		// 消息  用法 uni.$utils.toast(res.data.msg)
 //导入封装的请求对象

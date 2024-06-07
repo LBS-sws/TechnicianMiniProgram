@@ -93,6 +93,8 @@
 </template>
 
 <script>
+import Base64 from 'base-64';
+
 	export default {
 		data() {
 			return {
@@ -316,7 +318,8 @@
 							return false;
 						}
 
-						let scan_id = atob(queryParams.get('id'))//base64 decode
+						let scan_id = Base64.decode(queryParams.get('id'))//base64 decode
+						
 						that.xz_all = [] // 清空选中项
 						//遍历当前设备
 						that.all.forEach(item=>{
