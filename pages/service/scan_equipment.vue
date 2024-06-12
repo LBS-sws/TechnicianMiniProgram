@@ -403,10 +403,7 @@ export default {
 				uni.scanCode({
 					success: async (res) => {
 						if(res.result==''){
-							uni.showToast({
-								icon: 'none',
-								title: '扫码错误！'
-							});
+							uni.showToast({icon: 'none',title: '扫码错误！'});
 							return false;
 						}
 						
@@ -438,11 +435,16 @@ export default {
 							job_type: that.jobtype,
 						}
 
-						that.hasScanCode = true
-						that.scan_id = params.scan_id
-
 						that.$api.bindQr(params).then(res=>{
 							uni.hideLoading();
+							if(res.code!==200){
+								uni.showToast({icon: 'none',title: res.msg});
+								return false
+							}
+
+							that.hasScanCode = true
+							that.scan_id = params.scan_id
+
 							uni.showToast({title: res.msg,icon: 'none'});
 						}).catch(err=>{
 							console.log(err)
