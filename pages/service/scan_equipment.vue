@@ -420,10 +420,11 @@ export default {
 						if(!queryParams.get('id') || !queryParams.get('city') || !queryParams.get('office_id')){
 							uni.showToast({icon: 'none',title: '无效二维码！'});
 							return false;
-						}else if(queryParams.get('city') != uni.getStorageSync('city')){
-							uni.showToast({icon: 'none',title: '非本地区二维码！'});
-							return false;
 						}
+						// else if(queryParams.get('city') != uni.getStorageSync('city')){
+						// 	uni.showToast({icon: 'none',title: '非本地区二维码！'});
+						// 	return false;
+						// }
 
 						let params = {
 							scan_id: queryParams.get('id'),
