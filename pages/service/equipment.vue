@@ -462,6 +462,7 @@ import Base64 from 'base-64';
 								if (res.code == 200) {
 									this.xz_all = ''
 									this.data_select()
+									this.optionEq()
 									uni.showToast({
 										icon: 'none',
 										title: '删除成功'
