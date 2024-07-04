@@ -608,9 +608,9 @@
 				let that = this
 
 				if(data.is_main == '0'){//保存附加签名时
-					that.autograph_customer_signature = `${that.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
-				}else if(data.is_main == '1'){//保存客户签名时
 					that.autograph_customer_signature_add = `${that.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
+				}else if(data.is_main == '1'){//保存客户签名时
+					that.autograph_customer_signature = `${that.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
 				}else if(data.is_main == '2'){//保存技术员签名时
 					that.staff_signature = []
 					data.img_url.forEach(item=>{
