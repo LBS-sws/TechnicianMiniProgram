@@ -237,11 +237,14 @@
 					<view class="sign_content">
 						<view class="sign_title">员工签名</view>
 						<cl-row>
-							<cl-col span="8">
+							<cl-col span="16">
 								<view class="eblock">
 								<cl-image size="200rpx" v-for="(img_url, index) in staff_signature" :key="index" :src="img_url" :preview-list="[img_url]">
 								</cl-image>
 								</view>
+							</cl-col>
+							<cl-col span="8" class="sign_qm">
+								<cl-button @tap="startSign_staff">签名</cl-button>
 							</cl-col>
 						</cl-row>
 					</view>
@@ -383,10 +386,10 @@
 				equipment:[],	// add
 				risk: [],
 				photo: [],
-				staff_signature:[],
+				staff_signature:[],//技术员签名
 				autograph_employee01_signature:'',
-				autograph_customer_signature:'',
-				autograph_customer_signature_add:'',
+				autograph_customer_signature:'',//客户签名
+				autograph_customer_signature_add:'',//附加签名
 				autograph_customer_style_add:'',
 				autograph_customer_grade:0,
 				show_briefing:false,
@@ -462,11 +465,11 @@
 			this.autograph_customer_signature = currPage.data.customer_signature;
 			let datas_add = currPage.data.customer_signature_add;
 			this.autograph_customer_signature_add = currPage.data.customer_signature_add;
-			
+			this.staff_signature = currPage.data.staff_signature;
+
 			this.bk.forEach((item,i)=>{
-				// console.log(item)
 				if(item == 1){
-					 this.show_briefing = true
+					this.show_briefing = true
 				}
 				if(item == 2){
 					this.show_material = true
@@ -578,7 +581,13 @@
 					urls: imgsArray
 				});
 			},
-			// 签名
+			// 技术员签名
+			startSign_staff() {
+				uni.navigateTo({ 
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=2"
+				})
+			},
+			// 客户签名
 			startSign_s() {
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1" + "&status=" + this.basic.status
@@ -596,16 +605,24 @@
 			},
 			// 保存签名时
 			onStartSign_s(data) {
-				if(data.is_main == '1'){
-					this.autograph_customer_signature = `${this.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
-				}else{
-					this.autograph_customer_signature_add = `${this.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
+				let that = this
+
+				if(data.is_main == '0'){//保存附加签名时
+					that.autograph_customer_signature = `${that.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
+				}else if(data.is_main == '1'){//保存客户签名时
+					that.autograph_customer_signature_add = `${that.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
+				}else if(data.is_main == '2'){//保存技术员签名时
+					that.staff_signature = []
+					data.img_url.forEach(item=>{
+						this.staff_signature.push(`${that.$baseUrl_imgs}` + item + '?t=' + new Date().getTime())
+					})
 				}
 			},
 			//保存附加签名时
 			onStartSign_sadd(code) {
 				console.log('onStartSign_sadd: ' + String(code))
 			},
+
 			//评价
 			bottom: function() {
 				this.width = "100%";
@@ -640,44 +657,45 @@
 				let that = this
 				/* 6.签名点评 */ 
 				let params6 = {
-					job_id:this.jobid,
-					job_type:this.jobtype,
+					job_id:that.jobid,
+					job_type:that.jobtype,
 				}
-				this.$api.getSignature(params6).then(res=>{
+				that.$api.getSignature(params6).then(res=>{
 					// 员工签名
-					if(this.staff_signature == ''){
+					if(that.staff_signature.length==0){
+						that.staff_signature = []
 						res.data.staff_sign_urls.forEach((item, index) => {
-							this.staff_signature.push(`${this.$baseUrl_imgs}` + item)
+							that.staff_signature.push(`${that.$baseUrl_imgs}` + item + '?t=' + new Date().getTime())
 						})
 					}
 					// 客户签名
 					if(res.data.cust.customer_signature_url){
-						this.autograph_customer_signature = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url + '?t=' + new Date().getTime()
+						that.autograph_customer_signature = `${that.$baseUrl_imgs}` + res.data.cust.customer_signature_url + '?t=' + new Date().getTime()
 					}
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add){
-						this.autograph_customer_signature_add = `${this.$baseUrl_imgs}` + res.data.cust.customer_signature_url_add + '?t=' + new Date().getTime()
+						that.autograph_customer_signature_add = `${that.$baseUrl_imgs}` + res.data.cust.customer_signature_url_add + '?t=' + new Date().getTime()
 					}
 					// 客户点评 星星
-					this.autograph_customer_grade = res.data.evaluates.score
+					that.autograph_customer_grade = res.data.evaluates.score
 					// 点评过
 					if(res.data.evaluates.question){
 						let qearr = JSON.parse(res.data.evaluates.question)	// 问题答案
 
 						// console.log('已点评:',qearr)
-						this.isdp = true
+						that.isdp = true
 						setTimeout(()=>{
-							let arr = this.startSign_sData.questions
+							let arr = that.startSign_sData.questions
 							arr.forEach((item,i)=>{
 								item.answer = qearr[i].answer
 							})
 							
-							this.questionsData = arr
-							// console.log('点击签名的时候----点评过',this.questionsData)
+							that.questionsData = arr
+							// console.log('点击签名的时候----点评过',that.questionsData)
 						},500)
 					}else{
-						this.questionsData = this.startSign_sData.questions
-						// console.log('点击签名的时候----没点评过',this.questionsData)
+						that.questionsData = that.startSign_sData.questions
+						// console.log('点击签名的时候----没点评过',that.questionsData)
 					}
 				}).catch(err=>{
 					// console.log(err)
