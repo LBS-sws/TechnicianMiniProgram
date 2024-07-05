@@ -105,6 +105,7 @@
 				formData: {
 					type:2
 				},
+				staffSign: 0,
 			}
 		},
 		computed: {
@@ -113,20 +114,25 @@
 		onLoad(index) {
 			var loginRes = this.checkLogin();
 			if (!loginRes) {
-				uni.showToast({
-					title: "请先登录",
-					icon: 'none',
-				});
+				uni.showToast({title: "请先登录",icon: 'none',});
+
 				setTimeout(() => {
 					return false
 				}, 2000);
 			}
+
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
 			this.lat = index.lat
 			this.lng = index.lng
 			this.addr = index.addr
+			this.staffSign = index.staffSign
 
+			if (index.staffSign == 0) {
+				this.$refs["message"].open({type: "warn",duration: 5000,top: "200rpx",message: "技术员未签名"});
+				return;
+			}
+			
 			if (index.autograph == 0) {
 				this.$refs["message"].open({
 					type: "warn",
@@ -232,6 +238,11 @@
 			// ...mapMutations(['SET_SELECTED_SEARCH']),
 			//开始服务签离
 			handleSignin() {
+				if (this.staffSign == 0) {
+					uni.showToast({title: '技术员未签名',icon: 'none'})
+					return;
+				}
+
 				if (this.invoice == -1) {
 					uni.showToast({
 						title: '请选择是否有发票',
