@@ -584,7 +584,7 @@
 			// 技术员签名
 			startSign_staff() {
 				uni.navigateTo({ 
-					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=2"
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=2" + "&status=" + this.basic.status
 				})
 			},
 			// 客户签名
