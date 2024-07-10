@@ -427,13 +427,16 @@
 							icon: 'success'
 						})
 						uni.navigateBack();
+
+						//更新工单报表
+						this.makePdf()
 					} else {
-					this.$refs["message"].open({
-						type: "warn",
-						duration: 2000,
-						top: "200rpx",
-						message: res.msg,
-					});
+						this.$refs["message"].open({
+							type: "warn",
+							duration: 2000,
+							top: "200rpx",
+							message: res.msg,
+						});
 					}
 				}).catch(err=>{
 					uni.showToast({
@@ -441,6 +444,29 @@
 						icon: 'fail'
 					})
 				})
+			},
+			makePdf(){
+				let that = this
+
+				//更新工单报告
+				let formData = {
+						'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
+						'send':1,
+						'sync':1
+					}
+				uni.request({
+					url: `${that.$baseUrl}/Order.Order/makePdf`,
+					header: {
+						'token': uni.getStorageSync('token'),
+						'Content-type':'application/x-www-form-urlencoded'
+					},
+					method:'POST',
+					data: formData,
+					success: (res) => {
+						// console.log(res.data);
+						console.log('更新工单成功')
+					}
+				});
 			}
 		},
 		watch: {
