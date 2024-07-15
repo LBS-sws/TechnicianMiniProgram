@@ -24,7 +24,8 @@
 				</view>
 				<view class="new_card_content">
 					<view>
-						<cl-row>
+						
+						<cl-row v-if="item.order_type !=3 ">
 							<cl-col span="8">
 								<view class="service_name"><text selectable="true">{{item.service_type_info.service_name}}</text></view>
 							</cl-col>
@@ -36,6 +37,12 @@
 								<view class="customer_type">{{item.customer.customer_type_text}}</view>
 							</cl-col>
 						</cl-row>
+						<cl-row v-else>
+							<cl-col span="8" >
+								<view class="customer_type">勘察服务</view>
+							</cl-col>
+						</cl-row>
+						
 						<view>
 						</view>
 					</view>
@@ -91,6 +98,51 @@ export default {
 		
 		this.getjobs();
 		this.getJobTotal();
+		
+		setTimeout(()=>{
+			console.log(this.jobs)
+			
+			let jobs = this.jobs
+			let obj = {
+				customer:{
+					addr: "四川省成都市青羊区北大街19号正成财富领地",
+					customer_id: 7336,
+					customer_type: 249,
+					customer_type_text: "工厂服务",
+					name_zh: "东湖海鲜",
+				},
+				customer_grade:{
+					order_id: "",
+					score: ""
+				},
+				customer_id: 7336,
+				finish_date: null,
+				finish_time: null,
+				first_job: "常规服务",
+				first_job_flag: 0,
+				id: 3367223,
+				job_date: "2024-07-15",
+				job_end_time: "18:30:00",
+				job_start_time: "09:00:00",
+				order_type: 3,
+				remarks: "服務單及發票需經部長以上人員簽名及蓋章↵每月4次，MOP1300/月",
+				service_status:{
+					color: "#007AFF",
+					status: "待服务"
+				},
+				service_type: 2,
+				service_type_info:{
+					service_id: 2,
+					service_name: "灭虫"
+				},
+				start_date: null,
+				start_time: null,
+				status: 2,
+			}
+			jobs.push(obj)
+			this.jobs = jobs
+			
+		},1000)
 	},
 	methods: {
 		// 滑动月份触发事件
@@ -126,6 +178,7 @@ export default {
 			}
 			this.$api.dayOrderList(params).then(res=>{
 				if(res.code == 200) {
+					
 					this.jobs = res.data
 				}
 			}).catch(err=>{
@@ -154,88 +207,99 @@ export default {
 }
 </script>
 <style>
-	.datec {
-		background-color: #FFFFFF;
-		border-radius: 15px;
-	}
-	.datecontent {
-		margin: 10px 5px;
-	}
-	.dateshow {
-		font-size: 18px;
-		margin: 10px;
-	}
-	.new_card {
-		background-color: #FFFFFF;
-		border-radius: 10px;
-		padding-bottom: 10px;
-		margin-bottom: 10px;
+.datec {
+	background-color: #FFFFFF;
+	border-radius: 15px;
+}
+.datecontent {
+	margin: 10px 5px;
+}
+.dateshow {
+	font-size: 18px;
+	margin: 10px;
+}
+.new_card {
+	background-color: #FFFFFF;
+	border-radius: 10px;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+}
+.new_card_title {
+	border-bottom: 1px solid #e0dcdc;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 10px 5px;
+	height: 25px;
+}
+.new_card_title_left {
+	float: left;
+	width: 80%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.new_card_title_right {
+	font-size: 17px;
+	float: right;
+}
+.new_card_content {
+	margin: 10px 5px;
+	font-size: 16px;
+}
+.new_card_content view {
+	margin-bottom: 5px;
+}
+.noservice {
+	text-align: center;
+	margin-top: 20%;
+	color: #a5a6a7;
+	font-size: 17px;
+}
+.content_t {
+	color: #6b6464;
+	margin: 10px;
+}
+.service_name {
+	background-color: #c6ecc0;
+	color: #12900a;
+	border-radius: 8px;
+	padding: 3px 0px;
+	text-align: center;
+	margin-right: 5px;
+}
+.first_job {
+	background-color: #cbe8ff;
+	color: #0876f1;
+	border-radius: 8px;
+	padding: 3px 0px;
+	text-align: center;
+	margin-right: 5px;
+}
+.customer_type {
+	background-color: #f6a6a6;
+	color: #e01313;
+	border-radius: 8px;
+	padding: 3px 0px;
+	text-align: center;
+	margin-right: 5px;
+}
+.content {
+	padding: 50px 5px;
+	height: 5%;
+	background-color: #0e8cf1;
+	color: #6b6464;
+}
+.kc_title{
+	background-color: #f6a6a6;
+    color: #e01313;
+    border-radius: 8px;
+    padding: 3px 0px;
+    text-align: center;
+    margin-right: 5px;
+	
+	background: #ea8e4c;
+	color: #000000;
+}
 
-	}
-	.new_card_title {
-		border-bottom: 1px solid #e0dcdc;
-		font-size: 18px;
-		font-weight: bold;
-		padding: 10px 5px;
-		height: 25px;
-	}
-	.new_card_title_left {
-		float: left;
-		width: 80%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.new_card_title_right {
-		font-size: 17px;
-		float: right;
-	}
-	.new_card_content {
-		margin: 10px 5px;
-		font-size: 16px;
-	}
-	.new_card_content view {
-		margin-bottom: 5px;
-	}
-	.noservice {
-		text-align: center;
-		margin-top: 20%;
-		color: #a5a6a7;
-		font-size: 17px;
-	}
-	.content_t {
-		color: #6b6464;
-		margin: 10px;
-	}
-	.service_name {
-		background-color: #c6ecc0;
-		color: #12900a;
-		border-radius: 8px;
-		padding: 3px 0px;
-		text-align: center;
-		margin-right: 5px;
-	}
-	.first_job {
-		background-color: #cbe8ff;
-		color: #0876f1;
-		border-radius: 8px;
-		padding: 3px 0px;
-		text-align: center;
-		margin-right: 5px;
-	}
-	.customer_type {
-		background-color: #f6a6a6;
-		color: #e01313;
-		border-radius: 8px;
-		padding: 3px 0px;
-		text-align: center;
-		margin-right: 5px;
-	}
-	.content {
-		padding: 50px 5px;
-		height: 5%;
-		background-color: #0e8cf1;
-		color: #6b6464;
-	}
 </style>
 
