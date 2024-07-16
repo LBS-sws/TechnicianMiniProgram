@@ -39,7 +39,7 @@
 						</cl-row>
 						<cl-row v-else>
 							<cl-col span="8" >
-								<view class="customer_type">勘察服务</view>
+								<view class="customer_type kc">勘察服务</view>
 							</cl-col>
 						</cl-row>
 						
@@ -289,9 +289,8 @@ export default {
 	background-color: #0e8cf1;
 	color: #6b6464;
 }
-.kc_title{
-	background-color: #f6a6a6;
-    color: #e01313;
+.customer_type.kc{
+	
     border-radius: 8px;
     padding: 3px 0px;
     text-align: center;
