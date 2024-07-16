@@ -1,14 +1,14 @@
 <template>
 	<view class="container">
-		<view class="sigh-btns">
+		<view class="sigh-btns" :class="[disabled?'yes':'no']">
 			<button class="btn cancel-btn" @tap="handleCancel">取 消</button>
 			<button class="btn reset-btn" @tap="handleReset">重 写</button>
-			<button class="btn save-btn" @tap="handleConfirm">确 认</button>
+			<button class="btn save-btn" @tap="handleConfirm" >确 认</button>
 		</view>
 		<view class="handCenter">
 			<canvas class="handWriting" disable-scroll="true" :style="{width:width +'px',height:height +'px'}"
 				canvas-id="mycanvas" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
-			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:height +'rpx',height:width +'rpx'}"
+			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:parseInt(height/2)+'px',height:parseInt(width/2)+'px'}"
 				class="canvsborder"></canvas>
 		</view>
 	</view>
@@ -35,7 +35,9 @@
 				height: 0,
 				jobid:'',
 				jobtype:'',
-				is_main:0
+				is_main:0,
+				status:'',
+				disabled:true,
 			}
 		},
 		onLoad(option) {
@@ -44,6 +46,7 @@
 			this.jobid = option.jobid
 			this.jobtype = option.jobtype
 			this.is_main = option.is_main
+			this.status = option.status
 			this.ctx = uni.createCanvasContext('mycanvas', this); //创建绘图对象
 			//设置画笔样式
 			this.ctx.lineWidth = 3;
@@ -56,6 +59,10 @@
 					that.height = res.windowHeight * 1;
 				}
 			});
+		},
+		created() {
+			console.log(this.status)
+			
 		},
 		methods: {
 			//触摸开始，获取到起点
@@ -92,10 +99,10 @@
 			},
 
 			/* ***********************************************
-			        #   绘制笔迹
-			        #   1.为保证笔迹实时显示，必须在移动的同时绘制笔迹
-			        #   2.为保证笔迹连续，每次从路径集合中区两个点作为起点（moveTo）和终点(lineTo)
-			        #   3.将上一次的终点作为下一次绘制的起点（即清除第一个点）
+			#   绘制笔迹
+			#   1.为保证笔迹实时显示，必须在移动的同时绘制笔迹
+			#   2.为保证笔迹连续，每次从路径集合中区两个点作为起点（moveTo）和终点(lineTo)
+			#   3.将上一次的终点作为下一次绘制的起点（即清除第一个点）
 			************************************************ */
 			draw: function() {
 				let point1 = this.points[0];
@@ -119,6 +126,8 @@
 			},
 			//将签名笔迹上传到服务器，并将返回来的地址存到本地
 			handleConfirm: function() {
+				let that = this
+				
 				if (tempPoint.length == 0) {
 					uni.showToast({
 						title: '请先签名',
@@ -127,6 +136,14 @@
 					});
 					return;
 				}
+				console.log('保存')
+				if(!this.disabled){
+					return false
+				}
+				uni.showLoading({
+					title: '保存中...'
+				})
+				this.disabled = false
 				uni.canvasToTempFilePath({
 					canvasId: 'mycanvas',
 					success: function(res) {
@@ -145,66 +162,10 @@
 								success: function(res) {
 									//这是签名图片文件的本地临时地址
 									let path = res.tempFilePath;
-									uni.showLoading({
-										title: '保存中...'
-									})
-									const formData = {
-										job_id: that.jobid,
-										job_type: that.jobtype,
-										is_main: that.is_main,
-										file: path
-									}
-									uni.uploadFile({
-										url: `${that.$baseUrl}/Sign.Sign/uploadSign`,
-										name: 'file',
-										header: {
-											'token': uni.getStorageSync('token'),
-										},
-										formData: formData,
-										filePath: path,
-										success: (res) => {
-											let data = JSON.parse(res.data)
-											if(that.is_main == '1'){
-												uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url})
-											}else{
-												uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url_add})
-											}
-											
-											uni.hideLoading()
-											console.log(res, '上传结果')
-											if (data.code == 200) {
-												// 上传成功
-												console.log('上传成功')
-											} else {
-												// 上传失败
-												uni.showToast({
-													title: data
-														.msg,
-													icon: 'error',
-													duration: 2000
-												})
-											}
-											// Pass data back to the previous page
-											const pages =
-										getCurrentPages();
-											const prevPage = pages[pages
-												.length - 2];
-											prevPage.setData({
-												data: data,
-												is_new: 1
-											});
-											uni.navigateBack({
-												delta: 1
-											});
-										},
-										fail: (err) => {
-											uni.showToast({
-												title: err.errMsg,
-												icon: 'error',
-												duration: 2000
-											});
-										}
-									});
+
+									setTimeout(()=>{
+										that.updateImage(path)
+									},1500)
 								},
 								fail: (err) => {
 									uni.showToast({
@@ -215,6 +176,99 @@
 								}
 							});
 						}, 1500);
+					},
+					fail: (err) => {
+						uni.showToast({
+							title: err.errMsg,
+							icon: 'error',
+							duration: 2000
+						});
+					}
+				});
+			},
+			//上传图片
+			updateImage(path){
+				let that = this
+				let url = ''
+
+				const formData = {
+					job_id: that.jobid,
+					job_type: that.jobtype,
+					is_main: that.is_main,
+					file: path
+				}
+
+				uni.uploadFile({
+					// todo 根据签名角色不同而处理不同的
+					url: `${that.$baseUrl}/Sign.Sign/uploadSign`,
+					name: 'file',
+					header: {
+						'token': uni.getStorageSync('token'),
+					},
+					formData: formData,
+					filePath: path,
+					success: (res) => {
+						let data = JSON.parse(res.data)
+						uni.hideLoading()
+
+						console.log(res, '上传结果')
+						if (data.code != 200) {
+							// 上传失败
+							uni.showToast({title: data.msg,icon: 'error',duration: 2000})
+							return false
+						}
+
+						// 上传成功
+						switch(that.is_main){
+							case '0'://附加签名
+								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url_add});
+								break;
+							case '1'://客户签名
+								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url});
+								break;
+							case '2'://技术员签名
+								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data});
+								break;
+						}
+
+						//更新对应order的pdf
+						if(that.status==3){
+							let formData = {
+								'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
+								'send':1,
+								'sync':1
+							}
+							setTimeout(()=>{
+								uni.request({
+									url: `${that.$baseUrl}/Order.Order/makePdf`,
+									header: {
+										'token': uni.getStorageSync('token'),
+										'Content-type':'application/x-www-form-urlencoded'
+									},
+									method:'POST',
+									data: formData,
+									success: (res) => {
+										console.log(res.data);
+										console.log('更新')
+									}
+								});
+							},500)
+						}
+
+						setTimeout(()=>{
+							that.disabled = true
+						},8000)
+
+						// Pass data back to the previous page
+						const pages = getCurrentPages();
+						const prevPage = pages[pages.length - 1];
+						prevPage.setData({
+							data: data,
+							is_new: 1
+						});
+						uni.navigateBack({
+							delta: 1
+						});
 					},
 					fail: (err) => {
 						uni.showToast({
@@ -253,6 +307,17 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
+		position: relative;
+	}
+	.sigh-btns.no::after{
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		button:0;
+		height: 100%;
+		background: rgba(255, 255, 255, 0);
 	}
 
 	.btn {

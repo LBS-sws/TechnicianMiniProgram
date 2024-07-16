@@ -2,12 +2,13 @@
 	<view class="content" style="margin-bottom: 40px;">
 		<view class="service">
 			<view class="service_content">
-				<!-- <cl-row>
+				<cl-row v-show="can_save">
 					<view class="text-left">设备二维码</view>
 					<view class="text-right">
-						<cl-icon name="cl-icon-scan" color="#007AFF" :size="60" class="scan" @tap="scanCode()"></cl-icon>
+						<cl-icon v-if="!hasScanCode" name="cl-icon-scan" color="#007AFF" :size="60" class="scan" @tap="scanCode()"></cl-icon>
+						<view v-else class="scanCode" @tap="scanCode()">更换二维码</view>
 					</view>
-				</cl-row> -->
+				</cl-row>
 				<cl-row>
 					<view class="text-left" >设备编号</view>
 					<view class="text-right" style="width: 70%;">
@@ -15,8 +16,8 @@
 							<cl-col span="12" style="text-align: right;">
 								{{eq_mark}}
 							</cl-col>
-							<cl-col span="12">
-								<cl-input  v-model="eq_mark_num" placeholder="自定义"  />
+							<cl-col span="12" style="height:40rpx">
+								<cl-input  v-model="eq_mark_num" placeholder="自定义" style="height:40rpx;line-height: 40rpx;"/>
 							</cl-col>
 						</view>
 						<view v-if="one_eq == 0">
@@ -102,9 +103,8 @@
 			</view>
 			<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="more_info" count></cl-textarea>
 		</view>
-		<view class="bu" @tap="save()">
-			保存
-		</view>
+		<view v-if="can_save" class="bu" @tap="save()">保存</view>
+		<view v-else class="bu" @tap="back()">返回</view>
 	</view>
 </template>
 
@@ -161,7 +161,10 @@ export default {
 			eq_mark:'',		// 设备标识
 			eq_mark_num:'', // 设备编号
 			list:[]			,// 储存list
-			selectList:[]
+			selectList:[],
+			hasScanCode: false,
+			scan_id:0,
+			can_save: true,
 		}
 	},
 	onLoad(index) {
@@ -177,6 +180,8 @@ export default {
 		}
 		this.jobid = index.jobid
 		this.jobtype = index.jobtype
+		this.scan_id = index.jobtype
+		this.can_save = true
 		
 		this.id = index.id
 		// this.ct = uni.getStorageSync('ct')
@@ -225,210 +230,234 @@ export default {
 					ids: this.id,
 				}
 				this.$api.getEqInfo(params).then(res=>{
-					if (res.code == 200) {
-						if (res.data) {
-							// 1.设备名称
-							this.equipment_name = res.data.eq_name	
-							
-							// 2.设备编号
-							var equipmentNumber = '';
-							// 单个
-							if(res.data.list.length == 1)
-							{
-								this.eq_mark = res.data.list[0]['equipment_number']	// 设备标识
-								this.eq_mark_num = res.data.list[0]['number']			// 设备编号
-								this.equipment_number = res.data.list[0]['number']
+					if(res.code != 200){
+						uni.showToast({icon: 'none',title: res.msg});
+						this.can_save = false
+					}else if (res.data) {
+						// 1.设备名称
+						this.equipment_name = res.data.eq_name	
+						
+						// 2.设备编号
+						var equipmentNumber = '';
+						
+						if(res.data.list.length == 1){// 单个
+							this.eq_mark = res.data.list[0]['equipment_number']	// 设备标识
+							this.eq_mark_num = res.data.list[0]['number']			// 设备编号
+							this.equipment_number = res.data.list[0]['number']
+							//二维码
+							if(res.data.list[0]['qrcode_id'] != null){
+								this.scan_id = res.data.list[0]['qrcode_id'] || ''
+								this.hasScanCode = true
 							}
-							// 多个
-							
-							if(res.data.list.length>1){
-								for(let i=0;i<res.data.list.length;i++){
-									if(equipmentNumber == ''){
-										equipmentNumber = res.data.list[i]['equipment_number'] + res.data.list[i]['number']
-									}else{
-										equipmentNumber = equipmentNumber + ',' +res.data.list[i]['equipment_number'] + res.data.list[i]['number']
-									}
-								}
-								this.eq_mark_num = equipmentNumber
-								this.equipment_number = equipmentNumber
-								this.one_eq = 0
-							}
-							// console.log(equipmentNumber)
-							
-							
-							// 3.设备区域
-							let use_area = res.data.use_area	//  数组
-							use_area.forEach((item,i)=>{
-								item.label = item.use_area
-								item.value = item.use_area
-							})
-							this.use_areas = use_area
-							
-							if(res.data.list.length == 1){		// 选中
-								
-								if(!res.data.list[0].equipment_area)
-								{
-									this.equipment_area = ''
+						}else if(res.data.list.length>1){// 多个
+							for(let i=0;i<res.data.list.length;i++){
+								if(equipmentNumber == ''){
+									equipmentNumber = res.data.list[i]['equipment_number'] + res.data.list[i]['number']
 								}else{
-									this.equipment_area = res.data.list[0].equipment_area
+									equipmentNumber = equipmentNumber + ',' +res.data.list[i]['equipment_number'] + res.data.list[i]['number']
 								}
 							}
-							// 多个设备时，禁止选区域，以及设备区域都为空
-							if(res.data.list.length > 1){
-								this.disabled = false
-								this.equipment_area = ''
-							}
-							
-							// 4.检查数据
-							// typeid == 1 input == 2 select
-							this.typeid = res.data.list[0].equipment_type
-							let selectArr = []
-							if(res.data.list[0].equipment_type ==2)
-							{
-								
-								// let selectList = res.data.data.check_option
-								let selectList = Object.entries(res.data.check_option)		//  对象转数组
-								console.log(selectList)
-								
-								selectList.forEach((itemx,index)=>{
-									let arr_arr = []
-									itemx[1].forEach((item,i)=>{
-										arr_arr.push({label:item,value:item})
-									})
-									selectArr.push(arr_arr)
-								})
-								
-								this.selectList = selectArr
-							}
-							// 单个设备
-							if(res.data.list.length == 1){
-								// 检查数据没有值时
-								if(res.data.list[0].check_datas == null)
-								{
-									let check_targt_arr = res.data.check_handle.check_targt	
-									let check_targt_array = []
-									check_targt_arr.forEach((item,i)=>{
-										if(res.data.list[0].equipment_type==1){
-											check_targt_array.push({label:item,value:0})
-										}else{
-											check_targt_array.push({label:item,value:'',select:selectArr[i]})
-										}
-									})
-									this.check_datas = check_targt_array
-								}else{
-									this.check_datas = res.data.list[0].check_datas
-								}
-							}
-							
-							if(res.data.list.length > 1){
-								// 多个设备 - 检查数据 默认数量都设置为1
-								let check_datas_arr = res.data.check_handle.check_targt
-								let check_datas_array = []
-								check_datas_arr.forEach((item,i)=>{
-									
-									if(res.data.list[0].equipment_type==1){
-										
-										check_datas_array.push({label:item,value:0})
-									}else{
-										
-										check_datas_array.push({label:item,value:'',select:selectArr[i]})
-									}
-									
-								})
-								this.check_datas = check_datas_array
-							}
-							
-							
-							// 5.检查与处理
-							let check_handles = res.data.check_handle.check_handles	// 数组
-							let check_handles_arr = []
-							check_handles.forEach((item,i)=>{
-								check_handles_arr.push({label:item,value:item})
-							})
-							this.check_handles = check_handles_arr
-							
-							if(res.data.list.length == 1){
-								this.check_handle = res.data.list[0].check_handle			// 选中
-							}
-							
-							
-							// 6.补充说明
-							if(res.data.list.length == 1){
-								this.more_info = res.data.list[0].more_info
-								if(res.data.list[0].more_info == "null"){
-									this.more_info = ''
-								}else{
-									if(res.data.list[0].more_info){
-										this.more_info = res.data.list[0].more_info.split(",")
-									}
-									
-								}
-							}
-							
-							this.list = res.data.list		// 数组
-							
-							if(res.data.list.length>5)
-							{
-								this.showmore = 1
-								this.all_equipment_number = equipmentNumber
-							}
-					
-							// 快捷语数组
-							let shortcuts = res.data.shortcutContents 	
-							let shortcutsArr = []
-							shortcuts.forEach((item,i)=>{
-								shortcutsArr.push({label:item,value:item})
-							})
-							this.shortcuts = shortcutsArr
-							this.shortcutsOld = shortcutsArr
+							this.eq_mark_num = equipmentNumber
+							this.equipment_number = equipmentNumber
+							this.one_eq = 0
 						}
+						// console.log(equipmentNumber)
+						
+						
+						// 3.设备区域
+						let use_area = res.data.use_area	//  数组
+						use_area.forEach((item,i)=>{
+							item.label = item.use_area
+							item.value = item.use_area
+						})
+						this.use_areas = use_area
+						
+						if(res.data.list.length == 1){		// 选中
+							
+							if(!res.data.list[0].equipment_area)
+							{
+								this.equipment_area = ''
+							}else{
+								this.equipment_area = res.data.list[0].equipment_area
+							}
+						}
+						// 多个设备时，禁止选区域，以及设备区域都为空
+						if(res.data.list.length > 1){
+							this.disabled = false
+							this.equipment_area = ''
+						}
+						
+						// 4.检查数据
+						// typeid == 1 input == 2 select
+						this.typeid = res.data.list[0].equipment_type
+						let selectArr = []
+						if(res.data.list[0].equipment_type ==2)
+						{
+							
+							// let selectList = res.data.data.check_option
+							let selectList = Object.entries(res.data.check_option)		//  对象转数组
+							console.log(selectList)
+							
+							selectList.forEach((itemx,index)=>{
+								let arr_arr = []
+								itemx[1].forEach((item,i)=>{
+									arr_arr.push({label:item,value:item})
+								})
+								selectArr.push(arr_arr)
+							})
+							
+							this.selectList = selectArr
+						}
+						// 单个设备
+						if(res.data.list.length == 1){
+							// 检查数据没有值时
+							if(res.data.list[0].check_datas == null)
+							{
+								let check_targt_arr = res.data.check_handle.check_targt	
+								let check_targt_array = []
+								check_targt_arr.forEach((item,i)=>{
+									if(res.data.list[0].equipment_type==1){
+										check_targt_array.push({label:item,value:0})
+									}else{
+										check_targt_array.push({label:item,value:'',select:selectArr[i]})
+									}
+								})
+								this.check_datas = check_targt_array
+							}else{
+								this.check_datas = res.data.list[0].check_datas
+							}
+						}
+						
+						if(res.data.list.length > 1){
+							// 多个设备 - 检查数据 默认数量都设置为1
+							let check_datas_arr = res.data.check_handle.check_targt
+							let check_datas_array = []
+							check_datas_arr.forEach((item,i)=>{
+								
+								if(res.data.list[0].equipment_type==1){
+									
+									check_datas_array.push({label:item,value:0})
+								}else{
+									
+									check_datas_array.push({label:item,value:'',select:selectArr[i]})
+								}
+								
+							})
+							this.check_datas = check_datas_array
+						}
+						
+						
+						// 5.检查与处理
+						let check_handles = res.data.check_handle.check_handles	// 数组
+						let check_handles_arr = []
+						check_handles.forEach((item,i)=>{
+							check_handles_arr.push({label:item,value:item})
+						})
+						this.check_handles = check_handles_arr
+						
+						if(res.data.list.length == 1){
+							this.check_handle = res.data.list[0].check_handle			// 选中
+						}
+						
+						
+						// 6.补充说明
+						if(res.data.list.length == 1){
+							this.more_info = res.data.list[0].more_info
+							if(res.data.list[0].more_info == "null"){
+								this.more_info = ''
+							}else{
+								if(res.data.list[0].more_info){
+									this.more_info = res.data.list[0].more_info.split(",")
+								}
+								
+							}
+						}
+						
+						this.list = res.data.list		// 数组
+						
+						if(res.data.list.length>5)
+						{
+							this.showmore = 1
+							this.all_equipment_number = equipmentNumber
+						}
+				
+						// 快捷语数组
+						let shortcuts = res.data.shortcutContents 	
+						let shortcutsArr = []
+						shortcuts.forEach((item,i)=>{
+							shortcutsArr.push({label:item,value:item})
+						})
+						this.shortcuts = shortcutsArr
+						this.shortcutsOld = shortcutsArr
+					}else{
+						uni.showToast({icon: 'none',title: '出现错误,请重试'});
 					}
 				}).catch(err=>{
+					uni.showToast({icon: 'none',title: err.msg});
 					console.log(err)
 				})
 			},
 			scanCode() {
+				let that = this
+
 				uni.scanCode({
 					success: async (res) => {
-						if(res.result!=''){
-							let param = {
-								staffid: uni.getStorageSync('staffid'),
-								city: uni.getStorageSync('city'),
-								scan_code: res.result,
-								job_id: this.jobid,
-								job_type: this.jobtype,
-							}
-							uni.request({
-								url: `${this.$baseUrl}/addequipmentbyscan`,
-								header: {
-									'content-type': 'application/x-www-form-urlencoded',
-									'token': uni.getStorageSync('token')
-								},
-								method: 'POST',
-								data: param,
-								success: (res) => {
-									if (res.data.code == 1 && res.data.data!=null) {
-										this.id = res.data.data
-										this.data_select();
-									} else {
-										uni.showToast({
-											icon: 'none',
-											title: res.data.msg
-										});
-									}
-							
-								},
-								fail: (err) => {
-									console.log(res);
-								}
-							})
-						}else{
-							uni.showToast({
-								icon: 'none',
-								title: '扫码错误！'
-							});
+						if(res.result==''){
+							uni.showToast({icon: 'none',title: '扫码错误！'});
+							return false;
 						}
 						
+						let queryString = res.result.split('?')[1];
+						if (!queryString) {
+							uni.showToast({
+								icon: 'none',
+								title: 'URL格式错误！'
+							});
+							return false;
+						}
+
+						let queryParams = new URLSearchParams(queryString);
+						if(!queryParams.get('id') || !queryParams.get('city') || !queryParams.get('office_id')){
+							uni.showToast({icon: 'none',title: '无效二维码！'});
+							return false;
+						}
+						// else if(queryParams.get('city') != uni.getStorageSync('city')){
+						// 	uni.showToast({icon: 'none',title: '非本地区二维码！'});
+						// 	return false;
+						// }
+
+						let params = {
+							scan_id: queryParams.get('id'),
+							city: queryParams.get('city'),
+							office_id: queryParams.get('office_id'),
+							scan_code: res.result,
+							id: that.id,
+							job_id: that.jobid,
+							job_type: that.jobtype,
+						}
+
+						that.$api.bindQr(params).then(res=>{
+							uni.hideLoading();
+							if(res.code!==200){
+								uni.showToast({icon: 'none',title: res.msg});
+								return false
+							}
+
+							that.hasScanCode = true
+							that.scan_id = params.scan_id
+
+							uni.showToast({title: res.msg,icon: 'none'});
+						}).catch(err=>{
+							console.log(err)
+							uni.showToast({icon: 'none',title: err.msg});
+						})
+
+					},
+					fail: (err) => {
+						uni.showToast({
+							icon: 'none',
+							title: '无效二维码！'
+						});
 					}
 				});
 			},
@@ -512,6 +541,12 @@ export default {
 					}
 				}).catch(err=>{
 					console.log(err)
+				})
+			},
+			//返回
+			back(){
+				uni.redirectTo({
+					url: "/pages/service/equipment?jobid=" +this.jobid + '&jobtype=' + this.jobtype +'&shortcut_type=' +this.shortcut_type +'&service_type=' + this.service_type + '&ct=' + this.ct
 				})
 			},
 			// savex() {
@@ -791,5 +826,13 @@ page {
 }
 .more{
 	color: #007AFF;
+}
+.scanCode{
+	width: 200rpx;
+	height: 40rpx;
+	color: #FFF;
+	background-color: #007AFF;
+	font-size: 26rpx;
+	text-align: center;
 }
 </style>

@@ -1,14 +1,16 @@
 {
     "id": "ld-select",
-    "name": "下拉多选、单选",
+    "name": "technician_mpweixin",
     "version": "1.0.5",
-    "description": "下拉多选 下拉单选",
+    "description": "technician_mpweixin",
     "keywords": [
         "select"
     ],
     "dependencies": {
+        "base-64": "^1.0.0",
         "cool": "0.0.1",
         "dayjs": "^1.11.10",
+        "url-search-params-polyfill": "^8.2.5",
         "uview-ui": "^2.0.36"
     }
 }

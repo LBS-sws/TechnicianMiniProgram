@@ -1,13 +1,15 @@
+// todo 制作 扫码跳转到对应设备详情页的功能
 <template>
 	<view class="content" style="padding-top: 80rpx; padding-bottom: 120rpx;">
 		<!-- 添加 -->
 		<view class="add" @tap="add()">
 			<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
 		</view>
-		<!-- <view class="scan" @tap="scanCode()">
+		<!-- 扫码 -->
+		<view class="scan" @tap="scanCode()">
 			<cl-icon name="cl-icon-scan" color="#007AFF" :size="80"></cl-icon>
 		</view>
-		<cl-confirm ref="add_confirm" style="z-index: 99999;">
+		<!--<cl-confirm ref="add_confirm" style="z-index: 99999;">
 			<cl-input v-model="add_numbercode" placeholder="设备编号"></cl-input>
 		</cl-confirm> -->
 		<cl-confirm ref="add_confirm" style="z-index: 99999;">
@@ -20,7 +22,9 @@
 					</cl-checkbox-group>
 				</view>
 			</cl-scroller>
-			增加数量：<cl-input-number v-model="add_number" style="margin-left: 10px;"></cl-input-number>
+			增加数量：
+			<cl-input-number v-if="!scan_code" v-model="add_number" style="margin-left: 10px;"></cl-input-number>
+			<cl-input-number v-else v-model="add_number" min="1" max="1" readonly="true" disabled></cl-input-number>
 		</cl-confirm>
 		<!-- 删除 -->
 		<view class="del" @tap="del()">
@@ -89,6 +93,8 @@
 </template>
 
 <script>
+import Base64 from 'base-64';
+
 	export default {
 		data() {
 			return {
@@ -281,42 +287,61 @@
 					return;
 				} else {
 					let ids = this.xz_all.join(",")
-					let params = {
-						job_type: this.jobtype,
-						job_id: this.jobid,
-						ids:ids
-					}
-					this.$api.getEqInfo(params).then(res=>{
-						if (res.code == 400) {
-							uni.showToast({
-								icon: 'none',
-								title: res.msg
-							})
-							return ;
-						}
-						if(res.code == 200){
-							uni.redirectTo({
-								url: "/pages/service/scan_equipment?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-									'&id=' + ids
-							})
-						}
-					}).catch(err=>{
-						console.log(err)
+					
+					uni.redirectTo({
+						url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+ids
 					})
 				}
 			},
 			scanCode() {
+				let that = this
+				that.scan_code = ''
+
 				uni.scanCode({
 					success: async (res) => {
-						if(res.result!=''){
-							this.scan_code = res.result
-							this.add_xq(res.result);
-						}else{
-							uni.showToast({
-								icon: 'none',
-								title: '扫码错误！'
-							});
+						if(res.result==''){
+							uni.showToast({icon: 'none',title: '无效二维码'});
+							return false;
 						}
+						let queryString = res.result.split('?')[1];
+						if (!queryString) {
+							uni.showToast({icon: 'none',title: '无效二维码!'});
+							return false;
+						}
+
+						let queryParams = new URLSearchParams(queryString);
+						if(!queryParams.get('id') || !queryParams.get('city') || !queryParams.get('office_id')){
+							uni.showToast({icon: 'none',title: '无效的二维码！'});
+							return false;
+						}
+						// else if(queryParams.get('city') != uni.getStorageSync('city')){
+						// 	uni.showToast({icon: 'none',title: '非本地区二维码！'});
+						// 	return false;
+						// }
+
+						let scan_id = Base64.decode(queryParams.get('id'))//base64 decode
+						
+						that.xz_all = [] // 清空选中项
+						//遍历当前设备
+						that.all.forEach(item=>{
+							if(item.qrcode_id!=null && item.qrcode_id == scan_id){
+								that.xz_all = [item.id]
+							}
+						})
+
+						//跳转
+						if(that.xz_all.length <= 0){//没有设备，添加
+							that.scan_code = res.result
+							that.add_by_scan(queryParams.get('id'),res.result);
+						}else{//查看对应设备详情
+							let ids = that.xz_all.join(",")
+
+							uni.redirectTo({
+								url: "/pages/service/scan_equipment?jobid="+that.jobid + '&jobtype='+that.jobtype +'&id='+ids
+							})
+						}
+					},fail(err){
+						uni.showToast({icon: 'none',title: '无效二维码'});
 					}
 				});
 			},
@@ -342,52 +367,50 @@
 							icon: 'none',
 							title: '取消成功！'
 						});
-					});
-			
-			
+					});				
 			},
-			add_xq(numcode){
-				let param = {
-					staffid: uni.getStorageSync('staffid'),
-					city: uni.getStorageSync('city'),
-					scan_code: numcode,
-					job_id: this.jobid,
-					job_type: this.jobtype,
-				}
-				uni.request({
-					url: `${this.$baseUrl}/addequipmentbyscan`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: param,
-					success: (res) => {
-						if (res.data.code == 1 && res.data.data!=null) {
-							uni.redirectTo({
-								url: "/pages/service/scan_equipment?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-									'&shortcut_type=' + this.shortcut_type + '&service_type=' + this.service_type +
-									'&id=' + res.data.data
-							})
-						} else {
-							uni.showToast({
-								icon: 'none',
-								title: res.data.msg
-							});
-						}
-				
-					},
-					fail: (err) => {
-						// console.log(res);
+			// 扫码新增设备
+			add_by_scan(scanId,scanCode) {
+				let that = this
+
+				that.$refs["add_confirm"].open({
+					title: "增加服务设备",
+					width: "95%",
+				}).then(() => {
+					let params = {
+						ids: that.add_eq,
+						number: that.add_number,
+						job_id: that.jobid,
+						job_type: that.jobtype,
+						scan_id: scanId,
+						scan_code: scanCode,
 					}
-				})
-				
-				
-				
-				
+					that.$api.addEq(params).then(res=>{
+						if(res.code != 200){
+							uni.$utils.toast(res.msg)
+							return false
+						}
+
+						uni.$utils.toast('增加成功')
+						that.add_number = 1;
+						
+						that.optionEq()
+						that.optionEqAdd()
+						that.data_select()
+
+						that.xz_all = [res.data.id]
+						that.scan_code = ''
+						that.ckxq()
+					}).catch(err=>{
+						uni.$utils.toast(err.msg)
+						console.log(err)
+					})
+				}).catch(() => {});
 			},
 			// 新增设备
 			add() {
+				this.scan_code = ''
+
 				this.$refs["add_confirm"]
 					.open({
 						title: "增加服务设备",
@@ -418,6 +441,11 @@
 			},
 			// 删除设备
 			del() {
+				if (this.xz_all == '') {
+					uni.showToast({icon: 'none',title: '请选择设备'});
+					return;
+				}
+
 				this.$refs["del_confirm"].open({
 					title: "提示",
 					message: "确认删除？",
@@ -425,36 +453,24 @@
 						action
 					}) => {
 						if (action == 'confirm') {
-							if (this.xz_all == '') {
-								uni.showToast({
-									icon: 'none',
-									title: '请选择设备'
-								});
-								return;
-							} else {
-								let ids = this.xz_all.join(",")
-								let params = {
-									ids:ids
-								}
-								this.$api.delEq(params).then(res=>{
-									if (res.code == 200) {
-										this.xz_all = ''
-										this.data_select()
-										uni.showToast({
-											icon: 'none',
-											title: '删除成功'
-										});
-									}
-								}).catch(err=>{
-									console.log(err)
-								})
+							let ids = this.xz_all.join(",")
+							let params = {
+								ids:ids
 							}
 
-						} else {
-							uni.showToast({
-								icon: 'none',
-								title: '取消成功'
-							});
+							this.$api.delEq(params).then(res=>{
+								if (res.code == 200) {
+									this.xz_all = ''
+									this.data_select()
+									this.optionEq()
+									uni.showToast({
+										icon: 'none',
+										title: '删除成功'
+									});
+								}
+							}).catch(err=>{
+								console.log(err)
+							})
 						}
 					}
 				});

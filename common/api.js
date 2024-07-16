@@ -118,6 +118,10 @@ export default {
 	delEq(params){
 		  return request("/Equipment.Equipment/delEq?ids=" + params.ids, params, 'DELETE')
 	},
+	//设备绑定二维码
+	bindQr(params){
+		return request("/Equipment.Equipment/bindQr", params, 'POST')
+	},
 	risksList(params){
 		  return request("/Risks.Risks/list", params, 'GET')
 	},

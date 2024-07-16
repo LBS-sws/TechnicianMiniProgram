@@ -199,8 +199,8 @@
 
 			// 获取上传或者预览后的图片
 			handleLoaded3(arr) {
-				console.log("获取上传或者预览后的图片：")
-				console.log(arr)
+				// console.log("获取上传或者预览后的图片：")
+				// console.log(arr)
 				var imageStr = "";
 				for (var i = 0; i < arr.length; i++) {
 					imageStr += arr[i].result + ",";
@@ -288,7 +288,17 @@
 					uni.showToast({icon: 'none', title: `没选择工作照(⊙_⊙)?`});
 				    return false;
 				}
-				
+			
+				// 验证图片中是否有上传失败的图片
+				let photoArr = this.upload_site_photos.split(',')
+				photoArr.forEach((item,i)=>{
+					let no = i+1
+					if(item=='' || item==undefined || item=='undefined'){
+						uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
+						return false
+					}
+				})
+				this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 				let param = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
@@ -336,14 +346,24 @@
 			},
 			// 保存
 			save() {
-				//保存信息
-				console.log("保存图片信息：")
+				
+				//console.log("保存图片信息：")
 				if (this.upload_site_photos == '' || this.upload_site_photos == undefined || this.upload_site_photos.length == 0) {
 					uni.showToast({icon: 'none', title: `没选择工作照(⊙_⊙)?`});
 					return false;
 				}
 				
-				// this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+				// 验证图片中是否有上传失败的图片
+				let photoArr = this.upload_site_photos.split(',')
+				photoArr.forEach((item,i)=>{
+					let no = i+1
+					if(item=='' || item==undefined || item=='undefined'){
+						uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
+						return false
+					}
+				})
+				
+				this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 				let param = {
 					id: this.id,
 					site_photos:this.upload_site_photos,
@@ -355,8 +375,6 @@
 				var log = require('log.js')
 				log.info('点击了保存现场工作照。。。')
 				log.info('param', param)
-				
-				
 				
 				this.$api.editSiteWorkPhotos(param).then(res=>{
 					if (res.code == 200) {
@@ -552,97 +570,5 @@
 		margin: 10px 0px;
 	}
 	// 自定义上传样式
-	.uni-file-picker__container {
-		display: flex;
-		box-sizing: border-box;
-		flex-wrap: wrap;
-		margin: -5px;
 
-		.file-picker__box {
-			position: relative;
-			width: 33.3%;
-			height: 0;
-			padding-top: 33.33%;
-			box-sizing: border-box;
-
-			.file-picker__box-content {
-				position: absolute;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
-				margin: 5px;
-				border: 1px #eee solid;
-				border-radius: 5px;
-				overflow: hidden;
-			}
-
-			.file-picker__box-content {
-				border-width: 1px;
-				border-style: solid;
-				border-color: #eee;
-				border-radius: 3px;
-			}
-
-			.is-add {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-
-				.icon-add {
-					width: 50px;
-					height: 5px;
-					background-color: #f1f1f1;
-					border-radius: 2px;
-				}
-
-				.rotate {
-					position: absolute;
-					-webkit-transform: rotate(90deg);
-					transform: rotate(90deg);
-				}
-			}
-
-		}
-	}
-
-	// 图片
-	.file-image {
-		width: 100%;
-		height: 100%;
-	}
-
-	// 删除图标
-	.icon-del-box {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		position: absolute;
-		top: 3px;
-		right: 3px;
-		height: 26px;
-		width: 26px;
-		border-radius: 50%;
-		background-color: rgba(0, 0, 0, 0.5);
-		z-index: 2;
-		-webkit-transform: rotate(-45deg);
-		transform: rotate(-45deg);
-
-		.icon-del {
-			width: 15px;
-			height: 2px;
-			background-color: #fff;
-			border-radius: 2px;
-		}
-
-		.rotate {
-			position: absolute;
-			-webkit-transform: rotate(90deg);
-			transform: rotate(90deg);
-		}
-	}
-
-	.bg-white {
-		background: #fff;
-	}
 </style>

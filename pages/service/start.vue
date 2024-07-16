@@ -104,7 +104,8 @@ import color from 'uview-ui/libs/config/color';
 				Staff01: '',
 				custInfo: {},
 				ct:0,
-				autograph:'',
+				autograph:'',//客户签名数量
+				staffSign:'',//技术员签名数量
 				loginStaff:'',
 				bk:''
 			}
@@ -138,6 +139,7 @@ import color from 'uview-ui/libs/config/color';
 				this.showContent = false;
 				this.$api.orderStart(params).then(res=>{
 					this.autograph = res.data.autograph
+					this.staffSign = res.data.staffSign
 					this.service = res.data.data
 					this.custInfo = {
 						address: res.data.data.customer.addr,
@@ -253,7 +255,7 @@ import color from 'uview-ui/libs/config/color';
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
-						.Addr + "&autograph=" + this.autograph
+						.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign
 				})
 			}
 		}
