@@ -222,6 +222,13 @@
                 "navigationBarTitleText": "demo",
 				"enablePullDownRefresh":true
             }
+        },{
+            "path" : "pages/service/summarize",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "勘察总结"
+            }
+            
         }
     ],
 	"globalStyle": {
