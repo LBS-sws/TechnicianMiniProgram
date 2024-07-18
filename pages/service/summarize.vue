@@ -2,38 +2,37 @@
 	<view class="content">
 		<view class="service">
 			<view class="service_title">风险问题描述<span class="jh">*</span></view>
-			<view class="lz">
+			<!-- <view class="lz">
 				<cl-row>
 					<ld-select :multiple="true" :list="contentData" @inputFun="inputFun" label-key="label"
 						value-key="value" placeholder="示例" clearable v-model="service_content"
 						@change="selectChange"></ld-select>
 				</cl-row>
-			</view>
-			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="service_content" count></cl-textarea>
+			</view> -->
+			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="risk_desc" count></cl-textarea>
 		</view>
 		<view class="service">
 			<view class="service_title">门店建议措施<span class="jh">*</span></view>
-			<view class="lz">
+			<!-- <view class="lz">
 				<cl-row>
 					<ld-select :multiple="true" :list="proposalData" @inputFun="inputFunx" label-key="label"
 						value-key="value" placeholder="示例" clearable v-model="service_proposal"
 						@change="selectChange1"></ld-select>
-
 				</cl-row>
-			</view>
-			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="service_proposal" count>
+			</view> -->
+			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="store_coordinate" count>
 			</cl-textarea>
 		</view>
 		<view class="service">
 			<view class="service_title">本次行动方案<span class="jh">*</span></view>
-			<view class="lz">
+			<!-- <view class="lz">
 				<cl-row>
 					<ld-select :multiple="true" :list="contentData" @inputFun="inputFun" label-key="label"
 						value-key="value" placeholder="示例" clearable v-model="service_content"
 						@change="selectChange"></ld-select>
 				</cl-row>
-			</view>
-			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="service_content" count></cl-textarea>
+			</view> -->
+			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="ms_action" count></cl-textarea>
 		</view>
 		<view style="width: 100%; height: 200rpx;"></view>
 		<view class="bu" @tap="save()">
@@ -42,173 +41,91 @@
 	</view>
 </template>
 <script>
-export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
-  const reg = new RegExp(keyWord)
-  const arr = []
-  for (let i = 0; i < list.length; i++) {
-    if (reg.test(list[i][attribute])) {
-      arr.push(list[i])
-    }
-  }
-  return arr
-}
-	import ldSelect from '@/components/ld-select/ld-select.vue'
-	export default {
-		components: {
+import ldSelect from '@/components/ld-select/ld-select.vue'
+export default {
+	components: {
 			ldSelect
-		},
-		data() {
-			return {
-				name:'服务简报',
-				service_content: [],
-				service_proposal: [],
-				tablename: "briefings",
-				jobid: '',
-				jobtype: '',
-				search_key: '',
-				timer: null,
-				len: false,
-				contentData:[],			// 服务内容
-				proposalData:[],		// 跟进建议
-				contentDataOld:[],		// 服务内容 - 旧
-				proposalDataOld:[]		// 跟进建议 - 旧
-			}
-		},
-		onLoad(index) {
-			var loginRes = this.checkLogin();
-			if (!loginRes) {
-				uni.showToast({
-					title: "请先登录",
-					icon: 'none',
-				});
-				setTimeout(() => {
-					return false
-				}, 2000);
-			}
-			this.jobid = index.jobid
-			this.jobtype = index.jobtype
+	},
+	data() {
+		return {
+			name:'勘察总结',
+			jobid: '',
+			risk_desc:'',
+			store_coordinate: '',
+			ms_action: ''
+		}
+	},
+	onLoad(index) {
+		var loginRes = this.checkLogin();
+		if (!loginRes) {
+			uni.showToast({
+				title: "请先登录",
+				icon: 'none',
+			});
+			setTimeout(() => {
+				return false
+			}, 2000);
+		}
+		this.jobid = index.jobid
+		this.data_select()
+	},
+	methods: {
 			
-			this.data_select()
+		// 勘查总结信息
+		data_select() {
+			let params = {
+					id:this.jobid,
+			}
+			this.$api.getSummaryInfo(params).then(res=>{
+				// console.log(res)
+				if(res.code==200){
+					this.ms_action = res.data.ms_action
+					this.risk_desc = res.data.risk_desc
+					this.store_coordinate = res.data.store_coordinate
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
 		},
-		methods: {
-			inputFun(data) {
-				this.search_key = data.value;
-				this.clearTimer()
-				if (this.search_key && this.search_key.length > 0) {
+		// 添加/编辑勘查总结
+		save() {
+			if (this.service_content == '') {
+				uni.showToast({
+						title: '信息填写不全',
+						icon: 'none',
+				});
+				return;
+			} else {
+				uni.showLoading({
+					title: "保存中..."
+				});
 					
-					this.timer = setTimeout(() => {
-						let result = fuzzyQuery(this.contentData, this.search_key, 'value') // 数组、搜索值、字段
-						this.contentData = result
-					}, 500)
-					
-				} else {
-					// 恢复原来值
-					this.contentData = this.contentDataOld
-				}
-			},
-			inputFunx(data) {
-				// console.log(data.value)
-				this.search_key = data.value;
-				this.clearTimer()
-				if (this.search_key && this.search_key.length > 0) {
-					
-					this.timer = setTimeout(() => {
-						let result = fuzzyQuery(this.proposalData, this.search_key, 'value') // 数组、搜索值、字段
-						this.proposalData= result
-					}, 500)
-					
-				} else {
-					// 恢复原来值
-					this.proposalData = this.proposalDataOld
-				}
-			},
-			clearTimer() {
-				if (this.timer) {
-					clearTimeout(this.timer)
-				}
-			},
-			/**
-			 *搜索结束
-			 * *
-			 */
-			selectChange(val) {
-				this.service_content = val
-			},
-			selectChange1(val) {
-				this.service_proposal = val
-			},
-			// 获取 服务内容、跟进建议 以及填写的内容
-			data_select() {
 				let params = {
-					job_type:this.jobtype,
-					job_id:this.jobid,
+					id: this.jobid,
+					risk_desc: this.risk_desc,
+					store_coordinate: this.store_coordinate,
+					ms_action: this.ms_action
 				}
-				this.$api.getBriefingsInfo(params).then(res=>{
-					let listContent = []
-					let listProposal = []
-					if(res.data.shortcutContents.length>0)
-					{
-						res.data.shortcutContents.forEach((item,i)=>{
-							if(item.type == 0)
-							{
-								listContent.push({value: item.content, label: item.content})
-							}
-							if(item.type==1){
-								listProposal.push({value: item.content, label: item.content})
-							}
+				this.$api.editSummary(params).then(res=>{
+					uni.hideLoading();
+					uni.showToast({
+						title: res.msg,
+						icon: 'none'
+					});
+					setTimeout(()=>{
+						uni.navigateBack({
+						  delta: 1,
+						  animationType: 'pop-out',
+						  animationDuration: 200
 						})
-					}
-					console.log(listContent)
-					console.log(listProposal)
-					
-					this.contentData = listContent
-					this.proposalData = listProposal
-					this.contentDataOld = listContent
-					this.proposalDataOld = listProposal
-					this.service_content = res.data.data.content.split(",")
-					this.service_proposal = res.data.data.proposal.split(",")
+					},1500)
 				}).catch(err=>{
 					console.log(err)
 				})
-			},
-			save() {
-				if (this.service_content == '') {
-					uni.showToast({
-						title: '信息填写不全',
-						icon: 'none',
-					});
-					return;
-				} else {
-					uni.showLoading({
-						title: "保存中..."
-					});
-					
-					let params = {
-						job_id: this.jobid,
-						job_type: this.jobtype,
-						content: this.service_content,
-						proposal: this.service_proposal
-					}
-					this.$api.editBriefings(params).then(res=>{
-						uni.hideLoading();
-						uni.showToast({
-							title: res.msg,
-							icon: 'none'
-						});
-						setTimeout(()=>{
-							uni.navigateBack({
-							  delta: 1,
-							  animationType: 'pop-out',
-							  animationDuration: 200
-							});
-						},1500)
-					}).catch(err=>{
-						console.log(err)
-					})
-				}
-			},
+			}
 		},
-	}
+	},
+}
 </script>
 
 <style>

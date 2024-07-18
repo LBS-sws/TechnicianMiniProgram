@@ -136,61 +136,6 @@
 			this.service.Status = 0;
 			this.data_select()
 			
-			setTimeout(()=>{
-				if(this.service ==''){
-					
-					this.service = {
-						addr: "四川省成都市青羊区北大街19号正成财富领地",
-						contact_name: "刘",
-						contract_id: 51826,
-						contract_number: "2014-253",
-						customer: {
-							addr: "四川省成都市青羊区北大街19号正成财富领地",
-							customer_id: 7336,
-							customer_type: 249,
-							customer_type_text: "工厂服务",
-							name_zh: "东湖海鲜111",
-						},
-						customer_id: 7336,
-						equipments: [],
-						finish_date: null,
-						finish_time: null,
-						first_job: "常规服务",
-						first_job_flag: 0,
-						job_date: "2024-07-15",
-						job_end_time: "18:30:00",
-						job_id: 3367223,
-						job_start_time: "09:00:00",
-						mobile: "1542155223",
-						order_type: 3,
-						project: "老鼠,蟑螂,果蝇",
-						remarks: "服務單及發票需經部長以上人員簽名及蓋章↵每月4次，MOP1300/月",
-						service_status: {status: "待服务", color: "#007AFF"},
-						service_type: 2,
-						service_type_info: {service_id: 2, service_name: "灭虫"},
-						staff: {main: "黄丽帆", other: ""},
-						start_date: null,
-						start_time: null,
-						status: 2,
-						tech_attachment: [
-							{
-								file_path: "/lbs/contract/51826-Tech/DF64CE1C-B3A8-4662-B4A0-324CC3204F94.jpeg",
-								from_id: "51826",
-								from_type: 3,
-							},
-						],
-						tech_remarks: "客户需要增加服务项目",
-						tel: "150028888515",
-						
-					}
-					this.service_button = '继续服务'
-					
-					this.is_show_project = false
-					this.is_show_bz = false
-					this.is_show_fbt = false
-				}
-				
-			},1000)
 		},
 		methods: {
 			//预览轮播图
@@ -275,6 +220,13 @@
 						if(res.data.status == 3){
 							this.service_button = '查看服务报告';
 						}
+					}
+					
+					if(res.data.order_type == 3)
+					{
+						this.is_show_project = false
+						this.is_show_bz = false
+						this.is_show_fbt = false
 					}
 					uni.hideLoading();
 				}).catch(err=>{

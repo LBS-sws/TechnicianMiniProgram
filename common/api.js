@@ -75,6 +75,23 @@ export default {
 	getReportSiteWorkPhotosInfo(params){
 		 return request("/Report.Report/getSiteWorkPhotosInfo", params, 'GET')
 	},
+	// 勘察总结
+	getSummaryInfo(params){
+		return request("/Exploration.Summary/info", params, 'GET')
+	},
+	// 勘察编辑
+	editSummary(params){
+		return request("/Exploration.Summary/edit", params, 'POST')
+	},
+	// 风险评估 分类
+	getRiskCategoryList(params){
+		return request("/Exploration.Risk/getCategoryList", params, 'GET')
+	},
+	// 风险评估 问题列表
+	getRiskProblemList(params){
+		return request("/Exploration.Risk/getProblemList", params, 'GET')
+	},
+	
 	about(params){
 		 return request("/Content.Content/about", params, 'GET')
 	},

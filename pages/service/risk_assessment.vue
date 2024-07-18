@@ -1,18 +1,63 @@
 <template>
 	<view class="container">
 		<view class="list">
-			<view class="item">
-				<text>滋生源 (5)</text>
+			<view class="item" v-for="(item,i) in data" :key="i" @click="goDetail(item.id)">
+				{{item.category_title}} ({{item.count}})
 			</view>
-			<view class="item">
-				 <text>&nbsp;</text>
-			</view>
+			
 		</view>
 		
 	</view>
 </template>
 
 <script>
+export default{
+	data(){
+		return{
+			name:'风险评估问题列表',
+			job_id:'',
+			data:[]
+		}
+	},
+	onLoad(index) {
+		var loginRes = this.checkLogin();
+		if (!loginRes) {
+			uni.showToast({
+				title: "请先登录",
+				icon: 'none',
+			});
+			setTimeout(() => {
+				return false
+			}, 2000);
+		}
+		this.jobid = index.jobid
+		this.list()
+	},
+	methods:{
+		// 勘查总结信息
+		list() {
+			let params = {
+				id:this.jobid,
+			}
+			this.$api.getRiskCategoryList(params).then(res=>{
+				console.log(res)
+				if(res.code==200){
+					this.data = res.data
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
+		//  详细
+		goDetail(id){
+			
+			uni.navigateTo({
+				url:'/pages/service/risk_show?id=' + id +'&jobid=' + this.jobid
+			})
+			
+		}
+	}
+}
 </script>
 
 <style lang="scss">
@@ -46,6 +91,7 @@
 			border-radius: 10rpx;
 			text-align: center;
 			margin-bottom: 40rpx;
+			overflow: hidden;
 		}
 	}
 }

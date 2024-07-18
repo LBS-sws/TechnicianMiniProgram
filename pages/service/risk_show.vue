@@ -1,52 +1,48 @@
 <template>
 	<view class="content" style="margin-bottom: 40px;">
-		<view class="del" @tap="del()" v-if="id>0">
+		<!-- <view class="del" @tap="del()" v-if="id>0">
 			<cl-icon name="cl-icon-minus-border" color="#007AFF" :size="80"></cl-icon>
-		</view>
+		</view> -->
 		<cl-confirm ref="del_confirm"> </cl-confirm>
+		<!-- <cl-select v-model="item.is_conform" :options="columns" keyName="label" placeholder="请选择"></cl-select> -->
 		
 		
-		<view class="service">
-			<view class="service_title">风险评估项目<span class="jh">*</span></view>
-			<view class="service_content">
-				1、门店外围30米范围内不存在绿化带(含绿植)/化粪池/流动摊点/垃圾堆放点等虫鼠害滋生源。
-			</view>
-		</view>
-		<view >
-			<view style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-				<view class="">是否符合要求<span class="jh" >*</span></view>
-				<view>
-					<cl-input v-model="risk_area" placeholder="" />
+		<block v-for="(item,i) in data" :key="i">
+			<view class="service">
+				<view class="service_title">风险评估项目<span class="jh">*</span></view>
+				<view class="service_content">
+					{{i+1}}、{{item.title}}
 				</view>
 			</view>
-			
-		</view>
-		<view class="service">
-			<view class="">备注说明</view>
-			<view class="service_content">
-				<!-- <ld-select :multiple="true" :list="service_content_lists" @inputFun="inputFun" label-key="label"
-					value-key="value" placeholder="示例" clearable v-model="risk_description" @change="selectChange">
-				</ld-select>
-		 -->
-				<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="risk_description" count></cl-textarea>
-			</view>
-		</view>
-		<view class="service" style="width: 100%;">
-			<view class="">照片<span class="dcts">(最多4张)</span>
-			</view>
-			<view class="service_content">
-				<view label="限制上传图片格式/大小">
-					<m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加现场照片"
-						@upload="handleLoaded3" @change="handleChange3" :number="4" :formData="formData">
-						<template v-slot:icon>
-							<text class="s-add-list-btn-icon">+</text>
-						</template>
-					</m-upload>
+			<view class="service">
+				<view style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+					<view class="">是否符合要求<span class="jh" >*</span></view>
+					<view>
+						<cl-select v-model="data[i].is_conform" :options="columns" placeholder="请选择"></cl-select>
+					</view>
 				</view>
 			</view>
-		</view>
-		
-		
+			<view class="service">
+				<view class="">备注说明</view>
+				<view class="service_content">
+					<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="risk_description" count></cl-textarea>
+				</view>
+			</view>
+			<view class="service" style="width: 100%;">
+				<view class="">照片<span class="dcts">(最多4张)</span>
+				</view>
+				<view class="service_content">
+					<view label="限制上传图片格式/大小">
+						<m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加现场照片"
+							@upload="handleLoaded3" @change="handleChange3" :number="4" :formData="formData">
+							<template v-slot:icon>
+								<text class="s-add-list-btn-icon">+</text>
+							</template>
+						</m-upload>
+					</view>
+				</view>
+			</view>
+		</block>
 		
 		<view style="width: 100%; height: 100rpx;"></view>
 		<view class="bu" @tap="$noMultipleClicks(save)" v-if="id>0">
@@ -60,146 +56,81 @@
 </template>
 
 <script>
-	export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
-		const reg = new RegExp(keyWord)
-		const arr = []
-		for (let i = 0; i < list.length; i++) {
-			if (reg.test(list[i][attribute])) {
-				arr.push(list[i])
-			}
-		}
-		return arr
-	}
-	import newUpload from '@/components/new-upload/new-upload.vue';
-	import ldSelect from '@/components/ld-select/ld-select.vue';
-	export default {
-		components: {
-			newUpload,
-			ldSelect
-		},
+import newUpload from '@/components/new-upload/new-upload.vue';
+import ldSelect from '@/components/ld-select/ld-select.vue';
+// import ldSelect from '@/components/ld-select/ld-select.vue';
+export default {
+	components: {
+		newUpload,
+		ldSelect
+	},
 		data() {
 			return {
+				name:'风险评估 - 问题列表',
 				noClick: true,
-				target: "",
-				targets: [],
-				type: "",
-				types: [],
-				rank: "",
-				ranks: [],
-				label: "",
-				labels: [],
-				service_content_lists: [],
-				service_content_listsOld: [],
-				id: 0,
-				jobid: '',
-				jobtype: '',
-				shortcut_type: '',
-				service_type: '',
-				risk_targets: [],
-				risk_types: [],
-				risk_rank: '',
-				risk_label: '',
+				
 				site_photos: [],
 				// start_site_photos: [],
 				// end_site_photos: [],
 				upload_site_photos: [],
-				risk_description: [],
-				risk_proposal: [],
-				take_steps: [],
-				status: '',
-				search_key: '',
-				timer: null,
-				len: false,
+				
 				upPicUrl: `${this.$baseUrl}/Upload.Upload/image`,
 				init_photos: [],
 				headerUpload: {
 					'token': uni.getStorageSync('token')
 				},
-				ct: 0,
-				risk_area: '',
-				formData: {
-					type:1
-				},
-				customer_type:'',
-				checkdata:[],
-				check:{
-					ls_number:0,
-					ls_select:'',
-					zl_number:0,
-					zl_select:'',
-					fc_number:0,
-					fc_text:'',
-					selects:[
-						{
-							label: "有",
-							value: '1'
-						},
-						{
-							label: "无",
-							value: '0'
-						}
-					]
-				},
+				
+				data:[],
+				show: false,
+                columns: [
+                    {
+                        label: '是',
+                        value:1
+                    }, {
+                        label: '否',
+                        value:0
+                    }
+                ],
+				index:'',
 			}
 		},
-		onLoad(index) {
-			var loginRes = this.checkLogin();
-			if (!loginRes) {
-				uni.showToast({
-					title: "请先登录",
-					icon: 'none',
-				});
-				setTimeout(() => {
-					return false
-				}, 2000);
-			}
+	onLoad(index) {
+		var loginRes = this.checkLogin();
+		if (!loginRes) {
+			uni.showToast({
+				title: "请先登录",
+				icon: 'none',
+			});
+			setTimeout(() => {
+				return false
+			}, 2000);
+		}
 
-			this.id = index.id
-			this.jobid = index.jobid
-			this.jobtype = index.jobtype
-			
-			this.ct = uni.getStorageSync('ct')
-			this.data_select()
-			
-		},
+		this.jobid = index.jobid
+		
+		this.list()
+	},
 		methods: {
+			// 回调参数为包含columnIndex、value、values
+			confirm(e) {
+                console.log('confirm', e)
 			
-			/**
-			 *搜索开始
-			 * *
-			 */
-			inputFun(data) {
-				this.search_key = data.value;
-				this.clearTimer()
-				if (this.search_key && this.search_key.length > 0) {
-
-					this.timer = setTimeout(() => {
-						let result = fuzzyQuery(this.service_content_lists, this.search_key, 'value') // 数组、搜索值、字段
-						this.service_content_lists = result
-					}, 500)
-
-				} else {
-					// 恢复原来值
-					this.service_content_lists = this.service_content_listsOld
+				// console.log(e.indexs[0])
+				// this.data[]
+                this.show = false
+			},
+			list() {
+				let params = {
+					id:this.jobid,
 				}
-			},
-			clearTimer() {
-				if (this.timer) {
-					clearTimeout(this.timer)
-				}
-			},
-			/**
-			 *搜索结束
-			 * *
-			 */
-			selectChange(val) {
-				this.risk_description = val
-			},
-			selectChange1(val) {
-				this.risk_proposal = val
-			},
-			selectChange2(val) {
-				this.take_steps = val
+				this.$api.getRiskProblemList(params).then(res=>{
+					console.log(res)
+					if(res.code==200){
+						this.data = res.data
+					}
+				}).catch(err=>{
+					console.log(err)
+				})
 			},
 			data_select() {
 				let params = {
@@ -558,7 +489,7 @@
 			},
 			//...
 		},
-	}
+}
 </script>
 
 <style lang="scss">

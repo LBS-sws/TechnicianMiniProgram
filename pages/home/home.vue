@@ -99,50 +99,6 @@ export default {
 		this.getjobs();
 		this.getJobTotal();
 		
-		setTimeout(()=>{
-			console.log(this.jobs)
-			
-			let jobs = this.jobs
-			let obj = {
-				customer:{
-					addr: "四川省成都市青羊区北大街19号正成财富领地",
-					customer_id: 7336,
-					customer_type: 249,
-					customer_type_text: "工厂服务",
-					name_zh: "东湖海鲜",
-				},
-				customer_grade:{
-					order_id: "",
-					score: ""
-				},
-				customer_id: 7336,
-				finish_date: null,
-				finish_time: null,
-				first_job: "常规服务",
-				first_job_flag: 0,
-				id: 3367223,
-				job_date: "2024-07-15",
-				job_end_time: "18:30:00",
-				job_start_time: "09:00:00",
-				order_type: 3,
-				remarks: "服務單及發票需經部長以上人員簽名及蓋章↵每月4次，MOP1300/月",
-				service_status:{
-					color: "#007AFF",
-					status: "待服务"
-				},
-				service_type: 2,
-				service_type_info:{
-					service_id: 2,
-					service_name: "灭虫"
-				},
-				start_date: null,
-				start_time: null,
-				status: 2,
-			}
-			jobs.push(obj)
-			this.jobs = jobs
-			
-		},1000)
 	},
 	methods: {
 		// 滑动月份触发事件
