@@ -4,45 +4,24 @@
 			<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
 		</view>
 		<view class="service">
-			<!-- <view class="service_title">
-			  <view class="title-item">
-			
-				<cl-tag type="info">风 险 评 估({{ risk_total }})</cl-tag>
-			
-			  </view>
-			  <view class="title-item title-item-left"  @tap="last_risk()">
-
-				<cl-badge :value="dotConfirmNum" type="success" >
-				  <cl-tag type="primary">待 确 认  </cl-tag>
-				</cl-badge>
-
-			  </view>
-			  <view class="title-item title-item-right" @tap="last_risk()">
-				<cl-badge :value="dotNum" type="error" >
-				  <cl-tag size="small" type="warning">历史风险记录</cl-tag>
-				</cl-badge>
-			  </view>
-			</view> -->
-
 			<view class="service_content">
 				<view class="noservice" v-if="risks.length==0">
 					没有数据哦~~
 				</view>
 				<view v-else class="service_content">
 					<view class="risk" v-for="(item,index) in risks" :key="index" @tap="risk_detail(item.id)" v-if="risks.length>0">
-						<cl-row>
-							<cl-col span="9" style="">
+					
+						<view class="item">
+							<view class="thumb">
 								<img :src="item.img" />
-							</cl-col>
-							<cl-col span="15" >
-								
-								<cl-list><span>风险区域：</span>{{item.risk_area}}</cl-list>
-								<cl-list><span>风险程度：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.creat_time}}</cl-list>
-								
-							</cl-col>
-
-						</cl-row>
+							</view>
+							<view class="info">
+								<view class="item-x"><text class="span">风险区域：</text>{{item.risk_area}}</view>
+								<view class="item-x"><text class="span">风险程度：</text>{{item.risk_types}}</view>
+								<view class="item-x"><text class="span">跟进时间：</text>{{item.creat_time}}</view>
+							</view>
+						</view>
+						
 					</view>
 					<view style="display: block; text-align: center;" v-if="loading">
 						<cl-loading></cl-loading>
@@ -59,7 +38,7 @@
 export default {
 	data() {
 		return {
-			name:'风险跟进',
+			name:'风险情况',
 			risks: [
 				{id:1,img:'https://files.lbsapps.cn/storage/risk/20240715/240715160144972755302.jpg'},
 				
@@ -211,13 +190,7 @@ export default {
 					}
 				});
 		},
-		//风险
-		last_risk() {
-			uni.navigateTo({
-				url: "/pages/service/last_risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-					'&service_type=' + this.service_type + '&shortcut_type=' + this.shortcut_type
-			})
-		},
+		
 		//风险详情页
 		risk_detail(id) {
 			uni.redirectTo({
@@ -230,7 +203,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 	.add {
 		z-index: 9999;
 		position: fixed;
@@ -286,6 +259,16 @@ export default {
 		/* height: 120px; */
 		padding: 10px 0px 0px 0px;
 		border-bottom: 1px solid #eeeeee;
+		.item{
+			display: flex;
+			justify-content: flex-start;
+			.info{
+				margin-left: 20rpx;
+				.item-x{
+					margin-bottom: 30rpx;
+				}
+			}
+		}
 	}
 
 	.risk cl-list {
@@ -298,7 +281,7 @@ export default {
 		border-radius: 10px;
 	}
 
-	.risk span {
+	.risk .span {
 		font-weight: bold;
 		color: #b91306;
 	}
@@ -358,29 +341,6 @@ export default {
 		/* padding-bottom: 15px; */
 	}
   /* Rest of the styles */
-  .service_title {
-    display: flex;
-    align-items: center;
-  }
-  .title-item {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-  }
-  .title-item-right {
-    float: right;
-    position: absolute;
-    right: 3%;
-
-  }
-
-  .title-item-left {
-    /*font-size: 21px;*/
-    float: right;
-    position: absolute;
-    padding-left: 35%;
-
-  }
 	.text-green.data-v-2ee6bce8 {
 		color: #12900a;
 	}

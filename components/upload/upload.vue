@@ -18,11 +18,16 @@
 </template>
 
 <script>
+// 上传图片
 export default{
 	props:{
 		photos:{
 			type:[Object,Array],
 			default:{}
+		},
+		current:{
+			type:[Number],
+			default:''
 		}
 	},
 	data(){
@@ -45,8 +50,10 @@ export default{
 		handleLoaded3(arr) {
 			console.log('arrarrarrarr',arr)
 			var imageStr = "";
+			var imgArray = []
 			for (var i = 0; i < arr.length; i++) {
 				imageStr += arr[i].result + ",";
+				imgArray.push(arr[i].result)
 			}
 			//去掉最后一个逗号
 			if (imageStr.length > 0) {
@@ -55,6 +62,13 @@ export default{
 			// console.log(imageStr);
 			console.log('imageStrimageStrimageStr',imageStr)
 			this.upload_site_photos = imageStr
+			
+			let obj = {
+				index: this.current,
+				imgArr: imgArray
+			}
+			this.$emit('imageEdit', obj);
+			
 		},
 	}
 }

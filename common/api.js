@@ -91,6 +91,10 @@ export default {
 	getRiskProblemList(params){
 		return request("/Exploration.Risk/getProblemList", params, 'GET')
 	},
+	// 风险评估 编辑
+	editRiskAssessment(params){
+		return request("/Exploration.Risk/edit", params, 'POST')
+	},
 	
 	about(params){
 		 return request("/Content.Content/about", params, 'GET')

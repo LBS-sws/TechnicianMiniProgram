@@ -43,15 +43,13 @@
 				</view>
 			</view> -->
 			<view>
-				<upload :photos="item.photos" @imageEdit="imageEdit"></upload>
+				<upload :photos="item.photos" :current="i" @imageEdit="imageEdit"></upload>
 			</view>
 		</block>
-		
+		 
 		<view style="width: 100%; height: 100rpx;"></view>
-		<view class="bu" @tap="$noMultipleClicks(save)" v-if="id>0">
-			保存
-		</view>
-		<view v-else class="bu" @tap="$noMultipleClicks(submit)">
+		
+		<view class="bu" @tap="$noMultipleClicks(submit)">
 			保存
 		</view>
 
@@ -115,7 +113,8 @@ export default {
 	},
 		methods: {
 			imageEdit(val){
-				
+				console.log('return:',val)
+				this.data[val.index].photos = val.imgArr
 			},
 			// 回调参数为包含columnIndex、value、values
 			confirm(e) {
@@ -167,55 +166,37 @@ export default {
 			},
 			// 新增
 			submit() {
-				if (this.ct == 0) {
-					console.log('this.upload_site_photos',this.upload_site_photos)
-					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
-						uni.showToast({
-							icon: 'none',
-							title: `没上传现场照(⊙_⊙)?`
-						});
-						return false;
-					}
-				}
-				if(this.ct == 1){
-					if(this.risk_area==''){
-						uni.showToast({
-							icon: 'none',
-							title: `工厂区域必填`
-						});
-						return false;
-					}
-				}
-				
-				let photoArr = this.upload_site_photos.split(',')
-				photoArr.forEach((item,i)=>{
-					let no = i+1
-					if(item=='' || item==undefined || item=='undefined'){
-						uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
-						return false
-					}
-				})
+				console.log(this.data)
+				// return false
+			// 	let photoArr = this.upload_site_photos.split(',')
+			// 	photoArr.forEach((item,i)=>{
+			// 		let no = i+1
+			// 		if(item=='' || item==undefined || item=='undefined'){
+			// 			uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
+			// 			return false
+			// 		}
+			// 	})
 				
 			
-			const str = this.upload_site_photos;
-			const substr = "undefined";
-			if (str.includes(substr)) {
-				uni.showToast({
-					icon: 'none',
-					title: `有上传失败的图片请重新上传!`
-				});
-				return false;
-			}
+			// const str = this.upload_site_photos;
+			// const substr = "undefined";
+			// if (str.includes(substr)) {
+			// 	uni.showToast({
+			// 		icon: 'none',
+			// 		title: `有上传失败的图片请重新上传!`
+			// 	});
+			// 	return false;
+			// }
 			
-				uni.showLoading({
-					title: "正在保存"
-				});
+			// 	uni.showLoading({
+			// 		title: "正在保存"
+			// 	});
 			
-			let checkdata = '';
-			if(this.checkdata.length>0){
-				checkdata = JSON.stringify(this.checkdata)
-			}
-			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+			// let checkdata = '';
+			// if(this.checkdata.length>0){
+			// 	checkdata = JSON.stringify(this.checkdata)
+			// }
+			// this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 			let params = {
 				job_id: this.jobid,
 				job_type: this.jobtype,
@@ -232,20 +213,20 @@ export default {
 				customer_type: this.customer_type,
 				service_type:this.service_type
 			}
-			this.$api.addRisk(params).then(res=>{
+			this.$api.editRiskAssessment(params).then(res=>{
 				if (res.code == 200) {
 					if (res.data) {
-						this.id = res.data
-						this.data_select()
-						this.del_index = []
+				// 		this.id = res.data
+				// 		this.data_select()
+				// 		this.del_index = []
 				
-						uni.hideLoading();
-						uni.$utils.toast("保存成功")
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
-							})
-						}, 2000)
+				// 		uni.hideLoading();
+				// 		uni.$utils.toast("保存成功")
+				// 		setTimeout(() => {
+				// 			uni.redirectTo({
+				// 				url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
+				// 			})
+				// 		}, 2000)
 					}
 				}
 				if(res.code == 400){
