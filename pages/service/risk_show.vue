@@ -28,7 +28,7 @@
 					<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="risk_description" count></cl-textarea>
 				</view>
 			</view>
-			<view class="service" style="width: 100%;">
+			<!-- <view class="service" style="width: 100%;">
 				<view class="">照片<span class="dcts">(最多4张)</span>
 				</view>
 				<view class="service_content">
@@ -41,6 +41,9 @@
 						</m-upload>
 					</view>
 				</view>
+			</view> -->
+			<view>
+				<upload :photos="item.photos" @imageEdit="imageEdit"></upload>
 			</view>
 		</block>
 		
@@ -58,42 +61,42 @@
 <script>
 import newUpload from '@/components/new-upload/new-upload.vue';
 import ldSelect from '@/components/ld-select/ld-select.vue';
-// import ldSelect from '@/components/ld-select/ld-select.vue';
+import upload from '@/components/upload/upload.vue';
 export default {
 	components: {
 		newUpload,
-		ldSelect
+		ldSelect,
+		upload
 	},
-		data() {
-			return {
-				name:'风险评估 - 问题列表',
-				noClick: true,
+	data() {
+		return {
+			name:'风险评估 - 问题列表',
+			noClick: true,
 				
-				site_photos: [],
-				// start_site_photos: [],
-				// end_site_photos: [],
-				upload_site_photos: [],
+			site_photos: [],
+			// start_site_photos: [],
+			// end_site_photos: [],
+			upload_site_photos: [],
 				
-				upPicUrl: `${this.$baseUrl}/Upload.Upload/image`,
-				init_photos: [],
-				headerUpload: {
-					'token': uni.getStorageSync('token')
-				},
-				
-				data:[],
-				show: false,
-                columns: [
-                    {
-                        label: '是',
-                        value:1
-                    }, {
-                        label: '否',
-                        value:0
-                    }
-                ],
-				index:'',
-			}
-		},
+			upPicUrl: `${this.$baseUrl}/Upload.Upload/image`,
+			init_photos: [],
+			headerUpload: {
+				'token': uni.getStorageSync('token')
+			},
+			data:[],
+			show: false,
+            columns: [
+                {
+                    label: '是',
+                    value:1
+                }, {
+                    label: '否',
+                    value:0
+                }
+            ],
+			index:'',
+		}
+	},
 	onLoad(index) {
 		var loginRes = this.checkLogin();
 		if (!loginRes) {
@@ -107,10 +110,13 @@ export default {
 		}
 
 		this.jobid = index.jobid
-		
+		this.c_id = index.id
 		this.list()
 	},
 		methods: {
+			imageEdit(val){
+				
+			},
 			// 回调参数为包含columnIndex、value、values
 			confirm(e) {
                 console.log('confirm', e)
@@ -122,79 +128,24 @@ export default {
 			list() {
 				let params = {
 					id:this.jobid,
+					c_id:this.c_id
 				}
 				this.$api.getRiskProblemList(params).then(res=>{
 					console.log(res)
 					if(res.code==200){
 						this.data = res.data
-					}
-				}).catch(err=>{
-					console.log(err)
-				})
-			},
-			data_select() {
-				let params = {
-					id: this.id,
-					job_id:this.jobid,
-					job_type:this.jobtype
-				}
-				this.$api.getRiskInfo(params).then(res=>{
-					if (res.code == 200) {
-						if (res.data) {
-							
-							
-							this.targets = res.data.riskTargets
-							this.types = res.data.riskTypes
-							this.ranks = res.data.riskRanks
-							this.labels = res.data.riskLabel
-							
-							this.customer_type = res.data.customer_type
-							this.service_type = res.data.service_type
-							
 						
-							// 现场发现
-							if(this.id==0){
-								this.checkdata = res.data.service_data
-							}
-							if (this.id>0) {
-								this.risk_targets = res.data.risk.risk_targets.split(',') 	// 靶标
-								this.risk_types = res.data.risk.risk_types.split(',') 		// 风险类别
-								this.risk_rank = res.data.risk.risk_rank 					// 风险等级
-								this.risk_label = res.data.risk.risk_label.split(',') 		// 风险标签
-								this.risk_area = res.data.risk.risk_area 					// 风险区域
-								this.risk_description = res.data.risk.risk_description.split(',') 		// 风险描述
-								this.risk_proposal = res.data.risk.risk_proposal.split(',') 			// 整改建议
-								this.take_steps = res.data.risk.take_steps.split(',') 					// 采取措施
-								var photoStr = res.data.risk.site_photos ?? [];
-								if(photoStr.length>0){
-									photoStr.forEach((item,i)=>{
-										
-										let imgurl = item
-										imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
-										this.init_photos[i] = imgurl
-									})
-									// console.log(this.init_photos)
-									this.$refs.upload3.setItems(this.init_photos);
-								}
+						// var photoStr = res.data.risk.site_photos ?? [];
+						// if(photoStr.length>0){
+						// 	photoStr.forEach((item,i)=>{
 								
-								if(res.data.risk.risk_data){
-									// console.log(JSON.parse(res.data.risk.risk_data))
-									this.checkdata = JSON.parse(res.data.risk.risk_data)
-								}
-							}
-							// 快捷语  一维数组转二维数组
-							let shortcutContents = res.data.shortcutContents
-							
-							let shortcutArr = []
-							shortcutContents.forEach((item, i) => {
-								shortcutArr.push({
-									label: item,
-									value: item
-								})
-							})
-							this.service_content_lists = shortcutArr
-							this.service_content_listsOld = shortcutArr // 用于恢复
-						}
+						// 		let imgurl = item
+						// 		imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
+						// 		this.init_photos[i] = imgurl
+						// 	})
+						// 	// console.log(this.init_photos)
+						// 	this.$refs.upload3.setItems(this.init_photos);
+						// }
 					}
 				}).catch(err=>{
 					console.log(err)
