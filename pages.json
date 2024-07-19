@@ -222,7 +222,41 @@
                 "navigationBarTitleText": "demo",
 				"enablePullDownRefresh":true
             }
-        }
+        },{
+            "path" : "pages/service/summarize",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "勘察总结"
+            }
+        },
+		{
+		    "path" : "pages/service/risk_assessment",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "风险评估"
+		    }
+		},
+		{
+		    "path" : "pages/service/risk_show",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "风险评估"
+		    }
+		},
+		{
+		    "path" : "pages/service/risk_list",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "风险情况"
+		    }
+		},
+		{
+		    "path" : "pages/service/risk_item",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "风险情况"
+		    }
+		}
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
