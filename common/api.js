@@ -103,8 +103,17 @@ export default {
 	getRiskSituationInfo(params){
 		return request("/Exploration.RiskSituation/getInfo", params, 'GET')
 	},
+	// 新增
 	addRiskSituation(params){
 		return request("/Exploration.RiskSituation/add", params, 'POST')
+	},
+	// 编辑
+	editRiskSituation(params){
+		return request("/Exploration.RiskSituation/edit", params, 'POST')
+	},
+	// 删除
+	delRiskSituation(params){
+		return request("/Exploration.RiskSituation/del", params, 'POST')
 	},
 	
 	about(params){

@@ -214,6 +214,50 @@
 					</view>
 				</cl-scroller>
 			</swiper-item>
+			<!-- 6. 勘察总结 -->
+			<swiper-item class="sumup" v-if="show_sumup">
+				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.risk_desc">
+					<view class="service_title">风险问题描述</view>
+					<view class="service_content">
+						<text selectable="true">{{kczj_model.risk_desc}}</text>
+					</view>
+				</view>
+				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.store_coordinate">
+					<view class="service_title">门店建议措施</view>
+					<view class="service_content">
+						<text selectable="true">{{kczj_model.store_coordinate}}</text>
+					</view>
+				</view>
+				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.ms_action">
+					<view class="service_title">本次行动方案</view>
+					<view class="service_content">
+						<text selectable="true">{{kczj_model.ms_action}}</text>
+					</view>
+				</view>
+			</swiper-item>
+			<swiper-item class="evaluate" v-if="show_evaluate">
+				
+			</swiper-item>
+			<!-- 8.风险情况 -->
+			<swiper-item class="condition" v-if="show_condition">
+				<cl-scroller>
+					<view class="risk" v-for="(item,index) in conditionData" :key="index" @tap="risk_detail(item.id)" v-if="conditionData.length>0">
+					
+						<view class="item">
+							<view class="thumb">
+								<img :src="item.img" />
+							</view>
+							<view class="info">
+								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area}}</view>
+								<view class="item-x"><text class="span">风险程度：</text>{{item.cd}}</view>
+								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time}}</view>
+							</view>
+						</view>
+						
+					</view>
+				</cl-scroller>
+			</swiper-item>
+			
 			<!-- 签名点评 -->
 			<swiper-item  class="sign-review">
 				<cl-scroller>
@@ -361,11 +405,22 @@
 						tit: '现场工作照'
 					},
 					{
+						id: 'summarize',
+						tit: '勘察总结'
+					},
+					{
+						id: 'risk_assessment',
+						tit: '风险评估'
+					},
+					{
+						id: 'risk_list',
+						tit: '风险情况'
+					},
+					{
 						id: 'autograph',
 						tit: '签名点评'
 					}
 				],
-				
 				//评论弹窗
 				type: "bottom", // left right top bottom center
 				transition: "bottom", //none slider fade
@@ -397,6 +452,10 @@
 				show_material:false,
 				show_photo:false,
 				show_risk:false,
+				show_sumup:false,
+				show_evaluate:false,
+				show_condition:false,
+				
 				Staff01:'',
 				// 图片旋转 flag
 				conversion_flag:1,
@@ -421,7 +480,13 @@
 				isShowAdd:false,
 				isdp:false,
 				current:0,
-				bk:[] // 板块
+				bk:[] ,// 板块
+				kczj_model:{
+					ms_action:'',
+					risk_desc:'',
+					store_coordinate:''
+				},
+				conditionData:[]
 			}
 		},
 		onLoad(index) {
@@ -483,12 +548,17 @@
 				if(item == 5){
 					this.show_photo = true
 				}
+				if(item == 6){
+					this.show_sumup = true
+				}
+				if(item == 7){
+					this.show_evaluate = true
+				}
+				if(item == 8){
+					this.show_condition = true
+				}
 			})
-			// this.show_briefing = true
-			// this.show_material = true
-			// this.show_equipment = true
-			// this.show_risk = true
-			// this.show_photo = true
+			
 		},
 		//页面销毁
 		beforeDestroy() {
@@ -528,39 +598,38 @@
 			run_tab(index) {
 				console.log('执行整个tab事件',index)
 				console.log('this.tab_bar[index]',this.tab_bar[index])
-				// this.show_briefing = true
-				// this.show_material = true
-				// this.show_equipment = true
-				// this.show_risk = true
-				// this.show_photo = true
+				
 				if(index == 0){
 					this.getBriefing()		// 基础
-					
 				}
 				if(this.tab_bar[index].data == '1'){
 					this.getBriefing()		// 简报
-					
 				}
 				if(this.tab_bar[index].data == '2'){
-					this.getMaterial()		// 物料
-					
+					this.getMaterial()		// 物料	
 				}
 				if(this.tab_bar[index].data == '3'){
 					this.getEquipment()		// 设备
-					
 				}
 				if(this.tab_bar[index].data == '4'){
 					this.getRisk()			// 风险跟进
-					
 				}
 				if(this.tab_bar[index].data == '5'){
 					this.getPhoto()			// 现场工作照
-					
 				}
 				if(this.tab_bar[index].data == '6'){
-					this.getItems()			// 签名
-					
+					this.getSummaryInfo()		// 勘察总结	
 				}
+				if(this.tab_bar[index].data == '7'){
+					// this.getItems()			// 风险评估
+				}
+				if(this.tab_bar[index].data == '8'){
+					this.getRiskSituationList()	// 风险情况
+				}
+				if(this.tab_bar[index].data == '9'){
+					this.getItems()			// 签名
+				}
+				
 				// 记录当前滑动的位置
 				this.current_tab = index
 				// 如果点击了第4个以后的,滚动条向右移动屏幕的宽度
@@ -571,6 +640,9 @@
 				uni.navigateTo({
 					url: "/pages/report/risk_detail?id=" + index + "&jobid=" + this.jobid +"&jobtype="+ this.jobtype
 				})
+			},
+			risk_qk_detail(){
+				
 			},
 			previewImg(logourl) {
 				let _this = this;
@@ -622,7 +694,6 @@
 			onStartSign_sadd(code) {
 				console.log('onStartSign_sadd: ' + String(code))
 			},
-
 			//评价
 			bottom: function() {
 				this.width = "100%";
@@ -643,6 +714,7 @@
 			add() {
 				var i = this.current_tab
 				var url_t = this.tab_bar[i].id
+				
 				uni.navigateTo({
 					url: "../service/" + url_t+"?jobid=" + this.jobid+'&jobtype='+this.jobtype+'&shortcut_type='+url_t+'&service_type='+this.service_type,
 					success(res) {
@@ -729,8 +801,18 @@
 								if(item=='5'){
 									arr.push({id: 'photo',tit: '现场工作照',data:5})
 								}
+								if(item=='6'){
+									arr.push({id: 'summarize',tit: '勘察总结',data:6})
+								}
+								if(item=='7'){
+									arr.push({id: 'risk_assessment',tit: '风险评估',data:7})
+								}
+								if(item=='8'){
+									arr.push({id: 'risk_list',tit: '风险情况',data:8})
+								}
 							})
-							arr.push({id: 'autograph',tit: '签名点评', data:6})
+							// arr.push({id: 'autograph',tit: '签名点评', data:6})
+							arr.push({id: 'autograph',tit: '签名点评', data:9})
 							console.log('arrarr',arr)
 							this.tab_bar = arr
 							
@@ -830,6 +912,53 @@
 					})
 					this.photo = list
 					console.log(this.photo)
+				}).catch(err=>{
+					console.log(err)
+				})
+			},
+			// 6.勘察总结
+			getSummaryInfo(){
+				let params = {
+					id:this.jobid,
+				}
+				this.$api.getSummaryInfo(params).then(res=>{
+					// console.log(res)
+					if(res.code==200){
+						this.kczj_model.ms_action = res.data.ms_action
+						this.kczj_model.risk_desc = res.data.risk_desc
+						this.kczj_model.store_coordinate = res.data.store_coordinate
+					}
+				}).catch(err=>{
+					console.log(err)
+				})
+			},
+			getRiskSituationList(){
+				let params = {
+					id:this.jobid,
+				}
+				this.$api.getRiskSituationList(params).then(res=>{
+					console.log(res)
+					if(res.code==200){
+						let list = res.data.data
+						list.forEach((item,i)=>{
+							item.img = `${this.$baseUrl_imgs}` + item.img
+							if(item.create_time == null || item.create_time == 'null' || item.create_time=='')
+							{
+								item.create_time == ' '
+							}
+							if(item.risk ==1){
+								item.cd = '高'
+							}
+							if(item.risk ==2){
+								item.cd = '中'
+							}
+							if(item.risk ==3){
+								item.cd = '低'
+							}
+						})
+						
+						this.conditionData = list
+					}
 				}).catch(err=>{
 					console.log(err)
 				})
@@ -1110,6 +1239,21 @@
 		/* height: 120px; */
 		padding: 10px 0px 0px 0px;
 		border-bottom: 1px solid #eeeeee;
+		.item{
+			display: flex;
+			justify-content: flex-start;
+			.info{
+				margin-left: 20rpx;
+				.item-x{
+					margin-bottom: 30rpx;
+					text-align: left;
+					.span{
+						color: #b91306;
+						font-weight: bold;
+					}
+				}
+			}
+		}
 	}
 
 	.risk cl-list {

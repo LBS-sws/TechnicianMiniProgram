@@ -13,25 +13,25 @@
 		</view>
 		<view class="service">
 			<view class="service_title">门店建议措施<span class="jh">*</span></view>
-			<!-- <view class="lz">
+			<view class="lz">
 				<cl-row>
 					<ld-select :multiple="true" :list="proposalData" @inputFun="inputFunx" label-key="label"
 						value-key="value" placeholder="示例" clearable v-model="service_proposal"
 						@change="selectChange1"></ld-select>
 				</cl-row>
-			</view> -->
+			</view>
 			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="store_coordinate" count>
 			</cl-textarea>
 		</view>
 		<view class="service">
 			<view class="service_title">本次行动方案<span class="jh">*</span></view>
-			<!-- <view class="lz">
+			<view class="lz">
 				<cl-row>
 					<ld-select :multiple="true" :list="contentData" @inputFun="inputFun" label-key="label"
 						value-key="value" placeholder="示例" clearable v-model="service_content"
 						@change="selectChange"></ld-select>
 				</cl-row>
-			</view> -->
+			</view>
 			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="ms_action" count></cl-textarea>
 		</view>
 		<view style="width: 100%; height: 200rpx;"></view>

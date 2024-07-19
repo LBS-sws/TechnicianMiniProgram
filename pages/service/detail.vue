@@ -183,13 +183,17 @@
 				this.$api.getOrderInfo(params).then(res=>{
 					this.service = res.data;
 					this.showContent = true;
-					if (this.service.remarks && !this.acknowledged && this.service.status != 3) { // 判断 acknowledged 的值
-						this.showConfirmationDialog('客户要求提示', this.service.remarks, () => {
-						  this.acknowledged = true; // 用户已知晓
-						}, () => {
-						  uni.navigateBack();
-						});
+					if(res.data.order_type !=3){
+						if (this.service.remarks && !this.acknowledged && this.service.status != 3) { // 判断 acknowledged 的值
+							this.showConfirmationDialog('客户要求提示', this.service.remarks, () => {
+							  this.acknowledged = true; // 用户已知晓
+							}, () => {
+							  uni.navigateBack();
+							});
+						}
 					}
+					
+					
 					if(res.data.staff.main == uni.getStorageSync('staffname')){
 						if(res.data.status == -1 && res.data.start_time == null){
 							this.service_button = '服务未完成';
