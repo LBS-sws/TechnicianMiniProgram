@@ -236,12 +236,24 @@
 				</view>
 			</swiper-item>
 			<swiper-item class="evaluate" v-if="show_evaluate">
-				
+				<view v-for="(item,i) in 3" :key="i" class="risk_list">
+					<view class="cat_title">
+						滋生源
+					</view>
+					<view class="child_list">
+						<view class="list-item">
+							<view class="list-title">灭蝇灯位置和高度是否符合要求？</view>
+							<view>
+								是
+							</view>
+						</view>
+					</view>
+				</view>
 			</swiper-item>
 			<!-- 8.风险情况 -->
 			<swiper-item class="condition" v-if="show_condition">
 				<cl-scroller>
-					<view class="risk" v-for="(item,index) in conditionData" :key="index" @tap="risk_detail(item.id)" v-if="conditionData.length>0">
+					<view class="risk" v-for="(item,index) in conditionData" :key="index" @tap="risk_qk_detail(item.id)" v-if="conditionData.length>0">
 					
 						<view class="item">
 							<view class="thumb">
@@ -558,7 +570,7 @@
 					this.show_condition = true
 				}
 			})
-			
+	
 		},
 		//页面销毁
 		beforeDestroy() {
@@ -641,8 +653,11 @@
 					url: "/pages/report/risk_detail?id=" + index + "&jobid=" + this.jobid +"&jobtype="+ this.jobtype
 				})
 			},
-			risk_qk_detail(){
-				
+			risk_qk_detail(id){
+				console.log(id)
+				uni.navigateTo({
+					url: "/pages/service/risk_item?id=" + id + "&jobid=" + this.jobid +"&jobtype="+ this.jobtype
+				})
 			},
 			previewImg(logourl) {
 				let _this = this;
@@ -1086,6 +1101,25 @@
 </script>
 
 <style lang="scss">
+.risk_list{
+	.cat_ttle{
+		font-size: 28rpx;
+		color: #504f4f;
+		text-align: center;
+	}
+	.child_list{
+		.list-item{
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 10rpx 30rpx;
+			.list-title{
+				
+			}
+			
+		}
+	}
+}
 	.new_card {
 		background-color: #fff;
 		border-radius: 10px;
