@@ -9,7 +9,7 @@
 			<view class="service_title">检查区域<span class="jh" v-if="ct==1">*</span></view>
 			<view class="service_content">
 				<cl-col span="24">
-					<cl-input v-model="risk_area" placeholder="例如:厂区一" />
+					<cl-input v-model="model.check_area" placeholder="" />
 				</cl-col>
 			</view>
 		</view>
@@ -20,14 +20,14 @@
 					value-key="value" placeholder="示例" clearable v-model="risk_proposal" @change="selectChange1">
 				</ld-select>
 		
-				<cl-textarea rows="13" cols="40" placeholder="" v-model="risk_proposal" count></cl-textarea>
+				<cl-textarea rows="13" cols="40" placeholder="" v-model="model.problem_desc" count></cl-textarea>
 			</view>
 		</view>
 		<view class="service">
 			<view class="service_title">风险程度<span class="jh">*</span></view>
 			<view class="service_content">
-				<cl-radio-group v-model="risk_rank" border>
-					<cl-radio v-for="(item,index) in ranks" :key="index" v-bind:label="item.rank">{{item.rank}}
+				<cl-radio-group v-model="model.risk" border>
+					<cl-radio v-for="(item,index) in ranks" :key="index" v-bind:label="item.value">{{item.rank}}
 					</cl-radio>
 				</cl-radio-group>
 			</view>
@@ -57,7 +57,7 @@
 					value-key="value" placeholder="示例" clearable v-model="risk_proposal" @change="selectChange1">
 				</ld-select>
 
-				<cl-textarea rows="13" cols="40" placeholder="整改建议" v-model="risk_proposal" count></cl-textarea>
+				<cl-textarea rows="13" cols="40" placeholder="整改建议" v-model="model.improve" count></cl-textarea>
 			</view>
 		</view>
 		<view class="service">
@@ -67,14 +67,12 @@
 					value-key="value" placeholder="示例" clearable v-model="take_steps" @change="selectChange2">
 				</ld-select>
 
-				<cl-textarea rows="13" cols="40" placeholder="采取措施" v-model="take_steps" count></cl-textarea>
+				<cl-textarea rows="13" cols="40" placeholder="采取措施" v-model="model.take_steps" count></cl-textarea>
 			</view>
 		</view>
 		<view style="width: 100%; height: 100rpx;"></view>
-		<view class="bu" @tap="$noMultipleClicks(save)" v-if="id>0">
-			保存
-		</view>
-		<view v-else class="bu" @tap="$noMultipleClicks(submit)">
+		
+		<view class="bu" @tap="$noMultipleClicks(submit)">
 			保存
 		</view>
 
@@ -108,9 +106,9 @@
 				types: [],
 				rank: "",
 				ranks: [
-					{rank:'高'},
-					{rank:'中'},
-					{rank:'低'}
+					{rank:'高',value:1},
+					{rank:'中',value:2},
+					{rank:'低',value:3}
 				],
 				label: "",
 				labels: [],
@@ -166,6 +164,15 @@
 						}
 					]
 				},
+				model:{
+					risk_area:'',
+					risk:'',
+					photos:[],
+					problem_desc:'',
+					improve:'',
+					take_steps:''
+				},
+				photosArray:[]
 			}
 		},
 		onLoad(index) {
@@ -233,62 +240,63 @@
 					job_id:this.jobid,
 					job_type:this.jobtype
 				}
-				this.$api.getRiskInfo(params).then(res=>{
+				this.$api.getRiskSituationInfo(params).then(res=>{
 					if (res.code == 200) {
+						console.log(res.data)
 						if (res.data) {
 							
 							
-							this.targets = res.data.riskTargets
-							this.types = res.data.riskTypes
-							this.ranks = res.data.riskRanks
-							this.labels = res.data.riskLabel
+							// this.targets = res.data.riskTargets
+						// 	this.types = res.data.riskTypes
+						// 	this.ranks = res.data.riskRanks
+						// 	this.labels = res.data.riskLabel
 							
-							this.customer_type = res.data.customer_type
-							this.service_type = res.data.service_type
+						// 	this.customer_type = res.data.customer_type
+						// 	this.service_type = res.data.service_type
 							
 						
-							// 现场发现
-							if(this.id==0){
-								this.checkdata = res.data.service_data
-							}
-							if (this.id>0) {
-								this.risk_targets = res.data.risk.risk_targets.split(',') 	// 靶标
-								this.risk_types = res.data.risk.risk_types.split(',') 		// 风险类别
-								this.risk_rank = res.data.risk.risk_rank 					// 风险等级
-								this.risk_label = res.data.risk.risk_label.split(',') 		// 风险标签
-								this.risk_area = res.data.risk.risk_area 					// 风险区域
-								this.risk_description = res.data.risk.risk_description.split(',') 		// 风险描述
-								this.risk_proposal = res.data.risk.risk_proposal.split(',') 			// 整改建议
-								this.take_steps = res.data.risk.take_steps.split(',') 					// 采取措施
-								var photoStr = res.data.risk.site_photos ?? [];
-								if(photoStr.length>0){
-									photoStr.forEach((item,i)=>{
+						// 	// 现场发现
+						// 	if(this.id==0){
+						// 		this.checkdata = res.data.service_data
+						// 	}
+						// 	if (this.id>0) {
+						// 		this.risk_targets = res.data.risk.risk_targets.split(',') 	// 靶标
+						// 		this.risk_types = res.data.risk.risk_types.split(',') 		// 风险类别
+						// 		this.risk_rank = res.data.risk.risk_rank 					// 风险等级
+						// 		this.risk_label = res.data.risk.risk_label.split(',') 		// 风险标签
+						// 		this.risk_area = res.data.risk.risk_area 					// 风险区域
+						// 		this.risk_description = res.data.risk.risk_description.split(',') 		// 风险描述
+						// 		this.risk_proposal = res.data.risk.risk_proposal.split(',') 			// 整改建议
+						// 		this.take_steps = res.data.risk.take_steps.split(',') 					// 采取措施
+						// 		var photoStr = res.data.risk.site_photos ?? [];
+						// 		if(photoStr.length>0){
+						// 			photoStr.forEach((item,i)=>{
 										
-										let imgurl = item
-										imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
-										this.init_photos[i] = imgurl
-									})
-									// console.log(this.init_photos)
-									this.$refs.upload3.setItems(this.init_photos);
-								}
+						// 				let imgurl = item
+						// 				imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
+						// 				this.init_photos[i] = imgurl
+						// 			})
+						// 			// console.log(this.init_photos)
+						// 			this.$refs.upload3.setItems(this.init_photos);
+						// 		}
 								
-								if(res.data.risk.risk_data){
-									// console.log(JSON.parse(res.data.risk.risk_data))
-									this.checkdata = JSON.parse(res.data.risk.risk_data)
-								}
-							}
-							// 快捷语  一维数组转二维数组
-							let shortcutContents = res.data.shortcutContents
+						// 		if(res.data.risk.risk_data){
+						// 			// console.log(JSON.parse(res.data.risk.risk_data))
+						// 			this.checkdata = JSON.parse(res.data.risk.risk_data)
+						// 		}
+						// 	}
+						// 	// 快捷语  一维数组转二维数组
+						// 	let shortcutContents = res.data.shortcutContents
 							
-							let shortcutArr = []
-							shortcutContents.forEach((item, i) => {
-								shortcutArr.push({
-									label: item,
-									value: item
-								})
-							})
-							this.service_content_lists = shortcutArr
-							this.service_content_listsOld = shortcutArr // 用于恢复
+						// 	let shortcutArr = []
+						// 	shortcutContents.forEach((item, i) => {
+						// 		shortcutArr.push({
+						// 			label: item,
+						// 			value: item
+						// 		})
+						// 	})
+						// 	this.service_content_lists = shortcutArr
+						// 	this.service_content_listsOld = shortcutArr // 用于恢复
 						}
 					}
 				}).catch(err=>{
@@ -311,83 +319,82 @@
 			},
 			// 新增
 			submit() {
-				if (this.ct == 0) {
-					console.log('this.upload_site_photos',this.upload_site_photos)
-					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
-						uni.showToast({
-							icon: 'none',
-							title: `没上传现场照(⊙_⊙)?`
-						});
-						return false;
-					}
-				}
-				if(this.ct == 1){
-					if(this.risk_area==''){
-						uni.showToast({
-							icon: 'none',
-							title: `工厂区域必填`
-						});
-						return false;
-					}
-				}
+				// if (this.ct == 0) {
+				// 	console.log('this.upload_site_photos',this.upload_site_photos)
+				// 	if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
+				// 		uni.showToast({
+				// 			icon: 'none',
+				// 			title: `没上传现场照(⊙_⊙)?`
+				// 		});
+				// 		return false;
+				// 	}
+				// }
+				// if(this.ct == 1){
+				// 	if(this.risk_area==''){
+				// 		uni.showToast({
+				// 			icon: 'none',
+				// 			title: `工厂区域必填`
+				// 		});
+				// 		return false;
+				// 	}
+				// }
 				
-				let photoArr = this.upload_site_photos.split(',')
-				photoArr.forEach((item,i)=>{
-					let no = i+1
-					if(item=='' || item==undefined || item=='undefined'){
-						uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
-						return false
-					}
-				})
+				// let photoArr = this.upload_site_photos.split(',')
+				// photoArr.forEach((item,i)=>{
+				// 	let no = i+1
+				// 	if(item=='' || item==undefined || item=='undefined'){
+				// 		uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
+				// 		return false
+				// 	}
+				// })
 				
 			
-			const str = this.upload_site_photos;
-			const substr = "undefined";
-			if (str.includes(substr)) {
-				uni.showToast({
-					icon: 'none',
-					title: `有上传失败的图片请重新上传!`
-				});
-				return false;
-			}
+			// 	const str = this.upload_site_photos;
+			// 	const substr = "undefined";
+			// 	if (str.includes(substr)) {
+			// 		uni.showToast({
+			// 			icon: 'none',
+			// 			title: `有上传失败的图片请重新上传!`
+			// 		});
+			// 		return false;
+			// 	}
+				
+			// 		uni.showLoading({
+			// 			title: "正在保存"
+			// 		});
+				
+			// 	let checkdata = '';
+			// 	if(this.checkdata.length>0){
+			// 		checkdata = JSON.stringify(this.checkdata)
+			// 	}
+			// 	this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
 			
-				uni.showLoading({
-					title: "正在保存"
-				});
-			
-			let checkdata = '';
-			if(this.checkdata.length>0){
-				checkdata = JSON.stringify(this.checkdata)
-			}
-			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+			console.log(this.model)
+			console.log(this.photosArray)
+			// return false
 			let params = {
-				job_id: this.jobid,
-				job_type: this.jobtype,
-				risk_targets: this.risk_targets,
-				risk_types: this.risk_types,
-				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,
-				site_photos: this.upload_site_photos,
-				risk_description: this.risk_description,
-				risk_proposal: this.risk_proposal,
-				take_steps: this.take_steps,
-				risk_area: this.risk_area,
-				check_datas: JSON.stringify(this.checkdata),
-				customer_type: this.customer_type,
-				service_type:this.service_type
+				check_area: this.model.check_area,
+				risk: this.model.risk,
+				photos: this.photosArray,
+				problem_desc: this.model.problem_desc,
+				improve: this.model.improve,
+				take_steps: this.take_steps
 			}
-			this.$api.addRisk(params).then(res=>{
+			console.log(params)
+			
+			// return false
+			this.$api.addRiskSituation(params).then(res=>{
 				if (res.code == 200) {
 					if (res.data) {
-						this.id = res.data
-						this.data_select()
-						this.del_index = []
+				// 		this.id = res.data
+				// 		this.data_select()
+				// 		this.del_index = []
 				
 						uni.hideLoading();
 						uni.$utils.toast("保存成功")
 						setTimeout(() => {
 							uni.redirectTo({
-								url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
+								url: "/pages/service/risk_list?jobid=" + this.jobid + '&jobtype=' + this.jobtype
 							})
 						}, 2000)
 					}
@@ -407,101 +414,7 @@
 			})
 
 			},
-			// 保存
-			save() {
-				
-				if(this.ct == 0){
-					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
-						uni.showToast({
-							icon: 'none',
-							title: `没上传现场照(⊙_⊙)?`
-						});
-						return false;
-					}
-				}
-				if(this.ct == 1){
-					if(this.risk_area==''){
-						uni.showToast({
-							icon: 'none',
-							title: `工厂区域必填`
-						});
-						return false;
-					}
-				}
-				
-				
-				
-				let checkdata = '';
-				if(this.checkdata.length>0){
-					checkdata = JSON.stringify(this.checkdata)
-				}
-				
-			// 验证图片里面是否有失败图片
-			let photoArr = this.upload_site_photos.split(',')
-			const str = this.upload_site_photos;
-			const substr = "undefined";
-			if (str.includes(substr)) {
-				uni.showToast({
-					icon: 'none',
-					title: `有上传失败的图片请重新上传`
-				});
-				return false;
-			}
 			
-			
-			uni.showLoading({
-				title: "正在保存"
-			});	
-			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
-			let params = {
-				id: this.id,
-				job_id: this.jobid,
-				job_type: this.jobtype,
-				risk_targets: this.risk_targets,
-				risk_types: this.risk_types,
-				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,
-				site_photos: this.upload_site_photos,
-				risk_description: this.risk_description,
-				risk_proposal: this.risk_proposal,
-				take_steps: this.take_steps,
-				risk_area: this.risk_area,
-				check_datas: JSON.stringify(this.checkdata),
-				customer_type:this.customer_type,
-				service_type:this.service_type
-			}
-			this.$api.editRisk(params).then(res=>{
-				if (res.code == 200) {
-					if (res.data) {
-						this.id = res.data
-						this.data_select()
-						this.del_index = []
-						uni.hideLoading();
-						uni.showToast({
-							title: '保存成功',
-							icon: 'none',
-						});
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/service/risk?jobid=" + this.jobid +'&jobtype=' + this.jobtype
-							})
-						}, 2000)
-					}
-				}
-				if(res.code == 400){
-					uni.$utils.toast(res.msg)
-					return false
-				}
-			}).catch(err=>{
-				uni.showToast({
-					icon: 'error',
-					title: err.errMsg
-				});
-				setTimeout(function() {
-					uni.hideLoading();
-				}, 2000);
-			})
-			},
 			onBeforeUpload(file, index) {
 				// 受支持的图片格式
 				// const fileType = ['image/png', 'image/jpeg'];
@@ -524,8 +437,10 @@
 			handleLoaded3(arr) {
 				console.log('arrarrarrarr',arr)
 				var imageStr = "";
+				let imgArr = []
 				for (var i = 0; i < arr.length; i++) {
 					imageStr += arr[i].result + ",";
+					imgArr.push(arr[i].result )
 				}
 				//去掉最后一个逗号
 				if (imageStr.length > 0) {
@@ -534,6 +449,7 @@
 				// console.log(imageStr);
 				console.log('imageStrimageStrimageStr',imageStr)
 				this.upload_site_photos = imageStr
+				this.photosArray = imgArr
 			},
 			// 删除
 			del() {

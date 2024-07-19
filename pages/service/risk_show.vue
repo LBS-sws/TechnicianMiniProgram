@@ -25,7 +25,7 @@
 			<view class="service">
 				<view class="">备注说明</view>
 				<view class="service_content">
-					<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="risk_description" count></cl-textarea>
+					<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="data[i].remarks" count></cl-textarea>
 				</view>
 			</view>
 			<!-- <view class="service" style="width: 100%;">
@@ -43,7 +43,7 @@
 				</view>
 			</view> -->
 			<view>
-				<upload :photos="item.photos" :current="i" @imageEdit="imageEdit"></upload>
+				<upload :photos="data[i].photos" :current="i" @imageEdit="imageEdit"></upload>
 			</view>
 		</block>
 		 
@@ -113,7 +113,7 @@ export default {
 	},
 		methods: {
 			imageEdit(val){
-				console.log('return:',val)
+				// console.log('return:',val)
 				this.data[val.index].photos = val.imgArr
 			},
 			// 回调参数为包含columnIndex、value、values
@@ -130,21 +130,9 @@ export default {
 					c_id:this.c_id
 				}
 				this.$api.getRiskProblemList(params).then(res=>{
-					console.log(res)
+					// console.log(res)
 					if(res.code==200){
 						this.data = res.data
-						
-						// var photoStr = res.data.risk.site_photos ?? [];
-						// if(photoStr.length>0){
-						// 	photoStr.forEach((item,i)=>{
-								
-						// 		let imgurl = item
-						// 		imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
-						// 		this.init_photos[i] = imgurl
-						// 	})
-						// 	// console.log(this.init_photos)
-						// 	this.$refs.upload3.setItems(this.init_photos);
-						// }
 					}
 				}).catch(err=>{
 					console.log(err)
@@ -166,82 +154,49 @@ export default {
 			},
 			// 新增
 			submit() {
-				console.log(this.data)
+				let data = []
+				this.data.forEach((item,i)=>{
+					data.push({id: item.id, is_conform: item.is_conform, remarks: item.remarks, photos: item.photos})
+				})
+				// console.log(this.data)
+				// console.log(data)
 				// return false
-			// 	let photoArr = this.upload_site_photos.split(',')
-			// 	photoArr.forEach((item,i)=>{
-			// 		let no = i+1
-			// 		if(item=='' || item==undefined || item=='undefined'){
-			// 			uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
-			// 			return false
-			// 		}
-			// 	})
-				
 			
-			// const str = this.upload_site_photos;
-			// const substr = "undefined";
-			// if (str.includes(substr)) {
-			// 	uni.showToast({
-			// 		icon: 'none',
-			// 		title: `有上传失败的图片请重新上传!`
-			// 	});
-			// 	return false;
-			// }
-			
-			// 	uni.showLoading({
-			// 		title: "正在保存"
-			// 	});
-			
-			// let checkdata = '';
-			// if(this.checkdata.length>0){
-			// 	checkdata = JSON.stringify(this.checkdata)
-			// }
-			// this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
-			let params = {
-				job_id: this.jobid,
-				job_type: this.jobtype,
-				risk_targets: this.risk_targets,
-				risk_types: this.risk_types,
-				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,
-				site_photos: this.upload_site_photos,
-				risk_description: this.risk_description,
-				risk_proposal: this.risk_proposal,
-				take_steps: this.take_steps,
-				risk_area: this.risk_area,
-				check_datas: JSON.stringify(this.checkdata),
-				customer_type: this.customer_type,
-				service_type:this.service_type
-			}
-			this.$api.editRiskAssessment(params).then(res=>{
-				if (res.code == 200) {
-					if (res.data) {
-				// 		this.id = res.data
-				// 		this.data_select()
-				// 		this.del_index = []
-				
-				// 		uni.hideLoading();
-				// 		uni.$utils.toast("保存成功")
-				// 		setTimeout(() => {
-				// 			uni.redirectTo({
-				// 				url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
-				// 			})
-				// 		}, 2000)
+				let params = {
+					data:this.data
+				}
+				this.$api.editRiskAssessment(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+					// 		this.id = res.data
+					// 		this.data_select()
+					// 		this.del_index = []
+					
+							uni.hideLoading();
+							uni.$utils.toast("保存成功")
+							
+							
+							setTimeout(() => {
+					// 			uni.redirectTo({
+					// 				url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
+					// 			})
+								this.list()
+							}, 2000)
+						}
 					}
-				}
-				if(res.code == 400){
-					uni.$utils.toast(res.msg)
-					return false
-				}
-			}).catch(err=>{
-				uni.showToast({
-					icon: 'error',
-					title: err.errMsg
-				});
-				setTimeout(function() {
-					uni.hideLoading();
-				}, 2000);
-			})
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					uni.showToast({
+						icon: 'error',
+						title: err.errMsg
+					});
+					setTimeout(function() {
+						uni.hideLoading();
+					}, 2000);
+				})
 
 			},
 			// 保存
@@ -273,71 +228,71 @@ export default {
 					checkdata = JSON.stringify(this.checkdata)
 				}
 				
-			// 验证图片里面是否有失败图片
+				// 验证图片里面是否有失败图片
 			let photoArr = this.upload_site_photos.split(',')
-			const str = this.upload_site_photos;
-			const substr = "undefined";
-			if (str.includes(substr)) {
-				uni.showToast({
-					icon: 'none',
-					title: `有上传失败的图片请重新上传`
-				});
-				return false;
-			}
-			
-			
-			uni.showLoading({
-				title: "正在保存"
-			});	
-			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
-			let params = {
-				id: this.id,
-				job_id: this.jobid,
-				job_type: this.jobtype,
-				risk_targets: this.risk_targets,
-				risk_types: this.risk_types,
-				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,
-				site_photos: this.upload_site_photos,
-				risk_description: this.risk_description,
-				risk_proposal: this.risk_proposal,
-				take_steps: this.take_steps,
-				risk_area: this.risk_area,
-				check_datas: JSON.stringify(this.checkdata),
-				customer_type:this.customer_type,
-				service_type:this.service_type
-			}
-			this.$api.editRisk(params).then(res=>{
-				if (res.code == 200) {
-					if (res.data) {
-						this.id = res.data
-						this.data_select()
-						this.del_index = []
-						uni.hideLoading();
-						uni.showToast({
-							title: '保存成功',
-							icon: 'none',
-						});
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/service/risk?jobid=" + this.jobid +'&jobtype=' + this.jobtype
-							})
-						}, 2000)
+				const str = this.upload_site_photos;
+				const substr = "undefined";
+				if (str.includes(substr)) {
+					uni.showToast({
+						icon: 'none',
+						title: `有上传失败的图片请重新上传`
+					});
+					return false;
+				}
+				
+				
+				uni.showLoading({
+					title: "正在保存"
+				});	
+				this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+				let params = {
+					id: this.id,
+					job_id: this.jobid,
+					job_type: this.jobtype,
+					risk_targets: this.risk_targets,
+					risk_types: this.risk_types,
+					risk_rank: this.risk_rank,
+					risk_label: this.risk_label,
+					site_photos: this.upload_site_photos,
+					risk_description: this.risk_description,
+					risk_proposal: this.risk_proposal,
+					take_steps: this.take_steps,
+					risk_area: this.risk_area,
+					check_datas: JSON.stringify(this.checkdata),
+					customer_type:this.customer_type,
+					service_type:this.service_type
+				}
+				this.$api.editRisk(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							this.id = res.data
+							this.data_select()
+							this.del_index = []
+							uni.hideLoading();
+							uni.showToast({
+								title: '保存成功',
+								icon: 'none',
+							});
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/risk?jobid=" + this.jobid +'&jobtype=' + this.jobtype
+								})
+							}, 2000)
+						}
 					}
-				}
-				if(res.code == 400){
-					uni.$utils.toast(res.msg)
-					return false
-				}
-			}).catch(err=>{
-				uni.showToast({
-					icon: 'error',
-					title: err.errMsg
-				});
-				setTimeout(function() {
-					uni.hideLoading();
-				}, 2000);
-			})
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					uni.showToast({
+						icon: 'error',
+						title: err.errMsg
+					});
+					setTimeout(function() {
+						uni.hideLoading();
+					}, 2000);
+				})
 			},
 			onBeforeUpload(file, index) {
 				// 受支持的图片格式

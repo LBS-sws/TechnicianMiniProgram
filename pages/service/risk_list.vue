@@ -35,15 +35,12 @@
 </template>
 
 <script>
+// 勘察单 - 风险情况
 export default {
 	data() {
 		return {
 			name:'风险情况',
-			risks: [
-				{id:1,img:'https://files.lbsapps.cn/storage/risk/20240715/240715160144972755302.jpg'},
-				
-			],
-			tablename: "briefings",
+			risks: [],
 			jobid: '',
 			jobtype: '',
 			shortcut_type: '',
@@ -74,9 +71,8 @@ export default {
 		this.jobid = index.jobid
 		this.jobtype = index.jobtype
 		
-		this.data_select()
-		this.getItems()
-		// this.dotAlert()
+		this.list()
+		
 	},
 	//	上拉触底函数
 	onReachBottom(){
@@ -89,112 +85,52 @@ export default {
 				this.loading = true
 				this.isLoadMore = true
 				this.page+=1
-				this.data_select()
+				this.list()
 			}
 	        
 	     }
 	},
 	methods: {
-		// 历史风险记录
-		getItems(){
-			// 未解决
-			let params = {
-				job_id: this.jobid,
-				job_type: this.jobtype,
-				type:0
-			}
-			this.$api.stayQuestion(params).then(res=>{
-				// console.log(res)
-				this.dotNum = res.data.total
-				// this.lastrisks_n = res.data.data || []
-			}).catch(err=>{
-				// console.log(err)
-			})
-		},
-		data_select() {
+		
+		list() {
 			let params = {
 				page:this.page,
 				limit:this.limit,
-				job_id: this.jobid,
-				job_type: this.jobtype,
+				id: this.jobid,
+				
 			}
-			this.$api.risksList(params).then(res=>{
+			this.$api.getRiskSituationList(params).then(res=>{
 				console.log(res)
 				if (res.code == 200) {
-					this.total = res.data.data.total	// 总数
-					let list = res.data.data.data		// 分页
-					list.forEach((item,i)=>{
-						let photoArr = []
-						if(item.site_photos != null){
-							photoArr = item.site_photos.split(",")
-						}
-						item.img = `${this.$baseUrl_imgs}` + photoArr[0]
-						console.log(item.img)
-					})
+					// this.total = res.data.data.total	// 总数
+					// let list = res.data.data.data		// 分页
+					// list.forEach((item,i)=>{
+					// 	let photoArr = []
+					// 	if(item.site_photos != null){
+					// 		photoArr = item.site_photos.split(",")
+					// 	}
+					// 	item.img = `${this.$baseUrl_imgs}` + photoArr[0]
+					// 	console.log(item.img)
+					// })
 					
 					
-					this.risks = this.risks.concat(list)
-					this.risk_total	 = res.data.assess_count	// 风险评估数
-					this.isLoadMore=false				
-					setTimeout(()=>{
-						this.isLoadMore = true
-						this.loading = false
-					},1000)
+					// this.risks = this.risks.concat(list)
+					// this.risk_total	 = res.data.assess_count	// 风险评估数
+					// this.isLoadMore=false				
+					// setTimeout(()=>{
+					// 	this.isLoadMore = true
+					// 	this.loading = false
+					// },1000)
 				}
 			}).catch(err=>{
 				console.log(err)
 			})
 		},
-		dotAlert() {
-
-				let params = {
-					staffid: uni.getStorageSync('staffid'),
-					job_id: this.jobid,
-					job_type: this.jobtype
-				}
-				uni.request({
-					url: `${this.$baseUrl}/GetrisksTotals`,
-					header: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'token': uni.getStorageSync('token')
-					},
-					method: 'POST',
-					data: params,
-					success: (res) => {
-						let result = res.data.data
-							console.log(result)
-							if (res.data.code == 1) {
-								if (Object.keys(result).length !== 0) {
-									this.dotNum = result.n;
-									this.dotConfirmNum = result.g;
-
-									console.log(this.dotNum)
-									console.log(this.dotConfirmNum)
-								}
-
-							} else {
-								uni.showToast({
-									title: res.data.msg,
-									icon: 'none',
-								});
-								setTimeout(() => {
-									uni.redirectTo({
-										url: "/pages/login/login"
-									});
-								}, 2000)
-							}
-
-					},
-					fail: (err) => {
-							console.log(res);
-					}
-				});
-		},
 		
 		//风险详情页
 		risk_detail(id) {
 			uni.redirectTo({
-				url: "/pages/service/risk_detail?jobid=" + this.jobid + '&jobtype=' + this.jobtype +'&id=' + id 
+				url: "/pages/service/risk_item?jobid=" + this.jobid + '&jobtype=' + this.jobtype +'&id=' + id 
 			})
 				
 		},

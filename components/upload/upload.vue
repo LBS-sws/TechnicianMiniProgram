@@ -5,12 +5,14 @@
 			</view>
 			<view class="service_content">
 				<view label="限制上传图片格式/大小">
-					<m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加现场照片"
-						@upload="handleLoaded3" @change="handleChange3" :number="4" :formData="formData">
+					<mx-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加现场照片"
+						@upload="handleLoaded3" @change="handleChange3" :number="4" :formData="formData"
+						
+						:photos="photos">
 						<template v-slot:icon>
 							<text class="s-add-list-btn-icon">+</text>
 						</template>
-					</m-upload>
+					</mx-upload>
 				</view>
 			</view>
 		</view>
@@ -22,8 +24,8 @@
 export default{
 	props:{
 		photos:{
-			type:[Object,Array],
-			default:{}
+			type:[Array],
+			default:[]
 		},
 		current:{
 			type:[Number],
@@ -41,6 +43,9 @@ export default{
 			},
 		}
 	},
+	created() {
+		// console.log('组件：',this.photos)
+	},
 	methods:{
 		handleChange3() {
 			this.$refs.upload3.upload();
@@ -48,7 +53,10 @@ export default{
 		
 		// 获取上传或者预览后的图片
 		handleLoaded3(arr) {
-			console.log('arrarrarrarr',arr)
+			// console.log('图片上传:',arr) 
+			// [{ error: false , progress: 100, result: "/storage/uat_img/20240719/240719111925246531926.jpg" ,successInfo: "上传成功", 
+			// url: "https://files.lbsapps.cn/storage/uat_img/20240719/240719111925246531926.jpg", usuccess: true}]
+			
 			var imageStr = "";
 			var imgArray = []
 			for (var i = 0; i < arr.length; i++) {
@@ -59,8 +67,7 @@ export default{
 			if (imageStr.length > 0) {
 				imageStr = imageStr.substr(0, imageStr.length - 1);
 			}
-			// console.log(imageStr);
-			console.log('imageStrimageStrimageStr',imageStr)
+			// console.log(imageStr); // /storage/uat_img/20240719/240719111925246531926.jpg,/storage/uat_img/20240719/240719111925618430187.jpg
 			this.upload_site_photos = imageStr
 			
 			let obj = {

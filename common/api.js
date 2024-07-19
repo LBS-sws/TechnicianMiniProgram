@@ -83,17 +83,28 @@ export default {
 	editSummary(params){
 		return request("/Exploration.Summary/edit", params, 'POST')
 	},
-	// 风险评估 分类
+	// 勘察单 风险评估 分类
 	getRiskCategoryList(params){
 		return request("/Exploration.Risk/getCategoryList", params, 'GET')
 	},
-	// 风险评估 问题列表
+	// 勘察单 风险评估 问题列表
 	getRiskProblemList(params){
 		return request("/Exploration.Risk/getProblemList", params, 'GET')
 	},
-	// 风险评估 编辑
+	// 勘察单 风险评估 编辑
 	editRiskAssessment(params){
 		return request("/Exploration.Risk/edit", params, 'POST')
+	},
+	// 风险情况 列表
+	getRiskSituationList(params){
+		return request("/Exploration.RiskSituation/list", params, 'GET')
+	},
+	// 风险情况 信息
+	getRiskSituationInfo(params){
+		return request("/Exploration.RiskSituation/getInfo", params, 'GET')
+	},
+	addRiskSituation(params){
+		return request("/Exploration.RiskSituation/add", params, 'POST')
 	},
 	
 	about(params){
