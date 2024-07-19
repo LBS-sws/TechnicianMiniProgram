@@ -24,7 +24,6 @@
 				</view>
 				<view class="new_card_content">
 					<view>
-						
 						<cl-row v-if="item.order_type !=3 ">
 							<cl-col span="8">
 								<view class="service_name"><text selectable="true">{{item.service_type_info.service_name}}</text></view>
