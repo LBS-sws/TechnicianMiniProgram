@@ -4,7 +4,7 @@
 			<cl-icon name="cl-icon-cloud-download" color="#007AFF" :size="80"></cl-icon>
 		</view>
 		<view>
-			<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1)">
+			<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1) && is_add">
 				<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
 			</view>
 		</view>
@@ -243,8 +243,9 @@
 					<view class="child_list">
 						<view class="list-item" v-for="(item_c,index) in item.list" :key="index">
 							<view class="list-title">{{item_c.title}}</view>
-							<view>
-								是
+							<view style="width: 320rpx;">
+								<isYes :value="item_c.is_conform" :i="i" :ii="index" :reportRiskData="reportRiskData"></isYes>
+							
 							</view>
 						</view>
 					</view>
@@ -370,6 +371,7 @@
 	import tTd from '@/components/t-table/t-td.vue';
 	import Signature from '@/components/sin-signature/sin-signature.vue';
 	import luPopupWrapper from "@/components/lu-popup-wrapper/lu-popup-wrapper.vue";
+	import isYes from '@/components/risk/assessment.vue';
 	export default {
 		components: {
 			tTable,
@@ -378,6 +380,7 @@
 			tTd,
 			Signature,
 			luPopupWrapper,
+			isYes
 		},
 		data() {
 			return {
@@ -498,7 +501,8 @@
 					store_coordinate:''
 				},
 				reportRiskData:[],
-				conditionData:[]
+				conditionData:[],
+				is_add:true,
 			}
 		},
 		onLoad(index) {
@@ -640,6 +644,12 @@
 				}
 				if(this.tab_bar[index].data == '9'){
 					this.getItems()			// 签名
+				}
+				
+				if(this.tab_bar[index].id=='risk_assessment'){
+					this.is_add = false
+				}else{
+					this.is_add = true
 				}
 				
 				// 记录当前滑动的位置
@@ -1130,12 +1140,19 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: 10rpx 30rpx;
+			padding: 20rpx 30rpx;
 			border-bottom: 1rpx solid #ebedf0;
 			.list-title{
-				font-size: 24rpx;
+				font-size: 28rpx;
 				color: #323233;
-				padding: 10rpx 0;
+				
+				text-align: left;
+				width: calc(100% - 320rpx);
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				overflow: hidden ;
+				-webkit-line-clamp: 2;
+				text-overflow: ellipsis;
 			}
 			
 		}

@@ -158,28 +158,17 @@ export default {
 				this.data.forEach((item,i)=>{
 					data.push({id: item.id, is_conform: item.is_conform, remarks: item.remarks, photos: item.photos})
 				})
-				// console.log(this.data)
-				// console.log(data)
-				// return false
-			
+				
 				let params = {
 					data:this.data
 				}
 				this.$api.editRiskAssessment(params).then(res=>{
 					if (res.code == 200) {
 						if (res.data) {
-					// 		this.id = res.data
-					// 		this.data_select()
-					// 		this.del_index = []
-					
 							uni.hideLoading();
 							uni.$utils.toast("保存成功")
-							
-							
+
 							setTimeout(() => {
-					// 			uni.redirectTo({
-					// 				url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
-					// 			})
 								this.list()
 							}, 2000)
 						}
@@ -229,7 +218,7 @@ export default {
 				}
 				
 				// 验证图片里面是否有失败图片
-			let photoArr = this.upload_site_photos.split(',')
+				let photoArr = this.upload_site_photos.split(',')
 				const str = this.upload_site_photos;
 				const substr = "undefined";
 				if (str.includes(substr)) {
