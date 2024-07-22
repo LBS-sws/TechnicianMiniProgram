@@ -236,13 +236,13 @@
 				</view>
 			</swiper-item>
 			<swiper-item class="evaluate" v-if="show_evaluate">
-				<view v-for="(item,i) in 3" :key="i" class="risk_list">
+				<view v-for="(item,i) in reportRiskData" :key="i" class="risk_list">
 					<view class="cat_title">
-						滋生源
+						{{item.name}}
 					</view>
 					<view class="child_list">
-						<view class="list-item">
-							<view class="list-title">灭蝇灯位置和高度是否符合要求？</view>
+						<view class="list-item" v-for="(item_c,index) in item.list" :key="index">
+							<view class="list-title">{{item_c.title}}</view>
 							<view>
 								是
 							</view>
@@ -346,8 +346,7 @@
 			@click-overlay="startSign_sData.show=false"
 			@confirm="submitStartSign_sDialog"
 			width="100%"
-			:z-index="9999"
-		>
+			:z-index="9999">
 			<view class="review_popup">
 				<view class="review_popup_title">请点评</view>
 				
@@ -498,6 +497,7 @@
 					risk_desc:'',
 					store_coordinate:''
 				},
+				reportRiskData:[],
 				conditionData:[]
 			}
 		},
@@ -633,7 +633,7 @@
 					this.getSummaryInfo()		// 勘察总结	
 				}
 				if(this.tab_bar[index].data == '7'){
-					// this.getItems()			// 风险评估
+					this.getReportRiskList()			// 风险评估
 				}
 				if(this.tab_bar[index].data == '8'){
 					this.getRiskSituationList()	// 风险情况
@@ -947,6 +947,21 @@
 					console.log(err)
 				})
 			},
+			// 风险评估列表
+			getReportRiskList(){
+				let params = {
+					id:this.jobid,
+				}
+				this.$api.getReportRiskList(params).then(res=>{
+					console.log(res)
+					if(res.code==200){
+						this.reportRiskData = res.data
+					}
+				}).catch(err=>{
+					console.log(err)
+				})
+			},
+			//
 			getRiskSituationList(){
 				let params = {
 					id:this.jobid,
@@ -1102,10 +1117,13 @@
 
 <style lang="scss">
 .risk_list{
-	.cat_ttle{
+	.cat_title{
 		font-size: 28rpx;
+		font-weight: 600;
 		color: #504f4f;
 		text-align: center;
+		padding: 20rpx 0;
+		background: #fff;
 	}
 	.child_list{
 		.list-item{
@@ -1113,8 +1131,11 @@
 			justify-content: space-between;
 			align-items: center;
 			padding: 10rpx 30rpx;
+			border-bottom: 1rpx solid #ebedf0;
 			.list-title{
-				
+				font-size: 24rpx;
+				color: #323233;
+				padding: 10rpx 0;
 			}
 			
 		}

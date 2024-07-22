@@ -115,6 +115,11 @@ export default {
 	delRiskSituation(params){
 		return request("/Exploration.RiskSituation/del", params, 'POST')
 	},
+	// 风险评估报告
+	getReportRiskList(params){
+		return request("/Exploration.Risk/reportRiskList", params, 'GET')
+	},
+	
 	
 	about(params){
 		 return request("/Content.Content/about", params, 'GET')
