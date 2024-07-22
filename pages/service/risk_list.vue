@@ -16,9 +16,9 @@
 								<img :src="item.img" />
 							</view>
 							<view class="info">
-								<view class="item-x"><text class="span">风险区域：</text>{{item.risk_area}}</view>
-								<view class="item-x"><text class="span">风险程度：</text>{{item.risk_types}}</view>
-								<view class="item-x"><text class="span">跟进时间：</text>{{item.creat_time}}</view>
+								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area}}</view>
+								<view class="item-x"><text class="span">风险程度：</text>{{item.cd}}</view>
+								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time}}</view>
 							</view>
 						</view>
 						
@@ -100,27 +100,35 @@ export default {
 				
 			}
 			this.$api.getRiskSituationList(params).then(res=>{
-				console.log(res)
+				// console.log(res)
 				if (res.code == 200) {
+					console.log(res.data)
 					// this.total = res.data.data.total	// 总数
-					// let list = res.data.data.data		// 分页
-					// list.forEach((item,i)=>{
-					// 	let photoArr = []
-					// 	if(item.site_photos != null){
-					// 		photoArr = item.site_photos.split(",")
-					// 	}
-					// 	item.img = `${this.$baseUrl_imgs}` + photoArr[0]
-					// 	console.log(item.img)
-					// })
+					let list = res.data.data		// 分页
+					list.forEach((item,i)=>{
+						item.img = `${this.$baseUrl_imgs}` + item.img
+						if(item.create_time == null || item.create_time == 'null' || item.create_time=='')
+						{
+							item.create_time == ' '
+						}
+						if(item.risk ==1){
+							item.cd = '高'
+						}
+						if(item.risk ==2){
+							item.cd = '中'
+						}
+						if(item.risk ==3){
+							item.cd = '低'
+						}
+					})
 					
-					
-					// this.risks = this.risks.concat(list)
-					// this.risk_total	 = res.data.assess_count	// 风险评估数
-					// this.isLoadMore=false				
-					// setTimeout(()=>{
-					// 	this.isLoadMore = true
-					// 	this.loading = false
-					// },1000)
+					this.risks = this.risks.concat(list)
+					this.risk_total	 = res.data.assess_count	// 风险评估数
+					this.isLoadMore=false				
+					setTimeout(()=>{
+						this.isLoadMore = true
+						this.loading = false
+					},1000)
 				}
 			}).catch(err=>{
 				console.log(err)

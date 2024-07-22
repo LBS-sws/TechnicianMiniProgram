@@ -154,57 +154,6 @@ import color from 'uview-ui/libs/config/color';
 				mask: true
 			});
 			this.data_select();
-			
-			// setTimeout(()=>{
-			// 	console.log(this.service)
-			// 	if(this.service == undefined || this.service == 'undefined'){
-			// 		this.list = [
-						
-			// 			{
-			// 				content: "勘察总结",
-			// 				icon: "cl-icon-history-fill",
-			// 				color: "#409EFF",
-			// 				url: "/pages/service/briefing",
-			// 				shortcut_type: "briefing",
-			// 				classType: "info"
-			// 			},
-			// 			{
-			// 				content: "风险评估",
-			// 				icon: "cl-icon-clock-fill",
-			// 				color: "#409EFF",
-			// 				url: "/pages/service/material",
-			// 				shortcut_type: "material",
-			// 				classType: "info"
-			// 			},
-			// 			{
-			// 				content: "风险情况",
-			// 				icon: "cl-icon-map-fill",
-			// 				color: "#007AFF",
-			// 				url: "/pages/service/equipment",
-			// 				shortcut_type: "equipment",
-			// 				classType: "info"
-			// 			}
-			// 		]
-			// 		this.service = {
-			// 			addr: "四川省成都市青羊区北大街19号正成财富领地",
-			// 			contact_name: "刘",
-			// 			contract_id: 51826,
-			// 			count: 19,
-			// 			customer: {customer_id: 7336, name_zh: "东湖海鲜", addr: "四川省成都市青羊区北大街19号正成财富领地", customer_type: 249},
-			// 			customer_id: 7336,
-			// 			finish_time: null,
-			// 			id: 3367223,
-			// 			job_date: "2024-07-15",
-			// 			job_id: 3367223,
-			// 			main_staff: "黄丽帆",
-			// 			mobile: "1542155223",
-			// 			service_type: 2,
-			// 			status: 2,
-			// 			tel: "150028888515",
-			// 		}
-			// 	}
-				
-			// },1000)
 		},
 		methods: {
 			data_select() {

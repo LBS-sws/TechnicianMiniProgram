@@ -6,7 +6,7 @@
 		<cl-confirm ref="del_confirm"> </cl-confirm>
 		
 		<view class="service">
-			<view class="service_title">检查区域<span class="jh" v-if="ct==1">*</span></view>
+			<view class="service_title">检查区域<span class="jh" >*</span></view>
 			<view class="service_content">
 				<cl-col span="24">
 					<cl-input v-model="model.check_area" placeholder="" />
@@ -72,8 +72,12 @@
 		</view>
 		<view style="width: 100%; height: 100rpx;"></view>
 		
-		<view class="bu" @tap="$noMultipleClicks(submit)">
+		<view class="bu" v-if="model.id>0" @tap="$noMultipleClicks(save)">
 			保存
+		</view>
+		
+		<view class="bu" v-else @tap="$noMultipleClicks(submit)">
+			新增
 		</view>
 
 	</view>
@@ -117,12 +121,7 @@
 				id: 0,
 				jobid: '',
 				jobtype: '',
-				shortcut_type: '',
-				service_type: '',
-				risk_targets: [],
-				risk_types: [],
-				risk_rank: '',
-				risk_label: '',
+				
 				site_photos: [],
 				// start_site_photos: [],
 				// end_site_photos: [],
@@ -139,32 +138,11 @@
 				headerUpload: {
 					'token': uni.getStorageSync('token')
 				},
-				ct: 0,
-				risk_area: '',
 				formData: {
 					type:1
 				},
-				customer_type:'',
-				checkdata:[],
-				check:{
-					ls_number:0,
-					ls_select:'',
-					zl_number:0,
-					zl_select:'',
-					fc_number:0,
-					fc_text:'',
-					selects:[
-						{
-							label: "有",
-							value: '1'
-						},
-						{
-							label: "无",
-							value: '0'
-						}
-					]
-				},
 				model:{
+					id:'',
 					risk_area:'',
 					risk:'',
 					photos:[],
@@ -245,58 +223,10 @@
 						console.log(res.data)
 						if (res.data) {
 							
-							
-							// this.targets = res.data.riskTargets
-						// 	this.types = res.data.riskTypes
-						// 	this.ranks = res.data.riskRanks
-						// 	this.labels = res.data.riskLabel
-							
-						// 	this.customer_type = res.data.customer_type
-						// 	this.service_type = res.data.service_type
-							
+							this.model = res.data
 						
-						// 	// 现场发现
-						// 	if(this.id==0){
-						// 		this.checkdata = res.data.service_data
-						// 	}
-						// 	if (this.id>0) {
-						// 		this.risk_targets = res.data.risk.risk_targets.split(',') 	// 靶标
-						// 		this.risk_types = res.data.risk.risk_types.split(',') 		// 风险类别
-						// 		this.risk_rank = res.data.risk.risk_rank 					// 风险等级
-						// 		this.risk_label = res.data.risk.risk_label.split(',') 		// 风险标签
-						// 		this.risk_area = res.data.risk.risk_area 					// 风险区域
-						// 		this.risk_description = res.data.risk.risk_description.split(',') 		// 风险描述
-						// 		this.risk_proposal = res.data.risk.risk_proposal.split(',') 			// 整改建议
-						// 		this.take_steps = res.data.risk.take_steps.split(',') 					// 采取措施
-						// 		var photoStr = res.data.risk.site_photos ?? [];
-						// 		if(photoStr.length>0){
-						// 			photoStr.forEach((item,i)=>{
-										
-						// 				let imgurl = item
-						// 				imgurl.replace(/\"/g, "").replace(/[\\]/g, '')
-						// 				this.init_photos[i] = imgurl
-						// 			})
-						// 			// console.log(this.init_photos)
-						// 			this.$refs.upload3.setItems(this.init_photos);
-						// 		}
-								
-						// 		if(res.data.risk.risk_data){
-						// 			// console.log(JSON.parse(res.data.risk.risk_data))
-						// 			this.checkdata = JSON.parse(res.data.risk.risk_data)
-						// 		}
-						// 	}
-						// 	// 快捷语  一维数组转二维数组
-						// 	let shortcutContents = res.data.shortcutContents
-							
-						// 	let shortcutArr = []
-						// 	shortcutContents.forEach((item, i) => {
-						// 		shortcutArr.push({
-						// 			label: item,
-						// 			value: item
-						// 		})
-						// 	})
-						// 	this.service_content_lists = shortcutArr
-						// 	this.service_content_listsOld = shortcutArr // 用于恢复
+							this.$refs.upload3.setItems(res.data.photos)
+						
 						}
 					}
 				}).catch(err=>{
@@ -319,102 +249,86 @@
 			},
 			// 新增
 			submit() {
-				// if (this.ct == 0) {
-				// 	console.log('this.upload_site_photos',this.upload_site_photos)
-				// 	if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
-				// 		uni.showToast({
-				// 			icon: 'none',
-				// 			title: `没上传现场照(⊙_⊙)?`
-				// 		});
-				// 		return false;
-				// 	}
-				// }
-				// if(this.ct == 1){
-				// 	if(this.risk_area==''){
-				// 		uni.showToast({
-				// 			icon: 'none',
-				// 			title: `工厂区域必填`
-				// 		});
-				// 		return false;
-				// 	}
-				// }
 				
-				// let photoArr = this.upload_site_photos.split(',')
-				// photoArr.forEach((item,i)=>{
-				// 	let no = i+1
-				// 	if(item=='' || item==undefined || item=='undefined'){
-				// 		uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
-				// 		return false
-				// 	}
-				// })
+				let params = {
+					survey_id: this.jobid,
+					check_area: this.model.check_area,
+					risk: this.model.risk,
+					photos: this.photosArray,
+					problem_desc: this.model.problem_desc,
+					improve: this.model.improve,
+					take_steps: this.model.take_steps
+				}
 				
+				this.$api.addRiskSituation(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
 			
-			// 	const str = this.upload_site_photos;
-			// 	const substr = "undefined";
-			// 	if (str.includes(substr)) {
-			// 		uni.showToast({
-			// 			icon: 'none',
-			// 			title: `有上传失败的图片请重新上传!`
-			// 		});
-			// 		return false;
-			// 	}
-				
-			// 		uni.showLoading({
-			// 			title: "正在保存"
-			// 		});
-				
-			// 	let checkdata = '';
-			// 	if(this.checkdata.length>0){
-			// 		checkdata = JSON.stringify(this.checkdata)
-			// 	}
-			// 	this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
-			
-			console.log(this.model)
-			console.log(this.photosArray)
-			// return false
-			let params = {
-				check_area: this.model.check_area,
-				risk: this.model.risk,
-				photos: this.photosArray,
-				problem_desc: this.model.problem_desc,
-				improve: this.model.improve,
-				take_steps: this.take_steps
-			}
-			console.log(params)
-			
-			// return false
-			this.$api.addRiskSituation(params).then(res=>{
-				if (res.code == 200) {
-					if (res.data) {
-				// 		this.id = res.data
-				// 		this.data_select()
-				// 		this.del_index = []
-				
-						uni.hideLoading();
-						uni.$utils.toast("保存成功")
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/service/risk_list?jobid=" + this.jobid + '&jobtype=' + this.jobtype
-							})
-						}, 2000)
+							uni.hideLoading();
+							uni.$utils.toast("保存成功")
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/risk_list?jobid=" + this.jobid + '&jobtype=' + this.jobtype
+								})
+							}, 2000)
+						}
 					}
-				}
-				if(res.code == 400){
-					uni.$utils.toast(res.msg)
-					return false
-				}
-			}).catch(err=>{
-				uni.showToast({
-					icon: 'error',
-					title: err.errMsg
-				});
-				setTimeout(function() {
-					uni.hideLoading();
-				}, 2000);
-			})
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					uni.showToast({
+						icon: 'error',
+						title: err.errMsg
+					});
+					setTimeout(function() {
+						uni.hideLoading();
+					}, 2000);
+				})
 
 			},
+			// 编辑
+			save() {
+				
+				let params = {
+					id: this.model.id,
+					check_area: this.model.check_area,
+					risk: this.model.risk,
+					photos: this.photosArray,
+					problem_desc: this.model.problem_desc,
+					improve: this.model.improve,
+					take_steps: this.model.take_steps
+				}
+				
+				this.$api.editRiskSituation(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
 			
+							uni.hideLoading();
+							uni.$utils.toast("保存成功")
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/risk_list?jobid=" + this.jobid + '&jobtype=' + this.jobtype
+								})
+							}, 2000)
+						}
+					}
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					uni.showToast({
+						icon: 'error',
+						title: err.errMsg
+					});
+					setTimeout(function() {
+						uni.hideLoading();
+					}, 2000);
+				})
+			
+			},
 			onBeforeUpload(file, index) {
 				// 受支持的图片格式
 				// const fileType = ['image/png', 'image/jpeg'];
@@ -460,35 +374,27 @@
 						action
 					}) => {
 						if (action == 'confirm') {
-							if (this.id == '' || this.id == 0) {
-								uni.showToast({
-									icon: 'none',
-									title: '请选择删除物料'
-								});
-								return;
-							} else {
-								
-								let params = {
-									id: this.id,
-								}
-								this.$api.delRisk(params).then(res=>{
-									if (res.code == 200) {
-										uni.showToast({
-											icon: 'none',
-											title: '删除成功'
-										});
-										setTimeout(() => {
-											uni.redirectTo({
-												url: "/pages/service/risk?jobid=" +
-													this.jobid + '&jobtype=' +
-													this.jobtype
-											})
-										}, 2000)
-									}
-								}).catch(err=>{
-									console.log(err)
-								})
+							let params = {
+								id: this.model.id,
 							}
+							// console.log(params)
+							// return false
+							
+							this.$api.delRiskSituation(params).then(res=>{
+								if (res.code == 200) {
+									uni.showToast({
+										icon: 'none',
+										title: '删除成功'
+									});
+									setTimeout(() => {
+										uni.redirectTo({
+											url: "/pages/service/risk_list?jobid=" + this.jobid
+										})
+									}, 2000)
+								}
+							}).catch(err=>{
+								console.log(err)
+							})
 						} else {
 							uni.showToast({
 								icon: 'none',
