@@ -1,12 +1,6 @@
 <template>
 	<view class="content" style="margin-bottom: 40px;">
-		<!-- <view class="del" @tap="del()" v-if="id>0">
-			<cl-icon name="cl-icon-minus-border" color="#007AFF" :size="80"></cl-icon>
-		</view> -->
 		<cl-confirm ref="del_confirm"> </cl-confirm>
-		<!-- <cl-select v-model="item.is_conform" :options="columns" keyName="label" placeholder="请选择"></cl-select> -->
-		
-		
 		<block v-for="(item,i) in data" :key="i">
 			<view class="service">
 				<view class="service_title">风险评估项目<span class="jh">*</span></view>
@@ -16,43 +10,26 @@
 			</view>
 			<view class="service">
 				<view style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-					<view class="">是否符合要求<span class="jh" >*</span></view>
+					<view class="service_title">是否符合要求<span class="jh" >*</span></view>
 					<view>
 						<cl-select v-model="data[i].is_conform" :options="columns" placeholder="请选择"></cl-select>
 					</view>
 				</view>
 			</view>
 			<view class="service">
-				<view class="">备注说明</view>
+				<view class="service_title">备注说明</view>
 				<view class="service_content">
 					<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="data[i].remarks" count></cl-textarea>
 				</view>
 			</view>
-			<!-- <view class="service" style="width: 100%;">
-				<view class="">照片<span class="dcts">(最多4张)</span>
-				</view>
-				<view class="service_content">
-					<view label="限制上传图片格式/大小">
-						<m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加现场照片"
-							@upload="handleLoaded3" @change="handleChange3" :number="4" :formData="formData">
-							<template v-slot:icon>
-								<text class="s-add-list-btn-icon">+</text>
-							</template>
-						</m-upload>
-					</view>
-				</view>
-			</view> -->
 			<view>
 				<upload :photos="data[i].photos" :current="i" @imageEdit="imageEdit"></upload>
 			</view>
 		</block>
-		 
 		<view style="width: 100%; height: 100rpx;"></view>
-		
-		<view class="bu" @tap="$noMultipleClicks(submit)">
+		<view class="bu" @tap="submit()">
 			保存
 		</view>
-
 	</view>
 </template>
 
@@ -69,18 +46,9 @@ export default {
 	data() {
 		return {
 			name:'风险评估 - 问题列表',
-			noClick: true,
-				
-			site_photos: [],
-			// start_site_photos: [],
-			// end_site_photos: [],
-			upload_site_photos: [],
-				
-			upPicUrl: `${this.$baseUrl}/Upload.Upload/image`,
-			init_photos: [],
-			headerUpload: {
-				'token': uni.getStorageSync('token')
-			},
+			
+			jobid:'',
+			jobtype:'',
 			data:[],
 			show: false,
             columns: [
@@ -108,6 +76,7 @@ export default {
 		}
 
 		this.jobid = index.jobid
+		this.jobtype = index.jobtype
 		this.c_id = index.id
 		this.list()
 	},
@@ -119,9 +88,6 @@ export default {
 			// 回调参数为包含columnIndex、value、values
 			confirm(e) {
                 console.log('confirm', e)
-			
-				// console.log(e.indexs[0])
-				// this.data[]
                 this.show = false
 			},
 			list() {
@@ -137,20 +103,6 @@ export default {
 				}).catch(err=>{
 					console.log(err)
 				})
-			},
-			editParkImg(currentTempFilePath) {},
-			deleteImg(index) {
-				//删除数据库剩余部分
-				var del = JSON.parse(JSON.stringify(this.end_site_photos));
-				for (var i = 0; i < del.length; i++) {
-					var site_po = del[i].replace(/\"/g, "").replace(/[\\]/g, '');
-					del[i] = `${this.$baseUrl_imgs}` + site_po;
-					if (this.site_photos[index] == del[i])
-						this.end_site_photos.splice(i, 1)
-				}
-			},
-			getimgList(index) {
-				this.site_photos = index
 			},
 			// 新增
 			submit() {
@@ -170,101 +122,8 @@ export default {
 
 							setTimeout(() => {
 								this.list()
-							}, 2000)
-						}
-					}
-					if(res.code == 400){
-						uni.$utils.toast(res.msg)
-						return false
-					}
-				}).catch(err=>{
-					uni.showToast({
-						icon: 'error',
-						title: err.errMsg
-					});
-					setTimeout(function() {
-						uni.hideLoading();
-					}, 2000);
-				})
-
-			},
-			// 保存
-			save() {
-				
-				if(this.ct == 0){
-					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
-						uni.showToast({
-							icon: 'none',
-							title: `没上传现场照(⊙_⊙)?`
-						});
-						return false;
-					}
-				}
-				if(this.ct == 1){
-					if(this.risk_area==''){
-						uni.showToast({
-							icon: 'none',
-							title: `工厂区域必填`
-						});
-						return false;
-					}
-				}
-				
-				
-				
-				let checkdata = '';
-				if(this.checkdata.length>0){
-					checkdata = JSON.stringify(this.checkdata)
-				}
-				
-				// 验证图片里面是否有失败图片
-				let photoArr = this.upload_site_photos.split(',')
-				const str = this.upload_site_photos;
-				const substr = "undefined";
-				if (str.includes(substr)) {
-					uni.showToast({
-						icon: 'none',
-						title: `有上传失败的图片请重新上传`
-					});
-					return false;
-				}
-				
-				
-				uni.showLoading({
-					title: "正在保存"
-				});	
-				this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
-				let params = {
-					id: this.id,
-					job_id: this.jobid,
-					job_type: this.jobtype,
-					risk_targets: this.risk_targets,
-					risk_types: this.risk_types,
-					risk_rank: this.risk_rank,
-					risk_label: this.risk_label,
-					site_photos: this.upload_site_photos,
-					risk_description: this.risk_description,
-					risk_proposal: this.risk_proposal,
-					take_steps: this.take_steps,
-					risk_area: this.risk_area,
-					check_datas: JSON.stringify(this.checkdata),
-					customer_type:this.customer_type,
-					service_type:this.service_type
-				}
-				this.$api.editRisk(params).then(res=>{
-					if (res.code == 200) {
-						if (res.data) {
-							this.id = res.data
-							this.data_select()
-							this.del_index = []
-							uni.hideLoading();
-							uni.showToast({
-								title: '保存成功',
-								icon: 'none',
-							});
-							setTimeout(() => {
-								uni.redirectTo({
-									url: "/pages/service/risk?jobid=" + this.jobid +'&jobtype=' + this.jobtype
+								uni.navigateTo({
+									url:'/pages/service/risk_assessment?jobid='+this.jobid+'&jobtype=' + this.jobtype
 								})
 							}, 2000)
 						}
@@ -282,86 +141,7 @@ export default {
 						uni.hideLoading();
 					}, 2000);
 				})
-			},
-			onBeforeUpload(file, index) {
-				// 受支持的图片格式
-				// const fileType = ['image/png', 'image/jpeg'];
-				// 受支持的图片大小
-				// if (file.size / 1000 > 51.2) {
-				//     uni.showToast({icon:'none',title:`图片大小不能大于50K`});
-				//     return false;
-				// }
-				// if (fileType.indexOf(fileType) === -1) {
-				//     uni.showToast({icon:'none',title:`仅支持${fileType.join('、').replace(/image\//g, '')}图片格式`});
-				//     return false;
-				// }
-			},
 
-			handleChange3() {
-				this.$refs.upload3.upload();
-			},
-
-			// 获取上传或者预览后的图片
-			handleLoaded3(arr) {
-				console.log('arrarrarrarr',arr)
-				var imageStr = "";
-				for (var i = 0; i < arr.length; i++) {
-					imageStr += arr[i].result + ",";
-				}
-				//去掉最后一个逗号
-				if (imageStr.length > 0) {
-					imageStr = imageStr.substr(0, imageStr.length - 1);
-				}
-				// console.log(imageStr);
-				console.log('imageStrimageStrimageStr',imageStr)
-				this.upload_site_photos = imageStr
-			},
-			// 删除
-			del() {
-				this.$refs["del_confirm"].open({
-					title: "提示",
-					message: "确认删除？",
-					callback: ({
-						action
-					}) => {
-						if (action == 'confirm') {
-							if (this.id == '' || this.id == 0) {
-								uni.showToast({
-									icon: 'none',
-									title: '请选择删除物料'
-								});
-								return;
-							} else {
-								
-								let params = {
-									id: this.id,
-								}
-								this.$api.delRisk(params).then(res=>{
-									if (res.code == 200) {
-										uni.showToast({
-											icon: 'none',
-											title: '删除成功'
-										});
-										setTimeout(() => {
-											uni.redirectTo({
-												url: "/pages/service/risk?jobid=" +
-													this.jobid + '&jobtype=' +
-													this.jobtype
-											})
-										}, 2000)
-									}
-								}).catch(err=>{
-									console.log(err)
-								})
-							}
-						} else {
-							uni.showToast({
-								icon: 'none',
-								title: '取消成功'
-							});
-						}
-					}
-				});
 			},
 			//...
 		},

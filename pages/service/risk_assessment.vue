@@ -52,7 +52,7 @@ export default{
 		goDetail(id){
 			
 			uni.navigateTo({
-				url:'/pages/service/risk_show?id=' + id +'&jobid=' + this.jobid
+				url:'/pages/service/risk_show?id=' + id +'&jobid=' + this.jobid +'&jobtype=' + this.jobtype
 			})
 			
 		}
