@@ -16,9 +16,9 @@
 								<img :src="item.img" />
 							</view>
 							<view class="info">
-								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area}}</view>
-								<view class="item-x"><text class="span">风险程度：</text>{{item.cd}}</view>
-								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time}}</view>
+								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area || ''}}</view>
+								<view class="item-x"><text class="span">风险程度：</text>{{item.cd || ''}}</view>
+								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time || ''}}</view>
 							</view>
 						</view>
 						

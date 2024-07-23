@@ -235,6 +235,7 @@
 					</view>
 				</view>
 			</swiper-item>
+			<!-- 7. 风险评估 -->
 			<swiper-item class="evaluate" v-if="show_evaluate">
 				<view v-for="(item,i) in reportRiskData" :key="i" class="risk_list">
 					<view class="cat_title">
@@ -242,7 +243,7 @@
 					</view>
 					<view class="child_list">
 						<view class="list-item" v-for="(item_c,index) in item.list" :key="index">
-							<view class="list-title">{{item_c.title}}</view>
+							<view class="list-title"  @click="goRiskPinggu(item)">{{item_c.title}}</view>
 							<view style="width: 320rpx;">
 								<isYes :value="item_c.is_conform" :i="i" :ii="index" :reportRiskData="reportRiskData"></isYes>
 							
@@ -261,9 +262,9 @@
 								<img :src="item.img" />
 							</view>
 							<view class="info">
-								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area}}</view>
-								<view class="item-x"><text class="span">风险程度：</text>{{item.cd}}</view>
-								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time}}</view>
+								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area || ''}}</view>
+								<view class="item-x"><text class="span">风险程度：</text>{{item.cd || ''}}</view>
+								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time || ''}}</view>
 							</view>
 						</view>
 						
@@ -582,6 +583,12 @@
 			uni.$off('startSign_sadd', this.onStartSign_sadd)//销毁监听保存附加签名
 		},
 		methods: {
+			// 风险评估跳转
+			goRiskPinggu(e){
+				uni.navigateTo({
+					url:'/pages/service/risk_show?id='+e.list[0].c_id+'&jobid=' + this.basic.id
+				})
+			},
 			radioChange(e,i){
 				
 				this.questionsData[i].answer = e.detail.value
