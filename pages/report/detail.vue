@@ -428,7 +428,7 @@
 						tit: '风险评估'
 					},
 					{
-						id: 'risk_list',
+						id: 'risk_item',
 						tit: '风险情况'
 					},
 					{
@@ -840,7 +840,7 @@
 									arr.push({id: 'risk_assessment',tit: '风险评估',data:7})
 								}
 								if(item=='8'){
-									arr.push({id: 'risk_list',tit: '风险情况',data:8})
+									arr.push({id: 'risk_item',tit: '风险情况',data:8})
 								}
 							})
 							// arr.push({id: 'autograph',tit: '签名点评', data:6})

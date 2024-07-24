@@ -77,7 +77,7 @@
 		</view>
 		
 		<view class="bu" v-else @tap="$noMultipleClicks(submit)">
-			新增
+			保存
 		</view>
 
 	</view>
