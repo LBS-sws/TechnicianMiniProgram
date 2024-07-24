@@ -16,9 +16,9 @@
 								<img :src="item.img" />
 							</view>
 							<view class="info">
-								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area}}</view>
-								<view class="item-x"><text class="span">风险程度：</text>{{item.cd}}</view>
-								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time}}</view>
+								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area || ''}}</view>
+								<view class="item-x"><text class="span">风险程度：</text>{{item.cd || ''}}</view>
+								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time || ''}}</view>
 							</view>
 						</view>
 						
@@ -107,9 +107,10 @@ export default {
 					let list = res.data.data		// 分页
 					list.forEach((item,i)=>{
 						item.img = `${this.$baseUrl_imgs}` + item.img
-						if(item.create_time == null || item.create_time == 'null' || item.create_time=='')
+						if(item.create_time)
 						{
-							item.create_time == ' '
+							let date = item.create_time
+							item.create_time = /\d{4}-\d{1,2}-\d{1,2}/g.exec(date)
 						}
 						if(item.risk ==1){
 							item.cd = '高'
@@ -120,6 +121,7 @@ export default {
 						if(item.risk ==3){
 							item.cd = '低'
 						}
+						
 					})
 					
 					this.risks = this.risks.concat(list)

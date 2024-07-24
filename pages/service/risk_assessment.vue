@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<view class="list">
-			<view class="item" v-for="(item,i) in data" :key="i" @click="goDetail(item.id)">
+			<view class="item" v-for="(item,i) in data" :key="i" @click="goDetail(item.id)" :style="[{color: item.choice ? '#12900a':'#323233'}]">
 				{{item.category_title}} ({{item.count}})
 			</view>
 			
@@ -52,7 +52,7 @@ export default{
 		goDetail(id){
 			
 			uni.navigateTo({
-				url:'/pages/service/risk_show?id=' + id +'&jobid=' + this.jobid
+				url:'/pages/service/risk_show?id=' + id +'&jobid=' + this.jobid +'&jobtype=' + this.jobtype
 			})
 			
 		}

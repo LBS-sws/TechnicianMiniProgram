@@ -4,7 +4,7 @@
 			<cl-icon name="cl-icon-cloud-download" color="#007AFF" :size="80"></cl-icon>
 		</view>
 		<view>
-			<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1)">
+			<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1) && is_add">
 				<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
 			</view>
 		</view>
@@ -235,6 +235,7 @@
 					</view>
 				</view>
 			</swiper-item>
+			<!-- 7. 风险评估 -->
 			<swiper-item class="evaluate" v-if="show_evaluate">
 				<view v-for="(item,i) in reportRiskData" :key="i" class="risk_list">
 					<view class="cat_title">
@@ -242,9 +243,10 @@
 					</view>
 					<view class="child_list">
 						<view class="list-item" v-for="(item_c,index) in item.list" :key="index">
-							<view class="list-title">{{item_c.title}}</view>
-							<view>
-								是
+							<view class="list-title"  @click="goRiskPinggu(item)">{{item_c.title}}</view>
+							<view style="width: 320rpx;">
+								<isYes :value="item_c.is_conform" :i="i" :ii="index" :reportRiskData="reportRiskData"></isYes>
+							
 							</view>
 						</view>
 					</view>
@@ -260,9 +262,9 @@
 								<img :src="item.img" />
 							</view>
 							<view class="info">
-								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area}}</view>
-								<view class="item-x"><text class="span">风险程度：</text>{{item.cd}}</view>
-								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time}}</view>
+								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area || ''}}</view>
+								<view class="item-x"><text class="span">风险程度：</text>{{item.cd || ''}}</view>
+								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time || ''}}</view>
 							</view>
 						</view>
 						
@@ -370,6 +372,7 @@
 	import tTd from '@/components/t-table/t-td.vue';
 	import Signature from '@/components/sin-signature/sin-signature.vue';
 	import luPopupWrapper from "@/components/lu-popup-wrapper/lu-popup-wrapper.vue";
+	import isYes from '@/components/risk/assessment.vue';
 	export default {
 		components: {
 			tTable,
@@ -378,6 +381,7 @@
 			tTd,
 			Signature,
 			luPopupWrapper,
+			isYes
 		},
 		data() {
 			return {
@@ -424,7 +428,7 @@
 						tit: '风险评估'
 					},
 					{
-						id: 'risk_list',
+						id: 'risk_item',
 						tit: '风险情况'
 					},
 					{
@@ -498,7 +502,8 @@
 					store_coordinate:''
 				},
 				reportRiskData:[],
-				conditionData:[]
+				conditionData:[],
+				is_add:true,
 			}
 		},
 		onLoad(index) {
@@ -578,6 +583,12 @@
 			uni.$off('startSign_sadd', this.onStartSign_sadd)//销毁监听保存附加签名
 		},
 		methods: {
+			// 风险评估跳转
+			goRiskPinggu(e){
+				uni.navigateTo({
+					url:'/pages/service/risk_show?id='+e.list[0].c_id+'&jobid=' + this.basic.id
+				})
+			},
 			radioChange(e,i){
 				
 				this.questionsData[i].answer = e.detail.value
@@ -640,6 +651,12 @@
 				}
 				if(this.tab_bar[index].data == '9'){
 					this.getItems()			// 签名
+				}
+				
+				if(this.tab_bar[index].id=='risk_assessment'){
+					this.is_add = false
+				}else{
+					this.is_add = true
 				}
 				
 				// 记录当前滑动的位置
@@ -823,7 +840,7 @@
 									arr.push({id: 'risk_assessment',tit: '风险评估',data:7})
 								}
 								if(item=='8'){
-									arr.push({id: 'risk_list',tit: '风险情况',data:8})
+									arr.push({id: 'risk_item',tit: '风险情况',data:8})
 								}
 							})
 							// arr.push({id: 'autograph',tit: '签名点评', data:6})
@@ -1130,12 +1147,19 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: 10rpx 30rpx;
+			padding: 20rpx 30rpx;
 			border-bottom: 1rpx solid #ebedf0;
 			.list-title{
-				font-size: 24rpx;
+				font-size: 28rpx;
 				color: #323233;
-				padding: 10rpx 0;
+				
+				text-align: left;
+				width: calc(100% - 320rpx);
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				overflow: hidden ;
+				-webkit-line-clamp: 2;
+				text-overflow: ellipsis;
 			}
 			
 		}

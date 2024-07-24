@@ -9,7 +9,7 @@
 			<view class="service_title">检查区域<span class="jh" >*</span></view>
 			<view class="service_content">
 				<cl-col span="24">
-					<cl-input v-model="model.check_area" placeholder="" />
+					<cl-input v-model="model.check_area" placeholder=" " />
 				</cl-col>
 			</view>
 		</view>
@@ -20,7 +20,7 @@
 					value-key="value" placeholder="示例" clearable v-model="risk_proposal" @change="selectChange1">
 				</ld-select>
 		
-				<cl-textarea rows="13" cols="40" placeholder="" v-model="model.problem_desc" count></cl-textarea>
+				<cl-textarea rows="13" cols="40" placeholder=" " v-model="model.problem_desc" count></cl-textarea>
 			</view>
 		</view>
 		<view class="service">
@@ -77,7 +77,7 @@
 		</view>
 		
 		<view class="bu" v-else @tap="$noMultipleClicks(submit)">
-			新增
+			保存
 		</view>
 
 	</view>

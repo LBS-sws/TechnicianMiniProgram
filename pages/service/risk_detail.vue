@@ -81,12 +81,18 @@
 			</view>
 			<view class="service_content">
 				<view label="限制上传图片格式/大小">
-					<m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加现场照片"
+					<!-- <m-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加现场照片"
 						@upload="handleLoaded3" @change="handleChange3" :number="4" :formData="formData">
 						<template v-slot:icon>
 							<text class="s-add-list-btn-icon">+</text>
 						</template>
-					</m-upload>
+					</m-upload> -->
+					<new-upload :url="upPicUrl" :header="headerUpload" :fileName="file" ref="upload3" title="添加现场照片"
+						@upload="handleLoaded3" @change="handleChange3" :number="4" :formData="formData">
+						<template v-slot:icon>
+							<text class="s-add-list-btn-icon">+</text>
+						</template>
+					</new-upload>
 				</view>
 			</view>
 		</view>
