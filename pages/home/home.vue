@@ -56,7 +56,7 @@
 					</view>
 					<view>
 						<span class="content_t">地址:</span>
-						<text selectable="true">{{item.customer.addr}}</text>
+						<text selectable="true">{{item.addr}}</text>
 					</view>
 					<view style="display: flex;height: 20px;" v-if="item.customer_grade.score!=''">
 						<span style="margin-left:10px;">客户点评:</span>

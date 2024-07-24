@@ -17,7 +17,7 @@
 				联系电话：<span style="color: black;"><text selectable="true">{{service.tel}}</text></span>
 			</view>
 			<view class="v_magin">
-				联系地址：<span style="color: black;"><text selectable="true">{{service.customer.addr}}</text></span>
+				联系地址：<span style="color: black;"><text selectable="true">{{service.addr}}</text></span>
 			</view>
 			<!-- 流程 -->
 			<cl-divider>
