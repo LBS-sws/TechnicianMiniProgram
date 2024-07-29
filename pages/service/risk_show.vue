@@ -122,9 +122,26 @@ export default {
 
 							setTimeout(() => {
 								this.list()
-								uni.navigateTo({
-									url:'/pages/service/risk_assessment?jobid='+this.jobid+'&jobtype=' + this.jobtype
-								})
+								// uni.navigateTo({
+								// 	url:'/pages/service/risk_assessment?jobid='+this.jobid+'&jobtype=' + this.jobtype
+								// })
+								// uni.reLaunch({
+								//     url:'/pages/service/risk_assessment?jobid='+this.jobid+'&jobtype=' + this.jobtype // 跳转到对应路径的页面
+								// });
+								// uni.redirectTo({
+								//     url:'/pages/service/risk_assessment?jobid='+this.jobid+'&jobtype=' + this.jobtype // 跳转到对应路径的页面
+								// });
+								    // 获取当前页面栈的实例，以数组形式按栈的顺序给出，第一个元素为首页，最后一个元素为当前页面。
+								    const pages = getCurrentPages() 
+								    const prevPage = pages[pages.length - 2] //上一个页面
+								    //#ifdef H5
+								    prevPage._data.selectData = this.selectMaterial
+								    //#endif
+								    //小程序中的修改方法
+								    // #ifndef H5
+								    prevPage.$vm._data.selectData = this.selectMaterial
+								    //#endif
+								    uni.navigateBack() //返回上一页面
 							}, 2000)
 						}
 					}

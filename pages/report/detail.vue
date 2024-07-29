@@ -43,7 +43,7 @@
 						<text selectable="true">{{basic.service_type_info.service_name}}</text>
 					</cl-list-item>
 				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
+				<view style="border-bottom: 1px solid #eeeeee;" v-if="basic.order_type != 3">
 					<cl-list-item label="服务项目：">
 						<text selectable="true">{{basic.project}}</text>
 					</cl-list-item>
@@ -63,7 +63,7 @@
 						<text selectable="true">{{basic.staff.main}}</text> <text selectable="true">{{basic.staff.other}}</text>
 					</cl-list-item>
 				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
+				<view style="border-bottom: 1px solid #eeeeee;" v-if="basic.order_type != 3">
 					<cl-list-item label="设备巡查：">
 						<text selectable="true">{{basic.equipments}}</text>
 					</cl-list-item>
