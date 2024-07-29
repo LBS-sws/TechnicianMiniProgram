@@ -104,12 +104,26 @@ export default {
 					console.log(err)
 				})
 			},
-			// 新增
+			// 保存
 			submit() {
+				// 处理数据
 				let data = []
 				this.data.forEach((item,i)=>{
 					data.push({id: item.id, is_conform: item.is_conform, remarks: item.remarks, photos: item.photos})
 				})
+				
+				// 判断必须是否填写
+				let status = 1;
+				this.data.forEach((item,i)=>{
+					if (!item.is_conform && String(item.is_conform) !== '0') {
+						status = 0
+						uni.$utils.toast("必填项需要填写")
+						return false
+					}
+				})
+				if(status==0){
+					return false
+				}
 				
 				let params = {
 					data:this.data
