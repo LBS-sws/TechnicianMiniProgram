@@ -290,7 +290,7 @@ export default {
 						this.imageList[index].errorInfo = uploadRes.msg;
 					} else {
 						//上传图片成功
-						// console.log(uploadRes)
+						console.log(uploadRes)
 						this.imageList[index].progress = 100;
 						this.imageList[index].url = `${this.$baseUrl_imgs}`+uploadRes.data.file_name;
 						this.imageList[index].result = uploadRes.data.file_name;

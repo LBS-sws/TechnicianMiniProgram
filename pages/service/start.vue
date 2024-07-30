@@ -8,7 +8,7 @@
 				服务次数：<span style="color: black;">{{service.count}}次</span>
 			</view>
 			<view class="v_magin">
-				服务人员：<span style="color: black;"><text selectable="true">{{service.customer.name_zh}}</text></span>
+				服务人员：<span style="color: black;"><text selectable="true">{{service.main_staff}}</text></span>
 			</view>
 			<view class="v_magin">
 				联系人员：<span style="color: black;"><text selectable="true">{{service.contact_name}}</text></span>
