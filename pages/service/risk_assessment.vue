@@ -31,7 +31,13 @@ export default{
 			}, 2000);
 		}
 		this.jobid = index.jobid
+		
+	},
+	onShow() {
 		this.list()
+	},
+	created() {
+		
 	},
 	methods:{
 		// 勘查总结信息

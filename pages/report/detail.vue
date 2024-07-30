@@ -577,6 +577,22 @@
 			})
 	
 		},
+		mounted() {
+			let that = this;
+			uni.$on('update', function(data) {
+				console.log('触发更新后')
+				that.reportRiskData = []
+				that.getReportRiskList()
+				//触发更新后
+				
+				
+			})
+		},
+		//为了优化代码，可以加上移除事件，避免重复监听事件
+		onUnload() {
+			// 移除监听事件  
+			uni.$off('update');
+		},
 		//页面销毁
 		beforeDestroy() {
 			uni.$off('startSign_s', this.onStartSign_s)// 销毁监听签名保存事件
@@ -972,6 +988,8 @@
 				this.$api.getReportRiskList(params).then(res=>{
 					console.log(res)
 					if(res.code==200){
+						
+						
 						this.reportRiskData = res.data
 					}
 				}).catch(err=>{
