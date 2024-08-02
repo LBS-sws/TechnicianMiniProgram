@@ -146,8 +146,9 @@
 				var ix = []
 				i.forEach((item,i)=>{
 					item.src = this.fileUrl + item.file_path
-					ix.push(this.fileUrl + item.file_path)
+					ix.push(this.fileUrl + '/' + item.file_path)
 				})
+				// console.log(ix)
 				
 				uni.previewImage({
 					current:index, 
