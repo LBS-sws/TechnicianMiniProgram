@@ -9,7 +9,7 @@
 			<view class="service_title">检查区域<span class="jh" >*</span></view>
 			<view class="service_content">
 				<cl-col span="24">
-					<cl-input v-model="model.check_area" placeholder=" " />
+					<cl-input v-model="risk_area" placeholder=" " />
 				</cl-col>
 			</view>
 		</view>
@@ -17,10 +17,10 @@
 			<view class="service_title">问题说明<span class="jh">*</span></view>
 			<view class="service_content">
 				<ld-select :multiple="true" :list="contentData" @inputFun="inputFun" label-key="label"
-					value-key="value" placeholder="示例" clearable v-model="model.problem_desc" @change="selectChange">
+					value-key="value" placeholder="示例" clearable v-model="problem_desc" @change="selectChange">
 				</ld-select>
 		
-				<cl-textarea rows="13" cols="40" placeholder=" " v-model="model.problem_desc" count></cl-textarea>
+				<cl-textarea rows="13" cols="40" placeholder=" " v-model="problem_desc" count></cl-textarea>
 			</view>
 		</view>
 		<view class="service">
@@ -52,20 +52,20 @@
 			<view class="service_title">整改建议<span class="jh">*</span></view>
 			<view class="service_content">
 				<ld-select :multiple="true" :list="contentData" @inputFun="inputFunb" label-key="label"
-					value-key="value" placeholder="示例" clearable v-model="model.improve" @change="selectChange1">
+					value-key="value" placeholder="示例" clearable v-model="improve" @change="selectChange1">
 				</ld-select>
 
-				<cl-textarea rows="13" cols="40" placeholder="整改建议" v-model="model.improve" count></cl-textarea>
+				<cl-textarea rows="13" cols="40" placeholder="整改建议" v-model="improve" count></cl-textarea>
 			</view>
 		</view>
 		<view class="service">
 			<view class="service_title">采取措施<span class="jh">*</span></view>
 			<view class="service_content">
 				<ld-select :multiple="true" :list="contentData" @inputFun="inputFunc" label-key="label"
-					value-key="value" placeholder="示例" clearable v-model="model.take_steps" @change="selectChange2">
+					value-key="value" placeholder="示例" clearable v-model="take_steps" @change="selectChange2">
 				</ld-select>
 
-				<cl-textarea rows="13" cols="40" placeholder="采取措施" v-model="model.take_steps" count></cl-textarea>
+				<cl-textarea rows="13" cols="40" placeholder="采取措施" v-model="take_steps" count></cl-textarea>
 			</view>
 		</view>
 		<view style="width: 100%; height: 100rpx;"></view>
@@ -136,13 +136,18 @@
 				},
 				model:{
 					id:'',
-					risk_area:'',
+					
+					check_area:'',
 					risk:'',
 					photos:[],
-					problem_desc:'',
-					improve:'',
-					take_steps:''
+					
 				},
+				risk_area:'',
+				risk:'',
+				problem_desc:'',
+				improve:'',
+				take_steps:'',
+				
 				photosArray:[],
 				
 				contentData:[],
@@ -234,13 +239,13 @@
 			 * *
 			 */
 			selectChange(val) {
-				this.model.problem_desc = val
+				this.problem_desc = val
 			},
 			selectChange1(val) {
-				this.model.improve = val
+				this.improve = val
 			},
 			selectChange2(val) {
-				this.model.take_steps = val
+				this.take_steps = val
 			},
 			data_select() {
 				let params = {
@@ -266,6 +271,12 @@
 							
 							this.$refs.upload3.setItems(res.data.data.photos)
 							
+							this.risk = res.data.data.risk
+							
+							this.risk_area = res.data.data.check_area
+							this.problem_desc = res.data.data.problem_desc
+							this.improve = res.data.data.improve
+							this.take_steps = res.data.data.take_steps
 						}
 					}
 				}).catch(err=>{
@@ -277,12 +288,12 @@
 				
 				let params = {
 					survey_id: this.jobid,
-					check_area: this.model.check_area,
-					risk: this.model.risk,
+					check_area: this.risk_area,
+					risk: this.risk,
 					photos: this.photosArray,
-					problem_desc: this.model.problem_desc,
-					improve: this.model.improve,
-					take_steps: this.model.take_steps
+					problem_desc: this.problem_desc,
+					improve: this.improve,
+					take_steps: this.take_steps
 				}
 				
 				this.$api.addRiskSituation(params).then(res=>{
@@ -317,13 +328,14 @@
 			save() {
 				
 				let params = {
-					id: this.model.id,
-					check_area: this.model.check_area,
-					risk: this.model.risk,
+					id:this.model.id,
+					survey_id: this.jobid,
+					check_area: this.risk_area,
+					risk: this.risk,
 					photos: this.photosArray,
-					problem_desc: this.model.problem_desc,
-					improve: this.model.improve,
-					take_steps: this.model.take_steps
+					problem_desc: this.problem_desc,
+					improve: this.improve,
+					take_steps: this.take_steps
 				}
 				
 				this.$api.editRiskSituation(params).then(res=>{
