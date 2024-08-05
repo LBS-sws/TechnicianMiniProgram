@@ -2,22 +2,22 @@
 	<view class="content">
 		<view class="service">
 			<view class="service_title">风险问题描述<span class="jh">*</span></view>
-			<!-- <view class="lz">
+			<view class="lz">
 				<cl-row>
 					<ld-select :multiple="true" :list="contentData" @inputFun="inputFun" label-key="label"
-						value-key="value" placeholder="示例" clearable v-model="service_content"
+						value-key="value" placeholder="示例" clearable v-model="risk_desc"
 						@change="selectChange"></ld-select>
 				</cl-row>
-			</view> -->
+			</view>
 			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="risk_desc" count></cl-textarea>
 		</view>
 		<view class="service">
 			<view class="service_title">门店建议措施<span class="jh">*</span></view>
 			<view class="lz">
 				<cl-row>
-					<ld-select :multiple="true" :list="proposalData" @inputFun="inputFunx" label-key="label"
-						value-key="value" placeholder="示例" clearable v-model="service_proposal"
-						@change="selectChange1"></ld-select>
+					<ld-select :multiple="true" :list="contentData" @inputFun="inputFunb" label-key="label"
+						value-key="value" placeholder="示例" clearable v-model="store_coordinate"
+						@change="selectChangeb"></ld-select>
 				</cl-row>
 			</view>
 			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="store_coordinate" count>
@@ -27,9 +27,9 @@
 			<view class="service_title">本次行动方案<span class="jh">*</span></view>
 			<view class="lz">
 				<cl-row>
-					<ld-select :multiple="true" :list="contentData" @inputFun="inputFun" label-key="label"
-						value-key="value" placeholder="示例" clearable v-model="service_content"
-						@change="selectChange"></ld-select>
+					<ld-select :multiple="true" :list="contentData" @inputFun="inputFunc" label-key="label"
+						value-key="value" placeholder="示例" clearable v-model="ms_action"
+						@change="selectChangec"></ld-select>
 				</cl-row>
 			</view>
 			<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="ms_action" count></cl-textarea>
@@ -41,6 +41,16 @@
 	</view>
 </template>
 <script>
+export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
+  const reg = new RegExp(keyWord)
+  const arr = []
+  for (let i = 0; i < list.length; i++) {
+    if (reg.test(list[i][attribute])) {
+      arr.push(list[i])
+    }
+  }
+  return arr
+}
 import ldSelect from '@/components/ld-select/ld-select.vue'
 export default {
 	components: {
@@ -52,7 +62,17 @@ export default {
 			jobid: '',
 			risk_desc:'',
 			store_coordinate: '',
-			ms_action: ''
+			ms_action: '',
+			
+			contentData:[],
+			contentDataOld:[],
+			contentDatab:[],
+			contentDataOldb:[],
+			contentDatac:[],
+			contentDataOldc:[],
+			timer: null,
+			search_key: '',
+			current:1
 		}
 	},
 	onLoad(index) {
@@ -70,7 +90,75 @@ export default {
 		this.data_select()
 	},
 	methods: {
+		inputFun(data) {
 			
+			this.search_key = data.value;
+			this.clearTimer()
+			if (this.search_key && this.search_key.length > 0) {
+				
+				this.timer = setTimeout(() => {
+					let result = fuzzyQuery(this.contentData, this.search_key, 'value') // 数组、搜索值、字段
+					this.contentData = result
+				}, 500)
+				
+			} else {
+				// 恢复原来值
+				this.contentData = this.contentDataOld
+			}
+		},
+		inputFunb(data) {
+			
+			this.search_key = data.value;
+			this.clearTimer()
+			if (this.search_key && this.search_key.length > 0) {
+				
+				this.timer = setTimeout(() => {
+					let result = fuzzyQuery(this.contentDatab, this.search_key, 'value') // 数组、搜索值、字段
+					this.contentDatab = result
+				}, 500)
+				
+			} else {
+				// 恢复原来值
+				this.contentDatab = this.contentDataOldb
+			}
+		},
+		inputFunc(data) {
+			
+			this.search_key = data.value;
+			this.clearTimer()
+			if (this.search_key && this.search_key.length > 0) {
+				
+				this.timer = setTimeout(() => {
+					let result = fuzzyQuery(this.contentDatac, this.search_key, 'value') // 数组、搜索值、字段
+					this.contentDatac = result
+				}, 500)
+				
+			} else {
+				// 恢复原来值
+				this.contentDatac= this.contentDataOldc
+			}
+		},
+		clearTimer() {
+			if (this.timer) {
+				clearTimeout(this.timer)
+			}
+		},
+		/**
+		 *搜索结束
+		 * *
+		 */
+		selectChange(val) {
+			
+			this.risk_desc = val
+		},
+		selectChangeb(val) {
+			
+			this.store_coordinate = val
+		},
+		selectChangec(val) {
+			
+			this.ms_action = val
+		},
 		// 勘查总结信息
 		data_select() {
 			let params = {
@@ -79,9 +167,21 @@ export default {
 			this.$api.getSummaryInfo(params).then(res=>{
 				// console.log(res)
 				if(res.code==200){
-					this.ms_action = res.data.ms_action
-					this.risk_desc = res.data.risk_desc
-					this.store_coordinate = res.data.store_coordinate
+					this.ms_action = res.data.data.ms_action
+					this.risk_desc = res.data.data.risk_desc
+					this.store_coordinate = res.data.data.store_coordinate
+					
+					
+					let contentData = []
+					let list = res.data.shortcutContents
+					if(list.length>0){
+						list.forEach((item,i)=>{
+							contentData.push({value: item.content, label: item.content})
+						})
+					}
+					this.contentDataOldc = this.contentDataOldb = this.contentDataOld = this.contentDatc = this.contentDatb = this.contentData = contentData
+					
+					console.log(this.contentData)
 				}
 			}).catch(err=>{
 				console.log(err)
