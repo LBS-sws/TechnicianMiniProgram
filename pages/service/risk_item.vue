@@ -16,8 +16,8 @@
 		<view class="service">
 			<view class="service_title">问题说明<span class="jh">*</span></view>
 			<view class="service_content">
-				<ld-select :multiple="true" :list="service_content_lists" @inputFun="inputFun" label-key="label"
-					value-key="value" placeholder="示例" clearable v-model="risk_proposal" @change="selectChange1">
+				<ld-select :multiple="true" :list="contentData" @inputFun="inputFun" label-key="label"
+					value-key="value" placeholder="示例" clearable v-model="model.problem_desc" @change="selectChange">
 				</ld-select>
 		
 				<cl-textarea rows="13" cols="40" placeholder=" " v-model="model.problem_desc" count></cl-textarea>
@@ -33,8 +33,6 @@
 			</view>
 		</view>
 		
-		
-
 		<view class="service">
 			<view class="service_title">照片<span class="jh" v-if="ct==0">*</span><span class="dcts">(最多4张)</span>
 			</view>
@@ -53,8 +51,8 @@
 		<view class="service">
 			<view class="service_title">整改建议<span class="jh">*</span></view>
 			<view class="service_content">
-				<ld-select :multiple="true" :list="service_content_lists" @inputFun="inputFun" label-key="label"
-					value-key="value" placeholder="示例" clearable v-model="risk_proposal" @change="selectChange1">
+				<ld-select :multiple="true" :list="contentData" @inputFun="inputFunb" label-key="label"
+					value-key="value" placeholder="示例" clearable v-model="model.improve" @change="selectChange1">
 				</ld-select>
 
 				<cl-textarea rows="13" cols="40" placeholder="整改建议" v-model="model.improve" count></cl-textarea>
@@ -63,8 +61,8 @@
 		<view class="service">
 			<view class="service_title">采取措施<span class="jh">*</span></view>
 			<view class="service_content">
-				<ld-select :multiple="true" :list="service_content_lists" @inputFun="inputFun" label-key="label"
-					value-key="value" placeholder="示例" clearable v-model="take_steps" @change="selectChange2">
+				<ld-select :multiple="true" :list="contentData" @inputFun="inputFunc" label-key="label"
+					value-key="value" placeholder="示例" clearable v-model="model.take_steps" @change="selectChange2">
 				</ld-select>
 
 				<cl-textarea rows="13" cols="40" placeholder="采取措施" v-model="model.take_steps" count></cl-textarea>
@@ -104,11 +102,7 @@
 		data() {
 			return {
 				noClick: true,
-				target: "",
-				targets: [],
-				type: "",
-				types: [],
-				rank: "",
+				
 				ranks: [
 					{rank:'高',value:1},
 					{rank:'中',value:2},
@@ -123,8 +117,7 @@
 				jobtype: '',
 				
 				site_photos: [],
-				// start_site_photos: [],
-				// end_site_photos: [],
+			
 				upload_site_photos: [],
 				risk_description: [],
 				risk_proposal: [],
@@ -150,7 +143,14 @@
 					improve:'',
 					take_steps:''
 				},
-				photosArray:[]
+				photosArray:[],
+				
+				contentData:[],
+				contentDataOld:[],
+				contentDatab:[],
+				contentDataOldb:[],
+				contentDatac:[],
+				contentDataOldc:[],
 			}
 		},
 		onLoad(index) {
@@ -185,13 +185,43 @@
 				if (this.search_key && this.search_key.length > 0) {
 
 					this.timer = setTimeout(() => {
-						let result = fuzzyQuery(this.service_content_lists, this.search_key, 'value') // 数组、搜索值、字段
-						this.service_content_lists = result
+						let result = fuzzyQuery(this.contentData, this.search_key, 'value') // 数组、搜索值、字段
+						this.contentData = result
 					}, 500)
 
 				} else {
 					// 恢复原来值
-					this.service_content_lists = this.service_content_listsOld
+					this.contentData = this.contentDataOld
+				}
+			},
+			inputFunb(data) {
+				this.search_key = data.value;
+				this.clearTimer()
+				if (this.search_key && this.search_key.length > 0) {
+			
+					this.timer = setTimeout(() => {
+						let result = fuzzyQuery(this.contentDatab, this.search_key, 'value') // 数组、搜索值、字段
+						this.contentDatab = result
+					}, 500)
+			
+				} else {
+					// 恢复原来值
+					this.contentDatab = this.contentDataOldb
+				}
+			},
+			inputFunc(data) {
+				this.search_key = data.value;
+				this.clearTimer()
+				if (this.search_key && this.search_key.length > 0) {
+			
+					this.timer = setTimeout(() => {
+						let result = fuzzyQuery(this.contentDatac, this.search_key, 'value') // 数组、搜索值、字段
+						this.contentDatac = result
+					}, 500)
+			
+				} else {
+					// 恢复原来值
+					this.contentDatac = this.contentDataOldc
 				}
 			},
 			clearTimer() {
@@ -204,13 +234,13 @@
 			 * *
 			 */
 			selectChange(val) {
-				this.risk_description = val
+				this.model.problem_desc = val
 			},
 			selectChange1(val) {
-				this.risk_proposal = val
+				this.model.improve = val
 			},
 			selectChange2(val) {
-				this.take_steps = val
+				this.model.take_steps = val
 			},
 			data_select() {
 				let params = {
@@ -223,29 +253,24 @@
 						console.log(res.data)
 						if (res.data) {
 							
-							this.model = res.data
+							this.model = res.data.data
 						
-							this.$refs.upload3.setItems(res.data.photos)
-						
+							let contentData = []
+							let list = res.data.shortcutContents
+							if(list.length>0){
+								list.forEach((item,i)=>{
+									contentData.push({value: item.content, label: item.content})
+								})
+							}
+							this.contentDataOldc = this.contentDataOldb = this.contentDataOld = this.contentDatc = this.contentDatb = this.contentData = contentData
+							
+							this.$refs.upload3.setItems(res.data.data.photos)
+							
 						}
 					}
 				}).catch(err=>{
 					console.log(err)
 				})
-			},
-			editParkImg(currentTempFilePath) {},
-			deleteImg(index) {
-				//删除数据库剩余部分
-				var del = JSON.parse(JSON.stringify(this.end_site_photos));
-				for (var i = 0; i < del.length; i++) {
-					var site_po = del[i].replace(/\"/g, "").replace(/[\\]/g, '');
-					del[i] = `${this.$baseUrl_imgs}` + site_po;
-					if (this.site_photos[index] == del[i])
-						this.end_site_photos.splice(i, 1)
-				}
-			},
-			getimgList(index) {
-				this.site_photos = index
 			},
 			// 新增
 			submit() {
@@ -342,11 +367,9 @@
 				//     return false;
 				// }
 			},
-
 			handleChange3() {
 				this.$refs.upload3.upload();
 			},
-
 			// 获取上传或者预览后的图片
 			handleLoaded3(arr) {
 				console.log('arrarrarrarr',arr)
