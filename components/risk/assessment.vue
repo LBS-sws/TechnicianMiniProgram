@@ -41,20 +41,20 @@ export default{
 		}
 	},
 	created() {
-		
+		// console.log(this.val)
 	},
 	methods:{
 		changeHandle(e){
-			console.log(e)
-			console.log('i:',this.i)
-			console.log('ii',this.ii)
-			console.log(this.reportRiskData)
+			// console.log(e)
+			// console.log('i:',this.i)
+			// console.log('ii',this.ii)
+			// console.log(this.reportRiskData)
 			
 			this.reportRiskData[this.i].list[this.ii].is_conform = e
 			let data = this.reportRiskData[this.i].list
 			
 			this.data = data
-			console.log(this.reportRiskData)
+			// console.log(this.reportRiskData)
 			this.submit()
 		},
 		submit() {

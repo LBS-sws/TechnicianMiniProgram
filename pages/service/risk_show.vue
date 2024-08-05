@@ -155,7 +155,14 @@ export default {
 								    // #ifndef H5
 								    prevPage.$vm._data.selectData = this.selectMaterial
 								    //#endif
-								    uni.navigateBack() //返回上一页面
+								    uni.navigateBack(
+										{
+											delta:prevPage,
+											success() {
+											        uni.$emit('update',{msg:'页面更新'})
+											    }
+										}
+									) //返回上一页面
 							}, 2000)
 						}
 					}
