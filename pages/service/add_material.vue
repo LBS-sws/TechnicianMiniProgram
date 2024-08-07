@@ -1,20 +1,32 @@
 <template>
 	<view class="content" style="margin-bottom: 40px;">
-		<view class="del" @tap="del()" v-if="id>0">
+		<view class="del" @tap="del()" v-if="id>0" style="z-index: 9;">
 			<cl-icon name="cl-icon-minus-border" color="#007AFF" :size="80"></cl-icon>
 		</view>
 		<cl-confirm ref="del_confirm"> </cl-confirm>
 		<!-- 物料 -->
 		<view class="service">
-			<view class="service_title">物料<span class="jh">*</span>
+			<view class="service_title" style="display: none;">物料<span class="jh">*</span>
 			
-				<view class="new_card_title_right" style="font-size: 20rpx; font-weight: 500;">
+				
+				<view class="new_card_title_right" >
 					<!-- <cl-select v-model="material" :options="material_lists" @change="change_material()"></cl-select> -->
 					
-					<jp-select-plus label="" color="#f00"placeholder="请选择" isSearch v-model="material" :list="options" @toConfirm="toConfirm"></jp-select-plus>
+					<!-- <jp-select-plus label="" color="#f00"placeholder="请选择" isSearch v-model="material" :list="options" @toConfirm="toConfirm"></jp-select-plus>
+					 -->
 					
 				</view>
 			</view>
+			 <!-- <jp-select-plus label="物料" labelColor="#000000" required="true" :isLineFeed="false" placeholder="请选择" isSearch 
+				 v-model="va1" 
+				 :list="listc">
+			 </jp-select-plus> -->
+			 <jp-select-plus label="物料" labelColor="#000000" required="true" :isLineFeed="false" placeholder="请选择" isSearch
+			 	v-model="material" 
+			 	:list="options"
+				@toConfirm="toConfirm"
+				>
+			 </jp-select-plus>
 			
 			<view class="service_content">
 				<cl-row>
@@ -158,7 +170,19 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				len: false,
 				
 				options:[],
-				store:''
+				store:'',
+				
+				va1: '',           
+                listc: [{
+                    code: 'CHN',
+                    name: '中国'
+                }, {
+                    name: '美国5',
+                    code: 'USA'
+                }, {
+                    name: '巴西',
+                    code: 'BRA'
+                }],
 			}
 		},
 		onLoad(index) {
@@ -195,7 +219,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 		},
 		methods: {
 			toConfirm(e){
-				// console.log('11111',e[0].name)
+				console.log('单选:',e[0].name)
 				// console.log(e.length)
 				// console.log(this.material_lists)
 				if(e.length == 1){
@@ -267,7 +291,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						})
 						
 						this.options = arr
-						
+						 
 						
 						this.targets = res.data.materialTargets	     // 靶标
 						this.usemodes = res.data.materialUsemodes       // 使用方式

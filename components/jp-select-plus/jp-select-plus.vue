@@ -3,9 +3,7 @@
 		<view v-if="isShow" :class="isLineFeed?'showData-field-line':'showData-field-input'" @click="open">
 			<view class="showData-field-label"
 				:style="{minWidth:isLineFeed?'':labelWidths,width:isLineFeed?'':labelWidths,color:labelColor}"
-				v-if="label"><span v-if="required" style="color: red">*</span>
-				<!-- {{label}} -->
-				</view>
+				v-if="label" style=" font-weight: bold;">{{label}}<span v-if="required" style="color: red;">*</span></view>
 			<!-- 多选 -->
 			<view :class="direction=='left'?'textleft':'textR'" :style="{width: inpeWidth}"
 				class="inputs checkbox showDatas" v-if="checkbox && !clickable">
@@ -22,7 +20,7 @@
 					<view :style="{color: placeholderColor }" v-else>{{placeholder}}</view>
 				</view>
 				<view v-if="arrow" class="arrows">
-					<image src="@/components/jp-select-plus/arrow.png" style="width: 30rpx;height: 30rpx;"></image>
+					<image src="./arrow.png" style="width: 30rpx;height: 30rpx;"></image>
 				</view>
 			</view>
 			<!-- 单选 -->
@@ -33,7 +31,7 @@
 					{{ListXz.length>0?(KeyType?ListXz[0][showName]:ListXz[0]):placeholder}}
 				</view>
 				<view v-if="arrow" class="arrows">
-					<image src="@/components/jp-select-plus/arrow.png" style="width: 30rpx;height: 30rpx;"></image>
+					<image src="./arrow.png" style="width: 30rpx;height: 30rpx;"></image>
 				</view>
 			</view>
 			<!-- 可以点击 -->
@@ -42,7 +40,7 @@
 				<view :style="{color: value?valueColor?valueColor:'':placeholderColor,width: inpeWidthLfet}"
 					:class="isoverflow?'showData-field-pu':''">{{value?value:placeholder}}</view>
 				<view v-if="arrow" class="arrows">
-					<image src="@/components/jp-select-plus/arrow.png" style="width: 30rpx;height: 30rpx;"></image>
+					<image src="./arrow.png" style="width: 30rpx;height: 30rpx;"></image>
 				</view>
 			</view>
 		</view>
@@ -65,10 +63,12 @@
 								style="border-radius: 10rpx;padding: 0 25rpx;;display: flex;justify-content: center;background-color: #f5f5f5;line-height: 65rpx;height: 65rpx;">
 								<view style="display: flex;justify-content: center;flex: 1;">
 									<input style="line-height: 65rpx;height: 65rpx;flex: 1;" v-model.trim="key"
-										:placeholder="headerPlaceholder" @input="inputFun"/>
+										:placeholder="headerPlaceholder" 
+										@input="inputFun"
+										/>
 								</view>
 								<view @click="onSearch" :style="{color}"
-									style="width: 80rpx;text-align: center;margin-left: 25rpx;display: none;">
+									style="width: 80rpx;text-align: center;margin-left: 25rpx; display: none;">
 									搜索
 								</view>
 							</view>
@@ -90,7 +90,7 @@
 										</view>
 									</label>
 								</checkbox-group>
-								<!-- <radio-group v-else @change="radioChange">
+								<radio-group v-else @change="radioChange">
 									<label class="uni-list-cell uni-list-cell-pd" v-for="(item, index) in popList"
 										:key="KeyType?item[keys]:item">
 										<view>{{KeyType?item[showName]:item}}</view>
@@ -99,12 +99,7 @@
 												:checked="(KeyType?item[keys]:item) == resultRadio" />
 										</view>
 									</label>
-								</radio-group> -->
-								<view class="list">
-									<view v-for="(item, index) in popList" @click="xzclick(index)">
-										<view class="item" :class="item.has ? 'cur':'' ">{{item.name}}</view>
-									</view>
-								</view>
+								</radio-group>
 							</view>
 
 							<view v-else class="noData">
@@ -169,7 +164,7 @@
 			},
 			label: {
 				type: String,
-				default: ' ',
+				default: '',
 			},
 			color: {
 				type: String,
@@ -301,46 +296,17 @@
 				labelWidths: '90px',
 				key: '',
 				resultRadio: '',
+				
 				timer: null, // m自定义
-				oldValue:''
 			}
 		},
 		created() {
-			
-			console.log('list值：',this.list)
 			this.loading = false
 			this.popList = JSON.parse(JSON.stringify(this.list))
-			// this.popList = this.list
-			
 			this.setList()
-		
 		},
-		mounted() {
-			
-		},
+		mounted() {},
 		methods: {
-			xzclick(index){
-				
-				if(this.oldValue == this.popList[index].code){
-					this.popList.forEach((item,i)=>{
-						item.has = false
-					})
-					this.result = [];
-					this.resultRadio = ''
-					this.oldValue = ''
-				}else{
-					
-					this.popList.forEach((item,i)=>{
-						
-						item.has = false
-					})
-					this.popList[index].has = true
-					this.result = [this.popList[index].code];
-					this.resultRadio = this.popList[index].code
-					this.oldValue = this.popList[index].code
-				}
-				this.$emit('toConfirm', this.popList)
-			},
 			// 自定义 start
 			
 			inputFun(e){
@@ -370,11 +336,8 @@
 			checkboxChange(evt) {
 				this.result = evt.detail.value
 				console.log(this.result)
-				// console.log('123')
 			},
 			radioChange(evt) {
-				// console.log('456')
-				// console.log(evt.detail.value)
 				this.result = [evt.detail.value]
 				this.resultRadio = evt.detail.value
 			},
@@ -503,9 +466,6 @@
 						firm = ''
 					}
 				}
-				
-				// console.log('listXz',this.ListXz) // 选中的值
-				
 				this.showPicker = false
 				this.$emit('input', this.alls ? this.ListXz : firm)
 				this.$emit('toConfirm', this.ListXz)
@@ -523,8 +483,6 @@
 		},
 		mounted() {
 			// this.eWidth = this.$refs.echartsWrapper.clientWidth
-			console.log('这是',this.eWidth)
-			
 			if (this.isLineFeed) {
 				this.labelWidths = this.eWidth + 'px'
 			} else {
@@ -637,7 +595,7 @@
 			justify-content: space-between;
 			align-items: flex-start;
 			width: 100%;
-			// padding: 10px 0;
+			padding: 10px 0;
 
 			.showData-field-label {
 				margin-right: 12px;
@@ -664,13 +622,10 @@
 		}
 
 		.showData-field-line {
-			// padding: 10px 0;
-			line-height: 33px;
+			padding: 10px 0;
+			line-height: 25px;
 			width: 100%;
-			
-			// display: flex;
-			// justify-content: flex-start;
-			// align-items: center;
+
 			.showData-field-label {
 				margin-right: 12px;
 				color: #969799;
@@ -749,17 +704,4 @@
 			height: 40vh;
 		}
 	}
-
-.list{
-	padding: 0 20rpx;
-	.item{
-		padding:10rpx 0;
-		font-size: 16px;
-		text-align: center;
-	}
-	.item.cur{
-		color: #0081ff;
-		font-size: 16px;
-	}
-}
 </style>
