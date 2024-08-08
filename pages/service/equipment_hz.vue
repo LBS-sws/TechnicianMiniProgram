@@ -2,23 +2,26 @@
 	<view class="content">
 		<view class="service" v-for="(item, index) in list">
 			<view class="service_title">{{item.equipment_name}}({{item.use_count}}/{{item.total_count}})</span></view>
-			<view class="new_card_content"  v-if="item.table_data.length>0">
-				<t-table>
-					<!-- 表头 -->
-					<t-tr>
-						<t-th v-for="(table_title, index_t) in item.table_title" :key="index_t">{{table_title}}</t-th>
-					</t-tr>
-					<!-- 内容 -->
-					<t-tr v-if="JSON.stringify(item.content)!='{}'" v-for="(contents, index_cs) in item.table_data" :key="index_cs">
-						<t-td v-for="(content, index_c) in contents" :key="index_c">
-							<text v-if="content!='null'">
-								{{content}}
-							</text>
-						
-						</t-td>
-					</t-tr>
-				</t-table> 
-			</view>
+			<scroll-view class="uni-swiper-tab" scroll-x :style="'height:'+scrollH+'upx'">
+				<view class="new_card_content"  v-if="item.table_data.length>0">
+					<t-table>
+						<!-- 表头 -->
+						<t-tr>
+							<t-th v-for="(table_title, index_t) in item.table_title" :key="index_t">{{table_title}}</t-th>
+						</t-tr>
+						<!-- 内容 -->
+						<t-tr v-if="JSON.stringify(item.content)!='{}'" v-for="(contents, index_cs) in item.table_data" :key="index_cs">
+							<t-td v-for="(content, index_c) in contents" :key="index_c">
+								<text v-if="content!='null'">
+									{{content}}
+								</text>
+							
+							</t-td>
+						</t-tr>
+					</t-table> 
+				</view>
+			</scroll-view>
+			
 		</view>
 	</view>
 </template>
@@ -114,6 +117,7 @@ export default {
 .new_card_content {
 	margin:10px;
 	font-size:15px;
+	width: 1100rpx;
 }
 .new_card_content span {
 	color:#5e6165;
