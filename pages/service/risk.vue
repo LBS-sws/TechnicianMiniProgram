@@ -144,7 +144,7 @@ export default {
 				job_type: this.jobtype,
 			}
 			this.$api.risksList(params).then(res=>{
-				console.log(res)
+				// console.log(res)
 				if (res.code == 200) {
 					this.total = res.data.data.total	// 总数
 					let list = res.data.data.data		// 分页
@@ -154,7 +154,7 @@ export default {
 							photoArr = item.site_photos.split(",")
 						}
 						item.img = `${this.$baseUrl_imgs}` + photoArr[0]
-						console.log(item.img)
+						
 					})
 					
 					

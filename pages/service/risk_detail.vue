@@ -363,8 +363,10 @@
 			},
 			// 新增
 			submit() {
+				
+				
 				if (this.ct == 0) {
-					console.log('this.upload_site_photos',this.upload_site_photos)
+					
 					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
 						uni.showToast({
 							icon: 'none',
@@ -373,6 +375,7 @@
 						return false;
 					}
 				}
+				
 				if(this.ct == 1){
 					if(this.risk_area==''){
 						uni.showToast({
@@ -381,82 +384,90 @@
 						});
 						return false;
 					}
+					
 				}
+				// 
+				let photoArr = []
 				
-				let photoArr = this.upload_site_photos.split(',')
-				photoArr.forEach((item,i)=>{
-					let no = i+1
-					if(item=='' || item==undefined || item=='undefined'){
-						uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
-						return false
-					}
-				})
-				
-			
-			const str = this.upload_site_photos;
-			const substr = "undefined";
-			if (str.includes(substr)) {
-				uni.showToast({
-					icon: 'none',
-					title: `有上传失败的图片请重新上传!`
-				});
-				return false;
-			}
+				if(this.upload_site_photos)
+				{
+					photoArr = this.upload_site_photos.split(',')
+					photoArr.forEach((item,i)=>{
+						let no = i+1
+						if(item=='' || item==undefined || item=='undefined'){
+							uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
+							return false
+						}
+					})
+				}
+				console.log(this.upload_site_photos)
+				// return false
+				const str = this.upload_site_photos;
+				const substr = "undefined";
+				if (str.includes(substr)) {
+					uni.showToast({
+						icon: 'none',
+						title: `有上传失败的图片请重新上传!`
+					});
+					return false;
+				}
 			
 				uni.showLoading({
 					title: "正在保存"
 				});
 			
-			let checkdata = '';
-			if(this.checkdata.length>0){
-				checkdata = JSON.stringify(this.checkdata)
-			}
-			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
-			let params = {
-				job_id: this.jobid,
-				job_type: this.jobtype,
-				risk_targets: this.risk_targets,
-				risk_types: this.risk_types,
-				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,
-				site_photos: this.upload_site_photos,
-				risk_description: this.risk_description,
-				risk_proposal: this.risk_proposal,
-				take_steps: this.take_steps,
-				risk_area: this.risk_area,
-				check_datas: JSON.stringify(this.checkdata),
-				customer_type: this.customer_type,
-				service_type:this.service_type
-			}
-			this.$api.addRisk(params).then(res=>{
-				if (res.code == 200) {
-					if (res.data) {
-						this.id = res.data
-						this.data_select()
-						this.del_index = []
-				
-						uni.hideLoading();
-						uni.$utils.toast("保存成功")
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
-							})
-						}, 2000)
+				let checkdata = '';
+				if(this.checkdata.length>0){
+					checkdata = JSON.stringify(this.checkdata)
+				}
+				this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+				// console.log(this.upload_site_photos);
+				// return false
+				let params = {
+					job_id: this.jobid,
+					job_type: this.jobtype,
+					risk_targets: this.risk_targets,
+					risk_types: this.risk_types,
+					risk_rank: this.risk_rank,
+					risk_label: this.risk_label,
+					site_photos: this.upload_site_photos,
+					risk_description: this.risk_description,
+					risk_proposal: this.risk_proposal,
+					take_steps: this.take_steps,
+					risk_area: this.risk_area,
+					check_datas: JSON.stringify(this.checkdata),
+					customer_type: this.customer_type,
+					service_type:this.service_type
+				}
+				this.$api.addRisk(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							this.id = res.data
+							this.data_select()
+							this.del_index = []
+					
+							uni.hideLoading();
+							uni.$utils.toast("保存成功")
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/risk?jobid=" + this.jobid + '&jobtype=' + this.jobtype
+								})
+							}, 2000)
+						}
 					}
-				}
-				if(res.code == 400){
-					uni.$utils.toast(res.msg)
-					return false
-				}
-			}).catch(err=>{
-				uni.showToast({
-					icon: 'error',
-					title: err.errMsg
-				});
-				setTimeout(function() {
-					uni.hideLoading();
-				}, 2000);
-			})
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					uni.showToast({
+						icon: 'error',
+						title: err.errMsg
+					});
+					setTimeout(function() {
+						uni.hideLoading();
+					}, 2000);
+				})
 
 			},
 			// 保存
@@ -488,71 +499,71 @@
 					checkdata = JSON.stringify(this.checkdata)
 				}
 				
-			// 验证图片里面是否有失败图片
-			let photoArr = this.upload_site_photos.split(',')
-			const str = this.upload_site_photos;
-			const substr = "undefined";
-			if (str.includes(substr)) {
-				uni.showToast({
-					icon: 'none',
-					title: `有上传失败的图片请重新上传`
-				});
-				return false;
-			}
+				// 验证图片里面是否有失败图片
+				let photoArr = this.upload_site_photos.split(',')
+				const str = this.upload_site_photos;
+				const substr = "undefined";
+				if (str.includes(substr)) {
+					uni.showToast({
+						icon: 'none',
+						title: `有上传失败的图片请重新上传`
+					});
+					return false;
+				}
 			
 			
-			uni.showLoading({
-				title: "正在保存"
-			});	
-			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
-			let params = {
-				id: this.id,
-				job_id: this.jobid,
-				job_type: this.jobtype,
-				risk_targets: this.risk_targets,
-				risk_types: this.risk_types,
-				risk_rank: this.risk_rank,
-				risk_label: this.risk_label,
-				site_photos: this.upload_site_photos,
-				risk_description: this.risk_description,
-				risk_proposal: this.risk_proposal,
-				take_steps: this.take_steps,
-				risk_area: this.risk_area,
-				check_datas: JSON.stringify(this.checkdata),
-				customer_type:this.customer_type,
-				service_type:this.service_type
-			}
-			this.$api.editRisk(params).then(res=>{
-				if (res.code == 200) {
-					if (res.data) {
-						this.id = res.data
-						this.data_select()
-						this.del_index = []
-						uni.hideLoading();
-						uni.showToast({
-							title: '保存成功',
-							icon: 'none',
-						});
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/service/risk?jobid=" + this.jobid +'&jobtype=' + this.jobtype
-							})
-						}, 2000)
+				uni.showLoading({
+					title: "正在保存"
+				});	
+				this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+				let params = {
+					id: this.id,
+					job_id: this.jobid,
+					job_type: this.jobtype,
+					risk_targets: this.risk_targets,
+					risk_types: this.risk_types,
+					risk_rank: this.risk_rank,
+					risk_label: this.risk_label,
+					site_photos: this.upload_site_photos,
+					risk_description: this.risk_description,
+					risk_proposal: this.risk_proposal,
+					take_steps: this.take_steps,
+					risk_area: this.risk_area,
+					check_datas: JSON.stringify(this.checkdata),
+					customer_type:this.customer_type,
+					service_type:this.service_type
+				}
+				this.$api.editRisk(params).then(res=>{
+					if (res.code == 200) {
+						if (res.data) {
+							this.id = res.data
+							this.data_select()
+							this.del_index = []
+							uni.hideLoading();
+							uni.showToast({
+								title: '保存成功',
+								icon: 'none',
+							});
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/risk?jobid=" + this.jobid +'&jobtype=' + this.jobtype
+								})
+							}, 2000)
+						}
 					}
-				}
-				if(res.code == 400){
-					uni.$utils.toast(res.msg)
-					return false
-				}
-			}).catch(err=>{
-				uni.showToast({
-					icon: 'error',
-					title: err.errMsg
-				});
-				setTimeout(function() {
-					uni.hideLoading();
-				}, 2000);
-			})
+					if(res.code == 400){
+						uni.$utils.toast(res.msg)
+						return false
+					}
+				}).catch(err=>{
+					uni.showToast({
+						icon: 'error',
+						title: err.errMsg
+					});
+					setTimeout(function() {
+						uni.hideLoading();
+					}, 2000);
+				})
 			},
 			onBeforeUpload(file, index) {
 				// 受支持的图片格式
@@ -574,7 +585,7 @@
 
 			// 获取上传或者预览后的图片
 			handleLoaded3(arr) {
-				console.log('arrarrarrarr',arr)
+				
 				var imageStr = "";
 				for (var i = 0; i < arr.length; i++) {
 					imageStr += arr[i].result + ",";
@@ -583,8 +594,7 @@
 				if (imageStr.length > 0) {
 					imageStr = imageStr.substr(0, imageStr.length - 1);
 				}
-				// console.log(imageStr);
-				console.log('imageStrimageStrimageStr',imageStr)
+				
 				this.upload_site_photos = imageStr
 			},
 			// 删除
