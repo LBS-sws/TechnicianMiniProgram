@@ -128,6 +128,9 @@ import Base64 from 'base-64';
 			this.shortcut_type = index.shortcut_type
 			this.service_type = index.service_type
 			
+			this.equipment_area = uni.getStorageSync('equipment_area_' + this.jobid)
+			this.equipment = uni.getStorageSync('equipment_' + this.jobid)
+						
 			this.optionEq()		// 筛选1
 			this.data_select()  // 列表
 			this.optionEqAdd()	// 添加设备选项
@@ -466,12 +469,14 @@ import Base64 from 'base-64';
 			change_equipment(e) {
 				console.log(e)
 				this.equipment = e;
+				uni.setStorageSync('equipment_' + this.jobid,e)
 				this.data_select()
 			},
 			// 筛选设备
 			change_area(e) {
 				console.log(e)
 				this.equipment_area = e;
+				uni.setStorageSync('equipment_area_' + this.jobid,e)
 				this.data_select()
 			},
 			//...
