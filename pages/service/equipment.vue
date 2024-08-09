@@ -13,13 +13,14 @@
 			<cl-input v-model="add_numbercode" placeholder="设备编号"></cl-input>
 		</cl-confirm> -->
 		<cl-confirm ref="add_confirm" style="z-index: 99999;">
-			<cl-scroller>
+			<cl-scroller style="overflow-y: auto;">
 				<view class="allo xzadd">
 					<cl-checkbox-group v-model="add_eq" border>
 						<cl-checkbox v-for="(item,index) in add_all" :key="index" v-bind:label="item.id">
 							{{item.name}}
 						</cl-checkbox>
 					</cl-checkbox-group>
+					<view style="width: 100%; height: 140rpx; background: none;"></view>
 				</view>
 			</cl-scroller>
 			增加数量：
@@ -615,6 +616,7 @@ import Base64 from 'base-64';
 		display: flex;
 		justify-content: flex-start;
 		flex-wrap: wrap;
+		padding-left: 6rpx;
 	}
 	.cl-checkbox-group .content_{
 		
@@ -736,7 +738,10 @@ import Base64 from 'base-64';
 		color: #666;
 		padding: 10rpx 0;
 	}
-cl-checkbox{
-	padding: 4rpx 2rpx;
+.allo cl-checkbox{
+	padding: 4rpx 3rpx;
+}
+.cl-scroller__wrap{
+	overflow-y: auto !important;
 }
 </style>
