@@ -14,7 +14,7 @@
 		</cl-confirm> -->
 		<cl-confirm ref="add_confirm" style="z-index: 99999;">
 			<cl-scroller>
-				<view class="all xzadd">
+				<view class="allo xzadd">
 					<cl-checkbox-group v-model="add_eq" border>
 						<cl-checkbox v-for="(item,index) in add_all" :key="index" v-bind:label="item.id">
 							{{item.name}}
@@ -51,11 +51,9 @@
 			<cl-checkbox-group v-model="xz_all" border >
 				<cl-checkbox v-for="(item,index) in all" :key="index" v-bind:label="item.id" :class="'content_' + item.id" >
 					<view v-if="item.choose > 0" class="eq_isnull_color" >
-						
 						{{item.number}}&nbsp;{{item.label}}
 					</view>
 					<view v-else>
-						
 						{{item.number}}&nbsp;{{item.label}}
 					</view>
 				</cl-checkbox>
@@ -489,7 +487,7 @@ import Base64 from 'base-64';
 		z-index: 9999;
 		position: fixed;
 		bottom: 10%;
-		right: 15px
+		right: 15px;
 	}
 
 	.scan {
@@ -578,6 +576,7 @@ import Base64 from 'base-64';
 		right: 0;
 		bottom: 0px;
 		line-height: 50px;
+		z-index: 99999;
 	}
 
 	.hzyl {
@@ -592,11 +591,15 @@ import Base64 from 'base-64';
 	}
 
 	.all {
-		padding: 10px;
+		
 		height: 100%;
 		overflow: hidden;
 	}
-
+	.allo{
+		padding: 10px;
+		height: calc(100vh - 500rpx);
+		overflow-y: auto;
+	}
 	.xzadd .cl-checkbox--border {
 		border-radius: 10rpx;
 		padding: 14rpx 20rpx;
@@ -733,4 +736,7 @@ import Base64 from 'base-64';
 		color: #666;
 		padding: 10rpx 0;
 	}
+cl-checkbox{
+	padding: 4rpx 2rpx;
+}
 </style>
