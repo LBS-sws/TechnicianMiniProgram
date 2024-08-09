@@ -32,6 +32,7 @@
 								<view class="first_job" v-if="item.first_job_flag==1">{{item.first_job}}</view>
 								<view v-else class="first_job">{{item.first_job}}</view>
 							</cl-col>
+							<!-- 工厂 -->
 							<cl-col span="8"  v-if="item.customer.customer_type_text">
 								<view class="customer_type">{{item.customer.customer_type_text}}</view>
 							</cl-col>
@@ -121,6 +122,13 @@ export default {
 		job_detail(index) {
 			let jobid = this.jobs[index].id
 			let type  = this.jobs[index].order_type
+			
+			// console.log(this.jobs[index].customer.customer_type_text)
+			if(this.jobs[index].customer.customer_type_text){
+				uni.setStorageSync('ct', 1);
+			}else{
+				uni.setStorageSync('ct', 0);
+			}
 			uni.navigateTo({
 				url: "/pages/service/detail?jobtype=" + type + "&jobid=" + jobid
 			});

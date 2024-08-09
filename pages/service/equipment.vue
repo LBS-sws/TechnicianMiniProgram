@@ -23,8 +23,9 @@
 				</view>
 			</cl-scroller>
 			增加数量：
-			<cl-input-number v-if="!scan_code" v-model="add_number" style="margin-left: 10px;"></cl-input-number>
-			<cl-input-number v-else v-model="add_number" min="1" max="1" readonly="true" disabled></cl-input-number>
+			<cl-input-number v-if="!scan_code" v-model="add_number"  :max="100000" :min="1" input="true" style="margin-left: 10px;"
+			@change="numChange"></cl-input-number>
+			<cl-input-number v-else v-model="add_number":max="1" :min="1" input="true" readonly="true" disabled></cl-input-number>
 		</cl-confirm>
 		<!-- 删除 -->
 		<view class="del" @tap="del()">
@@ -50,28 +51,11 @@
 			<cl-checkbox-group v-model="xz_all" border >
 				<cl-checkbox v-for="(item,index) in all" :key="index" v-bind:label="item.id" :class="'content_' + item.id" >
 					<view v-if="item.choose > 0" class="eq_isnull_color" >
-						<!-- <span v-if="ct>0">
-							{{item.eq_number}}
-						</span>
-						<span v-if="item.number<9">
-							{{item.number}}
-						</span>
-						<span v-else>
-							{{item.number}}
-						</span> -->
+						
 						{{item.number}}&nbsp;{{item.label}}
 					</view>
 					<view v-else>
-						<!-- <span v-if="ct>0">
-							{{item.eq_number}}
-						</span>
 						
-						<span v-if="item.number<9">
-							{{item.number}}
-						</span>
-						<span v-else>
-							{{item.number}}
-						</span> -->
 						{{item.number}}&nbsp;{{item.label}}
 					</view>
 				</cl-checkbox>
@@ -144,6 +128,9 @@ import Base64 from 'base-64';
 			this.shortcut_type = index.shortcut_type
 			this.service_type = index.service_type
 			
+			this.equipment_area = uni.getStorageSync('equipment_area_' + this.jobid)
+			this.equipment = uni.getStorageSync('equipment_' + this.jobid)
+						
 			this.optionEq()		// 筛选1
 			this.data_select()  // 列表
 			this.optionEqAdd()	// 添加设备选项
@@ -168,6 +155,9 @@ import Base64 from 'base-64';
 		  //    }
 		},
 		methods: {
+			numChange(e){
+				console.log(e)
+			},
 			optionEqAdd(){
 				let params = {
 					job_type: this.jobtype,
@@ -479,12 +469,14 @@ import Base64 from 'base-64';
 			change_equipment(e) {
 				console.log(e)
 				this.equipment = e;
+				uni.setStorageSync('equipment_' + this.jobid,e)
 				this.data_select()
 			},
 			// 筛选设备
 			change_area(e) {
 				console.log(e)
 				this.equipment_area = e;
+				uni.setStorageSync('equipment_area_' + this.jobid,e)
 				this.data_select()
 			},
 			//...

@@ -86,8 +86,8 @@
 			<view class="block" v-if="is_show_fbt">
 				<cl-row>
 					<view>
-						<view v-if="service.tech_attachment" v-for="(item, index) in service.tech_attachment" :key="index" class="item-img">
-							<image :src="fileUrl + '/' + item.file_path"  @click="previewImage(index)"></image>
+						<view v-if="service.tech_attachment && item.type!=1" v-for="(item, index) in service.tech_attachment" :key="index" class="item-img">
+							<image :src="fileUrl + '/' + item.file_path"  @click="previewImage(index)"  ></image>
 						</view>
 					</view>
 				</cl-row>
@@ -146,8 +146,17 @@
 				var ix = []
 				i.forEach((item,i)=>{
 					item.src = this.fileUrl + item.file_path
-					ix.push(this.fileUrl + '/' + item.file_path)
+					// ix.push(this.fileUrl + '/' + item.file_path)
+					
+					if(item.file_path.slice(item.file_path.lastIndexOf(".") + 1)=='pdf'){
+						item.type = 1
+					}else{
+						// item.type = 2
+						ix.push(this.fileUrl + '/' + item.file_path)
+					}
 				})
+				
+				
 				// console.log(ix)
 				
 				uni.previewImage({
@@ -192,6 +201,19 @@
 							  uni.navigateBack();
 							});
 						}
+					}
+					
+					if(this.service.tech_attachment){
+						this.service.tech_attachment.forEach((item,i)=>{
+							item.type = ''
+							// console.log(item.file_path.slice(item.file_path.lastIndexOf(".") + 1))
+							if(item.file_path.slice(item.file_path.lastIndexOf(".") + 1)=='pdf'){
+								item.type = 1
+							}else{
+								item.type = 2
+							}
+							// console.log(item)
+						})
 					}
 					
 					

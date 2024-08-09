@@ -1,16 +1,33 @@
 <template>
 	<view class="content" style="margin-bottom: 40px;">
-		<view class="del" @tap="del()" v-if="id>0">
+		<view class="del" @tap="del()" v-if="id>0" style="z-index: 9;">
 			<cl-icon name="cl-icon-minus-border" color="#007AFF" :size="80"></cl-icon>
 		</view>
 		<cl-confirm ref="del_confirm"> </cl-confirm>
 		<!-- 物料 -->
 		<view class="service">
-			<view class="service_title">物料<span class="jh">*</span>
-				<view class="new_card_title_right">
-					<cl-select v-model="material" :options="material_lists" @change="change_material()"></cl-select>
+			<view class="service_title" style="display: none;">物料<span class="jh">*</span>
+			
+				
+				<view class="new_card_title_right" >
+					<!-- <cl-select v-model="material" :options="material_lists" @change="change_material()"></cl-select> -->
+					
+					<!-- <jp-select-plus label="" color="#f00"placeholder="请选择" isSearch v-model="material" :list="options" @toConfirm="toConfirm"></jp-select-plus>
+					 -->
+					
 				</view>
 			</view>
+			 <!-- <jp-select-plus label="物料" labelColor="#000000" required="true" :isLineFeed="false" placeholder="请选择" isSearch 
+				 v-model="va1" 
+				 :list="listc">
+			 </jp-select-plus> -->
+			 <jp-select-plus label="物料" labelColor="#000000" required="true" :isLineFeed="false" placeholder="请选择" isSearch
+			 	v-model="material" 
+			 	:list="options"
+				@toConfirm="toConfirm"
+				>
+			 </jp-select-plus>
+			
 			<view class="service_content">
 				<cl-row>
 					<view class="text-left">农药登记证号</view>
@@ -18,7 +35,7 @@
 				</cl-row>
 				<cl-row>
 					<view class="text-left">有效成分</view>
-					<view class="text-right">{{active_ingredient}}</view>
+					<view class="text-right" style="width: 410rpx;">{{active_ingredient}}</view>
 				</cl-row>
 				<cl-row style="color: #000000;">
 					<view class="text-left">药物配比</view>
@@ -150,8 +167,22 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				unit: '',
 				search_key: '',
 				timer: null,
-				len: false
-
+				len: false,
+				
+				options:[],
+				store:'',
+				
+				va1: '',           
+                listc: [{
+                    code: 'CHN',
+                    name: '中国'
+                }, {
+                    name: '美国5',
+                    code: 'USA'
+                }, {
+                    name: '巴西',
+                    code: 'BRA'
+                }],
 			}
 		},
 		onLoad(index) {
@@ -172,7 +203,44 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 			this.data_select()
 			
 		},
+		onShow() {
+			
+		},
+		watch:{
+			material(newVal, oldVal) {
+				// 监听文本框值的改变
+				if (newVal !== oldVal) {
+				  // 执行需要在文本框值改变时执行的方法
+				  // console.log('文本框的值发生改变');
+				  // 调用其他方法
+				  
+				}
+			}
+		},
 		methods: {
+			toConfirm(e){
+				console.log('单选:',e[0].name)
+				// console.log(e.length)
+				// console.log(this.material_lists)
+				if(e.length == 1){
+					for (let i = 0; i < this.material_lists.length; i++) {
+						if (this.material_lists[i].label == e[0].name) {
+							this.registration_no = this.material_lists[i].registration_no;
+							this.active_ingredient = this.material_lists[i].active_ingredient;
+							this.ratio = this.material_lists[i].ratio;
+							this.unit = this.material_lists[i].unit;
+						}
+					}
+					this.options.forEach((item,i)=>{
+						if(item.name == e[0].name){
+							item.has = true
+						}else{
+							item.has = false
+						}
+					})
+				}
+				
+			},
 			/**
 			 *搜索开始
 			 * *
@@ -213,8 +281,18 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						material_lists.forEach((item,i)=>{
 							item.label = item.name
 							item.value = item.name
-						})
+						}) 
 						this.material_lists = material_lists
+						
+						
+						let arr = []
+						material_lists.forEach((item,i)=>{
+							arr.push({"name":item.name, "code":item.name, "has":false})
+						})
+						
+						this.options = arr
+						 
+						
 						this.targets = res.data.materialTargets	     // 靶标
 						this.usemodes = res.data.materialUsemodes       // 使用方式
 						this.useareas = res.data.materialUseareas		 // 使用区域
@@ -239,6 +317,12 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 							this.processing_space = res.data.material.processing_space	// 处理空间
 							this.dosage = res.data.material.dosage						// 药物用量
 							this.matters_needing_attention = res.data.material.matters_needing_attention.split(",")	// 注意事项
+							
+							this.options.forEach((item,i)=>{
+								if(item.name == this.material){
+									item.has = true
+								}
+							})
 						}
 					}
 					if(res.code == 400){
@@ -249,6 +333,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				})
 			},
 			change_material(e) {
+				console.log(e)
 				for (let i = 0; i < this.material_lists.length; i++) {
 					if (this.material_lists[i].label == e) {
 						this.registration_no = this.material_lists[i].registration_no;

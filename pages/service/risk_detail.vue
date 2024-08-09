@@ -383,14 +383,16 @@
 					}
 				}
 				
-				let photoArr = this.upload_site_photos.split(',')
-				photoArr.forEach((item,i)=>{
-					let no = i+1
-					if(item=='' || item==undefined || item=='undefined'){
-						uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
-						return false
-					}
-				})
+				if(this.upload_site_photos.length>0){
+					let photoArr = this.upload_site_photos.split(',')
+					photoArr.forEach((item,i)=>{
+						let no = i+1
+						if(item=='' || item==undefined || item=='undefined'){
+							uni.showToast({icon: 'none', title: `第`+no+`张图有问题，请删除后重新上传哈`});
+							return false
+						}
+					})
+				}
 				
 			
 			const str = this.upload_site_photos;
@@ -411,7 +413,10 @@
 			if(this.checkdata.length>0){
 				checkdata = JSON.stringify(this.checkdata)
 			}
-			this.upload_site_photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+			let photos = ''
+			if(this.upload_site_photos.length>0){
+				photos = this.upload_site_photos.split(',').filter(item => item !== 'undefined').join(',');
+			}
 			let params = {
 				job_id: this.jobid,
 				job_type: this.jobtype,
@@ -419,7 +424,7 @@
 				risk_types: this.risk_types,
 				risk_rank: this.risk_rank,
 				risk_label: this.risk_label,
-				site_photos: this.upload_site_photos,
+				site_photos: photos,
 				risk_description: this.risk_description,
 				risk_proposal: this.risk_proposal,
 				take_steps: this.take_steps,
