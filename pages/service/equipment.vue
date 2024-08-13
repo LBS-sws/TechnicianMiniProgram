@@ -774,7 +774,7 @@ import Base64 from 'base-64';
 .cl-scroller__wrap{
 	overflow-y: auto !important;
 }
-.more-item{
+/* .more-item{
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -791,5 +791,5 @@ import Base64 from 'base-64';
 	}
 .confirm_magin{
 	margin: 3px;
-}	
+}	 */
 </style>
