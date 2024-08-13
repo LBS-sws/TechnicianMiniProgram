@@ -13,20 +13,42 @@
 			<cl-input v-model="add_numbercode" placeholder="设备编号"></cl-input>
 		</cl-confirm> -->
 		<cl-confirm ref="add_confirm" style="z-index: 99999;">
-			<cl-scroller style="overflow-y: auto;">
-				<view class="allo xzadd">
-					<cl-checkbox-group v-model="add_eq" border>
-						<cl-checkbox v-for="(item,index) in add_all" :key="index" v-bind:label="item.id">
-							{{item.name}}
-						</cl-checkbox>
-					</cl-checkbox-group>
-					<view style="width: 100%; height: 140rpx; background: none;"></view>
-				</view>
-			</cl-scroller>
-			增加数量：
-			<cl-input-number v-if="!scan_code" v-model="add_number"  :max="100000" :min="1" input="true" style="margin-left: 10px;"
-			@change="numChange"></cl-input-number>
-			<cl-input-number v-else v-model="add_number":max="1" :min="1" input="true" readonly="true" disabled></cl-input-number>
+			<view class="confirm_magin">
+				<cl-scroller style="overflow-y: auto;">
+					<view class="allo xzadd">
+						<cl-checkbox-group v-model="add_eq" border>
+							<cl-checkbox v-for="(item,index) in add_all" :key="index" v-bind:label="item.id">
+								{{item.name}}
+							</cl-checkbox>
+						</cl-checkbox-group>
+						<view style="width: 100%; height: 140rpx; background: none;"></view>
+					</view>
+				</cl-scroller>
+			</view>
+			<!-- <view class="confirm_magin">
+				<cl-row style="color: #000000;width: 60%;margin: 0 auto;" class="more-item">
+					<view style="width: 36%;text-align: left;">编号</view>
+					<view>
+						<cl-input v-model="add_equipment_number" style="text-align: left;">
+							<text slot="append" style="margin-top: 3px;font-size: 16px;"></text>
+						</cl-input>
+					</view>
+				</cl-row>
+				<cl-row style="color: #000000;width: 60%;margin: 0 auto;" class="more-item">
+					<view style="width: 36%;text-align: left;">区域</view>
+					<view>
+						<cl-input v-model="add_equipment_area" style="text-align: left;">
+							<text slot="append" style="margin-top: 3px;font-size: 16px;"></text>
+						</cl-input>
+					</view>
+				</cl-row>
+			</view> -->
+			<view class="confirm_magin">
+				增加数量：
+				<cl-input-number v-if="!scan_code" v-model="add_number"  :max="100000" :min="1" input="true" style="margin-left: 10px;"
+				@change="numChange"></cl-input-number>
+				<cl-input-number v-else v-model="add_number":max="1" :min="1" input="true" readonly="true" disabled></cl-input-number>
+			</view>
 		</cl-confirm>
 		<!-- 删除 -->
 		<view class="del" @tap="del()">
@@ -95,6 +117,8 @@ import Base64 from 'base-64';
 				service_type: '',
 				add_all: '',
 				add_eq: '',
+				// add_equipment_number: '',
+				// add_equipment_area: '',
 				add_number: 1,
 				scan_code:'',
 				add_numbercode:'',
@@ -399,7 +423,6 @@ import Base64 from 'base-64';
 			// 新增设备
 			add() {
 				this.scan_code = ''
-
 				this.$refs["add_confirm"]
 					.open({
 						title: "增加服务设备",
@@ -411,6 +434,8 @@ import Base64 from 'base-64';
 							number: this.add_number,
 							job_id: this.jobid,
 							job_type: this.jobtype,
+							// add_equipment_number: this.add_equipment_number,
+							// add_equipment_area: this.add_equipment_area,
 						}
 						this.$api.addEq(params).then(res=>{
 							if (res.code == 200) {
@@ -419,6 +444,11 @@ import Base64 from 'base-64';
 								this.optionEqAdd()
 								this.data_select()
 								uni.$utils.toast('增加成功')
+							}else{
+								uni.showToast({
+									icon: 'none',
+									title: res.msg
+								});
 							}
 						}).catch(err=>{
 							console.log(err)
@@ -598,7 +628,7 @@ import Base64 from 'base-64';
 	}
 	.allo{
 		padding: 10px;
-		height: calc(100vh - 500rpx);
+		height: calc(45vh - 40rpx);
 		overflow-y: auto;
 	}
 	.xzadd .cl-checkbox--border {
@@ -744,4 +774,22 @@ import Base64 from 'base-64';
 .cl-scroller__wrap{
 	overflow-y: auto !important;
 }
+.more-item{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	
+}
+.more-item .cl-row{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+}
+.more-item .item-l{
+		width: 50%;
+	}
+.confirm_magin{
+	margin: 3px;
+}	
 </style>
