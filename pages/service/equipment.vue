@@ -629,7 +629,7 @@ import Base64 from 'base-64';
 	.allo{
 		padding: 10px;
 		height: calc(45vh - 40rpx);
-		overflow-y: auto;
+		/* overflow-y: auto; */
 	}
 	.xzadd .cl-checkbox--border {
 		border-radius: 10rpx;
