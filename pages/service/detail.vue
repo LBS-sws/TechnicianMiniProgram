@@ -86,8 +86,8 @@
 			<view class="block" v-if="is_show_fbt">
 				<cl-row>
 					<view>
-						<view v-if="service.tech_attachment && item.type!=1" v-for="(item, index) in service.tech_attachment" :key="index" class="item-img">
-							<image :src="fileUrl + '/' + item.file_path"  @click="previewImage(index)"  ></image>
+						<view v-if="service.tech_attachment && item.type!=1" v-for="(item, index) in photosArr" :key="index" class="item-img">
+							<image :src="item"  @click="previewImage(index)"  ></image>
 						</view>
 					</view>
 				</cl-row>
@@ -124,6 +124,8 @@
 				is_show_project:true,
 				is_show_bz:true,
 				is_show_fbt:true,
+				
+				photosArr:[]
 			}
 		},
 		onLoad(index) {
@@ -140,28 +142,9 @@
 		methods: {
 			//预览轮播图
 			previewImage:function(index){
-				
-				var i = this.service.tech_attachment
-				
-				var ix = []
-				i.forEach((item,i)=>{
-					item.src = this.fileUrl + item.file_path
-					// ix.push(this.fileUrl + '/' + item.file_path)
-					
-					if(item.file_path.slice(item.file_path.lastIndexOf(".") + 1)=='pdf'){
-						item.type = 1
-					}else{
-						// item.type = 2
-						ix.push(this.fileUrl + '/' + item.file_path)
-					}
-				})
-				
-				
-				// console.log(ix)
-				
 				uni.previewImage({
 					current:index, 
-					urls:ix
+					urls:this.photosArr
 				})
 			},
 			showConfirmationDialog(title, content, onConfirm, onCancel) {
@@ -203,19 +186,19 @@
 						}
 					}
 					
+					// 布防图处理 去除pdf
+					let photosArr = []
 					if(this.service.tech_attachment){
 						this.service.tech_attachment.forEach((item,i)=>{
-							item.type = ''
-							// console.log(item.file_path.slice(item.file_path.lastIndexOf(".") + 1))
 							if(item.file_path.slice(item.file_path.lastIndexOf(".") + 1)=='pdf'){
-								item.type = 1
+								
 							}else{
-								item.type = 2
+								photosArr.push(this.fileUrl + '/' + item.file_path)
 							}
-							// console.log(item)
 						})
+						
+						this.photosArr = photosArr
 					}
-					
 					
 					if(res.data.staff.main == uni.getStorageSync('staffname')){
 						if(res.data.status == -1 && res.data.start_time == null){
