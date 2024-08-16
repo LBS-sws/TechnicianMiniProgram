@@ -972,9 +972,9 @@
 				this.$api.getSummaryInfo(params).then(res=>{
 					// console.log(res)
 					if(res.code==200){
-						this.kczj_model.ms_action = res.data.ms_action
-						this.kczj_model.risk_desc = res.data.risk_desc
-						this.kczj_model.store_coordinate = res.data.store_coordinate
+						this.kczj_model.ms_action = res.data.data.ms_action
+						this.kczj_model.risk_desc = res.data.data.risk_desc
+						this.kczj_model.store_coordinate = res.data.data.store_coordinate
 					}
 				}).catch(err=>{
 					console.log(err)
