@@ -25,24 +25,29 @@
 					</view>
 				</cl-scroller>
 			</view>
-			<!-- <view class="confirm_magin">
-				<cl-row style="color: #000000;width: 60%;margin: 0 auto;" class="more-item">
-					<view style="width: 36%;text-align: left;">编号</view>
+			<view class="confirm_magin">
+				<cl-row style="color: #000000;width: 73%;margin: -10px auto 0 auto;" class="more-item">
+					<view style="width: 48%;text-align: left;">编号</view>
+					<view>
+						<cl-input v-model="add_equipment_letter" style="text-align: left;">
+							<text slot="append" style="margin-top: 3px;font-size: 16px;"></text>
+						</cl-input>
+					</view>
 					<view>
 						<cl-input v-model="add_equipment_number" style="text-align: left;">
 							<text slot="append" style="margin-top: 3px;font-size: 16px;"></text>
 						</cl-input>
 					</view>
 				</cl-row>
-				<cl-row style="color: #000000;width: 60%;margin: 0 auto;" class="more-item">
-					<view style="width: 36%;text-align: left;">区域</view>
+				<cl-row style="color: #000000;width: 89%;margin:  0 auto 10px auto;" class="more-item">
+					<view style="width: 11%;text-align: left;">区域</view>
 					<view>
 						<cl-input v-model="add_equipment_area" style="text-align: left;">
 							<text slot="append" style="margin-top: 3px;font-size: 16px;"></text>
 						</cl-input>
 					</view>
 				</cl-row>
-			</view> -->
+			</view>
 			<view class="confirm_magin">
 				增加数量：
 				<cl-input-number v-if="!scan_code" v-model="add_number"  :max="100000" :min="1" input="true" style="margin-left: 10px;"
@@ -81,6 +86,7 @@
 					</view>
 				</cl-checkbox>
 			</cl-checkbox-group>
+			<view v-show="is_load_bottom" style="text-align: center;">已经到底了！！</view>
 		</view>
 		<view style="display: block; text-align: center;" v-if="loading">
 			<cl-loading></cl-loading>
@@ -117,8 +123,9 @@ import Base64 from 'base-64';
 				service_type: '',
 				add_all: '',
 				add_eq: '',
-				// add_equipment_number: '',
-				// add_equipment_area: '',
+				add_equipment_letter:'',
+				add_equipment_number: '',
+				add_equipment_area: '',
 				add_number: 1,
 				scan_code:'',
 				add_numbercode:'',
@@ -129,7 +136,9 @@ import Base64 from 'base-64';
 				total:'',		// 总条数
 				loading:false,
 				isLoadMore:true,
-				loadingText:""
+				loadingText:"",
+				total_page:1,
+				is_load_bottom:true
 			}
 		},
 		onLoad(index) {
@@ -161,21 +170,16 @@ import Base64 from 'base-64';
 		onReady(){
 			this.but()
 		},
+		onPullDownRefresh(){
+			console.log('下拉刷新触发')
+			this.page = 1
+			this.data_select()  // 列表
+		},
 		//	上拉触底函数
 		onReachBottom(){
-			console.log('触发')
-			
-		  //    if(this.isLoadMore){  //此处判断，上锁，防止重复请求
-				// if(this.total< this.limit * this.page){
-				// 	this.loading = false
-				// }else{
-				// 	this.loading = true
-				// 	this.isLoadMore = true
-				// 	this.page+=1
-				// 	this.data_select()
-				// }
-		        
-		  //    }
+		  if(this.page <= this.total_page){
+			  this.data_select()  // 列表
+		  }
 		},
 		methods: {
 			numChange(e){
@@ -269,13 +273,22 @@ import Base64 from 'base-64';
 				this.$api.equipmentList(params).then(res=>{
 					if (res.code == 200) {
 						if (res.data) {
-							let all = res.data
+							let all = res.data.data
 							all.forEach((item,i)=>{
 								item.label = item.equipment_name
 								item.value = item.equipment_number
 								item.eq_number = item.equipment_number
 							})
-							this.all = all
+							if(this.page == 1){
+								this.all = all
+							}else{
+								this.all = [...this.all, ...all];
+							}
+							if(this.page == res.data.current_page){
+								this.is_load_bottom = true
+							}
+							this.total_page = res.data.last_page
+							this.page = res.data.current_page + 1
 						}
 					}
 					if(res.code == 400){
@@ -292,6 +305,7 @@ import Base64 from 'base-64';
 			},
 			// 查看详情
 			ckxq() {
+				// console.log('add_all',this.all)
 				if (this.xz_all == '') { // 撤销单选  || this.xz_all.length > 1
 					uni.showToast({
 						icon: 'none',
@@ -301,8 +315,14 @@ import Base64 from 'base-64';
 				} else {
 					let ids = this.xz_all.join(",")
 					
+					let id_list = this.all.map((item) => {
+					    return item.id
+					}).join(',')
+					
+					console.log('add_all',id_list)
+					
 					uni.redirectTo({
-						url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+ids
+						url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+ids +'&id_list='+id_list
 					})
 				}
 			},
@@ -434,8 +454,9 @@ import Base64 from 'base-64';
 							number: this.add_number,
 							job_id: this.jobid,
 							job_type: this.jobtype,
-							// add_equipment_number: this.add_equipment_number,
-							// add_equipment_area: this.add_equipment_area,
+							add_equipment_letter: this.add_equipment_letter,
+							add_equipment_number: this.add_equipment_number,
+							add_equipment_area: this.add_equipment_area,
 						}
 						this.$api.addEq(params).then(res=>{
 							if (res.code == 200) {
@@ -445,9 +466,11 @@ import Base64 from 'base-64';
 								this.data_select()
 								uni.$utils.toast('增加成功')
 							}else{
-								uni.showToast({
-									icon: 'none',
-									title: res.msg
+								let content = res.msg.replace(/<br>/g,"\n")
+								uni.showModal({  
+								    title: '提示',  
+								    content: content,  
+								    showCancel: false  
 								});
 							}
 						}).catch(err=>{
@@ -496,14 +519,16 @@ import Base64 from 'base-64';
 			},
 			// 筛选区域
 			change_equipment(e) {
-				console.log(e)
+				this.page = 1
+				this.total_page = 1
 				this.equipment = e;
 				uni.setStorageSync('equipment_' + this.jobid,e)
 				this.data_select()
 			},
 			// 筛选设备
 			change_area(e) {
-				console.log(e)
+				this.page = 1
+				this.total_page = 1
 				this.equipment_area = e;
 				uni.setStorageSync('equipment_area_' + this.jobid,e)
 				this.data_select()
@@ -774,7 +799,7 @@ import Base64 from 'base-64';
 .cl-scroller__wrap{
 	overflow-y: auto !important;
 }
-/* .more-item{
+.more-item{
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -791,5 +816,5 @@ import Base64 from 'base-64';
 	}
 .confirm_magin{
 	margin: 3px;
-}	 */
+}	
 </style>

@@ -103,8 +103,42 @@
 			</view>
 			<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="more_info" count></cl-textarea>
 		</view>
-		<view v-if="can_save" class="bu" @tap="save()">保存</view>
-		<view v-else class="bu" @tap="back()">返回</view>
+		
+		
+		
+		<!-- <view v-if="can_save" class="save_button">
+			<cl-row style="color: #000000;width: 60%;margin: 0 auto;" class="more-item">
+				<view style="width: 36%;text-align: left;" @tap="save()">保存</view>
+				<view  @tap="save()">保存</view>
+				<view  @tap="save()">保存</view>
+			</cl-row>
+		</view> -->
+		
+		
+		<view v-if="can_save" class="bu">
+			<cl-row>
+				<cl-col span="8" @tap="eq_previous()" v-show="is_single">
+					<view >上一个</view>
+				</cl-col>
+				
+				
+				<cl-col v-if="is_single" span="8" @tap="save()" >
+					<view class="previous">保存</view>
+				</cl-col>
+				
+				<cl-col v-else="!is_single"  @tap="save()" >
+					<view >保存</view>
+				</cl-col>
+				
+				
+				<cl-col span="8" @tap="eq_next()" v-show="is_single">
+					<view>下一个</view>
+				</cl-col>
+			</cl-row>
+		</view>
+		
+		<view v-if="!can_save" class="bu" @tap="back()">返回</view>
+		
 	</view>
 </template>
 
@@ -165,6 +199,8 @@ export default {
 			hasScanCode: false,
 			scan_id:0,
 			can_save: true,
+			eqIdListStr:'',
+			is_single:true
 		}
 	},
 	onLoad(index) {
@@ -182,11 +218,15 @@ export default {
 		this.jobtype = index.jobtype
 		this.scan_id = index.jobtype
 		this.can_save = true
-		
 		this.id = index.id
+		this.eqIdListStr = index.id_list
 		// this.ct = uni.getStorageSync('ct')
+		var arr = index.id.split(",");
+		console.log('arr.length',arr.length)
+		if(arr.length > 1){
+			this.is_single = false
+		}
 		this.data_select()
-		
 	},
 	methods: {
 			
@@ -476,15 +516,17 @@ export default {
 			getimgList(index) {
 				this.site_photos = index
 			},
-			// 保存	单个 多个
 			save(){
-				
+				this.editEq()
+			},
+			// 保存	单个 多个
+			editEq(){
 				let ids = this.list.map((item) => {
 				    return item.id
 				}).join(',')
 				
 				//验证是否是中文
-				
+			
 				var pattern = new RegExp("[\u4E00-\u9FA5]+");
 				
 				if(pattern.test(this.eq_mark_num)){
@@ -548,6 +590,53 @@ export default {
 				uni.redirectTo({
 					url: "/pages/service/equipment?jobid=" +this.jobid + '&jobtype=' + this.jobtype +'&shortcut_type=' +this.shortcut_type +'&service_type=' + this.service_type + '&ct=' + this.ct
 				})
+			},
+			eq_previous(){
+				var arr = this.eqIdListStr.split(",");
+				let index = arr.indexOf(this.id);  
+				if (index !== -1) {  
+				    let prevJobId = index > 0 ? arr[index - 1] : null;
+					if(prevJobId != null){
+						uni.redirectTo({
+							url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+prevJobId +'&id_list='+this.eqIdListStr
+						})
+					}else{
+						this.back()
+						uni.showToast({
+							title: '上一个设备不存在！！',
+							icon: 'none'
+						})
+					}
+				} else { 
+					uni.showToast({
+						title: '上一个设备不存在！！',
+						icon: 'none'
+					})
+				}
+			},
+			eq_next(){
+				var arr = this.eqIdListStr.split(",");
+				let index = arr.indexOf(this.id);   
+				if (index !== -1) {  
+				    let nextJobId = index < arr.length - 1 ? arr[index + 1] : null; 
+					if(nextJobId != null){
+						uni.redirectTo({
+							url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+nextJobId +'&id_list='+this.eqIdListStr
+						})
+					}else{
+						this.back()
+						uni.showToast({
+							title: '下一个设备不存在！！',
+							icon: 'none'
+						})
+					}
+					
+				} else {  
+					uni.showToast({
+						title: '下一个设备不存在！！',
+						icon: 'none'
+					})
+				}
 			},
 			// savex() {
 			// 	var imgs = JSON.parse(JSON.stringify(this.site_photos))
@@ -750,6 +839,10 @@ export default {
 .dcts {
 	color: #9c9c9c;
 	font-size: 14px;
+}
+.previous{
+	background-color: #FFFFFF;
+	color: #007AFF;
 }
 .bu {
 	background-color: #007AFF;
