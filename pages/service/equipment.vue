@@ -138,7 +138,7 @@ import Base64 from 'base-64';
 				isLoadMore:true,
 				loadingText:"",
 				total_page:1,
-				is_load_bottom:true
+				is_load_bottom:false
 			}
 		},
 		onLoad(index) {
@@ -272,23 +272,31 @@ import Base64 from 'base-64';
 				}
 				this.$api.equipmentList(params).then(res=>{
 					if (res.code == 200) {
+						console.log('res.data',res.data)
 						if (res.data) {
 							let all = res.data.data
-							all.forEach((item,i)=>{
-								item.label = item.equipment_name
-								item.value = item.equipment_number
-								item.eq_number = item.equipment_number
-							})
-							if(this.page == 1){
-								this.all = all
+							if(all != undefined){
+								all.forEach((item,i)=>{
+									item.label = item.equipment_name
+									item.value = item.equipment_number
+									item.eq_number = item.equipment_number
+								})
+								if(this.page == 1){
+									this.all = all
+								}else{
+									this.all = [...this.all, ...all];
+								}
+								if(this.page == res.data.current_page){
+									this.is_load_bottom = true
+								}else{
+									this.is_load_bottom = false
+								}
+								this.total_page = res.data.last_page
+								this.page = res.data.current_page + 1
 							}else{
-								this.all = [...this.all, ...all];
+								this.all = []
+								this.is_load_bottom = false
 							}
-							if(this.page == res.data.current_page){
-								this.is_load_bottom = true
-							}
-							this.total_page = res.data.last_page
-							this.page = res.data.current_page + 1
 						}
 					}
 					if(res.code == 400){
@@ -426,6 +434,7 @@ import Base64 from 'base-64';
 
 						uni.$utils.toast('增加成功')
 						that.add_number = 1;
+						this.page = 1
 						
 						that.optionEq()
 						that.optionEqAdd()
@@ -461,6 +470,7 @@ import Base64 from 'base-64';
 						this.$api.addEq(params).then(res=>{
 							if (res.code == 200) {
 								this.add_number = 1;
+								this.page = 1
 								this.optionEq()
 								this.optionEqAdd()
 								this.data_select()
@@ -503,6 +513,7 @@ import Base64 from 'base-64';
 							this.$api.delEq(params).then(res=>{
 								if (res.code == 200) {
 									this.xz_all = ''
+									this.page = 1
 									this.data_select()
 									this.optionEq()
 									uni.showToast({
