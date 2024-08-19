@@ -39,13 +39,14 @@
 						</cl-input>
 					</view>
 				</cl-row>
-				<cl-row style="color: #000000;width: 89%;margin:  0 auto 10px auto;" class="more-item">
-					<view style="width: 11%;text-align: left;">区域</view>
+				<cl-row style="color: #000000;width: 73%;margin:  0 auto 10px auto;" class="more-item">
+					<view style="width: 24%;text-align: left;">区域</view>
 					<view>
 						<cl-input v-model="add_equipment_area" style="text-align: left;">
 							<text slot="append" style="margin-top: 3px;font-size: 16px;"></text>
 						</cl-input>
 					</view>
+					<view></view>
 				</cl-row>
 			</view>
 			<view class="confirm_magin">
