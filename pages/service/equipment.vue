@@ -26,15 +26,15 @@
 				</cl-scroller>
 			</view>
 			<view class="confirm_magin">
-				<cl-row style="color: #000000;width: 73%;margin: -10px auto 0 auto;" class="more-item">
+				<cl-row style="color: #000000;width: 73%;margin: -5px auto 5px auto;" class="more-item">
 					<view style="width: 48%;text-align: left;">编号</view>
 					<view>
-						<cl-input v-model="add_equipment_letter" style="text-align: left;">
+						<cl-input v-model="add_equipment_letter" placeholder="编号前缀"  style="text-align: left;">
 							<text slot="append" style="margin-top: 3px;font-size: 16px;"></text>
 						</cl-input>
 					</view>
 					<view>
-						<cl-input v-model="add_equipment_number" style="text-align: left;">
+						<cl-input v-model="add_equipment_number" placeholder="数字" style="text-align: left;">
 							<text slot="append" style="margin-top: 3px;font-size: 16px;"></text>
 						</cl-input>
 					</view>
@@ -87,7 +87,7 @@
 					</view>
 				</cl-checkbox>
 			</cl-checkbox-group>
-			<view v-show="is_load_bottom" style="text-align: center;">已经到底了！！</view>
+			<view v-show="is_load_bottom" style="text-align: center;">{{bottom_load_msg}}</view>
 		</view>
 		<view style="display: block; text-align: center;" v-if="loading">
 			<cl-loading></cl-loading>
@@ -139,7 +139,8 @@ import Base64 from 'base-64';
 				isLoadMore:true,
 				loadingText:"",
 				total_page:1,
-				is_load_bottom:false
+				is_load_bottom:false,
+				bottom_load_msg:'',
 			}
 		},
 		onLoad(index) {
@@ -180,6 +181,9 @@ import Base64 from 'base-64';
 		onReachBottom(){
 		  if(this.page <= this.total_page){
 			  this.data_select()  // 列表
+			  this.bottom_load_msg = '上滑显示更多！！'
+		  }else{
+			  this.bottom_load_msg = '已经到底了！！'
 		  }
 		},
 		methods: {
@@ -292,6 +296,13 @@ import Base64 from 'base-64';
 								}else{
 									this.is_load_bottom = false
 								}
+								
+								if(this.page == res.data.last_page){
+									this.bottom_load_msg = '已经到底了！！'			  
+								}else{
+									this.bottom_load_msg = '上滑显示更多！！'
+								}
+								
 								this.total_page = res.data.last_page
 								this.page = res.data.current_page + 1
 							}else{
