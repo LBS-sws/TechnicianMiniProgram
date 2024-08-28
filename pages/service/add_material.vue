@@ -7,20 +7,8 @@
 		<!-- 物料 -->
 		<view class="service">
 			<view class="service_title" style="display: none;">物料<span class="jh">*</span>
-			
-				
-				<view class="new_card_title_right" >
-					<!-- <cl-select v-model="material" :options="material_lists" @change="change_material()"></cl-select> -->
-					
-					<!-- <jp-select-plus label="" color="#f00"placeholder="请选择" isSearch v-model="material" :list="options" @toConfirm="toConfirm"></jp-select-plus>
-					 -->
-					
-				</view>
+				<view class="new_card_title_right" ></view>
 			</view>
-			 <!-- <jp-select-plus label="物料" labelColor="#000000" required="true" :isLineFeed="false" placeholder="请选择" isSearch 
-				 v-model="va1" 
-				 :list="listc">
-			 </jp-select-plus> -->
 			 <jp-select-plus label="物料" labelColor="#000000" required="true" :isLineFeed="false" placeholder="请选择" isSearch
 			 	v-model="material" 
 			 	:list="options"
@@ -170,19 +158,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				len: false,
 				
 				options:[],
-				store:'',
-				
-				va1: '',           
-                listc: [{
-                    code: 'CHN',
-                    name: '中国'
-                }, {
-                    name: '美国5',
-                    code: 'USA'
-                }, {
-                    name: '巴西',
-                    code: 'BRA'
-                }],
+				postStatus:true,
 			}
 		},
 		onLoad(index) {
@@ -332,17 +308,6 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					console.log(err)
 				})
 			},
-			change_material(e) {
-				console.log(e)
-				for (let i = 0; i < this.material_lists.length; i++) {
-					if (this.material_lists[i].label == e) {
-						this.registration_no = this.material_lists[i].registration_no;
-						this.active_ingredient = this.material_lists[i].active_ingredient;
-						this.ratio = this.material_lists[i].ratio;
-						this.unit = this.material_lists[i].unit;
-					}
-				}
-			},
 			// 保存
 			save() {
 				if (!this.material){
@@ -355,8 +320,11 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					uni.showLoading({
 						title: "保存中..."
 					});
-					console.log(this.matters_needing_attention)
 					
+					if(!this.postStatus){
+						return false
+					}
+					this.postStatus = false
 					
 					let params = {
 						id: this.id,
@@ -374,7 +342,9 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						matters_needing_attention: this.matters_needing_attention,	// 注意事项
 						unit: this.unit,
 					}
-					
+					setTimeout(()=>{
+						this.postStatus = true
+					},2000)
 					if(this.id == 0){
 						this.$api.addMaterials(params).then(res=>{
 							uni.hideLoading();
