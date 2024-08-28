@@ -200,7 +200,8 @@ export default {
 			scan_id:0,
 			can_save: true,
 			eqIdListStr:'',
-			is_single:true
+			is_single:true,
+			previous_next: 0, 	// 0 默认   1 上一个   2 下一个 
 		}
 	},
 	onLoad(index) {
@@ -220,6 +221,7 @@ export default {
 		this.can_save = true
 		this.id = index.id
 		this.eqIdListStr = index.id_list
+		this.previous_next = 0
 		// this.ct = uni.getStorageSync('ct')
 		var arr = index.id.split(",");
 		console.log('arr.length',arr.length)
@@ -517,6 +519,7 @@ export default {
 				this.site_photos = index
 			},
 			save(){
+				this.previous_next = 0
 				this.editEq()
 			},
 			// 保存	单个 多个
@@ -560,19 +563,71 @@ export default {
 						icon: 'none'
 					});
 					if(res.code == 200){
-						setTimeout(() => {
-							uni.redirectTo({
-								url: "/pages/service/equipment?jobid=" +
-									this
-									.jobid + '&jobtype=' + this
-									.jobtype +
-									'&shortcut_type=' +
-									this.shortcut_type +
-									'&service_type=' + this
-									.service_type + '&ct=' + this
-									.ct
-							})
-						}, 1000)
+						
+						if(this.previous_next == 1){
+							var arr = this.eqIdListStr.split(",");
+							let index = arr.indexOf(this.id);  
+							if (index !== -1) {  
+							    let prevJobId = index > 0 ? arr[index - 1] : null;
+								if(prevJobId != null){
+									uni.redirectTo({
+										url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+prevJobId +'&id_list='+this.eqIdListStr
+									})
+								}else{
+									this.back()
+									uni.showToast({
+										title: '上一个设备不存在！！',
+										icon: 'none'
+									})
+								}
+							} else { 
+								uni.showToast({
+									title: '上一个设备不存在！！',
+									icon: 'none'
+								})
+							}
+						}else if(this.previous_next == 2){
+							var arr = this.eqIdListStr.split(",");
+							let index = arr.indexOf(this.id);   
+							if (index !== -1) {  
+							    let nextJobId = index < arr.length - 1 ? arr[index + 1] : null; 
+								if(nextJobId != null){
+									uni.redirectTo({
+										url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+nextJobId +'&id_list='+this.eqIdListStr
+									})
+								}else{
+									this.back()
+									uni.showToast({
+										title: '下一个设备不存在！！',
+										icon: 'none'
+									})
+								}
+								
+							} else {  
+								uni.showToast({
+									title: '下一个设备不存在！！',
+									icon: 'none'
+								})
+							}
+						}else{
+							setTimeout(() => {
+								uni.redirectTo({
+									url: "/pages/service/equipment?jobid=" +
+										this
+										.jobid + '&jobtype=' + this
+										.jobtype +
+										'&shortcut_type=' +
+										this.shortcut_type +
+										'&service_type=' + this
+										.service_type + '&ct=' + this
+										.ct
+								})
+							}, 1000)
+						}
+						
+						
+						
+						
 					}
 					if(res.code == 400){
 						uni.showToast({
@@ -592,173 +647,20 @@ export default {
 				})
 			},
 			eq_previous(){
-				var arr = this.eqIdListStr.split(",");
-				let index = arr.indexOf(this.id);  
-				if (index !== -1) {  
-				    let prevJobId = index > 0 ? arr[index - 1] : null;
-					if(prevJobId != null){
-						uni.redirectTo({
-							url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+prevJobId +'&id_list='+this.eqIdListStr
-						})
-					}else{
-						this.back()
-						uni.showToast({
-							title: '上一个设备不存在！！',
-							icon: 'none'
-						})
-					}
-				} else { 
-					uni.showToast({
-						title: '上一个设备不存在！！',
-						icon: 'none'
-					})
-				}
+				this.previous_next = 1
+				this.editEq()
+				
+				
+				
 			},
 			eq_next(){
-				var arr = this.eqIdListStr.split(",");
-				let index = arr.indexOf(this.id);   
-				if (index !== -1) {  
-				    let nextJobId = index < arr.length - 1 ? arr[index + 1] : null; 
-					if(nextJobId != null){
-						uni.redirectTo({
-							url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+nextJobId +'&id_list='+this.eqIdListStr
-						})
-					}else{
-						this.back()
-						uni.showToast({
-							title: '下一个设备不存在！！',
-							icon: 'none'
-						})
-					}
-					
-				} else {  
-					uni.showToast({
-						title: '下一个设备不存在！！',
-						icon: 'none'
-					})
-				}
+				this.previous_next = 2
+				this.editEq()
+				
+				
+				
+				
 			},
-			// savex() {
-			// 	var imgs = JSON.parse(JSON.stringify(this.site_photos))
-			// 	if (this.equipment_area == '' || this.check_datas == '') {
-			// 		uni.showToast({
-			// 			title: '信息填写不全',
-			// 			icon: 'none',
-			// 		});
-			// 		return;
-			// 	} else if (imgs.length > 4) {
-			// 		uni.showToast({
-			// 			title: '图片最多四张',
-			// 			icon: 'none',
-			// 		});
-			// 		return;
-			// 	} else {
-			// 		uni.showLoading({
-			// 			title: "保存中..."
-			// 		});
-			// 		//图片上传
-			// 		if (this.id > 0) {
-			// 			//上传部分
-			// 			for (let i = 0; i < imgs.length; i++) {
-			// 				for (let j = 0; j < this.start_site_photos.length; j++) {
-			// 					if (imgs[i] == this.start_site_photos[j]) { //如果是id相同的，那么a[ j ].id == b[ i ].id
-			// 						imgs.splice(imgs[i], 1);
-			// 					}
-			// 				}
-			// 			}
-			// 		}
-			// 		//剩余部分
-			// 		if (this.end_site_photos.length > 0) {
-			// 			this.upload_site_photos = this.end_site_photos
-			// 		}
-			// 		for (var i = 0; i < imgs.length; i++) {
-			// 			uni.uploadFile({
-			// 				url: `${this.$baseUrl}/upload/imgswx?version=${this.$version}`, // 后端api接口
-			// 				filePath: imgs[i], // uni.chooseImage函数调用后获取的本地文件路劲
-			// 				name: 'file', //后端通过'file'获取上传的文件对象
-			// 				header: {
-			// 					'content-type': 'multipart/form-data',
-			// 					'token': uni.getStorageSync('token')
-			// 				},
-			// 				success: (res) => {
-			// 					var res = JSON.parse(result.data)
-			// 					if (res.code === 0) {
-			// 						var images_data = res.data.file_name;
-			// 						if (this.upload_site_photos == '') {
-			// 							this.upload_site_photos = images_data;
-			// 						} else {
-			// 							this.upload_site_photos = this.upload_site_photos + ',' + images_data;
-			// 						}
-			// 					} else {
-			// 						uni.showToast({
-			// 							title: res.msg,
-			// 							icon: 'none',
-			// 						});
-			// 					}
-
-
-			// 				},
-			// 				fail: (err) => {
-			// 					console.log('uploadImage fail', err);
-			// 					uni.showModal({
-			// 						content: err.errMsg,
-			// 						showCancel: false
-			// 					});
-			// 				}
-			// 			});
-
-			// 		}
-			// 		setTimeout(() => {
-			// 			//保存信息
-			// 			let params = {
-			// 				staffid: uni.getStorageSync('staffid'),
-			// 				id: this.id,
-			// 				job_id: this.jobid,
-			// 				job_type: this.jobtype,
-			// 				equipment_name: this.equipment_name,
-			// 				equipment_area: this.equipment_area,
-			// 				check_datas: this.check_datas,
-			// 				check_handle: this.check_handle,
-			// 				site_photos: this.upload_site_photos,
-			// 				more_info: this.more_info,
-			// 				eq_mark_num:this.eq_mark_num
-			// 			}
-			// 			uni.setStorageSync('last_id_' + this.jobid,this.id)
-			// 			uni.request({
-			// 				url: `${this.$baseUrl}/Saveequipment`,
-			// 				header: {
-			// 					'content-type': 'application/x-www-form-urlencoded',
-			// 					'token': uni.getStorageSync('token')
-			// 				},
-			// 				method: 'POST',
-			// 				data: params,
-			// 				success: (res) => {
-			// 					uni.hideLoading();
-			// 					uni.showToast({
-			// 						title: res.data.msg,
-			// 						icon: 'none'
-			// 					});
-			// 					setTimeout(() => {
-			// 						uni.redirectTo({
-			// 							url: "/pages/service/equipment?jobid=" +
-			// 								this
-			// 								.jobid + '&jobtype=' + this
-			// 								.jobtype +
-			// 								'&shortcut_type=' +
-			// 								this.shortcut_type +
-			// 								'&service_type=' + this
-			// 								.service_type + '&ct=' + this
-			// 								.ct
-			// 						})
-			// 					}, 1000)
-			// 				},
-			// 				fail: (err) => {
-			// 					console.log(res);
-			// 				}
-			// 			});
-			// 		}, 1000)
-			// 	}
-			// }
 	}
 }
 </script>
