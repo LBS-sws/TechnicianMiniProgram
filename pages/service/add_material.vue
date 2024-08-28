@@ -109,7 +109,7 @@
 			保存
 		</view> -->
 		<view class="bu">
-					<u-button type="primary" :disabled="disabled"  @tap="save()" >保存</u-button>
+					<u-button type="primary" :disabled="disabled"  @tap="$noMultipleClicks(save)" >保存</u-button>
 				</view>
 	</view>
 </template>
@@ -132,6 +132,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 		},
 		data() {
 			return {
+				noClick: true,
 				name:'新增物料使用',
 				shortcuts: [],
 				shortcutsOld:[],	// 快捷语原值 用于恢复
