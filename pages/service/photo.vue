@@ -131,6 +131,7 @@
 		margin: 1px;
 		background-color: #cbe8ff;
 		color: #0876f1;
+		overflow: hidden;
 	}
 
 	.sign_qm {
