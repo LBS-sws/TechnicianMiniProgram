@@ -23,18 +23,18 @@
 							:class="{
 								'day-hidden': !item.show
 							}" @click="clickItem(item)">
-							<view
-								class="date"
-								:class="[
-									item.isToday ? todayClass : '',
-									item.fullDate === selectedDate ? checkedClass : ''
-									]"
-							>
-							{{item.time.getDate()}}
-							</view>
-							<view class="dot-show" v-if="item.info" :style="[dotStyle]">		
-							</view>
-							</view>
+								<view
+									class="date"
+									:class="[
+										item.isToday ? todayClass : '',
+										item.fullDate === selectedDate ? checkedClass : ''
+										]"
+								>
+									{{item.time.getDate()}}
+								</view>
+								<view class="dot-show" v-if="item.info && !item.info['unfinsh']" :style="[dotStyle]"></view>
+								<view class="dot-show" v-if="item.info && item.info['unfinsh']" :style="[ReddotStyle]"></view>
+						</view>
 						</template>
 						<template v-else>
 							<template v-if="current - sitem === 1 || current-sitem ===-2">
@@ -112,6 +112,14 @@
 				default() {
 					return {
 						background: '#1899dc'
+					}
+				}
+			},
+			ReddotStyle: {
+				type: Object, // 打点日期的自定义样式
+				default() {
+					return {
+						background: '#E91E63'
 					}
 				}
 			}
