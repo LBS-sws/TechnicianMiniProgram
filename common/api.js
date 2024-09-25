@@ -15,6 +15,10 @@ export default {
 	dayCount(params){
 		 return request("/Order.Order/dayCount", params, 'GET')
 	},
+	// 首页 获取未完成的工单列表 pages/home/home
+	unFinshJobs(params){
+		 return request("/Order.Order/unFinshJobs", params, 'GET')
+	},
 	// 工作单详情 pages/service/detail
 	getOrderInfo(params){
 		 return request("/Order.Order/getOrderInfo", params, 'GET')

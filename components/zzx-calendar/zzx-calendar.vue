@@ -95,6 +95,15 @@
 					]
 				}
 			},
+			cilck_time: {
+				type: Object, /// 打点日期列表
+				default() {
+					return {
+						cur: '',
+						fullDate: ''
+					}
+				}
+			},
 			showBack: {
 				type: Boolean, // 是否返回今日
 				default: false
@@ -134,6 +143,10 @@
 					}
 				});
 				this.days = days;
+			},
+			cilck_time: function(newvalue){
+				this.initDate(newvalue.cur)//跳转对应日期页面
+				this.clickItem(newvalue)//选中指定日期
 			}
 		},
 		computed: {
@@ -274,29 +287,29 @@
 			},
 			//  上一个
 			daysPre () {
-			  if (this.weekMode) {
+				if (this.weekMode) {
 				const d = new Date(this.currentYear, this.currentMonth - 1,this.currentDate);
 				d.setDate(d.getDate() - 7);
 				this.initDate(d);  
-			  } else {
-				  const d = new Date(this.currentYear, this.currentMonth -2, 1);
-				  this.initDate(d);
-			  }
+			} else {
+					const d = new Date(this.currentYear, this.currentMonth -2, 1);
+					this.initDate(d);
+				}
 			  // console.log('pre',this.currentMonth)
-			  this.$emit('change-month', this.currentYear +'-' +  this.currentMonth);
+				this.$emit('change-month', this.currentYear +'-' +  this.currentMonth);
 			},
 			//  下一个
 			daysNext () {
-				 if (this.weekMode) {
+				if (this.weekMode) {
 					const d = new Date(this.currentYear, this.currentMonth - 1,this.currentDate);
 					d.setDate(d.getDate() + 7);
 					this.initDate(d);  
-				 } else {
+				} else {
 					const d = new Date(this.currentYear, this.currentMonth, 1);
 					this.initDate(d);
-				 }
-				 // console.log('next',this.currentMonth)
-				 this.$emit('change-month', this.currentYear +'-' + this.currentMonth);
+				}
+				// console.log('next',this.currentMonth)
+				this.$emit('change-month', this.currentYear +'-' + this.currentMonth);
 			},
 			changeMode() {
 				const premode = this.weekMode;

@@ -1,7 +1,7 @@
 <template>
 	<view v-if="isShowContent" class="content">
 		<view class="datec">
-			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists"></zzx-calendar>
+			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists" :cilck_time="cilck_time"></zzx-calendar>
 		</view>
 		<!-- <view class="dateshow">
 			<span style="margin-right: 10px;">{{Data}}</span>
@@ -11,6 +11,12 @@
 		<view class="noservice" v-if="jobs.length==0">
 			没有任务哦~~
 		</view>
+		<!-- 未完成工作单列表 -->
+		<cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
+			<view v-for="item in UnFinshLists" :key="item" @click="gotoday(item)">
+				<text class="unfinsh">{{item.job_date}}</text>
+			</view>
+		</cl-dialog>
 		<!-- 工作单 -->
 		<view class="datecontent" v-for="(item,index) in jobs" :key="index">
 			<view class="new_card" @click="job_detail(index)">
@@ -84,6 +90,10 @@ export default {
 			jobs: [],
 			dotLists: [],
 			isShowContent: false,
+			UnFinshLists: [],
+			cilck_time: '',
+			isFirstShow: false,
+			show_dislog: true,
 		};
 	},
 	onLoad() {
@@ -98,7 +108,9 @@ export default {
 		
 		this.getjobs();
 		this.getJobTotal();
-		
+		if(!this.isFirstShow){
+			this.getUnFinshJobs();
+		}
 	},
 	methods: {
 		// 滑动月份触发事件
@@ -165,6 +177,45 @@ export default {
 			}).catch(err=>{
 				console.log(err)
 			})
+		},
+		//获取未完成的工单列表
+		getUnFinshJobs(){
+			var that = this
+			var date = new Date()
+			var year = date.getFullYear()
+			var month = (date.getMonth()+1).toString().padStart(2,'0')
+			var day = date.getDate().toString().padStart(2,'0')
+			var time = year+'-'+month+'-'+day
+
+			this.$api.unFinshJobs({month: time}).then(res=>{
+				if(res.code == 200) {
+					that.UnFinshLists = res.data
+					that.isFirstShow = true
+					that.show_dislog = true
+					uni.hideLoading()
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
+		gotoday(row){
+			// 显示当天工单
+			this.Data = row.job_date;
+			this.Week = this.getWek(row.job_date);
+			this.getjobs();
+
+			//跳转到当天日期
+			//处理时间为[Wed Oct 09 2024 00:00:00 GMT+0800 (GMT+08:00)]这种格式
+			const dateParts = row.job_date.split("-");
+			const year = parseInt(dateParts[0], 10);
+			const month = parseInt(dateParts[1], 10) - 1; // 月份从 0 开始计数
+			const day = parseInt(dateParts[2], 10);
+			this.cilck_time = {
+				cur : new Date(year, month, day).toString(),
+				fullDate : row.job_date
+			}
+
+			this.show_dislog = false
 		}
 	}
 }
@@ -262,6 +313,9 @@ export default {
 	background: #ea8e4c;
 	color: #000000;
 }
-
+.unfinsh{
+	color:blue;
+	line-height: 26px;
+}
 </style>
 
