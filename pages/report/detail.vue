@@ -590,16 +590,11 @@
 				}
 			})
 			
-			// uni.getSystemInfo({
-			// 	success: e => {
-			// 		console.log('设备信息:',e)
-			// 		this.windowHeight = e.windowHeight
-			// 	}
-			// });
+			
 			const query = uni.createSelectorQuery().in(this);
 			query.select('.swiper').boundingClientRect(data => {
-							
-				console.log(data.height)
+				//获取 页面高度
+				// console.log(data.height)
 				this.windowHeight = data.height - 90
 			}).exec();
 
