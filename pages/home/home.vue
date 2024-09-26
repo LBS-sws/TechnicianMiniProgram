@@ -7,16 +7,28 @@
 			<span style="margin-right: 10px;">{{Data}}</span>
 			<span>{{Week}}</span>
 		</view> -->
-		<!-- 内容 -->
-		<view class="noservice" v-if="jobs.length==0">
-			没有任务哦~~
-		</view>
 		<!-- 未完成工作单列表 -->
 		<cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
 			<view v-for="item in UnFinshLists" :key="item" @click="gotoday(item)">
 				<text class="unfinsh">{{item.job_date}}</text>
 			</view>
 		</cl-dialog>
+		<!-- 搜索框 -->
+		<view class="seachBox">
+			<view class="text-left" style="width: 30%;">
+				<cl-select  :disabled="disabled" v-model="query.type" :options="typeList" placeholder="服务类型"></cl-select>
+			</view>
+			<view class="text-left" style="width: 45%;">
+				<cl-input :disabled="disabled" v-model="query.value" placeholder="搜索 公司名/地址"/>
+			</view>
+			<view class="text-right" style="width: 15%;">
+				<button class="seach-button" @tap="seach()">搜索</button>
+			</view>
+		</view>
+		<!-- 内容 -->
+		<view class="noservice" v-if="jobs.length==0">
+			没有任务哦~~
+		</view>
 		<!-- 工作单 -->
 		<view class="datecontent" v-for="(item,index) in jobs" :key="index">
 			<view class="new_card" @click="job_detail(index)">
@@ -94,6 +106,8 @@ export default {
 			cilck_time: '',
 			isFirstShow: false,
 			show_dislog: true,
+			query: {type:'', value:''},
+			typeList: [],
 		};
 	},
 	onLoad() {
@@ -105,7 +119,7 @@ export default {
 		this.Data = todayISOString
 	},
 	onShow(index) {
-		
+		this.getInitInfo()
 		this.getjobs();
 		this.getJobTotal();
 		if(!this.isFirstShow){
@@ -198,6 +212,7 @@ export default {
 				console.log(err)
 			})
 		},
+		//跳转至对应日期
 		gotoday(row){
 			// 显示当天工单
 			this.Data = row.job_date;
@@ -216,6 +231,40 @@ export default {
 			}
 
 			this.show_dislog = false
+		},
+		//获取基础信息
+		getInitInfo(){
+			var that = this
+
+			this.$api.InitInfo().then(res=>{
+				if(res.code == 200) {
+					console.log('res.data',res.data)
+					var type = [{label:'服务类型',value:''}];
+					for(var i in res.data.typeList){
+						type.push({label:res.data.typeList[i],value:i})
+					}
+					console.log('type',type)
+					that.typeList = type
+					uni.hideLoading()
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
+		//搜索
+		seach(){
+			let params = {
+				jobdate: this.Data, //todayISOString
+				service: this.query.type,
+				value: this.query.value
+			}
+			this.$api.dayOrderList(params).then(res=>{
+				if(res.code == 200) {
+					this.jobs = res.data
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
 		}
 	}
 }
@@ -316,6 +365,22 @@ export default {
 .unfinsh{
 	color:blue;
 	line-height: 26px;
+}
+.seachBox{
+	margin-top: 10%;
+}
+.text-left {
+	float: left;
+	padding: 0 5px;
+}
+.text-right {
+	float: right;
+	padding: 0 5px;
+}
+.seach-button{
+	background: #0e8cf1;
+	color: #FFFFFF;
+	font-size: 13px;
 }
 </style>
 

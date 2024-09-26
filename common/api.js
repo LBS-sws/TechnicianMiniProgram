@@ -19,6 +19,10 @@ export default {
 	unFinshJobs(params){
 		 return request("/Order.Order/unFinshJobs", params, 'GET')
 	},
+	// 首页 获取基础信息 pages/home/home
+	InitInfo(params){
+		 return request("/Order.Order/InitInfo", params, 'GET')
+	},
 	// 工作单详情 pages/service/detail
 	getOrderInfo(params){
 		 return request("/Order.Order/getOrderInfo", params, 'GET')
