@@ -9,79 +9,79 @@ export default {
 	
 	// 首页 当日工作单 pages/home/home
 	dayOrderList(params){
-		 return request("/Order.Order/dayOrder", params, 'GET')
+		return request("/Order.Order/dayOrder", params, 'GET')
 	},
 	// 首页 统计所有工作单 pages/home/home
 	dayCount(params){
-		 return request("/Order.Order/dayCount", params, 'GET')
+		return request("/Order.Order/dayCount", params, 'GET')
 	},
 	// 首页 获取未完成的工单列表 pages/home/home
 	unFinshJobs(params){
-		 return request("/Order.Order/unFinshJobs", params, 'GET')
+		return request("/Order.Order/unFinshJobs", params, 'GET')
 	},
 	// 首页 获取基础信息 pages/home/home
 	InitInfo(params){
-		 return request("/Order.Order/InitInfo", params, 'GET')
+		return request("/Order.Order/InitInfo", params, 'GET')
 	},
 	// 工作单详情 pages/service/detail
 	getOrderInfo(params){
-		 return request("/Order.Order/getOrderInfo", params, 'GET')
+		return request("/Order.Order/getOrderInfo", params, 'GET')
 	},
 	// 技术员备注修改 pages/service/detail
 	updateTeachRemarks(params){
-		 return request("/Order.Order/updateTeachRemarks", params, 'POST')
+		return request("/Order.Order/updateTeachRemarks", params, 'POST')
 	},
 	// 历史记录 pages/history/list
 	searchOrder(params){
-		 return request("/Order.Order/searchOrder", params, 'GET')
+		return request("/Order.Order/searchOrder", params, 'GET')
 	},
 	// 签到 pages/sign/sign
 	orderSignIn(params){
-		 return request("/Order.Order/orderSignIn", params, 'GET')
+		return request("/Order.Order/orderSignIn", params, 'GET')
 	},
 	// 工作单开始 pages/service/start
 	orderStart(params){
-		 return request("/Order.Order/orderStart", params, 'GET')
+		return request("/Order.Order/orderStart", params, 'GET')
 	},
 	// 服务简报 pages/service/briefing
 	getBriefingsInfo(params){
-		 return request("/Briefings.Briefings/getBriefingsInfo", params, 'GET')
+		return request("/Briefings.Briefings/getBriefingsInfo", params, 'GET')
 	},
 	editBriefings(params){
-		 return request("/Briefings.Briefings/editBriefings", params, 'POST')
+		return request("/Briefings.Briefings/editBriefings", params, 'POST')
 	},
 	getMaterials(params){
-		 return request("/Materials.Materials/index", params, 'GET')
+		return request("/Materials.Materials/index", params, 'GET')
 	},
 	getMaterialsInfo(params){
-		 return request("/Materials.Materials/getMaterialsInfo", params, 'GET')
+		return request("/Materials.Materials/getMaterialsInfo", params, 'GET')
 	},
 	addMaterials(params){
-		 return request("/Materials.Materials/addMaterials", params, 'POST')
+		return request("/Materials.Materials/addMaterials", params, 'POST')
 	},
 	editMaterials(params){
-		 return request("/Materials.Materials/editMaterials?id=" + params.id, params, 'PUT')
+		return request("/Materials.Materials/editMaterials?id=" + params.id, params, 'PUT')
 	},
 	delMaterials(params){
-		 return request("/Materials.Materials/delMaterials?id=" + params.id, params, 'DELETE')
+		return request("/Materials.Materials/delMaterials?id=" + params.id, params, 'DELETE')
 	},
 	ReportBaseInfo(params){
-		 return request("/Report.Report/baseInfo", params, 'GET')
+		return request("/Report.Report/baseInfo", params, 'GET')
 	},
 	getReportBriefingsInfo(params){
-		 return request("/Report.Report/getBriefingsInfo", params, 'GET')
+		return request("/Report.Report/getBriefingsInfo", params, 'GET')
 	},
 	getReportMaterialsInfo(params){
-		 return request("/Report.Report/getMaterialsInfo", params, 'GET')
+		return request("/Report.Report/getMaterialsInfo", params, 'GET')
 	},
 	getReportEqInfo(params){
-		 return request("/Report.Report/getEqInfo", params, 'GET')
+		return request("/Report.Report/getEqInfo", params, 'GET')
 	},
 	getReportRisksInfo(params){
-		 return request("/Report.Report/getRisksInfo", params, 'GET')
+		return request("/Report.Report/getRisksInfo", params, 'GET')
 	},
 	getReportSiteWorkPhotosInfo(params){
-		 return request("/Report.Report/getSiteWorkPhotosInfo", params, 'GET')
+		return request("/Report.Report/getSiteWorkPhotosInfo", params, 'GET')
 	},
 	// 勘察总结
 	getSummaryInfo(params){
@@ -130,81 +130,81 @@ export default {
 	
 	
 	about(params){
-		 return request("/Content.Content/about", params, 'GET')
+		return request("/Content.Content/about", params, 'GET')
 	},
 	logout(params){
-		 return request("/Staff.Login/logout", params, 'GET')
+		return request("/Staff.Login/logout", params, 'GET')
 	},
 	orderSignOut(params){
-		 return request("/Order.Order/orderSignOut", params, 'POST')
+		return request("/Order.Order/orderSignOut", params, 'POST')
 	},
 	getSiteWorkPhotosInfo(params){
-		 return request("/SiteWorkPhotos.SiteWorkPhotos/getSiteWorkPhotosInfo", params, 'GET')
+		return request("/SiteWorkPhotos.SiteWorkPhotos/getSiteWorkPhotosInfo", params, 'GET')
 	},
 	getShortcutContents(params){
-		 return request("/SiteWorkPhotos.SiteWorkPhotos/getShortcutContents", params, 'GET')
+		return request("/SiteWorkPhotos.SiteWorkPhotos/getShortcutContents", params, 'GET')
 	},
 	delSiteWorkPhotos(params){
-		 return request("/SiteWorkPhotos.SiteWorkPhotos/delSiteWorkPhotos?id=" + params.id, params, 'DELETE')
+		return request("/SiteWorkPhotos.SiteWorkPhotos/delSiteWorkPhotos?id=" + params.id, params, 'DELETE')
 	},
 	addSiteWorkPhotos(params){
-		  return request("/SiteWorkPhotos.SiteWorkPhotos/addSiteWorkPhotos", params, 'POST')
+		return request("/SiteWorkPhotos.SiteWorkPhotos/addSiteWorkPhotos", params, 'POST')
 	},
 	editSiteWorkPhotos(params){
-		  return request("/SiteWorkPhotos.SiteWorkPhotos/editSiteWorkPhotos", params, 'PUT')
+		return request("/SiteWorkPhotos.SiteWorkPhotos/editSiteWorkPhotos", params, 'PUT')
 	},
 	optionEqAdd(params){
-		  return request("/Equipment.Equipment/optionEqAdd", params, 'GET')
+		return request("/Equipment.Equipment/optionEqAdd", params, 'GET')
 	},
 	optionEq(params){
-		  return request("/Equipment.Equipment/optionEq", params, 'GET')
+		return request("/Equipment.Equipment/optionEq", params, 'GET')
 	},
 	equipmentList(params){
-		  return request("/Equipment.Equipment/list", params, 'GET')
+		return request("/Equipment.Equipment/list", params, 'GET')
 	},
 	getEqInfo(params){
-		  return request("/Equipment.Equipment/getEqInfo", params, 'GET')
+		return request("/Equipment.Equipment/getEqInfo", params, 'GET')
 	},
 	
 	addEq(params){
-		  return request("/Equipment.Equipment/addEq", params, 'POST')
+		return request("/Equipment.Equipment/addEq", params, 'POST')
 	},
 	delEq(params){
-		  return request("/Equipment.Equipment/delEq?ids=" + params.ids, params, 'DELETE')
+		return request("/Equipment.Equipment/delEq?ids=" + params.ids, params, 'DELETE')
 	},
 	//设备绑定二维码
 	bindQr(params){
 		return request("/Equipment.Equipment/bindQr", params, 'POST')
 	},
 	risksList(params){
-		  return request("/Risks.Risks/list", params, 'GET')
+		return request("/Risks.Risks/list", params, 'GET')
 	},
 	getRiskInfo(params){
-		  return request("/Risks.Risks/getRiskInfo", params, 'GET')
+		return request("/Risks.Risks/getRiskInfo", params, 'GET')
 	},
 	addRisk(params){
-		  return request("/Risks.Risks/addRisk", params, 'POST')
+		return request("/Risks.Risks/addRisk", params, 'POST')
 	},
 	editRisk(params){
-		  return request("/Risks.Risks/editRisk", params, 'PUT')
+		return request("/Risks.Risks/editRisk", params, 'PUT')
 	},
 	editRiskByTeach(params){
-		  return request("/Risks.Risks/editRiskByTeach", params, 'PUT')
+		return request("/Risks.Risks/editRiskByTeach", params, 'PUT')
 	},
 	delRisk(params){
-		  return request("/Risks.Risks/delRisk", params, 'DELETE')
+		return request("/Risks.Risks/delRisk", params, 'DELETE')
 	},
 	SiteWorkPhotosList(params){
-		  return request("/SiteWorkPhotos.SiteWorkPhotos/list", params, 'GET')
+		return request("/SiteWorkPhotos.SiteWorkPhotos/list", params, 'GET')
 	},
 	editEq(params){
-		  return request("/Equipment.Equipment/editEq?ids=" + params.ids, params, 'PUT')
+		return request("/Equipment.Equipment/editEq?ids=" + params.ids, params, 'PUT')
 	},
 	CheckData(params){
-		  return request("/Order.Order/CheckData", params, 'GET')
+		return request("/Order.Order/CheckData", params, 'GET')
 	},
 	saveEvaluates(params){
-		  return request("/Report.Report/saveEvaluates", params, 'POST')
+		return request("/Report.Report/saveEvaluates", params, 'POST')
 	},
 	
 	// 未解决问题
