@@ -105,7 +105,7 @@ export default {
 			UnFinshLists: [],
 			cilck_time: '',
 			isFirstShow: false,
-			show_dislog: true,
+			show_dislog: false,
 			query: {type:'', value:''},
 			typeList: [],
 		};
@@ -205,7 +205,9 @@ export default {
 				if(res.code == 200) {
 					that.UnFinshLists = res.data
 					that.isFirstShow = true
-					that.show_dislog = true
+					if(res.data.length !== 0){
+						that.show_dislog = true
+					}
 					uni.hideLoading()
 				}
 			}).catch(err=>{
@@ -243,7 +245,6 @@ export default {
 					for(var i in res.data.typeList){
 						type.push({label:res.data.typeList[i],value:i})
 					}
-					console.log('type',type)
 					that.typeList = type
 					uni.hideLoading()
 				}
@@ -367,7 +368,8 @@ export default {
 	line-height: 26px;
 }
 .seachBox{
-	margin-top: 10%;
+	padding-top: 5%;
+  display: flex;
 }
 .text-left {
 	float: left;
