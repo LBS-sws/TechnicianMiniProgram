@@ -15,13 +15,13 @@
 		</cl-dialog>
 		<!-- 搜索框 -->
 		<view class="seachBox">
-			<view class="text-left" style="width: 30%;">
+			<view class="text-left" style="flex:1;overflow: hidden;">
 				<cl-select  :disabled="disabled" v-model="query.type" :options="typeList" placeholder="服务类型"></cl-select>
 			</view>
-			<view class="text-left" style="width: 45%;">
+			<view class="text-left" style="flex:1;">
 				<cl-input :disabled="disabled" v-model="query.value" placeholder="搜索 公司名/地址"/>
 			</view>
-			<view class="text-right" style="width: 15%;">
+			<view class="text-right" style="flex:1;">
 				<button class="seach-button" @tap="seach()">搜索</button>
 			</view>
 		</view>
