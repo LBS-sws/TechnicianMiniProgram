@@ -1,12 +1,30 @@
 <template>
 	<view v-if="isShowContent" class="content">
 		<view class="datec">
-			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists"></zzx-calendar>
+			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists" :cilck_time="cilck_time"></zzx-calendar>
 		</view>
 		<!-- <view class="dateshow">
 			<span style="margin-right: 10px;">{{Data}}</span>
 			<span>{{Week}}</span>
 		</view> -->
+		<!-- 未完成工作单列表 -->
+		<cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
+			<view v-for="item in UnFinshLists" :key="item" @click="gotoday(item)">
+				<text class="unfinsh">{{item.job_date}}</text>
+			</view>
+		</cl-dialog>
+		<!-- 搜索框 -->
+		<view class="seachBox">
+			<view class="text-left" style="flex:1;overflow: hidden;">
+				<cl-select  :disabled="disabled" v-model="query.type" :options="typeList" placeholder="服务类型"></cl-select>
+			</view>
+			<view class="text-left" style="flex:1;">
+				<cl-input :disabled="disabled" v-model="query.value" placeholder="搜索 公司名/地址"/>
+			</view>
+			<view class="text-right" style="flex:1;">
+				<button class="seach-button" @tap="seach()">搜索</button>
+			</view>
+		</view>
 		<!-- 内容 -->
 		<view class="noservice" v-if="jobs.length==0">
 			没有任务哦~~
@@ -84,6 +102,12 @@ export default {
 			jobs: [],
 			dotLists: [],
 			isShowContent: false,
+			UnFinshLists: [],
+			cilck_time: '',
+			isFirstShow: false,
+			show_dislog: false,
+			query: {type:'', value:''},
+			typeList: [],
 		};
 	},
 	onLoad() {
@@ -95,10 +119,12 @@ export default {
 		this.Data = todayISOString
 	},
 	onShow(index) {
-		
+		this.getInitInfo()
 		this.getjobs();
 		this.getJobTotal();
-		
+		if(!this.isFirstShow){
+			this.getUnFinshJobs();
+		}
 	},
 	methods: {
 		// 滑动月份触发事件
@@ -161,6 +187,81 @@ export default {
 					this.dotLists = res.data
 					this.isShowContent = true
 					uni.hideLoading()
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
+		//获取未完成的工单列表
+		getUnFinshJobs(){
+			var that = this
+			var date = new Date()
+			var year = date.getFullYear()
+			var month = (date.getMonth()+1).toString().padStart(2,'0')
+			var day = date.getDate().toString().padStart(2,'0')
+			var time = year+'-'+month+'-'+day
+
+			this.$api.unFinshJobs({month: time}).then(res=>{
+				if(res.code == 200) {
+					that.UnFinshLists = res.data
+					that.isFirstShow = true
+					if(res.data.length !== 0){
+						that.show_dislog = true
+					}
+					uni.hideLoading()
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
+		//跳转至对应日期
+		gotoday(row){
+			// 显示当天工单
+			this.Data = row.job_date;
+			this.Week = this.getWek(row.job_date);
+			this.getjobs();
+
+			//跳转到当天日期
+			//处理时间为[Wed Oct 09 2024 00:00:00 GMT+0800 (GMT+08:00)]这种格式
+			const dateParts = row.job_date.split("-");
+			const year = parseInt(dateParts[0], 10);
+			const month = parseInt(dateParts[1], 10) - 1; // 月份从 0 开始计数
+			const day = parseInt(dateParts[2], 10);
+			this.cilck_time = {
+				cur : new Date(year, month, day).toString(),
+				fullDate : row.job_date
+			}
+
+			this.show_dislog = false
+		},
+		//获取基础信息
+		getInitInfo(){
+			var that = this
+
+			this.$api.InitInfo().then(res=>{
+				if(res.code == 200) {
+					console.log('res.data',res.data)
+					var type = [{label:'服务类型',value:''}];
+					for(var i in res.data.typeList){
+						type.push({label:res.data.typeList[i],value:i})
+					}
+					that.typeList = type
+					uni.hideLoading()
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
+		//搜索
+		seach(){
+			let params = {
+				jobdate: this.Data, //todayISOString
+				service: this.query.type,
+				value: this.query.value
+			}
+			this.$api.dayOrderList(params).then(res=>{
+				if(res.code == 200) {
+					this.jobs = res.data
 				}
 			}).catch(err=>{
 				console.log(err)
@@ -262,6 +363,26 @@ export default {
 	background: #ea8e4c;
 	color: #000000;
 }
-
+.unfinsh{
+	color:blue;
+	line-height: 26px;
+}
+.seachBox{
+	padding-top: 5%;
+  display: flex;
+}
+.text-left {
+	float: left;
+	padding: 0 5px;
+}
+.text-right {
+	float: right;
+	padding: 0 5px;
+}
+.seach-button{
+	background: #0e8cf1;
+	color: #FFFFFF;
+	font-size: 13px;
+}
 </style>
 

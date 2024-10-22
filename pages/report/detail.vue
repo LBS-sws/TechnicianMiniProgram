@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view class="container" :class="isHeight ? 'heightHide':''">
 		<view class="download" @tap="download()" v-if="current_tab==0">
 			<cl-icon name="cl-icon-cloud-download" color="#007AFF" :size="80"></cl-icon>
 		</view>
@@ -237,16 +237,27 @@
 			</swiper-item>
 			<!-- 7. 风险评估 -->
 			<swiper-item class="evaluate" v-if="show_evaluate">
-				<view v-for="(item,i) in reportRiskData" :key="i" class="risk_list">
-					<view class="cat_title">
-						{{item.name}}
-					</view>
-					<view class="child_list">
-						<view class="list-item" v-for="(item_c,index) in item.list" :key="index">
-							<view class="list-title"  @click="goRiskPinggu(item)">{{item_c.title}}</view>
-							<view style="width: 320rpx;">
-								<isYes :value="item_c.is_conform" :i="i" :ii="index" :reportRiskData="reportRiskData"></isYes>
-							
+				<!-- <scroll-view scroll-y="true"
+					:scroll-into-view="bottomId" scroll-with-animation="true"
+					
+					:style="{height:windowHeight + 'px'}">
+					
+				</scroll-view> -->
+				
+				<view>
+					<view style="overflow-y: auto;" :style="{height:windowHeight + 'px'}">
+						<view v-for="(item,i) in reportRiskData" :key="i" class="risk_list">
+							<view class="cat_title">
+								{{item.name}}
+							</view>
+							<view class="child_list">
+								<view class="list-item" v-for="(item_c,index) in item.list" :key="index">
+									<view class="list-title"  @click="goRiskPinggu(item)">{{item_c.title}}</view>
+									<view style="width: 320rpx;">
+										<isYes :value="item_c.is_conform" :i="i" :ii="index" :reportRiskData="reportRiskData"></isYes>
+									
+									</view>
+								</view>
 							</view>
 						</view>
 					</view>
@@ -504,6 +515,9 @@
 				reportRiskData:[],
 				conditionData:[],
 				is_add:true,
+				
+				windowHeight:0,
+				isHeight:false,
 			}
 		},
 		onLoad(index) {
@@ -575,7 +589,15 @@
 					this.show_condition = true
 				}
 			})
-	
+			
+			
+			const query = uni.createSelectorQuery().in(this);
+			query.select('.swiper').boundingClientRect(data => {
+				//获取 页面高度
+				// console.log(data.height)
+				this.windowHeight = data.height - 90
+			}).exec();
+
 		},
 		mounted() {
 			let that = this;
@@ -637,7 +659,7 @@
 			run_tab(index) {
 				console.log('执行整个tab事件',index)
 				console.log('this.tab_bar[index]',this.tab_bar[index])
-				
+				this.isHeight = false
 				if(index == 0){
 					this.getBriefing()		// 基础
 				}
@@ -661,6 +683,7 @@
 				}
 				if(this.tab_bar[index].data == '7'){
 					this.getReportRiskList()			// 风险评估
+					this.isHeight = true
 				}
 				if(this.tab_bar[index].data == '8'){
 					this.getRiskSituationList()	// 风险情况
@@ -1588,4 +1611,8 @@
 		line-height: 27px;
 	}
 .u-modal__content{ padding-left: 0; padding-right: 0; }
+.heightHide{
+	height: 100%;
+	overflow: hidden;
+}
 </style>

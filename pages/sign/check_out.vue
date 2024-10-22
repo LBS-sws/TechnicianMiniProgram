@@ -406,6 +406,7 @@
 				return d * Math.PI / 180.0;
 			},
 			sign_success(signdate, starttime) {
+				let that = this
 				let pics = this.upload_site_photos
 				let str = '';
 				let is_invoice = this.invoice
@@ -418,8 +419,8 @@
 				this.$api.orderSignOut(params).then(res=>{
 					uni.hideLoading();
 					if (res.code == 200) {
-						this.signin.isSignin = true
-						this.signin.count++
+						that.signin.isSignin = true
+						that.signin.count++
 						clearInterval(this.timerInterval)
 						
 						uni.showToast({
@@ -429,7 +430,9 @@
 						uni.navigateBack();
 
 						//更新工单报表
-						this.makePdf()
+						setTimeout(()=>{
+							that.makePdf();
+						},2000)
 					} else {
 						this.$refs["message"].open({
 							type: "warn",

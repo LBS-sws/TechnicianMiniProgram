@@ -99,6 +99,11 @@
 				<span>{{service_button}}</span>
 			</view>
 		</button>
+		
+	<!-- <cl-dialog title="客户要求提醒" :visible="show" :closeOnClickModal="false" :beforeClose="confirm" :showCloseBtn="true">
+		<text class="max-content">{{teach_remark}}</text>
+	</cl-dialog> -->
+		
 	</view>
 	</view>
 	</view>
@@ -125,7 +130,10 @@
 				is_show_bz:true,
 				is_show_fbt:true,
 				
-				photosArr:[]
+				photosArr:[],
+				show: false,
+				teach_remark: '',
+				confirm_flag: false
 			}
 		},
 		onLoad(index) {
@@ -140,6 +148,16 @@
 			
 		},
 		methods: {
+			// showModal() {
+			// 			this.show = true;
+			// 		},
+			confirm() {
+				if(!this.confirm_flag){
+					this.show = false;
+					this.confirm_flag = true
+				}
+				
+			},
 			//预览轮播图
 			previewImage:function(index){
 				uni.previewImage({
@@ -178,11 +196,13 @@
 					this.showContent = true;
 					if(res.data.order_type !=3){
 						if (this.service.remarks && !this.acknowledged && this.service.status != 3) { // 判断 acknowledged 的值
-							this.showConfirmationDialog('客户要求提示', this.service.remarks, () => {
-							  this.acknowledged = true; // 用户已知晓
-							}, () => {
-							  uni.navigateBack();
-							});
+							if(!this.confirm_flag){
+								this.showConfirmationDialog('客户要求提示', this.service.remarks, () => {
+															  this.acknowledged = true; // 用户已知晓
+															}, () => {
+															  uni.navigateBack();
+															});
+							}
 						}
 					}
 					
@@ -527,6 +547,10 @@
 	
 	background: #ea8e4c;
 	color: #000000;
+}
+.max-content{
+	max-height: 300px;
+	overflow-y: auto;
 }
 
 </style>

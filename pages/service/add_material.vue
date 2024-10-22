@@ -105,9 +105,12 @@
 		<view style="width: 100%; height: 100rpx;">
 			
 		</view>
-		<view class="bu" @tap="save()">
+		<!-- <view class="bu" @tap="save()">
 			保存
-		</view>
+		</view> -->
+		<view class="bu">
+					<u-button type="primary" :disabled="disabled"  @tap="$noMultipleClicks(save)" >保存</u-button>
+				</view>
 	</view>
 </template>
 
@@ -129,6 +132,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 		},
 		data() {
 			return {
+				noClick: true,
 				name:'新增物料使用',
 				shortcuts: [],
 				shortcutsOld:[],	// 快捷语原值 用于恢复
@@ -158,7 +162,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				len: false,
 				
 				options:[],
-				postStatus:true,
+				disabled:false,
 			}
 		},
 		onLoad(index) {
@@ -321,10 +325,11 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						title: "保存中..."
 					});
 					
-					if(!this.postStatus){
+					if(this.disabled == true){
+						console.log('操作频繁')
 						return false
 					}
-					this.postStatus = false
+					
 					
 					let params = {
 						id: this.id,
@@ -342,12 +347,11 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						matters_needing_attention: this.matters_needing_attention,	// 注意事项
 						unit: this.unit,
 					}
-					setTimeout(()=>{
-						this.postStatus = true
-					},2000)
+					
 					if(this.id == 0){
 						this.$api.addMaterials(params).then(res=>{
 							uni.hideLoading();
+							this.disabled = true
 							uni.showToast({
 								title: res.msg,
 								icon: 'none'
@@ -357,6 +361,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 									uni.redirectTo({
 										url: "/pages/service/material?jobid=" +this.jobid + '&jobtype=' + this.jobtype
 									})
+									this.disabled = false
 								}, 2000)
 							}
 						}).catch(err=>{
@@ -439,6 +444,10 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 </script>
 
 <style>
+/* ::v-deep .类样式{} */
+::v-deep .u-button--primary{
+	height: 50px !important;
+}
 	.content {
 		margin-bottom: 50px;
 	}

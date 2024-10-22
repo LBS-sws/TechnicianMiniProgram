@@ -23,18 +23,18 @@
 							:class="{
 								'day-hidden': !item.show
 							}" @click="clickItem(item)">
-							<view
-								class="date"
-								:class="[
-									item.isToday ? todayClass : '',
-									item.fullDate === selectedDate ? checkedClass : ''
-									]"
-							>
-							{{item.time.getDate()}}
-							</view>
-							<view class="dot-show" v-if="item.info" :style="[dotStyle]">		
-							</view>
-							</view>
+								<view
+									class="date"
+									:class="[
+										item.isToday ? todayClass : '',
+										item.fullDate === selectedDate ? checkedClass : ''
+										]"
+								>
+									{{item.time.getDate()}}
+								</view>
+								<view class="dot-show" v-if="item.info && !item.info['unfinsh']" :style="[dotStyle]"></view>
+								<view class="dot-show" v-if="item.info && item.info['unfinsh']" :style="[ReddotStyle]"></view>
+						</view>
 						</template>
 						<template v-else>
 							<template v-if="current - sitem === 1 || current-sitem ===-2">
@@ -95,6 +95,15 @@
 					]
 				}
 			},
+			cilck_time: {
+				type: Object, /// 打点日期列表
+				default() {
+					return {
+						cur: '',
+						fullDate: ''
+					}
+				}
+			},
 			showBack: {
 				type: Boolean, // 是否返回今日
 				default: false
@@ -114,6 +123,14 @@
 						background: '#1899dc'
 					}
 				}
+			},
+			ReddotStyle: {
+				type: Object, // 打点日期的自定义样式
+				default() {
+					return {
+						background: '#E91E63'
+					}
+				}
 			}
 		},
 		watch:{
@@ -126,6 +143,10 @@
 					}
 				});
 				this.days = days;
+			},
+			cilck_time: function(newvalue){
+				this.initDate(newvalue.cur)//跳转对应日期页面
+				this.clickItem(newvalue)//选中指定日期
 			}
 		},
 		computed: {
@@ -266,29 +287,29 @@
 			},
 			//  上一个
 			daysPre () {
-			  if (this.weekMode) {
+				if (this.weekMode) {
 				const d = new Date(this.currentYear, this.currentMonth - 1,this.currentDate);
 				d.setDate(d.getDate() - 7);
 				this.initDate(d);  
-			  } else {
-				  const d = new Date(this.currentYear, this.currentMonth -2, 1);
-				  this.initDate(d);
-			  }
+			} else {
+					const d = new Date(this.currentYear, this.currentMonth -2, 1);
+					this.initDate(d);
+				}
 			  // console.log('pre',this.currentMonth)
-			  this.$emit('change-month', this.currentYear +'-' +  this.currentMonth);
+				this.$emit('change-month', this.currentYear +'-' +  this.currentMonth);
 			},
 			//  下一个
 			daysNext () {
-				 if (this.weekMode) {
+				if (this.weekMode) {
 					const d = new Date(this.currentYear, this.currentMonth - 1,this.currentDate);
 					d.setDate(d.getDate() + 7);
 					this.initDate(d);  
-				 } else {
+				} else {
 					const d = new Date(this.currentYear, this.currentMonth, 1);
 					this.initDate(d);
-				 }
-				 // console.log('next',this.currentMonth)
-				 this.$emit('change-month', this.currentYear +'-' + this.currentMonth);
+				}
+				// console.log('next',this.currentMonth)
+				this.$emit('change-month', this.currentYear +'-' + this.currentMonth);
 			},
 			changeMode() {
 				const premode = this.weekMode;

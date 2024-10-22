@@ -24,7 +24,7 @@
 				<ld-select :multiple="true" :list="shortcuts" @inputFun="inputFun" label-key="label" value-key="value"
 					placeholder="示例" clearable v-model="remarks" @change="selectChange"></ld-select>
 			</view>
-			<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="remarks" count></cl-textarea>
+			<cl-textarea rows="13" cols="40" :maxlength="maxLength" placeholder="请输入" v-model="remarks" count></cl-textarea>
 		</view>
 		<button v-if="id>0" class="bu" @tap="$noMultipleClicks(save)">
 			保存
@@ -75,6 +75,7 @@
 				formData: {
 					type:0
 				},
+				maxLength:100000,
 			};
 		},
 		onLoad(index) {
