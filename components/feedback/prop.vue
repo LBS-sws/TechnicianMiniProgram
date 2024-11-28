@@ -28,16 +28,14 @@
 						</view>
 						<view class="service">
 							<view class="service_title">申请理由<span class="jh">*</span></view>
-							<view class="lz">
-								
-							</view>
-							<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="service_content" count></cl-textarea>
+							<view class="lz"></view>
+							<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="content" count></cl-textarea>
 						</view>
 						
 						<view class="item-list">
 							<view class="service_title">申请人<span class="jh">*</span>：</view>
 							<view>
-								<cl-select v-model="userVal" :options="UserData"></cl-select>
+								<cl-select v-model="userVal" :options="staffData"></cl-select>
 								
 							</view>
 						</view>
@@ -69,6 +67,14 @@ export default{
 			type:[String,Array],
 			default:''
 		},
+		staffData:{
+			type:[String,Array],
+			default:''
+		},
+		jobId:{
+			type:[Number],
+			default:''
+		}
 	},
 	components: {
 	    DateTimePicker
@@ -76,29 +82,34 @@ export default{
 	data(){
 		const now = new Date();
 		return{
-			// ServiceTypeData:this.ServiceTypeData,
 			val:'',
-			// TypeData:this.TypeData,
 			typeVal:'',
 			userData:[],
 			userVal:'',
-			
+			content:'',
 			formData: {
 				applyTime: ''
 			},
 			// defaultTime: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
 			defaultTime: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-			    
+			
 		}
 	},
 	created() {
-		
+		 console.log(this.jobId)
 	},
 	methods:{
 		 submitForm() {
 		  const applyTime = this.formData.applyTime || this.defaultTime; // 使用默认时间
 		  console.log('提交数据:', applyTime);
 		  // 提交逻辑
+		  
+		  console.log(this.val)
+		  console.log(this.typeVal)
+		  console.log(this.userVal)
+		  console.log(this.content)
+		  console.log('工作单id:',this.jobId)
+		  //
 		},
 		show(){
 			this.$refs.popup.open('center')

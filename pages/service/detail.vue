@@ -107,7 +107,7 @@
 	<!-- <cl-dialog title="客户要求提醒" :visible="show" :closeOnClickModal="false" :beforeClose="confirm" :showCloseBtn="true">
 		<text class="max-content">{{teach_remark}}</text>
 	</cl-dialog> -->
-		<Pup class="prop" ref="popup" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :title="title"></Pup>
+		<Pup class="prop" ref="popup" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :title="title" :staffData="staffData" :jobId="jobid"></Pup>
 		
 	</view>
 	</view>
@@ -147,6 +147,7 @@ import Pup from '@/components/feedback/prop.vue';
 				title:'服务反馈',
 				ServiceTypeData:[{label:'调整工单日期',value:1}],
 				TypeData:[{label:'是', value:1}, {label:'否', value:0}],
+				staffData:[]
 			}
 		},
 		onLoad(index) {
@@ -159,11 +160,19 @@ import Pup from '@/components/feedback/prop.vue';
 			this.service.Status = 0;
 			this.data_select()
 			
-			console.log(uni.getStorageSync('user_id'));
+			// 获取当前用户user_id和name
+			if(uni.getStorageSync('user_id') && uni.getStorageSync('staffname'))
+			{
+				let user_id = uni.getStorageSync('user_id');
+				let user_name = uni.getStorageSync('staffname');
+				this.staffData = [{label:user_name, value:user_id}]
+				console.log(user_id,user_name)
+			}
 		},
 		methods: {
+			// 弹出服务反馈
 			feedback(){
-				console.log('1231')
+				
 				this.$refs.popup.show();
 			},
 			// showModal() {
