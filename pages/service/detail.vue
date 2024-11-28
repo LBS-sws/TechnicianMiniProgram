@@ -92,6 +92,10 @@
 					</view>
 				</cl-row>
 			</view>
+			
+			<view class="feedback" @click="feedback" >
+				服务反馈
+			</view>
 		</view>
 		
 		<button class="tj_bu" @tap="start()"> 
@@ -103,13 +107,18 @@
 	<!-- <cl-dialog title="客户要求提醒" :visible="show" :closeOnClickModal="false" :beforeClose="confirm" :showCloseBtn="true">
 		<text class="max-content">{{teach_remark}}</text>
 	</cl-dialog> -->
+		<Pup class="prop" ref="popup" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :title="title"></Pup>
 		
 	</view>
 	</view>
 	</view>
 </template>
 <script>
+import Pup from '@/components/feedback/prop.vue';
 	export default {
+		components:{
+			Pup,
+		},
 		data() {
 			return {
 				name:'服务详情',
@@ -133,7 +142,11 @@
 				photosArr:[],
 				show: false,
 				teach_remark: '',
-				confirm_flag: false
+				confirm_flag: false,
+				
+				title:'服务反馈',
+				ServiceTypeData:[{label:'调整工单日期',value:1}],
+				TypeData:[{label:'是', value:1}, {label:'否', value:0}],
 			}
 		},
 		onLoad(index) {
@@ -146,8 +159,13 @@
 			this.service.Status = 0;
 			this.data_select()
 			
+			console.log(uni.getStorageSync('user_id'));
 		},
 		methods: {
+			feedback(){
+				console.log('1231')
+				this.$refs.popup.show();
+			},
 			// showModal() {
 			// 			this.show = true;
 			// 		},
@@ -437,7 +455,7 @@
 		border-radius: 10px;
 		margin: 10px 0px;
 		padding: 10px 10px 100px 10px;
-
+		position: relative;
 	}
 
 	.cust_name {
@@ -553,4 +571,13 @@
 	overflow-y: auto;
 }
 
+.feedback{
+	font-size: 34rpx;
+	color: #ffb100;
+	font-weight: 700;
+	position: absolute;
+	top: 20rpx;
+	right: 10px;
+	z-index: 9;
+}
 </style>

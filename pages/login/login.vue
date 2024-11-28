@@ -85,6 +85,7 @@
 					{
 						uni.setStorageSync('token', res.data.token);
 						uni.setStorageSync('staffname', res.data.name);
+						uni.setStorageSync('user_id', res.data.user_id);
 						uni.setStorageSync('city', res.data.city);
 						uni.setStorageSync('officetel', res.data.officetel);
 						uni.hideLoading();
