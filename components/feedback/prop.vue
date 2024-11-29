@@ -74,6 +74,10 @@ export default{
 		jobId:{
 			type:[Number],
 			default:''
+		},
+		jobType:{
+			type:[Number],
+			default:''
 		}
 	},
 	components: {
@@ -97,6 +101,7 @@ export default{
 	},
 	created() {
 		 console.log(this.jobId)
+		 console.log(this.jobType)
 	},
 	methods:{
 		 submitForm() {
@@ -109,6 +114,24 @@ export default{
 		  console.log(this.userVal)
 		  console.log(this.content)
 		  console.log('工作单id:',this.jobId)
+		  
+		  
+		  let params = {
+		  	id: this.jobId,
+		  	job_type: this.jobType,
+			service_type:this.val,
+			type:this.typeVal,
+			job_date:applyTime,
+			content:this.content,
+			user_id:this.userVal
+		  }
+		  this.$api.editOrderDate(params).then(res=>{
+		  	
+		  	uni.hideLoading();
+		  }).catch(err=>{
+		  	uni.hideLoading();
+		  	console.log(err)
+		  })
 		  //
 		},
 		show(){

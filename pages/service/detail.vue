@@ -93,9 +93,6 @@
 				</cl-row>
 			</view>
 			
-			<view class="feedback" @click="feedback" >
-				服务反馈
-			</view>
 		</view>
 		
 		<button class="tj_bu" @tap="start()"> 
@@ -107,10 +104,25 @@
 	<!-- <cl-dialog title="客户要求提醒" :visible="show" :closeOnClickModal="false" :beforeClose="confirm" :showCloseBtn="true">
 		<text class="max-content">{{teach_remark}}</text>
 	</cl-dialog> -->
-		<Pup class="prop" ref="popup" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :title="title" :staffData="staffData" :jobId="jobid"></Pup>
+		<Pup class="prop" ref="popup" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :title="title" :staffData="staffData" 
+		:jobId="jobid"
+		:jobType="jobtype"></Pup>
+		
+	<view class="navbar-toggle">
+		<view class="menu-container">
+			<view class="menu" @click="menuHandle">
+				<view class="icon-bar icon-bar-1"></view>
+				<view class="icon-bar icon-bar-2"></view>
+				<view class="icon-bar icon-bar-3"></view>
+			</view>
+			<view class="menu-list" v-show="menuShow">
+				<view class="list">门店异常反馈</view>
+				<view class="list" @click="feedback">申请更换日期</view>
+			</view>
+		</view>
 		
 	</view>
-	</view>
+
 	</view>
 </template>
 <script>
@@ -147,7 +159,9 @@ import Pup from '@/components/feedback/prop.vue';
 				title:'服务反馈',
 				ServiceTypeData:[{label:'调整工单日期',value:1}],
 				TypeData:[{label:'是', value:1}, {label:'否', value:0}],
-				staffData:[]
+				staffData:[],
+				
+				menuShow:false,
 			}
 		},
 		onLoad(index) {
@@ -170,8 +184,12 @@ import Pup from '@/components/feedback/prop.vue';
 			}
 		},
 		methods: {
+			menuHandle(){
+				this.menuShow = !this.menuShow
+			},
 			// 弹出服务反馈
 			feedback(){
+				this.menuShow = false
 				
 				this.$refs.popup.show();
 			},
@@ -380,7 +398,71 @@ import Pup from '@/components/feedback/prop.vue';
 		}
 	}
 </script>
-<style>
+<style lang="scss">
+    .navbar-toggle {
+		
+        display: block;
+        margin: 14px 0 0;
+        -webkit-transition: all .3s ease-out 0s;
+        -o-transition: all .3s ease-out 0s;
+        transition: all .3s ease-out 0s;
+		position: absolute;
+		top: 0;
+		right: 32rpx;
+		z-index: 99;
+		
+		// background: #000000;
+		.icon-bar {
+		    display: block;
+		    width: 22px;
+		    height: 2px;
+		    border-radius: 1px;
+		}
+		.icon-bar {
+		    margin-left: auto;
+		    margin-right: auto;
+		    display: block;
+		    width: 20px;
+		    height: 2px;
+		    margin-bottom: 6px;
+		    position: relative;
+		    background: #f9f6f6;
+		    border-radius: 30px;
+		    z-index: 1;
+		    -webkit-transform-origin: 20px;
+		    transform-origin: 20px;
+		    -webkit-transition: background 0.5s cubic-bezier(0.77,0.2,0.05,1), opacity 0.55s ease, -webkit-transform 0.5s cubic-bezier(0.77,0.2,0.05,1);
+		    transition: background 0.5s cubic-bezier(0.77,0.2,0.05,1), opacity 0.55s ease, -webkit-transform 0.5s cubic-bezier(0.77,0.2,0.05,1);
+		    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1), background 0.5s cubic-bezier(0.77,0.2,0.05,1), opacity 0.55s ease;
+		    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1), background 0.5s cubic-bezier(0.77,0.2,0.05,1), opacity 0.55s ease, -webkit-transform 0.5s cubic-bezier(0.77,0.2,0.05,1);
+		}
+		
+		.menu-container{
+			position: relative;
+			.menu{
+				width: 40rpx;
+				height: 40rpx;
+				position: absolute;
+				top: 0;
+				right: 0;
+			}
+			.menu-list{
+				width: 220rpx;
+				position: absolute;
+				top: 0;
+				right: 44rpx;
+				background: #fff;
+				.list{
+					font-size: 28rpx;
+					padding: 20rpx 0;
+					text-align: center;
+					border-bottom: 2rpx solid #eee;
+				}
+				
+			}
+		}
+    }
+	
 	.new_card {
 		background-color: #fff;
 		border-radius: 10px;
@@ -580,13 +662,4 @@ import Pup from '@/components/feedback/prop.vue';
 	overflow-y: auto;
 }
 
-.feedback{
-	font-size: 34rpx;
-	color: #ffb100;
-	font-weight: 700;
-	position: absolute;
-	top: 20rpx;
-	right: 10px;
-	z-index: 9;
-}
 </style>

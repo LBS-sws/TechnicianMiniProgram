@@ -232,5 +232,10 @@ export default {
 	getSignature(params) {
 		return request("/Report.Report/getSignData", params)
 	},
+	
+	// 申请修改工单日期
+	editOrderDate(params){
+		return request("/Feedback.Feedback/updateOrderDate", params, 'POST')
+	},
 }
 
