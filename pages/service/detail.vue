@@ -105,8 +105,11 @@
 		<text class="max-content">{{teach_remark}}</text>
 	</cl-dialog> -->
 		<Pup class="prop" ref="popup" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :title="title" :staffData="staffData" 
+		
 		:jobId="jobid"
-		:jobType="jobtype"></Pup>
+		:jobType="jobtype"
+		
+		></Pup>
 		
 	<view class="navbar-toggle">
 		<view class="menu-container">
@@ -116,8 +119,9 @@
 				<view class="icon-bar icon-bar-3"></view>
 			</view>
 			<view class="menu-list" v-show="menuShow">
-				<view class="list">门店异常反馈</view>
-				<view class="list" @click="feedback">申请更换日期</view>
+				<!-- <view class="list">门店异常反馈</view>
+				<view class="list" @click="feedback(1)">申请更换日期</view> -->
+				<view class="list" v-for="(item,index) in menuData" :key="index" @click="feedback(index)">{{item.label}}</view>
 			</view>
 		</view>
 		
@@ -157,11 +161,14 @@ import Pup from '@/components/feedback/prop.vue';
 				confirm_flag: false,
 				
 				title:'服务反馈',
-				ServiceTypeData:[{label:'调整工单日期',value:1}],
+				ServiceTypeData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
 				TypeData:[{label:'是', value:1}, {label:'否', value:0}],
 				staffData:[],
 				
 				menuShow:false,
+				
+				menuData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
+				user_id:''
 			}
 		},
 		onLoad(index) {
@@ -180,18 +187,27 @@ import Pup from '@/components/feedback/prop.vue';
 				let user_id = uni.getStorageSync('user_id');
 				let user_name = uni.getStorageSync('staffname');
 				this.staffData = [{label:user_name, value:user_id}]
-				console.log(user_id,user_name)
+				this.user_id = user_id
+				// console.log(user_id,user_name)
 			}
 		},
 		methods: {
+			// 展开菜单
 			menuHandle(){
+				
 				this.menuShow = !this.menuShow
 			},
 			// 弹出服务反馈
-			feedback(){
-				this.menuShow = false
+			feedback(index){
+				console.log(this.menuData[index].value)
+				this.$refs.popup.problem_type =  this.menuData[index].value
+				this.$refs.popup.userVal = this.user_id
 				
-				this.$refs.popup.show();
+				this.menuShow = false	// 关闭下拉菜单
+				
+				this.$refs.popup.show(); // 打开弹出层
+				
+				this.$forceUpdate()
 			},
 			// showModal() {
 			// 			this.show = true;

@@ -11,13 +11,13 @@
 						<view class="item-list">
 							<view class="service_title">问题类型<span class="jh">*</span>：</view>
 							<view>
-								<cl-select v-model="val" :options="ServiceTypeData"></cl-select>
+								<cl-select v-model="problem_type" :options="ServiceTypeData"></cl-select>
 							</view>
 						</view>
 						<view class="item-list">
 							<view class="service_title">是否异常反馈<span class="jh">*</span>：</view>
 							<view>
-								<cl-select v-model="typeVal" :options="TypeData"></cl-select>
+								<cl-select v-model="abnormal_type" :options="TypeData"></cl-select>
 							</view>
 						</view>
 						<view class="item-list">
@@ -78,7 +78,9 @@ export default{
 		jobType:{
 			type:[Number],
 			default:''
-		}
+		},
+		
+		
 	},
 	components: {
 	    DateTimePicker
@@ -86,8 +88,8 @@ export default{
 	data(){
 		const now = new Date();
 		return{
-			val:'',
-			typeVal:'',
+			problem_type:'',
+			abnormal_type:'',
 			userData:[],
 			userVal:'',
 			content:'',
@@ -100,8 +102,9 @@ export default{
 		}
 	},
 	created() {
-		 console.log(this.jobId)
-		 console.log(this.jobType)
+		 // console.log(this.jobId)
+		 // console.log(this.jobType)
+		 console.log("反馈类型:",this.problemType)
 	},
 	methods:{
 		 submitForm() {
@@ -109,18 +112,18 @@ export default{
 		  console.log('提交数据:', applyTime);
 		  // 提交逻辑
 		  
-		  console.log(this.val)
-		  console.log(this.typeVal)
+		  console.log(this.problem_type)
+		  console.log(this.abnormal_type)
 		  console.log(this.userVal)
 		  console.log(this.content)
 		  console.log('工作单id:',this.jobId)
 		  
 		  
 		  let params = {
-		  	id: this.jobId,
+		  	job_id: this.jobId,
 		  	job_type: this.jobType,
-			service_type:this.val,
-			type:this.typeVal,
+			service_type:this.problem_type,
+			is_abnormal:this.abnormal_type,
 			job_date:applyTime,
 			content:this.content,
 			user_id:this.userVal
