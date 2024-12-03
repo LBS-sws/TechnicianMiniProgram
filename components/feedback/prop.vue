@@ -129,7 +129,14 @@ export default{
 			user_id:this.userVal
 		  }
 		  this.$api.editOrderDate(params).then(res=>{
-		  	
+			  // console.log(res.data)
+		  	if(res.data.code==200)
+			{
+				uni.showToast({
+					title: '登录成功',
+					icon: 'success'
+				})
+			}
 		  	uni.hideLoading();
 		  }).catch(err=>{
 		  	uni.hideLoading();

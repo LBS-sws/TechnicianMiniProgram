@@ -160,7 +160,7 @@ import Pup from '@/components/feedback/prop.vue';
 				teach_remark: '',
 				confirm_flag: false,
 				
-				title:'服务反馈',
+				title:'服务反馈', // 申请调整工单日期
 				ServiceTypeData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
 				TypeData:[{label:'是', value:1}, {label:'否', value:0}],
 				staffData:[],
@@ -199,15 +199,20 @@ import Pup from '@/components/feedback/prop.vue';
 			},
 			// 弹出服务反馈
 			feedback(index){
-				console.log(this.menuData[index].value)
-				this.$refs.popup.problem_type =  this.menuData[index].value
-				this.$refs.popup.userVal = this.user_id
-				
+				if(this.menuData[index].value == 2)
+				{
+					this.title = '申请调整工单日期'
+					console.log(this.menuData[index].value)
+					this.$refs.popup.problem_type =  this.menuData[index].value
+					this.$refs.popup.userVal = this.user_id
+					
+					
+					
+					this.$refs.popup.show(); // 打开弹出层
+					
+					this.$forceUpdate()
+				}
 				this.menuShow = false	// 关闭下拉菜单
-				
-				this.$refs.popup.show(); // 打开弹出层
-				
-				this.$forceUpdate()
 			},
 			// showModal() {
 			// 			this.show = true;
