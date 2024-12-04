@@ -109,14 +109,14 @@ export default{
 	methods:{
 		 submitForm() {
 		  const applyTime = this.formData.applyTime || this.defaultTime; // 使用默认时间
-		  console.log('提交数据:', applyTime);
+		  // console.log('提交数据:', applyTime);
 		  // 提交逻辑
 		  
-		  console.log(this.problem_type)
-		  console.log(this.abnormal_type)
-		  console.log(this.userVal)
-		  console.log(this.content)
-		  console.log('工作单id:',this.jobId)
+		  // console.log(this.problem_type)
+		  // console.log(this.abnormal_type)
+		  // console.log(this.userVal)
+		  // console.log(this.content)
+		  // console.log('工作单id:',this.jobId)
 		  
 		  
 		  let params = {
@@ -128,21 +128,9 @@ export default{
 			content:this.content,
 			user_id:this.userVal
 		  }
-		  this.$api.editOrderDate(params).then(res=>{
-			  // console.log(res.data)
-		  	if(res.data.code==200)
-			{
-				uni.showToast({
-					title: '登录成功',
-					icon: 'success'
-				})
-			}
-		  	uni.hideLoading();
-		  }).catch(err=>{
-		  	uni.hideLoading();
-		  	console.log(err)
-		  })
-		  //
+		  
+		  this.$emit('propUpdateJobDate',params);
+			
 		},
 		show(){
 			this.$refs.popup.open('center')

@@ -64,9 +64,13 @@
 						<view>
 						</view>
 					</view>
-					<view>
+					<view class="label-date">
 						<span class="content_t">日期:</span>
 						<text selectable="true">{{item.job_date}}</text>
+						<view class="label-status">
+							<span v-if="item.job_order_date==1" style="color: red;">审核中</span>
+							<span v-if="item.job_order_date==2" style="color: #12900a;">审核通过</span>
+						</view>
 					</view>
 					<view>
 						<span class="content_t">时间:</span>
@@ -270,7 +274,7 @@ export default {
 	}
 }
 </script>
-<style>
+<style lang="scss">
 .datec {
 	background-color: #FFFFFF;
 	border-radius: 15px;
@@ -383,6 +387,15 @@ export default {
 	background: #0e8cf1;
 	color: #FFFFFF;
 	font-size: 13px;
+}
+.label-date{
+	position: relative;
+	.label-status{
+		position: absolute;
+		top: 0;
+		right: 30rpx;
+		font-size: 26rpx;
+	}
 }
 </style>
 

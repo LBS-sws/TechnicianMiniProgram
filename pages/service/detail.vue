@@ -108,7 +108,7 @@
 		
 		:jobId="jobid"
 		:jobType="jobtype"
-		
+		 @propUpdateJobDate="updateJobDate"
 		></Pup>
 		
 	<view class="navbar-toggle">
@@ -192,6 +192,29 @@ import Pup from '@/components/feedback/prop.vue';
 			}
 		},
 		methods: {
+			updateJobDate(params){
+				console.log('callback:',params)
+				
+				 this.$api.editOrderDate(params).then(res=>{
+					
+					console.log(res)
+				 	if(res.code==200)
+					{
+						setTimeout(()=>{
+							this.$refs.popup.close()
+						},2500)
+					}
+					uni.showToast({
+						title: res.msg,
+						icon: 'none'
+					})
+				 	uni.hideLoading();
+				 }).catch(err=>{
+				 	uni.hideLoading();
+				 	console.log(err)
+				 })
+				 
+			},
 			// 展开菜单
 			menuHandle(){
 				
@@ -205,8 +228,6 @@ import Pup from '@/components/feedback/prop.vue';
 					console.log(this.menuData[index].value)
 					this.$refs.popup.problem_type =  this.menuData[index].value
 					this.$refs.popup.userVal = this.user_id
-					
-					
 					
 					this.$refs.popup.show(); // 打开弹出层
 					
