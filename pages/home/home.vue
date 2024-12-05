@@ -94,8 +94,8 @@
 					</view>
 					
 					<view class="label-date" v-if="item.job_order_date">
-						<span class="content_t">调整日期:</span>
-						<text selectable="true">{{item.job_date}}</text>
+						<span class="content_t" style="color: #178bde;">调整日期:</span>
+						<text selectable="true" style="color: #178bde;">{{item.job_date}}</text>
 						<view class="label-status">
 							<span v-if="item.job_order_date.status==1" style="color: red;">审核中</span>
 							<span v-if="item.job_order_date.status==2" style="color: #12900a;">审核通过</span>
