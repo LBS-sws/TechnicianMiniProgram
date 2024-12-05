@@ -64,13 +64,10 @@
 						<view>
 						</view>
 					</view>
-					<view class="label-date">
+					<view>
 						<span class="content_t">日期:</span>
 						<text selectable="true">{{item.job_date}}</text>
-						<view class="label-status">
-							<span v-if="item.job_order_date==1" style="color: red;">审核中</span>
-							<span v-if="item.job_order_date==2" style="color: #12900a;">审核通过</span>
-						</view>
+						
 					</view>
 					<view>
 						<span class="content_t">时间:</span>
@@ -86,6 +83,25 @@
 							<u-rate :count="3" v-model="item.customer_grade.score" active-color="#ffc800" inactive-color="#dadada" gutter="3" readonly touchable="false"></u-rate>
 						</view>
 					</view>
+					
+					<view class="label-date" v-if="item.job_order_date">
+						<span class="content_t">是否异常:</span>
+						<text selectable="true">
+							
+							{{item.job_order_date.abnormal_text}}
+							
+						</text>
+					</view>
+					
+					<view class="label-date" v-if="item.job_order_date">
+						<span class="content_t">调整日期:</span>
+						<text selectable="true">{{item.job_date}}</text>
+						<view class="label-status">
+							<span v-if="item.job_order_date.status==1" style="color: red;">审核中</span>
+							<span v-if="item.job_order_date.status==2" style="color: #12900a;">审核通过</span>
+						</view>
+					</view>
+					
 				</view>
 			</view>
 		</view>
@@ -390,9 +406,10 @@ export default {
 }
 .label-date{
 	position: relative;
+	padding-top: 10rpx;
 	.label-status{
 		position: absolute;
-		top: 0;
+		top: 20rpx;
 		right: 30rpx;
 		font-size: 26rpx;
 	}

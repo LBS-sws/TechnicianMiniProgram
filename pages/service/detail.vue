@@ -105,11 +105,16 @@
 		<text class="max-content">{{teach_remark}}</text>
 	</cl-dialog> -->
 		<Pup class="prop" ref="popup" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :title="title" :staffData="staffData" 
-		
 		:jobId="jobid"
 		:jobType="jobtype"
 		 @propUpdateJobDate="updateJobDate"
 		></Pup>
+		
+		<popup class="popup" ref="openPopUp" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :staffData="staffData" 
+		:jobId="jobid"
+		:jobType="jobtype"
+		@propUpdateJobDate="updateJobDate"
+		></popup>
 		
 	<view class="navbar-toggle">
 		<view class="menu-container">
@@ -119,8 +124,6 @@
 				<view class="icon-bar icon-bar-3"></view>
 			</view>
 			<view class="menu-list" v-show="menuShow">
-				<!-- <view class="list">门店异常反馈</view>
-				<view class="list" @click="feedback(1)">申请更换日期</view> -->
 				<view class="list" v-for="(item,index) in menuData" :key="index" @click="feedback(index)">{{item.label}}</view>
 			</view>
 		</view>
@@ -131,9 +134,10 @@
 </template>
 <script>
 import Pup from '@/components/feedback/prop.vue';
+import popup from '@/components/feedback/popup.vue';
 	export default {
 		components:{
-			Pup,
+			Pup,popup
 		},
 		data() {
 			return {
@@ -201,7 +205,18 @@ import Pup from '@/components/feedback/prop.vue';
 				 	if(res.code==200)
 					{
 						setTimeout(()=>{
-							this.$refs.popup.close()
+							if(params.service_type==1)
+							{
+								this.$refs.openPopUp.close()
+								this.$refs.openPopUp.abnormal_type = ''
+								this.$refs.openPopUp.content = ''
+							}
+							if(params.service_type==2)
+							{
+								this.$refs.popup.close()
+								this.$refs.popup.abnormal_type = ''
+								this.$refs.popup.content = ''
+							}
 						},2500)
 					}
 					uni.showToast({
@@ -232,6 +247,15 @@ import Pup from '@/components/feedback/prop.vue';
 					this.$refs.popup.show(); // 打开弹出层
 					
 					this.$forceUpdate()
+				}
+				
+				if(this.menuData[index].value == 1)
+				{
+					
+					this.$refs.openPopUp.problem_type =  this.menuData[index].value
+					this.$refs.openPopUp.userVal = this.user_id
+					this.$refs.openPopUp.show();
+					
 				}
 				this.menuShow = false	// 关闭下拉菜单
 			},
