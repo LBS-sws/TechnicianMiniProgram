@@ -239,6 +239,13 @@ import popup from '@/components/feedback/popup.vue';
 			feedback(index){
 				if(this.menuData[index].value == 2)
 				{
+					if(this.service.status==3){
+						uni.showToast({
+							title:'已完成工单不能申请',
+							icon:'none'
+						})
+						return false
+					}
 					this.title = '申请调整工单日期'
 					console.log(this.menuData[index].value)
 					this.$refs.popup.problem_type =  this.menuData[index].value

@@ -84,7 +84,7 @@
 						</view>
 					</view>
 					
-					<view class="label-date" v-if="item.job_order_date">
+					<view class="label-date" v-if="item.job_order_date && item.job_order_date.id">
 						<span class="content_t">是否异常:</span>
 						<text selectable="true">
 							
@@ -93,7 +93,7 @@
 						</text>
 					</view>
 					
-					<view class="label-date" v-if="item.job_order_date">
+					<view class="label-date" v-if="item.job_order_date && item.job_order_date.id">
 						<span class="content_t" style="color: #178bde;">调整日期:</span>
 						<text selectable="true" style="color: #178bde;">{{item.job_date}}</text>
 						<view class="label-status">
