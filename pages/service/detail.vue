@@ -482,7 +482,7 @@ import popup from '@/components/feedback/popup.vue';
 		position: absolute;
 		top: 0;
 		right: 32rpx;
-		z-index: 99;
+		z-index: 98;
 		
 		// background: #000000;
 		.icon-bar {
@@ -593,7 +593,7 @@ import popup from '@/components/feedback/popup.vue';
 		background-color: #007AFF;
 		color: #FFFFFF;
 		border-radius: 15px;
-		z-index: 9999;
+		z-index: 99;
 		font-weight: bold;
 		font-size: 18px;
 	}
