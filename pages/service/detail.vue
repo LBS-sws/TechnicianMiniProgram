@@ -204,6 +204,10 @@ import popup from '@/components/feedback/popup.vue';
 					console.log(res)
 				 	if(res.code==200)
 					{
+						uni.showToast({
+							title: res.msg,
+							icon: 'none'
+						})
 						setTimeout(()=>{
 							if(params.service_type==1)
 							{
@@ -218,12 +222,14 @@ import popup from '@/components/feedback/popup.vue';
 								this.$refs.popup.content = ''
 							}
 						},2500)
+					}else{
+						uni.showToast({
+							title: res.msg,
+							icon: 'none'
+						})
 					}
-					uni.showToast({
-						title: res.msg,
-						icon: 'none'
-					})
-				 	uni.hideLoading();
+					
+				 	// uni.hideLoading();
 				 }).catch(err=>{
 				 	uni.hideLoading();
 				 	console.log(err)

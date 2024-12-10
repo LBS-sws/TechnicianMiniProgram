@@ -23,7 +23,11 @@
 						<view class="item-list">
 							<view class="service_title">申请工作日期<span class="jh">*</span>：</view>
 							<view style="max-width: 260rpx;">
-								 <DateTimePicker v-model="formData.applyTime" :defaultTime="defaultTime" />
+								 <!-- <DateTimePicker v-model="formData.applyTime" :defaultTime="defaultTime" /> -->
+								 <picker mode="date" :value="date" :start="startDate" :end="endDate" fields="day" @change="bindDateChange">
+								            <view class="uni-input">{{date}}</view>
+								        </picker>
+								
 							</view>
 						</view>
 						<view class="service">
@@ -87,6 +91,9 @@ export default{
 	},
 	data(){
 		const now = new Date();
+		const currentDate = this.getDate({
+		            format: true
+		        })
 		return{
 			problem_type:'',
 			abnormal_type:'',
@@ -97,16 +104,47 @@ export default{
 				applyTime: ''
 			},
 			// defaultTime: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
-			defaultTime: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-			
+			defaultTime: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
+			 date: currentDate
 		}
 	},
 	created() {
 		 
 	},
+	 computed:{
+        startDate() {
+            return this.getDate('start');
+        },
+        endDate() {
+            return this.getDate('end');
+        }
+    },
 	methods:{
+		 bindDateChange: function(e) { //选择日期
+		            this.date = e.detail.value
+		            console.log('date', this.date)
+		},
+		getDate(type) { //年月日
+		            const date = new Date();
+		            // const date = new Date();
+		            let year = date.getFullYear();
+		            let month = date.getMonth() + 1;
+		            let day = date.getDate();
+		
+		            if (type === 'start') {
+		                year = year - 60;
+		            } else if (type === 'end') {
+		                year = year + 2;
+		            }
+		            month = month > 9 ? month : '0' + month;
+		            day = day > 9 ? day : '0' + day;
+		            return `${year}-${month}-${day}`;
+		},
 		 submitForm() {
-		  const applyTime = this.formData.applyTime || this.defaultTime; // 使用默认时间
+			 
+			 // console.log(this.date)
+			 // return false
+		  // const applyTime = this.formData.applyTime || this.defaultTime; // 使用默认时间
 		  
 		  // 提交逻辑
 		  
@@ -123,7 +161,7 @@ export default{
 		  	job_type: this.jobType,
 			service_type:this.problem_type,
 			is_abnormal:this.abnormal_type,
-			job_date:applyTime,
+			job_date:this.date,
 			content:this.content,
 			user_id:this.userVal
 		  }
