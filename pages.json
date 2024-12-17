@@ -235,6 +235,23 @@
 					}
 				}
 			]
+		},
+		{
+			"root":"pages/feedback",
+			"pages": [
+				{
+					"path":"list",
+					"style":{
+						"navigationBarTitleText": "申请调整工单日期"
+					}
+				},
+				{
+					"path":"item",
+					"style":{
+						"navigationBarTitleText": "申请调整工单日期详情"
+					}
+				}
+			]
 		}
 		
 	],

@@ -92,6 +92,7 @@
 					</view>
 				</cl-row>
 			</view>
+			
 		</view>
 		
 		<button class="tj_bu" @tap="start()"> 
@@ -103,13 +104,41 @@
 	<!-- <cl-dialog title="客户要求提醒" :visible="show" :closeOnClickModal="false" :beforeClose="confirm" :showCloseBtn="true">
 		<text class="max-content">{{teach_remark}}</text>
 	</cl-dialog> -->
+		<Pup class="prop" ref="popup" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :title="title" :staffData="staffData" 
+		:jobId="jobid"
+		:jobType="jobtype"
+		 @propUpdateJobDate="updateJobDate"
+		></Pup>
+		
+		<popup class="popup" ref="openPopUp" :ServiceTypeData="ServiceTypeData" :TypeData="TypeData" :staffData="staffData" 
+		:jobId="jobid"
+		:jobType="jobtype"
+		@propUpdateJobDate="updateJobDate"
+		></popup>
+		
+	<view class="navbar-toggle">
+		<view class="menu-container">
+			<view class="menu" @click="menuHandle">
+				<view class="icon-bar icon-bar-1"></view>
+				<view class="icon-bar icon-bar-2"></view>
+				<view class="icon-bar icon-bar-3"></view>
+			</view>
+			<view class="menu-list" v-show="menuShow">
+				<view class="list" v-for="(item,index) in menuData" :key="index" @click="feedback(index)">{{item.label}}</view>
+			</view>
+		</view>
 		
 	</view>
-	</view>
+
 	</view>
 </template>
 <script>
+import Pup from '@/components/feedback/prop.vue';
+import popup from '@/components/feedback/popup.vue';
 	export default {
+		components:{
+			Pup,popup
+		},
 		data() {
 			return {
 				name:'服务详情',
@@ -133,7 +162,17 @@
 				photosArr:[],
 				show: false,
 				teach_remark: '',
-				confirm_flag: false
+				confirm_flag: false,
+				
+				title:'服务反馈', // 申请调整工单日期
+				ServiceTypeData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
+				TypeData:[{label:'是', value:1}, {label:'否', value:0}],
+				staffData:[],
+				
+				menuShow:false,
+				
+				menuData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
+				user_id:''
 			}
 		},
 		onLoad(index) {
@@ -146,8 +185,93 @@
 			this.service.Status = 0;
 			this.data_select()
 			
+			// 获取当前用户user_id和name
+			if(uni.getStorageSync('user_id') && uni.getStorageSync('staffname'))
+			{
+				let user_id = uni.getStorageSync('user_id');
+				let user_name = uni.getStorageSync('staffname');
+				this.staffData = [{label:user_name, value:user_id}]
+				this.user_id = user_id
+				// console.log(user_id,user_name)
+			}
 		},
 		methods: {
+			updateJobDate(params){
+				console.log('callback:',params)
+				
+				 this.$api.editOrderDate(params).then(res=>{
+					
+					console.log(res)
+				 	if(res.code==200)
+					{
+						uni.showToast({
+							title: res.msg,
+							icon: 'none'
+						})
+						setTimeout(()=>{
+							if(params.service_type==1)
+							{
+								this.$refs.openPopUp.close()
+								this.$refs.openPopUp.abnormal_type = ''
+								this.$refs.openPopUp.content = ''
+							}
+							if(params.service_type==2)
+							{
+								this.$refs.popup.close()
+								this.$refs.popup.abnormal_type = ''
+								this.$refs.popup.content = ''
+							}
+						},2500)
+					}else{
+						uni.showToast({
+							title: res.msg,
+							icon: 'none'
+						})
+					}
+					
+				 	// uni.hideLoading();
+				 }).catch(err=>{
+				 	uni.hideLoading();
+				 	console.log(err)
+				 })
+				 
+			},
+			// 展开菜单
+			menuHandle(){
+				
+				this.menuShow = !this.menuShow
+			},
+			// 弹出服务反馈
+			feedback(index){
+				if(this.menuData[index].value == 2)
+				{
+					if(this.service.status==3){
+						uni.showToast({
+							title:'已完成工单不能申请',
+							icon:'none'
+						})
+						return false
+					}
+					this.title = '申请调整工单日期'
+					console.log(this.menuData[index].value)
+					this.$refs.popup.problem_type =  this.menuData[index].value
+					this.$refs.popup.userVal = this.user_id
+					
+					this.$refs.popup.show(); // 打开弹出层
+					
+					this.$forceUpdate()
+				}
+				
+				if(this.menuData[index].value == 1)
+				{
+					
+					this.$refs.openPopUp.problem_type =  this.menuData[index].value
+					this.$refs.openPopUp.userVal = this.user_id
+					this.$refs.openPopUp.show();
+					
+				}
+				this.menuShow = false	// 关闭下拉菜单
+			},
 			// showModal() {
 			// 			this.show = true;
 			// 		},
@@ -353,7 +477,71 @@
 		}
 	}
 </script>
-<style>
+<style lang="scss">
+    .navbar-toggle {
+		
+        display: block;
+        margin: 14px 0 0;
+        -webkit-transition: all .3s ease-out 0s;
+        -o-transition: all .3s ease-out 0s;
+        transition: all .3s ease-out 0s;
+		position: absolute;
+		top: 0;
+		right: 32rpx;
+		z-index: 98;
+		
+		// background: #000000;
+		.icon-bar {
+		    display: block;
+		    width: 22px;
+		    height: 2px;
+		    border-radius: 1px;
+		}
+		.icon-bar {
+		    margin-left: auto;
+		    margin-right: auto;
+		    display: block;
+		    width: 20px;
+		    height: 2px;
+		    margin-bottom: 6px;
+		    position: relative;
+		    background: #f9f6f6;
+		    border-radius: 30px;
+		    z-index: 1;
+		    -webkit-transform-origin: 20px;
+		    transform-origin: 20px;
+		    -webkit-transition: background 0.5s cubic-bezier(0.77,0.2,0.05,1), opacity 0.55s ease, -webkit-transform 0.5s cubic-bezier(0.77,0.2,0.05,1);
+		    transition: background 0.5s cubic-bezier(0.77,0.2,0.05,1), opacity 0.55s ease, -webkit-transform 0.5s cubic-bezier(0.77,0.2,0.05,1);
+		    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1), background 0.5s cubic-bezier(0.77,0.2,0.05,1), opacity 0.55s ease;
+		    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1), background 0.5s cubic-bezier(0.77,0.2,0.05,1), opacity 0.55s ease, -webkit-transform 0.5s cubic-bezier(0.77,0.2,0.05,1);
+		}
+		
+		.menu-container{
+			position: relative;
+			.menu{
+				width: 40rpx;
+				height: 40rpx;
+				position: absolute;
+				top: 0;
+				right: 0;
+			}
+			.menu-list{
+				width: 220rpx;
+				position: absolute;
+				top: 0;
+				right: 44rpx;
+				background: #fff;
+				.list{
+					font-size: 28rpx;
+					padding: 20rpx 0;
+					text-align: center;
+					border-bottom: 2rpx solid #eee;
+				}
+				
+			}
+		}
+    }
+	
 	.new_card {
 		background-color: #fff;
 		border-radius: 10px;
@@ -411,7 +599,7 @@
 		background-color: #007AFF;
 		color: #FFFFFF;
 		border-radius: 15px;
-		z-index: 9999;
+		z-index: 99;
 		font-weight: bold;
 		font-size: 18px;
 	}
@@ -437,7 +625,7 @@
 		border-radius: 10px;
 		margin: 10px 0px;
 		padding: 10px 10px 100px 10px;
-
+		position: relative;
 	}
 
 	.cust_name {

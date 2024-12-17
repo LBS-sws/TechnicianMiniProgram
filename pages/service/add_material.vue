@@ -105,12 +105,10 @@
 		<view style="width: 100%; height: 100rpx;">
 			
 		</view>
-		<!-- <view class="bu" @tap="save()">
-			保存
-		</view> -->
+
 		<view class="bu">
-					<u-button type="primary" :disabled="disabled"  @tap="$noMultipleClicks(save)" >保存</u-button>
-				</view>
+			<u-button type="primary" :disabled="disabled"  @tap="$noMultipleClicks(save)" >{{saveText}}</u-button>
+		</view>
 	</view>
 </template>
 
@@ -163,6 +161,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				
 				options:[],
 				disabled:false,
+				saveText:'保存'
 			}
 		},
 		onLoad(index) {
@@ -329,7 +328,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 						console.log('操作频繁')
 						return false
 					}
-					
+					this.saveText = '保存中'
 					
 					let params = {
 						id: this.id,
@@ -351,7 +350,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 					if(this.id == 0){
 						this.$api.addMaterials(params).then(res=>{
 							uni.hideLoading();
-							this.disabled = true
+							
 							uni.showToast({
 								title: res.msg,
 								icon: 'none'
@@ -361,9 +360,13 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 									uni.redirectTo({
 										url: "/pages/service/material?jobid=" +this.jobid + '&jobtype=' + this.jobtype
 									})
-									this.disabled = false
-								}, 2000)
+									
+								}, 1500)
 							}
+							setTimeout(()=>{
+								this.disabled = false
+								this.saveText = '保存'
+							},1600)
 						}).catch(err=>{
 							uni.showToast({
 								title: res.msg,
