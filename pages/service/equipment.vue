@@ -313,6 +313,8 @@ import Base64 from 'base-64';
 					}
 					if(res.code == 400){
 						uni.$utils.toast(res.msg)
+						this.is_load_bottom = true
+						this.bottom_load_msg = res.msg
 					}
 				}).catch(err=>{
 					console.log(err)
