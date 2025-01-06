@@ -162,6 +162,9 @@ export default {
 	equipmentList(params){
 		return request("/Equipment.Equipment/list", params, 'GET')
 	},
+	deviceSelect(params){
+		return request("/Equipment.Equipment/deviceSelect", params, 'GET')
+	},
 	getEqInfo(params){
 		return request("/Equipment.Equipment/getEqInfo", params, 'GET')
 	},

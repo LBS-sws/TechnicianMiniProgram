@@ -48,12 +48,20 @@
 					</view>
 					<view></view>
 				</cl-row>
+				<cl-row style="color: #000000;width: 73%;margin:  0 auto 10px auto;" class="more-item">
+					<view style="width: 50%;text-align: left;">区域类型</view>
+					<view>
+						<cl-select placeholder="所有区域类型" v-model="equipment_area_type" :options="deviceOption" >
+						</cl-select>
+					</view>
+					<view></view>
+				</cl-row>
 			</view>
 			<view class="confirm_magin">
 				增加数量：
 				<cl-input-number v-if="!scan_code" v-model="add_number"  :max="100000" :min="1" input="true" style="margin-left: 10px;"
 				@change="numChange"></cl-input-number>
-				<cl-input-number v-else v-model="add_number":max="1" :min="1" input="true" readonly="true" disabled></cl-input-number>
+				<cl-input-number v-else v-model="add_number" :max="1" :min="1" input="true" readonly="true" disabled></cl-input-number>
 			</view>
 		</cl-confirm>
 		<!-- 删除 -->
@@ -127,6 +135,7 @@ import Base64 from 'base-64';
 				add_equipment_letter:'',
 				add_equipment_number: '',
 				add_equipment_area: '',
+				equipment_area_type:'',
 				add_number: 1,
 				scan_code:'',
 				add_numbercode:'',
@@ -141,6 +150,7 @@ import Base64 from 'base-64';
 				total_page:1,
 				is_load_bottom:false,
 				bottom_load_msg:'',
+				deviceOption:[],
 			}
 		},
 		onLoad(index) {
@@ -168,6 +178,7 @@ import Base64 from 'base-64';
 			this.optionEq()		// 筛选1
 			this.data_select()  // 列表
 			this.optionEqAdd()	// 添加设备选项
+			this.deviceSelect()	// 添加设备选项
 		},
 		onReady(){
 			this.but()
@@ -468,8 +479,9 @@ import Base64 from 'base-64';
 					.open({
 						title: "增加服务设备",
 						width: "95%",
-					})
-					.then(() => {
+						position: "relative",
+    					top: "1%",
+					}).then(() => {
 						let params = {
 							ids: this.add_eq,
 							number: this.add_number,
@@ -478,7 +490,9 @@ import Base64 from 'base-64';
 							add_equipment_letter: this.add_equipment_letter,
 							add_equipment_number: this.add_equipment_number,
 							add_equipment_area: this.add_equipment_area,
+							equipment_area_type: this.equipment_area_type,
 						}
+						
 						this.$api.addEq(params).then(res=>{
 							if (res.code == 200) {
 								this.add_number = 1;
@@ -556,12 +570,23 @@ import Base64 from 'base-64';
 				uni.setStorageSync('equipment_area_' + this.jobid,e)
 				this.data_select()
 			},
-			//...
+			deviceSelect(){
+				this.$api.deviceSelect({}).then(res=>{
+					this.deviceOption = res.data
+					console.log(res.data)
+				}).catch(err=>{
+					console.log(err)
+				})
+			}
 		}
 	}
 </script>
 
 <style>
+	.cl-popup{
+		    position: relative;
+    top: 1%;
+	}
 	.add {
 		z-index: 9999;
 		position: fixed;

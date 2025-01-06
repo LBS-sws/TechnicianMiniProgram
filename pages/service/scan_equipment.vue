@@ -52,6 +52,18 @@
 						</cl-col>
 					</view>
 				</cl-row>
+
+
+				<cl-row >
+					<view class="text-left" style="margin-top: 15px;">区域类型</view>
+					<view class="text-right" style="width: 70%;">
+						<cl-col span="12">
+						<cl-select v-model="equipment_area_type" :options="deviceOption"></cl-select>
+						</cl-col>
+					</view>
+				</cl-row>
+
+
 			</view>
 		</view>
 		<view class="service">
@@ -175,6 +187,7 @@ export default {
 			showmore:0,
 			equipment_name: '',
 			equipment_area: '',
+			equipment_area_type:'',
 			equipment_number: '',
 			all_equipment_number: '',
 			number: '',
@@ -202,6 +215,7 @@ export default {
 			eqIdListStr:'',
 			is_single:true,
 			previous_next: 0, 	// 0 默认   1 上一个   2 下一个 
+			deviceOption:[],
 		}
 	},
 	onLoad(index) {
@@ -229,6 +243,7 @@ export default {
 			this.is_single = false
 		}
 		this.data_select()
+		this.deviceSelect()	// 添加设备选项
 	},
 	methods: {
 			
@@ -322,6 +337,14 @@ export default {
 							}else{
 								this.equipment_area = res.data.list[0].equipment_area
 							}
+
+							if(!res.data.list[0].equipment_area_type)
+							{
+								this.equipment_area_type = ''
+							}else{
+								this.equipment_area_type = res.data.list[0].equipment_area_type
+							}
+
 						}
 						// 多个设备时，禁止选区域，以及设备区域都为空
 						if(res.data.list.length > 1){
@@ -553,6 +576,7 @@ export default {
 					check_handle: check_handle,
 					more_info: this.more_info,
 					eq_number: this.eq_mark_num,
+					equipment_area_type: this.equipment_area_type,
 					ids:ids
 				}
 				uni.setStorageSync('last_id_' + this.jobid,this.id)
@@ -656,11 +680,15 @@ export default {
 			eq_next(){
 				this.previous_next = 2
 				this.editEq()
-				
-				
-				
-				
 			},
+			deviceSelect(){
+				this.$api.deviceSelect({}).then(res=>{
+					this.deviceOption = res.data
+					console.log(res.data)
+				}).catch(err=>{
+					console.log(err)
+				})
+			}
 	}
 }
 </script>

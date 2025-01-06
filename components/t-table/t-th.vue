@@ -66,6 +66,7 @@
 		color: #3b4246;
 		border-left: 1px #d0dee5 solid;
 		border-top: 1px #d0dee5 solid;
-		padding: 15upx;
+		/* padding: 15upx; */
+		min-width: 20rpx;
 	}
 </style>
