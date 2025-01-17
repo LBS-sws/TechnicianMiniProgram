@@ -115,7 +115,9 @@
 			</view>
 			<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="more_info" count></cl-textarea>
 		</view>
-		
+		<view class="claer">
+			
+		</view>
 		
 		
 		<!-- <view v-if="can_save" class="save_button">
@@ -787,6 +789,7 @@ export default {
 	right: 0;
 	bottom: 0px;
 	line-height: 50px;
+	z-index: 9999;
 }
 .cl-checkbox {
 	display: inline-block;
@@ -857,5 +860,9 @@ page {
 	background-color: #007AFF;
 	font-size: 26rpx;
 	text-align: center;
+}
+.claer{
+	width: 100%;
+	height: 80rpx;
 }
 </style>
