@@ -13,6 +13,8 @@
 				{{item.remarks}}
 			</view>
 		</view>
+		<u-loading-icon text="加载中" textSize="12" v-if="!isLoadding"></u-loading-icon>
+		<view v-if="isLoadding" class="loadding-ui">已加载完</view>
 	</view>
 </template>
 
@@ -27,7 +29,11 @@
 				jobtype: '',
 				shortcut_type: '',
 				service_type: '',
-				custInfo: {}
+				custInfo: {},
+				page:1,
+				pageSize:10,
+				isLoadMore:false,  		//是否加载中
+				isLoadding:false,
 			}
 		},
 		onLoad(index) {
@@ -44,9 +50,13 @@
 			}
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
-			// this.shortcut_type = index.shortcut_type
-			// this.service_type = index.service_type
+			
 			this.getList()
+			
+			uni.showToast({
+				title:'',
+				icon:'loading'
+			})
 		},
 		// 同start 回调  暂不使用
 		onReady() {
@@ -61,26 +71,48 @@
 			uni.$off('send')
 			uni.$off('custInfo')
 		},
+		onReachBottom(){  //上拉触底函数
+			var _self = this
+			console.log('触发')
+			if(!_self.isLoadMore){  //此处判断，上锁，防止重复请求
+				_self.isLoadMore=true
+				_self.page+=1
+				
+				this.getList()
+			}
+			
+		},
 		methods: {
 			// 列表
 			getList() {
+				let that = this
 				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
+					page:this.page,
+					pageSize:this.pageSize
 				}
 				this.$api.SiteWorkPhotosList(params).then(res=>{
 					if (res.code == 200) {
-						if (res.data) {
-							let list = res.data.data
-							list.forEach((item,i)=>{
-								// console.log(item.site_photos)
-								// 处理图片地址
-								item.site_photos.forEach((itemx,index)=>{
-									item.site_photos[index] = `${this.$baseUrl_imgs}` + itemx
-								})
-								item.remarks = item.remarks
+						let list = res.data.data
+						list.forEach((item,i)=>{
+							
+							// 处理图片地址
+							item.site_photos.forEach((itemx,index)=>{
+								item.site_photos[index] = `${this.$baseUrl_imgs}` + itemx
 							})
-							this.photos = list
+							item.remarks = item.remarks
+						})
+						
+						that.photos = that.photos.concat(list)
+						if(res.data.data.length == 0){
+							that.isLoadMore = false
+							that.isLoadding = true
+						}else{
+							setTimeout(()=>{
+								that.isLoadMore = false
+								that.isLoadding = true
+							}, 2000);
 						}
 					}
 				}).catch(err=>{
@@ -204,4 +236,11 @@
 	.list span {
 		color: #000000;
 	}
+
+.loadding-ui{
+	font-size: 24rpx;
+	color: #7b7070;
+	text-align: center;
+	padding: 5px 0;
+}
 </style>
