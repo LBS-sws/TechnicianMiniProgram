@@ -153,6 +153,10 @@ export default {
 	editSiteWorkPhotos(params){
 		return request("/SiteWorkPhotos.SiteWorkPhotos/editSiteWorkPhotos", params, 'PUT')
 	},
+	// 设备自动继承 pages/service/start
+	inheritEq(params){
+		return request("/Equipment.Equipment/inheritEq", params, 'GET')
+	},
 	optionEqAdd(params){
 		return request("/Equipment.Equipment/optionEqAdd", params, 'GET')
 	},
