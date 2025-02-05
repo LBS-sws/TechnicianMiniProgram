@@ -123,6 +123,12 @@
 					}
 				},
 				{
+					"path": "smart_scan_equipment",
+					"style": {
+						"navigationBarTitleText": "智能设备详情"
+					}
+				},
+				{
 					"path": "summarize",
 					"style": {
 						"navigationBarTitleText": "勘察总结"

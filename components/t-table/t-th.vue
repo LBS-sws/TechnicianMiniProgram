@@ -68,5 +68,6 @@
 		border-top: 1px #d0dee5 solid;
 		/* padding: 15upx; */
 		min-width: 20rpx;
+		max-width: 70px;
 	}
 </style>

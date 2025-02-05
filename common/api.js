@@ -168,7 +168,9 @@ export default {
 	getEqInfo(params){
 		return request("/Equipment.Equipment/getEqInfo", params, 'GET')
 	},
-	
+	getSmartEqInfo(params){
+		return request("/Equipment.Equipment/getSmartEqInfo", params, 'GET')
+	},
 	addEq(params){
 		return request("/Equipment.Equipment/addEq", params, 'POST')
 	},
@@ -203,8 +205,14 @@ export default {
 	editEq(params){
 		return request("/Equipment.Equipment/editEq?ids=" + params.ids, params, 'PUT')
 	},
+	editSmartEq(params){
+		return request("/Equipment.Equipment/editSmartEq?ids=" + params.ids, params, 'PUT')
+	},
 	CheckData(params){
 		return request("/Order.Order/CheckData", params, 'GET')
+	},
+	getSmartEqServiceHistory(params){
+		return request("/Equipment.Equipment/getSmartEqServiceHistory", params, 'GET')
 	},
 	saveEvaluates(params){
 		return request("/Report.Report/saveEvaluates", params, 'POST')

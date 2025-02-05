@@ -84,14 +84,27 @@
 				</cl-col>
 			</cl-row>
 		</view>
-		<view class="all jjBtn">
+		<view class="all jjBtn" >
 			<cl-checkbox-group v-model="xz_all" border >
-				<cl-checkbox v-for="(item,index) in all" :key="index" v-bind:label="item.id" :class="'content_' + item.id" >
-					<view v-if="item.choose > 0" class="eq_isnull_color" >
-						{{item.number}}&nbsp;{{item.label}}
+				<cl-checkbox v-for="(item,index) in all" :key="index" v-bind:label="item.id" :class="'content_' + item.id">
+					<view v-if="item.choose > 0" class="eq_isnull_color">
+						<view style="width:80%;height:80px;float: left;display: grid;place-items: center;">
+							{{item.number}}&nbsp;{{item.label}} <view class="device_area">{{item.device_area}}</view>
+						</view>
+						<view style="width:20%;height:80px;float: right;">
+							<view class="top" v-if="item.up_or_down == 1"></view>
+							<view class="down" v-if="item.up_or_down == 2"></view>
+						</view>
+						
 					</view>
 					<view v-else>
-						{{item.number}}&nbsp;{{item.label}}
+						<view style="width:80%;height:80px;float: left;display: grid;place-items: center;">
+							{{item.number}}&nbsp;{{item.label}} <view class="device_area">{{item.device_area}}</view>
+						</view>
+						<view style="width:20%;height:80px;float: right;">
+							<view class="top" v-if="item.up_or_down == 1"></view>
+							<view class="down" v-if="item.up_or_down == 2"></view>
+						</view>
 					</view>
 				</cl-checkbox>
 			</cl-checkbox-group>
@@ -351,12 +364,29 @@ import Base64 from 'base-64';
 					let id_list = this.all.map((item) => {
 					    return item.id
 					}).join(',')
-					
-					console.log('add_all',id_list)
-					
-					uni.redirectTo({
-						url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+ids +'&id_list='+id_list
+
+					var is_existence_smart = 0
+					this.xz_all.forEach(idToCheck => {
+						let found = this.all.some(item => item.id === idToCheck && item.equipment_type_id === 327);
+						if (found) {
+							is_existence_smart = 1
+						} 
+					});
+					var smartList = [];
+					this.all.forEach((item,i)=>{
+						if(item.equipment_type_id === 327){
+							smartList.push(item.id)
+						}
 					})
+					if(is_existence_smart){
+						uni.redirectTo({
+							url: "/pages/service/smart_scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+ids +'&id_list='+smartList
+						})
+					}else{
+						uni.redirectTo({
+							url: "/pages/service/scan_equipment?jobid="+this.jobid + '&jobtype='+this.jobtype +'&id='+ids +'&id_list='+id_list
+						})
+					}
 				}
 			},
 			scanCode() {
@@ -595,7 +625,10 @@ import Base64 from 'base-64';
 		bottom: 10%;
 		right: 15px;
 	}
-
+	.device_area{
+		color: #565252;
+		font-size: 12px;
+	}
 	.scan {
 		z-index: 9999;
 		position: fixed;
@@ -714,7 +747,7 @@ import Base64 from 'base-64';
 		width: 97px;
 		height: 50px;
 		text-align: center;
-		padding-top: 15px;
+		/* padding-top: 15px; */
 		margin-top: 5px;
 	}
 	.cl-checkbox-group{
@@ -739,7 +772,7 @@ import Base64 from 'base-64';
 		width: 110px;
 		height: 80px;
 		text-align: center;
-		padding-top: 27px;
+		/* padding-top: 27px; */
 		margin-top: 10px;
 	}
 
@@ -769,7 +802,7 @@ import Base64 from 'base-64';
 		width: 110px;
 		height: 80px;
 		text-align: center;
-		padding-top: 27px;
+		/* padding-top: 27px; */
 		margin-top: 10px;
 	}
 
@@ -779,6 +812,8 @@ import Base64 from 'base-64';
 		font-size: 28rpx;
 		-webkit-transition: all 0.3s;
 		transition: all 0.3s;
+		display: grid;
+		place-items: center;
 	}
 
 	.xzadd .cl-checkbox--border {
@@ -789,7 +824,7 @@ import Base64 from 'base-64';
 		width: 97px;
 		height: 50px;
 		text-align: center;
-		padding-top: 15px;
+		/* padding-top: 15px; */
 		margin-top: 5px;
 	}
 
@@ -829,7 +864,7 @@ import Base64 from 'base-64';
 		width: 110px;
 		height: 80px;
 		text-align: center;
-		padding-top: 27px;
+		/* padding-top: 27px; */
 		margin-top: 10px;
 		color: #4CAF50;
 	}
@@ -867,4 +902,72 @@ import Base64 from 'base-64';
 .confirm_magin{
 	margin: 3px;
 }	
+</style>
+
+
+
+<style lang="scss">
+
+.top{
+            width:10px;
+            height:10px;
+            position: relative;
+			left: 10px;
+    		top: 9px;
+        }
+		.top::before{
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 10px;
+			height: 10px;
+			background: red;
+			clip-path: polygon(0 0, 0 100%, 100% 100%);
+			transform:rotate(135deg);
+		}
+		.top::after{
+			content:'';
+			position: absolute;
+			top: 0;
+			left: 50%;
+			width: 2px;
+			height: 18px;
+			margin-left: -1px;
+			background: red;
+			background: red;
+			// transform:rotate(45deg);
+			z-index: 99;
+		}
+.down{
+            width:10px;
+            height:10px;
+            position: relative;
+			left: 10px;
+    		top: 9px;
+        }
+		.down::before{
+			content: '';
+			position: absolute;
+			top: 9px;
+			left: 0;
+			width: 10px;
+			height: 10px;
+			background: green;
+			clip-path: polygon(0 0, 0 100%, 100% 100%);
+			transform:rotate(316deg);
+		}
+		.down::after{
+			content:'';
+			position: absolute;
+			top: 0;
+			left: 50%;
+			width:2px;
+			height:18px;
+			margin-left: -1px;
+			background: green;
+			// transform:rotate(45deg);
+			z-index: 99;
+		}
+		
 </style>
