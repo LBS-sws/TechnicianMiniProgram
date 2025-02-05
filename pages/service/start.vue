@@ -154,6 +154,7 @@ import color from 'uview-ui/libs/config/color';
 				mask: true
 			});
 			this.data_select();
+			this.autoInheritEq();
 		},
 		methods: {
 			data_select() {
@@ -283,6 +284,23 @@ import color from 'uview-ui/libs/config/color';
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
 						.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign
+				})
+			},
+			//继承设备
+			autoInheritEq(){
+				let params = {
+					job_id:this.jobid,
+					job_type:this.jobtype
+				}
+				this.$api.inheritEq(params).then(res=>{
+					//隐藏加载框
+					setTimeout(() => {
+						uni.hideLoading();
+					}, 100)
+					this.showContent = true;
+				}).catch(err=>{
+					this.showContent = true;
+					uni.hideLoading();
 				})
 			}
 		}

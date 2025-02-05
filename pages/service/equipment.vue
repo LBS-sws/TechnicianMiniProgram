@@ -291,6 +291,11 @@ import Base64 from 'base-64';
 			},
 			// 设备列表
 			data_select() {
+				uni.showLoading({
+					title: '加载中...',
+					mask: true
+				});
+
 				let params = {
 					job_type:this.jobtype,
 					job_id:this.jobid,
@@ -340,8 +345,11 @@ import Base64 from 'base-64';
 						this.is_load_bottom = true
 						this.bottom_load_msg = res.msg
 					}
+
+					uni.hideLoading();
 				}).catch(err=>{
 					console.log(err)
+					uni.hideLoading();
 				})
 			},
 			hzyl() {

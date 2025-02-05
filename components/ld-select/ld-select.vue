@@ -361,7 +361,7 @@
 			overflow: hidden;
 			width: 100%;
 			border-radius: 0;
-			padding-bottom: 50rpx;
+			padding-bottom: 94rpx;
 
 			.select-content {
 				// background-color: #F1F1F1;
