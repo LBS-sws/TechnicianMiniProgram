@@ -92,14 +92,14 @@
 										<view class="td">{{item.area}}</view>
 										<view class="td noPadding">
 											<view class="celspan">
-												<view class="td">{{item.past14DaysMorning}}</view>
-												<view class="td">{{item.past14DaysEvening}}</view>
+												<view class="td" style="width: 49%;">{{item.past14DaysMorning}}</view>
+												<view class="td" style="width: 49%;">{{item.past14DaysEvening}}</view>
 											</view>
 										</view>
 										<view class="td noPadding">
 											<view class="celspan">
-												<view class="td">{{item.past7DaysMorning}}</view>
-												<view class="td">{{item.past7DaysEvening}}</view>
+												<view class="td" style="width: 49%;">{{item.past7DaysMorning}}</view>
+												<view class="td" style="width: 49%;">{{item.past7DaysEvening}}</view>
 											</view>
 										</view>
 										<view class="td">{{item.ratio}} %</view>
@@ -127,10 +127,10 @@
 			<view class="popup-content" :class="{ 'popup-height': type === 'left' || type === 'right' }">
 				<view style="text-align: center;">
 					<view style="font-size: 20px;font-weight: bold;">本次服务内容</view>
-					<view style="padding: 12px;">共有 <span style="color: #02A7F0;">4</span> 个设备将被批量编辑，请谨慎操作！</view>
+					<view style="padding: 12px;">共有 <span style="color: #02A7F0;">{{editEqCount}}</span> 个设备将被批量编辑，请谨慎操作！</view>
 					<view style="border-bottom:2px solid #f2f2f2;margin: 10px;"></view>
 					<view style="border:1px solid rgb(245, 154, 35);background-color: rgba(245, 154, 35, 0.196);border-radius: 4px;">
-						<view style="width:90%;text_align:left;">以下 <span>2</span> 设备已填写内容是否替换服务内容</view>
+						<view style="width:90%;text_align:left;">以下 <span>{{editEqCount}}</span> 设备已填写内容是否替换服务内容</view>
 					</view>
 
 					<view style="width:90%;margin:10px auto;" v-for="(item,index) in list" :key="index">
@@ -251,6 +251,7 @@ export default {
 				{ name: '否', value: 0, checked: false },
 			],
 			editIds:'',
+			editEqCount:'',
 		}
 	},
 	onLoad(index) {
@@ -298,6 +299,7 @@ export default {
 						this.equipment_area = res.data.equipmentArea
 						this.serviceContentHistory = res.data.serviceContentHistory
 						this.list = res.data.list
+						this.editEqCount = res.data.list.length
 						if(res.data.list.length == 1){
 							// 单个
 							this.service_content = res.data.serviceContent	
@@ -345,9 +347,21 @@ export default {
 			},
 			// 保存	单个 多个
 			editEq(){
-				// let ids = this.list.map((item) => {
-				//     return item.id
-				// }).join(',')
+				// if(this.editIds == ''){
+				// 	uni.showToast({
+				// 		title: '没有需要操作的设备！',
+				// 		icon: 'none'
+				// 	})
+				// 	return false
+				// }
+				let ids = this.list.map((item) => {
+				    return item.id
+				}).join(',')
+
+// 				console.log('idsidsidsids',ids)
+// 				console.log('this.editIds',this.editIds)
+// return false
+
 				let params = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
@@ -357,7 +371,8 @@ export default {
 					more_info: null,
 					eq_number: this.equipment_number,
 					equipment_area_type: this.equipment_area_type,
-					ids:this.editIds,
+					ids:ids,
+					content_ids:this.editIds,
 					service_content:this.service_content
 				}
 
@@ -458,14 +473,16 @@ export default {
 				this.type = 'bottom'
 				this.$refs.batchedittip.open('bottom')
 				this.previous_next = 1
-				this.editEq()
+				// this.editEq()
+				this.editIds = ''
 				
 			},
 			eq_next(){
 				this.type = 'bottom'
 				this.$refs.batchedittip.open('bottom')
 				this.previous_next = 2
-				this.editEq()
+				// this.editEq()
+				this.editIds = ''
 			},
 			deviceSelect(){
 				this.$api.deviceSelect({}).then(res=>{
@@ -500,26 +517,19 @@ export default {
 				}).catch(err=>{
 				})
 			},
-			radioChange(event,id) {
+			radioChange(event, id) {
 				const { value } = event.detail;
-				let editIdsArray = this.editIds.split(',').filter(item => item); // 将字符串转换为数组并过滤空值
-
+				let editIdsArray = this.editIds.split(',').filter(item => item); 
+				const idStr = id.toString();
 				if (value == 1) {
-					// 如果 value 等于 1，则添加 id
-					if (!editIdsArray.includes(id)) {
-						editIdsArray.push(id);
+					if (!editIdsArray.includes(idStr)) {
+						editIdsArray.push(idStr);
 					}
 				} else if (value == 0) {
-					// 如果 value 等于 0，则删除 id
-					editIdsArray = editIdsArray.filter(item => item !== id);
+					editIdsArray = editIdsArray.filter(item => item !== idStr);
 				}
-
-				// 将数组转换回字符串
 				this.editIds = editIdsArray.join(',');
-				
-				// console.log('this.editIds1',this.editIds)
-				// return false
-					
+				return false;
 			}
 	}
 }
