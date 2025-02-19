@@ -177,6 +177,7 @@ import Base64 from 'base-64';
 					return false
 				}, 2000);
 			}
+			
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
 			// this.ct = index.ct
@@ -292,7 +293,7 @@ import Base64 from 'base-64';
 			// 设备列表
 			data_select() {
 				uni.showLoading({
-					title: '加载中...',
+					title: '加载中11111...',
 					mask: true
 				});
 
@@ -345,7 +346,6 @@ import Base64 from 'base-64';
 						this.is_load_bottom = true
 						this.bottom_load_msg = res.msg
 					}
-
 					uni.hideLoading();
 				}).catch(err=>{
 					console.log(err)
@@ -613,7 +613,6 @@ import Base64 from 'base-64';
 			deviceSelect(){
 				this.$api.deviceSelect({}).then(res=>{
 					this.deviceOption = res.data
-					console.log(res.data)
 				}).catch(err=>{
 					console.log(err)
 				})

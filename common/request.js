@@ -58,7 +58,7 @@ export default (path, data = {}, method = 'GET') => {
 				reject(err);
 			},
 			complete() {
-				uni.hideLoading();
+				// uni.hideLoading();
 			}
 		});
 	});

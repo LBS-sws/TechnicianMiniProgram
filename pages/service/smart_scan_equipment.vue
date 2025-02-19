@@ -17,7 +17,7 @@
 				<cl-row >
 					<view class="text-left" style="width:40%;line-height: 43px;">区域类型</view>
 					<view class="text-right" style="width: 50%;">
-						<cl-select v-model="equipment_area_type" :disabled="disabled" :options="deviceOption"></cl-select>
+						<cl-select v-model="equipment_area_type" :options="deviceOption"></cl-select>
 					</view>
 				</cl-row>
 				<cl-row v-if="disabled == false ">
@@ -38,7 +38,7 @@
 									<view style="margin-left: 11px;">
 										<view class="h_info">{{item.creat_time}}</view>
 										<view class="h_info">{{item.name}}({{item.code}})</view>
-										<view class="son2">{{item.service_content}}</view>
+										<view class="son2">{{item.service_content}}，{{item.more_info}}</view>
 									</view>
 								</view>
 								<view class="jianxi" style="margin:0;"></view>
@@ -121,6 +121,12 @@
 				</view>
 			</cl-row>
 			</view>
+		</view>
+
+
+		<view class="service">
+			<view class="service_title">补充说明</view>
+			<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="more_info" count></cl-textarea>
 		</view>
 
 		<uni-popup ref="batchedittip" background-color="#fff" >
@@ -221,7 +227,7 @@ export default {
 			// check_datas: [],
 			// check_handle: [],//'',
 			// check_handles: '',
-			// more_info: '',
+			 more_info: '',
 			// end_site_photos: '',
 			// start_site_photos: '',
 			// upload_site_photos: '',
@@ -247,7 +253,7 @@ export default {
 			no_work_time:'',
 			history_list:[],
 			yes_or_no_items: [
-				{ name: '是', value: 1, checked: false },
+				{ name: '是', value: 1, checked: true },
 				{ name: '否', value: 0, checked: false },
 			],
 			editIds:'',
@@ -300,11 +306,18 @@ export default {
 						this.serviceContentHistory = res.data.serviceContentHistory
 						this.list = res.data.list
 						this.editEqCount = res.data.list.length
+
+						let ids = this.list.map((item) => {
+							return item.id
+							}).join(',')
+						this.editIds = ids
+
 						if(res.data.list.length == 1){
 							// 单个
 							this.service_content = res.data.serviceContent	
 							this.disabled = false
 							this.equipment_area_type = res.data.equipmentAreaType	
+							this.more_info = res.data.list[0].more_info
 						}else if(res.data.list.length > 1){
 							// 多个
 							this.disabled = true
@@ -339,11 +352,35 @@ export default {
 			save_smart(){
 				this.editEq()
 			},
+			eq_previous(){
+				this.type = 'bottom'
+				this.previous_next = 1
+				this.editIds = ''
+				if(this.editEqCount > 1){
+					this.$refs.batchedittip.open('bottom')
+				}else{
+					this.editEq()
+				}
+			},
+			eq_next(){
+				this.type = 'bottom'
+				this.previous_next = 2
+				this.editIds = ''
+				if(this.editEqCount > 1){
+					this.$refs.batchedittip.open('bottom')
+				}else{
+					this.editEq()
+				}
+			},
 			save(){
 				this.type = 'bottom'
-				this.$refs.batchedittip.open('bottom')
 				this.previous_next = 0
-				// this.editEq()
+				if(this.editEqCount > 1){
+					this.$refs.batchedittip.open('bottom')
+				}else{
+					this.editEq()
+				}
+				
 			},
 			// 保存	单个 多个
 			editEq(){
@@ -358,9 +395,12 @@ export default {
 				    return item.id
 				}).join(',')
 
-// 				console.log('idsidsidsids',ids)
-// 				console.log('this.editIds',this.editIds)
-// return false
+				if(this.editEqCount > 1){
+					var content_ids = this.editIds
+				}else{
+					var content_ids = ids
+				}
+
 
 				let params = {
 					job_id: this.jobid,
@@ -368,15 +408,15 @@ export default {
 					equipment_name: this.equipment_name,
 					equipment_area: this.equipment_area,
 					check_handle: null,
-					more_info: null,
+					more_info: this.more_info,
 					eq_number: this.equipment_number,
 					equipment_area_type: this.equipment_area_type,
 					ids:ids,
-					content_ids:this.editIds,
+					content_ids:content_ids,
 					service_content:this.service_content
 				}
 
-				// console.log('this.editIds',this.editIds)
+				// console.log('content_ids',content_ids)
 				// return false
 
 				uni.setStorageSync('last_smart_id_' + this.jobid,this.id)
@@ -468,21 +508,6 @@ export default {
 				uni.redirectTo({
 					url: "/pages/service/equipment?jobid=" +this.jobid + '&jobtype=' + this.jobtype +'&shortcut_type=' +this.shortcut_type +'&service_type=' + this.service_type + '&ct=' + this.ct
 				})
-			},
-			eq_previous(){
-				this.type = 'bottom'
-				this.$refs.batchedittip.open('bottom')
-				this.previous_next = 1
-				// this.editEq()
-				this.editIds = ''
-				
-			},
-			eq_next(){
-				this.type = 'bottom'
-				this.$refs.batchedittip.open('bottom')
-				this.previous_next = 2
-				// this.editEq()
-				this.editIds = ''
 			},
 			deviceSelect(){
 				this.$api.deviceSelect({}).then(res=>{
