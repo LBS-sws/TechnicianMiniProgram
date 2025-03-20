@@ -293,7 +293,7 @@ import Base64 from 'base-64';
 			// 设备列表
 			data_select() {
 				uni.showLoading({
-					title: '加载中11111...',
+					title: '加载中...',
 					mask: true
 				});
 
