@@ -50,15 +50,19 @@
 			<view class="signout_ui">
 				<view class="item">返回</view>
 				<view class="item">直接签离</view>
-				<view class="item">服务暂停、安排下次时间</view>
+				<view class="item" @click="serviceHandle">服务暂停、安排下次时间</view>
 			</view>
 		</u-popup>
+		
+		<DatePicker :showLabel="true" :show="show1" :value="defaultDate" @confirm="dateChange" @cancel="show1=false" />
 	</view>
 </template>
 
 <script>
 import color from 'uview-ui/libs/config/color';
+import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 	export default {
+		components: {DatePicker},
 		data() {
 			return {
 				name:'开始服务',
@@ -143,6 +147,10 @@ import color from 'uview-ui/libs/config/color';
 				bk:'',
 				
 				show:true,
+				
+				defaultDate: '',
+				date:'',
+				show1: false,
 			}
 		},
 		onLoad(index) {
@@ -171,6 +179,17 @@ import color from 'uview-ui/libs/config/color';
 			// },2000)
 		},
 		methods: {
+			// 服务暂停、安排下次时间
+			serviceHandle(){
+				console.log('下次服务时间')
+				this.show = false
+				this.show1 = true
+			},
+			// 下次服务选择日期
+			dateChange(v) {
+			    this.show1 = false
+			    this.date = v
+			},
 			open(){
 				
 			},
