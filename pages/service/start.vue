@@ -45,6 +45,14 @@
 			</cl-row>
 		</view>
 		<view class="tj_bu" v-else @tap="report()">检查报告</view>
+		
+		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
+			<view class="signout_ui">
+				<view class="item">返回</view>
+				<view class="item">直接签离</view>
+				<view class="item">服务暂停、安排下次时间</view>
+			</view>
+		</u-popup>
 	</view>
 </template>
 
@@ -132,7 +140,9 @@ import color from 'uview-ui/libs/config/color';
 				autograph:'',//客户签名数量
 				staffSign:'',//技术员签名数量
 				loginStaff:'',
-				bk:''
+				bk:'',
+				
+				show:true,
 			}
 		},
 		onLoad(index) {
@@ -155,8 +165,18 @@ import color from 'uview-ui/libs/config/color';
 			});
 			this.data_select();
 			this.autoInheritEq();
+			
+			// setTimeout(()=>{
+			// 	this.show = true
+			// },2000)
 		},
 		methods: {
+			open(){
+				
+			},
+			close(){
+				this.show = false
+			},
 			data_select() {
 				let params = {
 					job_id:this.jobid,
@@ -307,7 +327,7 @@ import color from 'uview-ui/libs/config/color';
 	}
 </script>
 
-<style>
+<style lang="scss">
 	.new_card_title {
 		border-bottom: 1px solid #e0dcdc;
 		font-size: 19px;
@@ -467,4 +487,18 @@ import color from 'uview-ui/libs/config/color';
 		margin: 2px 0px;
 		line-height: 55rpx;
 	}
+.signout_ui{
+	padding: 50rpx 40rpx 40rpx;
+	.item{
+		border: 1rpx solid #eee;
+		height: 72rpx;
+		border-radius: 6rpx;
+		width: 100%;
+		margin-bottom: 24rpx;
+		font-size: 32rpx;
+		color: #0e8cf1;
+		text-align: center;
+		line-height: 72rpx;
+	}
+}
 </style>
