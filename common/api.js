@@ -37,7 +37,7 @@ export default {
 	},
 	// 签到 pages/sign/sign
 	orderSignIn(params){
-		return request("/Order.Order/orderSignIn", params, 'GET')
+		return request("/Order.Order/orderSignIn", params, 'POST') // GET
 	},
 	// 工作单开始 pages/service/start
 	orderStart(params){

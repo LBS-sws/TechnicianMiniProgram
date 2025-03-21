@@ -13,7 +13,10 @@
             "autoclose" : true,
             "delay" : 0
         },
-        "modules" : {},
+        "modules" : {
+            "Maps" : {},
+            "Geolocation" : {}
+        },
         "distribute" : {
             "android" : {
                 "permissions" : [
@@ -42,7 +45,23 @@
                 ]
             },
             "ios" : {},
-            "sdkConfigs" : {}
+            "sdkConfigs" : {
+                "maps" : {
+                    "amap" : {
+                        "name" : "xxx",
+                        "appkey_ios" : "c6631b0a7212536acc8aa68df419f9b3",
+                        "appkey_android" : "c6631b0a7212536acc8aa68df419f9b3"
+                    }
+                },
+                "geolocation" : {
+                    "amap" : {
+                        "name" : "c6631b0a7212536acc8aa68df419f9b3",
+                        "__platform__" : [ "ios", "android" ],
+                        "appkey_ios" : "c6631b0a7212536acc8aa68df419f9b3",
+                        "appkey_android" : "c6631b0a7212536acc8aa68df419f9b3"
+                    }
+                }
+            }
         }
     },
     "quickapp" : {},
