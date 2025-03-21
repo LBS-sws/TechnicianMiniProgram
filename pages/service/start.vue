@@ -39,7 +39,7 @@
 				<cl-col v-if="service.status == 3" span="12" >
 					<view class="qc">已签离店</view>
 				</cl-col>
-				<cl-col v-else span="12" @tap="check_out()">
+				<cl-col v-else span="12" @tap="check_out(0)">
 					<view class="qc">签出离店</view>
 				</cl-col>
 			</cl-row>
@@ -48,13 +48,13 @@
 		
 		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 			<view class="signout_ui">
-				<view class="item">返回</view>
-				<view class="item">直接签离</view>
+				<view class="item" @click="close">返回</view>
+				<view class="item" @click="check_out(1)">直接签离</view>
 				<view class="item" @click="serviceHandle">服务暂停、安排下次时间</view>
 			</view>
 		</u-popup>
 		
-		<DatePicker :showLabel="true" :show="show1" :value="defaultDate" @confirm="dateChange" @cancel="show1=false" />
+		<DatePicker :showLabel="true" :show="showDate" :value="defaultDate" @confirm="dateChange" @cancel="showDate=false" />
 	</view>
 </template>
 
@@ -146,11 +146,13 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				loginStaff:'',
 				bk:'',
 				
-				show:true,
+				show:false,
 				
 				defaultDate: '',
 				date:'',
-				show1: false,
+				showDate: false,
+				
+				qlType:'',
 			}
 		},
 		onLoad(index) {
@@ -183,12 +185,14 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 			serviceHandle(){
 				console.log('下次服务时间')
 				this.show = false
-				this.show1 = true
+				this.showDate = true
 			},
 			// 下次服务选择日期
 			dateChange(v) {
-			    this.show1 = false
+			    this.showDate = false
 			    this.date = v
+				this.qlType = 2
+				this.check_out(2)
 			},
 			open(){
 				
@@ -318,11 +322,19 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 					})
 				}
 			},
-			check_out() {
+			check_out(e) {
+				if(e<=0){
+					this.show = true
+					return false
+				}
+				if(e==1){
+					this.qlType = 1
+					this.date = ''
+				}
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
-						.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign
+						.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
 				})
 			},
 			//继承设备
