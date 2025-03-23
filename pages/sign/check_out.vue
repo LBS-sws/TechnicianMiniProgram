@@ -32,7 +32,7 @@
 		<view class="signin-area">
 			<van-button v-if="sign_whether==1" class="signin-btn" type="primary" round :disabled="signin.isSignin"
 				@click="handleSignin" :color="bgcolor">
-				<view class="label">签离</view>
+				<view class="label">{{signin.text}}</view>
 				<view class="time">{{ signin.time }}</view>
 			</van-button>
 			<van-button v-else class="signin-btn" type="primary" round :disabled="signin.isSignin">
@@ -68,14 +68,13 @@
 		</view>
 		<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 		
-		<!-- <u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
+		<!-- 异常签离弹出 -->
+		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 			<view class="abnormal">
 				<view class="title">异常签到/签离</view>
-				
 				<view class="item" v-for="(item,i) in abnormalList"  @click="exceptionHandle(i)">{{item.name}}</view>
-				
 			</view>
-		</u-popup> -->
+		</u-popup>
 		
 	</div>
 </template>
@@ -91,7 +90,8 @@ import amap  from '@/utils/amap-wx.130.js';
 				signin: {
 					time: '', // 签到时间
 					count: 0, // 签到时间
-					isSignin: false //是否签到
+					isSignin: false ,//是否签到
+					text:''
 				},
 				// formData: {
 				// 	signAddress: '', // 签到地址
@@ -137,7 +137,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					longitude:'',
 					latitude:''
 				},
-				
+				exceptionStatus:'',
 				amapPlugin: null,
 				key: 'c6631b0a7212536acc8aa68df419f9b3',  
 				addressName: '',  
@@ -195,7 +195,6 @@ import amap  from '@/utils/amap-wx.130.js';
 				abnormalList:[
 					{id:1, name:'忘记打卡'},
 					{id:2, name:'系统定位不准'},
-					{id:3, name:'门店地址错误'},
 				],
 				flip: '../../static/flip.png', // 反转
 				icon: '../../static/icon.png', // 相机
@@ -208,7 +207,7 @@ import amap  from '@/utils/amap-wx.130.js';
 				flashStyle: 'off',
 				imgUrl:'',
 				pageType:1,
-				exceptionStatus:'',	// 异常：1忘记打卡 2定位不准 3地址错误
+				exceptionStatus:'',	// 异常：1忘记打卡 2定位不准
 				
 				// 地图
 				marker: {
@@ -298,6 +297,20 @@ import amap  from '@/utils/amap-wx.130.js';
 			console.log('cameraHeight:',this.cameraHeight)
 		},
 		methods: {
+			// 异常签离选择事件
+			exceptionHandle(e){
+				console.log(e)
+				this.exceptionStatus = this.abnormalList[e].id
+				this.handleSignin()
+			},
+			// 异常签离 弹窗
+			open(){
+				
+			},
+			// 异常签离 弹窗关闭
+			close(){
+				this.show = false
+			},
 			// 模拟定位选位置
 			changeHandle(e){
 				// console.log(e)
@@ -473,6 +486,15 @@ import amap  from '@/utils/amap-wx.130.js';
 						return false;
 					}
 				}
+				console.log(this.DistanceType)
+				// 异常签离
+				if(this.DistanceType == 2 && !this.exceptionStatus)
+				{
+					this.show = true
+					return false
+				}
+				// console.log('继续')
+				// return false
 				// if (!this.location.curLocation) {
 				// 	this.getLocation()
 				// } else {
@@ -629,10 +651,17 @@ import amap  from '@/utils/amap-wx.130.js';
 					is_invoice:is_invoice,
 					ql_type:this.qlType,
 					date:this.date,
+					type:this.DistanceType,
+					status:this.exceptionStatus,
+					lng:this.point2.longitude,
+					lat:this.point2.latitude,
+					// title:this.title,
+					// address:this.address
 					signdate:'',
 					starttime:''
 				}
 				
+				this.show = false	// 异常签离 弹窗关闭
 				// return false
 				this.$api.orderSignOut(params).then(res=>{
 					uni.hideLoading();
@@ -715,8 +744,8 @@ import amap  from '@/utils/amap-wx.130.js';
 					}
 			
 					this.abnormalList  = oldArray
-					this.signin.text = '异常签到'
-					return (d / 1000).toFixed(2);	// return (d / 1000).toFixed(2) + "千米";
+					this.signin.text = '异常签离'
+					return (d / 1000).toFixed(2);
 				} else {
 					if(d > 100 && d<1000){
 						this.DistanceType = 2;
@@ -725,18 +754,17 @@ import amap  from '@/utils/amap-wx.130.js';
 						
 						this.abnormalList = [
 							{id:1, name:'忘记打卡'},
-							{id:2, name:'系统定位不准'},
-							{id:3, name:'门店地址错误'}
+							{id:2, name:'系统定位不准'}
 						]
-						this.signin.text = '异常签到'
+						this.signin.text = '异常签离'
 					}else{
 						this.DistanceType = 1;
 						this.signType = 1
 						this.bgcolor = '#007AFF'
-						this.signin.text = '拍照签到'
+						this.signin.text = '签离'
 					}
 					
-					return d.toFixed(0); // return d + "米";
+					return d.toFixed(0);
 				}
 			},
 		},
