@@ -66,5 +66,5 @@ Vue.prototype.$mapApiUrl="https://api.map.baidu.com/reverse_geocoding/v3" //ç™¾å
 Vue.prototype.$baseUrl="https://uat.teach.lbsapps.cn/api"   //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
 Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"
 
-// Vue.prototype.$baseUrl="http://localhost:10006/api"
+// Vue.prototype.$baseUrl="http://localhost:10005/api"
 // Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"
