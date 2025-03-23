@@ -7,6 +7,7 @@
 			<view class="customerInfo">
 				<view class="title">{{customerInfo.name_zh}}</view>
 				<view class="addr">{{customerInfo.addr}}</view>
+				<view class="time">已服务时间:{{formatTime}}</view>
 			</view>
 			<van-cell class="field-cell" required title-width="70px" title="发票签收：">
 				<view class="location">
@@ -222,10 +223,22 @@ import amap  from '@/utils/amap-wx.130.js';
 				address: '',
 				qlType:1,
 				date:'',
+				
+				isTiming: false,
+				time: 0,
+				timer: null
 			}
 		},
 		computed: {
 			// ...mapGetters(['selectedLocation', 'selectedSearch'])
+			formatTime() {
+					   
+			 var hours = Math.floor(this.time / 3600); // 获取小时数
+			 var minutes = Math.floor((this.time % 3600) / 60); // 获取分钟数
+			 var seconds = this.time % 60; // 获取秒数
+			 
+			 return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+			}
 		},
 		onLoad(index) {
 			var loginRes = this.checkLogin();
@@ -297,6 +310,16 @@ import amap  from '@/utils/amap-wx.130.js';
 			console.log('cameraHeight:',this.cameraHeight)
 		},
 		methods: {
+			startTimer() {
+			  this.isTiming = true
+			  this.timer = setInterval(() => {
+				this.time++
+			  }, 1000)
+			},
+			stopTimer() {
+			  this.isTiming = false
+			  clearInterval(this.timer)
+			},
 			// 异常签离选择事件
 			exceptionHandle(e){
 				console.log(e)
@@ -360,6 +383,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					job_type: this.jobtype
 				}
 				this.$api.getOrderInfo(params).then(res=>{
+					
 					// console.log(res)
 					this.customerInfo = res.data.customer
 					this.point1.latitude = res.data.customer.lat
@@ -370,6 +394,9 @@ import amap  from '@/utils/amap-wx.130.js';
 					this.distance = this.getDistance(this.point2, this.point1);
 					
 					console.log(this.distance);
+					
+					this.time = res.data.service_time	// 服务时间
+					this.startTimer();
 					
 				}).catch(err=>{
 					uni.hideLoading();
@@ -800,7 +827,7 @@ import amap  from '@/utils/amap-wx.130.js';
 
 <style lang="scss" scoped>
 	.signin {
-		:deep .field-cell {
+		::v-deep .field-cell {
 			.cell-field {
 				.van-cell {
 					padding: 0;
@@ -825,7 +852,7 @@ import amap  from '@/utils/amap-wx.130.js';
 			padding-top: 100rpx;
 			text-align: center;
 
-			:deep .signin-btn {
+			::v-deep .signin-btn {
 				.van-button {
 					width: 260rpx;
 					height: 260rpx;
@@ -963,6 +990,13 @@ import amap  from '@/utils/amap-wx.130.js';
 	.addr{
 		font-size: 24rpx;
 		color: #7F7F7F;
+		margin-bottom: 2rpx;
+	}
+	.time{
+		font-size: 28rpx;
+		font-weight: 400;
+		color: #333;
+		
 	}
 }
 .container-sign{
