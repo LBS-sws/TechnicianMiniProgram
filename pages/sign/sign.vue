@@ -780,11 +780,7 @@ function transformFromGCJToBaidu(latitude, longitude) {
 
 <style lang="scss" scoped>
 .signin {
-<<<<<<< HEAD
-		:deep .field-cell {
-=======
 		::v-deep .field-cell {
->>>>>>> e791c7d7ffaea5169e2a00761268865b15d77b47
 			.cell-field {
 				.van-cell {
 					padding: 0;
@@ -809,11 +805,7 @@ function transformFromGCJToBaidu(latitude, longitude) {
 			padding-top: 60rpx;
 			text-align: center;
 
-<<<<<<< HEAD
-			:deep .signin-btn {
-=======
 			::v-deep .signin-btn {
->>>>>>> e791c7d7ffaea5169e2a00761268865b15d77b47
 				.van-button {
 					width: 260rpx;
 					height: 260rpx;
