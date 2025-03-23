@@ -406,15 +406,20 @@ import popup from '@/components/feedback/popup.vue';
 						});
 						return ;
 					} else {
-						if(this.service.status == 3){
-							uni.navigateTo({
-								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-							})
-						}
-						else if(this.service.status == 2 && this.service.service_ql == 0){
+						if(this.service.status == 2 && this.service.start_time == null && this.service.finish_time == null)
+						{
+							console.log('分派未签到')
 							uni.navigateTo({
 								url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
 								.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+							})
+						}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql !=0){
+							uni.navigateTo({
+								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+							})
+						}else if(this.service.status == 3){
+							uni.navigateTo({
+								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
 							})
 						}else{
 								if (this.service.staff.main == uni.getStorageSync('staffname')) {
@@ -429,35 +434,6 @@ import popup from '@/components/feedback/popup.vue';
 									});
 								}
 						}
-						// else{
-							// if(this.service.start_time != null){
-							// 	// if(this.service.service_ql==0){
-							// 	// 	// 继续签到
-							// 	// 	uni.navigateTo({
-							// 	// 		url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-							// 	// 			.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-							// 	// 	})
-							// 	// }else{
-									
-							// 	// }
-							// 	uni.navigateTo({
-							// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-							// 	})
-							// }else{
-							// 	if (this.service.staff.main == uni.getStorageSync('staffname')) {
-							// 		uni.navigateTo({
-							// 			url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-							// 				.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-							// 		})
-							// 	}else{
-							// 		uni.showToast({
-							// 			icon: 'none',
-							// 			title: '等待服务人员签到！'
-							// 		});
-							// 	}
-							// }
-						// }
-						
 					}
 				}).catch(err=>{
 					console.log(err)

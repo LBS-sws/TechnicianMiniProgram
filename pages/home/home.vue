@@ -106,10 +106,10 @@
 			</view>
 		</view>
 		<!-- end -->
-		<u-modal :show="show" @confirm="confirm" @cancel="cancel" ref="uModal" :asyncClose="true" :closeOnClickOverlay="true" :title="title" confirmText="去签离" cancelText="取消"
+		<u-modal :show="show" @confirm="confirm" @cancel="cancel" ref="uModal" :asyncClose="true" :closeOnClickOverlay="true" title="提示" confirmText="去签离" cancelText="取消"
 		showConfirmButton="true" showCancelButton="true">
 			<view class="slot-content">
-				<rich-text :nodes="content"></rich-text>
+				<rich-text :nodes="noSignOrder.content"></rich-text>
 			</view>
 		</u-modal>
 	</view>
@@ -136,8 +136,6 @@ export default {
 			typeList: [],
 			
 			show: false,
-			title:'提示',
-			content:``,
 			noSignOrder:{}
 		};
 	},
@@ -156,19 +154,16 @@ export default {
 		if(!this.isFirstShow){
 			this.getUnFinshJobs();
 		}
-		// this.show = true
 		
 		this.getNoSignOrder()
 	},
 	methods: {
+		// 未签离工单
 		getNoSignOrder(){
-			let params = {
-				jobdate: this.Data //todayISOString
-			}
+			let params = {}
 			this.$api.noOrderSign(params).then(res=>{
 				if(res.code == 200) {
-					console.log(res.data.content)
-					this.content = res.data.content
+			
 					this.noSignOrder = res.data
 				}
 			}).catch(err=>{
@@ -179,11 +174,7 @@ export default {
 			this.show = false
 		},
 		confirm() {
-			
-			setTimeout(() => {
-				// 3秒后自动关闭
-				this.show = false;
-			}, 1000)
+			this.show = false;
 			uni.navigateTo({
 				url: "/pages/service/detail?jobtype=" + this.noSignOrder.type + "&jobid=" + this.noSignOrder.id
 			});
