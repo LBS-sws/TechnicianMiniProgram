@@ -94,5 +94,16 @@
     },
     "mp-qq" : {
         "usingComponents" : true
+    },
+    "h5" : {
+        "sdkConfigs" : {
+            "maps" : {
+                "amap" : {
+                    "key" : "c6631b0a7212536acc8aa68df419f9b3",
+                    "securityJsCode" : "",
+                    "serviceHost" : ""
+                }
+            }
+        }
     }
 }
