@@ -628,7 +628,9 @@ import amap  from '@/utils/amap-wx.130.js';
 					pics: this.upload_site_photos,
 					is_invoice:is_invoice,
 					ql_type:this.qlType,
-					date:this.date
+					date:this.date,
+					signdate:'',
+					starttime:''
 				}
 				
 				// return false

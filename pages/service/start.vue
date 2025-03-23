@@ -331,6 +331,7 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 					this.qlType = 1
 					this.date = ''
 				}
+				this.show = false
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
