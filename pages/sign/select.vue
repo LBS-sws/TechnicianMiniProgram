@@ -159,7 +159,7 @@ export default {
     height: 600rpx;
     position: relative;
   }
-  /deep/ .top-search {
+  :deep .top-search {
     position: absolute;
     top: 0;
     left: 0;

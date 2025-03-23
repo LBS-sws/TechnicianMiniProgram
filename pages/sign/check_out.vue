@@ -504,7 +504,7 @@
 
 <style lang="scss" scoped>
 	.signin {
-		/deep/ .field-cell {
+		:deep .field-cell {
 			.cell-field {
 				.van-cell {
 					padding: 0;
@@ -529,7 +529,7 @@
 			padding-top: 100rpx;
 			text-align: center;
 
-			/deep/ .signin-btn {
+			:deep .signin-btn {
 				.van-button {
 					width: 260rpx;
 					height: 260rpx;
