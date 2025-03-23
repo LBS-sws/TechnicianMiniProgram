@@ -221,6 +221,8 @@ import amap  from '@/utils/amap-wx.130.js';
 				disable: false,
 				title: '',
 				address: '',
+				qlType:1,
+				date:'',
 			}
 		},
 		computed: {
@@ -242,6 +244,8 @@ import amap  from '@/utils/amap-wx.130.js';
 			this.lng = index.lng
 			this.addr = index.addr
 			this.staffSign = index.staffSign
+			this.qlType = index.qlType
+			this.date = index.date
 
 			if (index.staffSign == 0) {
 				this.$refs["message"].open({type: "warn",duration: 5000,top: "200rpx",message: "技术员未签名"});
@@ -623,7 +627,11 @@ import amap  from '@/utils/amap-wx.130.js';
 					job_type: this.jobtype,
 					pics: this.upload_site_photos,
 					is_invoice:is_invoice,
+					ql_type:this.qlType,
+					date:this.date
 				}
+				
+				// return false
 				this.$api.orderSignOut(params).then(res=>{
 					uni.hideLoading();
 					if (res.code == 200) {
@@ -762,7 +770,7 @@ import amap  from '@/utils/amap-wx.130.js';
 
 <style lang="scss" scoped>
 	.signin {
-		/deep/ .field-cell {
+		:deep .field-cell {
 			.cell-field {
 				.van-cell {
 					padding: 0;
@@ -787,7 +795,7 @@ import amap  from '@/utils/amap-wx.130.js';
 			padding-top: 100rpx;
 			text-align: center;
 
-			/deep/ .signin-btn {
+			:deep .signin-btn {
 				.van-button {
 					width: 260rpx;
 					height: 260rpx;
