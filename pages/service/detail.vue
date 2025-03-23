@@ -353,8 +353,13 @@ import popup from '@/components/feedback/popup.vue';
 						if(res.data.status == 2 && res.data.start_time == null){
 							this.service_button = '服务签到';
 						}
+						
+						
 						if(res.data.status == 2 && res.data.start_time != null){
 							this.service_button = '继续服务';
+						}
+						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==0){// 新加
+							this.service_button = '服务签到';
 						}
 						if(res.data.status == 3){
 							this.service_button = '服务已完成';
@@ -402,9 +407,17 @@ import popup from '@/components/feedback/popup.vue';
 						return ;
 					} else {
 						if(this.service.start_time != null){
-							uni.navigateTo({
-								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-							})
+							if(this.service.service_ql==0){
+								// 继续签到
+								uni.navigateTo({
+									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+										.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+								})
+							}else{
+								uni.navigateTo({
+									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+								})
+							}
 						}else{
 							if (this.service.staff.main == uni.getStorageSync('staffname')) {
 								uni.navigateTo({
