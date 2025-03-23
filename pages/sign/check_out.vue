@@ -701,7 +701,14 @@ import amap  from '@/utils/amap-wx.130.js';
 							title: '签离成功',
 							icon: 'success'
 						})
-						uni.navigateBack();
+						
+						if(this.qlType==2){
+							uni.navigateTo({
+								url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
+							});
+						}else{
+							uni.navigateBack();
+						}
 
 						//更新工单报表
 						setTimeout(()=>{

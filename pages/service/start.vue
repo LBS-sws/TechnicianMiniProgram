@@ -239,6 +239,8 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				console.log('下次服务时间')
 				this.show = false
 				this.showDate = true
+				
+				
 			},
 			// 下次服务选择日期
 			dateChange(v) {
@@ -246,6 +248,7 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 			    this.date = v
 				this.qlType = 2
 				this.check_out(2)
+				
 			},
 			open(){
 				
@@ -400,6 +403,7 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				}
 			},
 			check_out(e) {
+				this.stopTimer()
 				if(e<=0){
 					this.show = true
 					return false
