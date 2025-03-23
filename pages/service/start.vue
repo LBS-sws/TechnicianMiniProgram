@@ -39,18 +39,30 @@
 				<cl-col v-if="service.status == 3" span="12" >
 					<view class="qc">已签离店</view>
 				</cl-col>
-				<cl-col v-else span="12" @tap="check_out()">
+				<cl-col v-else span="12" @tap="check_out(0)">
 					<view class="qc">签出离店</view>
 				</cl-col>
 			</cl-row>
 		</view>
 		<view class="tj_bu" v-else @tap="report()">检查报告</view>
+		
+		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
+			<view class="signout_ui">
+				<view class="item" @click="close">返回</view>
+				<view class="item" @click="check_out(1)">直接签离</view>
+				<view class="item" @click="serviceHandle">服务暂停、安排下次时间</view>
+			</view>
+		</u-popup>
+		
+		<DatePicker :showLabel="true" :show="showDate" :value="defaultDate" @confirm="dateChange" @cancel="showDate=false" />
 	</view>
 </template>
 
 <script>
 import color from 'uview-ui/libs/config/color';
+import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 	export default {
+		components: {DatePicker},
 		data() {
 			return {
 				name:'开始服务',
@@ -132,7 +144,15 @@ import color from 'uview-ui/libs/config/color';
 				autograph:'',//客户签名数量
 				staffSign:'',//技术员签名数量
 				loginStaff:'',
-				bk:''
+				bk:'',
+				
+				show:false,
+				
+				defaultDate: '',
+				date:'',
+				showDate: false,
+				
+				qlType:'',
 			}
 		},
 		onLoad(index) {
@@ -155,8 +175,31 @@ import color from 'uview-ui/libs/config/color';
 			});
 			this.data_select();
 			this.autoInheritEq();
+			
+			// setTimeout(()=>{
+			// 	this.show = true
+			// },2000)
 		},
 		methods: {
+			// 服务暂停、安排下次时间
+			serviceHandle(){
+				console.log('下次服务时间')
+				this.show = false
+				this.showDate = true
+			},
+			// 下次服务选择日期
+			dateChange(v) {
+			    this.showDate = false
+			    this.date = v
+				this.qlType = 2
+				this.check_out(2)
+			},
+			open(){
+				
+			},
+			close(){
+				this.show = false
+			},
 			data_select() {
 				let params = {
 					job_id:this.jobid,
@@ -279,11 +322,19 @@ import color from 'uview-ui/libs/config/color';
 					})
 				}
 			},
-			check_out() {
+			check_out(e) {
+				if(e<=0){
+					this.show = true
+					return false
+				}
+				if(e==1){
+					this.qlType = 1
+					this.date = ''
+				}
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
-						.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign
+						.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
 				})
 			},
 			//继承设备
@@ -307,7 +358,7 @@ import color from 'uview-ui/libs/config/color';
 	}
 </script>
 
-<style>
+<style lang="scss">
 	.new_card_title {
 		border-bottom: 1px solid #e0dcdc;
 		font-size: 19px;
@@ -467,4 +518,18 @@ import color from 'uview-ui/libs/config/color';
 		margin: 2px 0px;
 		line-height: 55rpx;
 	}
+.signout_ui{
+	padding: 50rpx 40rpx 40rpx;
+	.item{
+		border: 1rpx solid #eee;
+		height: 72rpx;
+		border-radius: 6rpx;
+		width: 100%;
+		margin-bottom: 24rpx;
+		font-size: 32rpx;
+		color: #0e8cf1;
+		text-align: center;
+		line-height: 72rpx;
+	}
+}
 </style>
