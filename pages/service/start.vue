@@ -40,7 +40,7 @@
 					<view class="jc">检查报告</view>
 				</cl-col>
 				<cl-col v-if="service.status == 3" span="12" >
-					<view class="qc" v-if="customer_qm" @click="createPdf">生成报告</view>
+					<view class="qc" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''">生成报告</view>
 					<view class="qc" v-else>已签离店</view>
 					
 				</cl-col>
@@ -562,8 +562,11 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 		background-color: #007AFF;
 		color: #FFFFFF;
 		border-radius: 15px;
+		
 	}
-
+	.qc.in{
+			background-color: #12900a;
+	}
 	.cl-timeline-item__node::after {
 		content: "";
 		display: block;
