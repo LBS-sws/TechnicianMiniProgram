@@ -45,7 +45,15 @@
 			</view>
 			<view>
 				模拟位置:
-				<cl-select v-model="val" :options="list" @change="changeHandle($event)"></cl-select>
+				<!-- <cl-select v-model="val" :options="list" @change="changeHandle($event)"></cl-select> -->
+				
+				<view style="width: 120px;"><u-button type="primary" text="100米内" @click="addHandle(0)"></u-button></view>
+				<view style="width: 120px;">
+					<u-button type="warning" text="100米外1000米内" @click="addHandle(1)"></u-button>
+				</view>
+				<view style="width: 120px;">
+					<u-button type="error" text="1000米外" @click="addHandle(2)"></u-button>
+				</view>
 			</view>
 			<!-- <view>
 				客户公司金纬度：
@@ -194,17 +202,17 @@ export default {
 						latitude:'30.663772'
 					}
 				},
-				{
-					label: "太升南路B出口",
-					value: 3,
-					location:{
-						longitude:'104.077448',
-						latitude:'30.664168'
-					}
-				},
+				// {
+				// 	label: "太升南路B出口",
+				// 	value: 3,
+				// 	location:{
+				// 		longitude:'104.077448',
+				// 		latitude:'30.664168'
+				// 	}
+				// },
 				{
 					label: "东门大桥A出口",
-					value: 4,
+					value: 3,
 					location:{
 						longitude:'104.08664',
 						latitude:'30.648323'
@@ -308,6 +316,22 @@ export default {
 		console.log('cameraHeight:',this.cameraHeight)
 	},
 	methods: {
+		addHandle(i){
+			console.log(i)
+			let e = this.list[i].value
+			let obj = this.list.find((item)=>{
+				return item.value === e
+			})
+			// console.log('选择的位置',obj)
+			
+			this.point2.longitude = obj.location.longitude 
+			this.point2.latitude = obj.location.latitude
+			
+			this.distance = this.getDistance(this.point2, this.point1);
+			
+			this.longitude = obj.location.longitude
+			this.latitude = obj.location.latitude
+		},
 		// 异常处理
 		exceptionHandle(e){
 			console.log(e)
@@ -1026,4 +1050,8 @@ function transformFromGCJToBaidu(latitude, longitude) {
 		max-height: 325px;
 	}
 }
+.custom-style {
+		color: #ff0000;
+		width: 400rpx;
+	}
 </style>

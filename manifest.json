@@ -76,6 +76,9 @@
         "permission" : {
             "scope.userLocation" : {
                 "desc" : "需要您授权使用位置信息"
+            },
+            "scope.phoneNumber" : {
+                "desc" : "你的应用程序需要获取您的手机号码以进行身份验证"
             }
         },
         "requiredPrivateInfos" : [ "getLocation" ],
@@ -100,7 +103,7 @@
             "maps" : {
                 "amap" : {
                     "key" : "c6631b0a7212536acc8aa68df419f9b3",
-                    "securityJsCode" : "",
+                    "securityJsCode" : "a9b3a18cde1b17673b7cb4a539c3b6e8",
                     "serviceHost" : ""
                 }
             }
