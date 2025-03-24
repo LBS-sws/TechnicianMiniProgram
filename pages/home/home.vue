@@ -106,6 +106,12 @@
 			</view>
 		</view>
 		<!-- end -->
+		<u-modal :show="show" @confirm="confirm" @cancel="cancel" ref="uModal" :asyncClose="true" :closeOnClickOverlay="true" title="提示" confirmText="去签离" cancelText="取消"
+		showConfirmButton="true" showCancelButton="true">
+			<view class="slot-content">
+				<rich-text :nodes="noSignOrder.content"></rich-text>
+			</view>
+		</u-modal>
 	</view>
 </template>
 <script>
@@ -128,6 +134,9 @@ export default {
 			show_dislog: false,
 			query: {type:'', value:''},
 			typeList: [],
+			
+			show: false,
+			noSignOrder:{}
 		};
 	},
 	onLoad() {
@@ -145,8 +154,31 @@ export default {
 		if(!this.isFirstShow){
 			this.getUnFinshJobs();
 		}
+		
+		this.getNoSignOrder()
 	},
 	methods: {
+		// 未签离工单
+		getNoSignOrder(){
+			let params = {}
+			this.$api.noOrderSign(params).then(res=>{
+				if(res.code == 200) {
+			
+					this.noSignOrder = res.data
+				}
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
+		cancel(){
+			this.show = false
+		},
+		confirm() {
+			this.show = false;
+			uni.navigateTo({
+				url: "/pages/service/detail?jobtype=" + this.noSignOrder.type + "&jobid=" + this.noSignOrder.id
+			});
+		},
 		// 滑动月份触发事件
 		monthchange(e){
 			this.getJobTotal(e);
@@ -166,6 +198,12 @@ export default {
 		},
 		// 工作单详情
 		job_detail(index) {
+			// 未完成工单提示
+			if(this.noSignOrder.name_zh && this.noSignOrder.id != this.jobs[index].id){
+				this.show = true
+				return false
+			}
+			
 			let jobid = this.jobs[index].id
 			let type  = this.jobs[index].order_type
 			

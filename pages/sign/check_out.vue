@@ -7,6 +7,7 @@
 			<view class="customerInfo">
 				<view class="title">{{customerInfo.name_zh}}</view>
 				<view class="addr">{{customerInfo.addr}}</view>
+				<view class="time">已服务时间:{{formatTime}}</view>
 			</view>
 			<van-cell class="field-cell" required title-width="70px" title="发票签收：">
 				<view class="location">
@@ -32,7 +33,7 @@
 		<view class="signin-area">
 			<van-button v-if="sign_whether==1" class="signin-btn" type="primary" round :disabled="signin.isSignin"
 				@click="handleSignin" :color="bgcolor">
-				<view class="label">签离</view>
+				<view class="label">{{signin.text}}</view>
 				<view class="time">{{ signin.time }}</view>
 			</van-button>
 			<van-button v-else class="signin-btn" type="primary" round :disabled="signin.isSignin">
@@ -60,7 +61,14 @@
 		</view>
 		<view>
 			模拟位置:
-			<cl-select v-model="val" :options="list" @change="changeHandle($event)"></cl-select>
+			<!-- <cl-select v-model="val" :options="list" @change="changeHandle($event)"></cl-select> -->
+			<view style="width: 120px;"><u-button type="primary" text="100米内" @click="addHandle(0)"></u-button></view>
+			<view style="width: 120px;">
+				<u-button type="warning" text="100米外1000米内" @click="addHandle(1)"></u-button>
+			</view>
+			<view style="width: 120px;">
+				<u-button type="error" text="1000米外" @click="addHandle(2)"></u-button>
+			</view>
 		</view>
 		<view>距离：{{distance}}
 			<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
@@ -68,14 +76,13 @@
 		</view>
 		<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 		
-		<!-- <u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
+		<!-- 异常签离弹出 -->
+		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 			<view class="abnormal">
 				<view class="title">异常签到/签离</view>
-				
 				<view class="item" v-for="(item,i) in abnormalList"  @click="exceptionHandle(i)">{{item.name}}</view>
-				
 			</view>
-		</u-popup> -->
+		</u-popup>
 		
 	</div>
 </template>
@@ -91,7 +98,8 @@ import amap  from '@/utils/amap-wx.130.js';
 				signin: {
 					time: '', // 签到时间
 					count: 0, // 签到时间
-					isSignin: false //是否签到
+					isSignin: false ,//是否签到
+					text:''
 				},
 				// formData: {
 				// 	signAddress: '', // 签到地址
@@ -137,7 +145,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					longitude:'',
 					latitude:''
 				},
-				
+				exceptionStatus:'',
 				amapPlugin: null,
 				key: 'c6631b0a7212536acc8aa68df419f9b3',  
 				addressName: '',  
@@ -173,17 +181,17 @@ import amap  from '@/utils/amap-wx.130.js';
 							latitude:'30.663772'
 						}
 					},
-					{
-						label: "太升南路B出口",
-						value: 3,
-						location:{
-							longitude:'104.077448',
-							latitude:'30.664168'
-						}
-					},
+					// {
+					// 	label: "太升南路B出口",
+					// 	value: 3,
+					// 	location:{
+					// 		longitude:'104.077448',
+					// 		latitude:'30.664168'
+					// 	}
+					// },
 					{
 						label: "东门大桥A出口",
-						value: 4,
+						value: 3,
 						location:{
 							longitude:'104.08664',
 							latitude:'30.648323'
@@ -195,7 +203,6 @@ import amap  from '@/utils/amap-wx.130.js';
 				abnormalList:[
 					{id:1, name:'忘记打卡'},
 					{id:2, name:'系统定位不准'},
-					{id:3, name:'门店地址错误'},
 				],
 				flip: '../../static/flip.png', // 反转
 				icon: '../../static/icon.png', // 相机
@@ -208,7 +215,7 @@ import amap  from '@/utils/amap-wx.130.js';
 				flashStyle: 'off',
 				imgUrl:'',
 				pageType:1,
-				exceptionStatus:'',	// 异常：1忘记打卡 2定位不准 3地址错误
+				exceptionStatus:'',	// 异常：1忘记打卡 2定位不准
 				
 				// 地图
 				marker: {
@@ -223,10 +230,22 @@ import amap  from '@/utils/amap-wx.130.js';
 				address: '',
 				qlType:1,
 				date:'',
+				
+				isTiming: false,
+				time: 0,
+				timer: null
 			}
 		},
 		computed: {
 			// ...mapGetters(['selectedLocation', 'selectedSearch'])
+			formatTime() {
+					   
+			 var hours = Math.floor(this.time / 3600); // 获取小时数
+			 var minutes = Math.floor((this.time % 3600) / 60); // 获取分钟数
+			 var seconds = this.time % 60; // 获取秒数
+			 
+			 return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+			}
 		},
 		onLoad(index) {
 			var loginRes = this.checkLogin();
@@ -298,6 +317,46 @@ import amap  from '@/utils/amap-wx.130.js';
 			console.log('cameraHeight:',this.cameraHeight)
 		},
 		methods: {
+			addHandle(i){
+				console.log(i)
+				let e = this.list[i].value
+				let obj = this.list.find((item)=>{
+					return item.value === e
+				})
+				// console.log('选择的位置',obj)
+				
+				this.point2.longitude = obj.location.longitude 
+				this.point2.latitude = obj.location.latitude
+				
+				this.distance = this.getDistance(this.point2, this.point1);
+				
+				this.longitude = obj.location.longitude
+				this.latitude = obj.location.latitude
+			},
+			startTimer() {
+			  this.isTiming = true
+			  this.timer = setInterval(() => {
+				this.time++
+			  }, 1000)
+			},
+			stopTimer() {
+			  this.isTiming = false
+			  clearInterval(this.timer)
+			},
+			// 异常签离选择事件
+			exceptionHandle(e){
+				console.log(e)
+				this.exceptionStatus = this.abnormalList[e].id
+				this.handleSignin()
+			},
+			// 异常签离 弹窗
+			open(){
+				
+			},
+			// 异常签离 弹窗关闭
+			close(){
+				this.show = false
+			},
 			// 模拟定位选位置
 			changeHandle(e){
 				// console.log(e)
@@ -347,6 +406,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					job_type: this.jobtype
 				}
 				this.$api.getOrderInfo(params).then(res=>{
+					
 					// console.log(res)
 					this.customerInfo = res.data.customer
 					this.point1.latitude = res.data.customer.lat
@@ -357,6 +417,9 @@ import amap  from '@/utils/amap-wx.130.js';
 					this.distance = this.getDistance(this.point2, this.point1);
 					
 					console.log(this.distance);
+					
+					this.time = res.data.service_time	// 服务时间
+					this.startTimer();
 					
 				}).catch(err=>{
 					uni.hideLoading();
@@ -473,6 +536,15 @@ import amap  from '@/utils/amap-wx.130.js';
 						return false;
 					}
 				}
+				console.log(this.DistanceType)
+				// 异常签离
+				if(this.DistanceType == 2 && !this.exceptionStatus)
+				{
+					this.show = true
+					return false
+				}
+				// console.log('继续')
+				// return false
 				// if (!this.location.curLocation) {
 				// 	this.getLocation()
 				// } else {
@@ -628,9 +700,18 @@ import amap  from '@/utils/amap-wx.130.js';
 					pics: this.upload_site_photos,
 					is_invoice:is_invoice,
 					ql_type:this.qlType,
-					date:this.date
+					date:this.date,
+					type:this.DistanceType,
+					status:this.exceptionStatus,
+					lng:this.point2.longitude,
+					lat:this.point2.latitude,
+					// title:this.title,
+					// address:this.address
+					signdate:'',
+					starttime:''
 				}
 				
+				this.show = false	// 异常签离 弹窗关闭
 				// return false
 				this.$api.orderSignOut(params).then(res=>{
 					uni.hideLoading();
@@ -643,7 +724,14 @@ import amap  from '@/utils/amap-wx.130.js';
 							title: '签离成功',
 							icon: 'success'
 						})
-						uni.navigateBack();
+						
+						if(this.qlType==2){
+							uni.navigateTo({
+								url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
+							});
+						}else{
+							uni.navigateBack();
+						}
 
 						//更新工单报表
 						setTimeout(()=>{
@@ -713,8 +801,8 @@ import amap  from '@/utils/amap-wx.130.js';
 					}
 			
 					this.abnormalList  = oldArray
-					this.signin.text = '异常签到'
-					return (d / 1000).toFixed(2);	// return (d / 1000).toFixed(2) + "千米";
+					this.signin.text = '异常签离'
+					return (d / 1000).toFixed(2);
 				} else {
 					if(d > 100 && d<1000){
 						this.DistanceType = 2;
@@ -723,18 +811,17 @@ import amap  from '@/utils/amap-wx.130.js';
 						
 						this.abnormalList = [
 							{id:1, name:'忘记打卡'},
-							{id:2, name:'系统定位不准'},
-							{id:3, name:'门店地址错误'}
+							{id:2, name:'系统定位不准'}
 						]
-						this.signin.text = '异常签到'
+						this.signin.text = '异常签离'
 					}else{
 						this.DistanceType = 1;
 						this.signType = 1
 						this.bgcolor = '#007AFF'
-						this.signin.text = '拍照签到'
+						this.signin.text = '签离'
 					}
 					
-					return d.toFixed(0); // return d + "米";
+					return d.toFixed(0);
 				}
 			},
 		},
@@ -770,7 +857,7 @@ import amap  from '@/utils/amap-wx.130.js';
 
 <style lang="scss" scoped>
 	.signin {
-		:deep .field-cell {
+		::v-deep .field-cell {
 			.cell-field {
 				.van-cell {
 					padding: 0;
@@ -795,7 +882,7 @@ import amap  from '@/utils/amap-wx.130.js';
 			padding-top: 100rpx;
 			text-align: center;
 
-			:deep .signin-btn {
+			::v-deep .signin-btn {
 				.van-button {
 					width: 260rpx;
 					height: 260rpx;
@@ -933,6 +1020,13 @@ import amap  from '@/utils/amap-wx.130.js';
 	.addr{
 		font-size: 24rpx;
 		color: #7F7F7F;
+		margin-bottom: 2rpx;
+	}
+	.time{
+		font-size: 28rpx;
+		font-weight: 400;
+		color: #333;
+		
 	}
 }
 .container-sign{

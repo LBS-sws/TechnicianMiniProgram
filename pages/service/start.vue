@@ -37,10 +37,15 @@
 					<view class="jc">检查报告</view>
 				</cl-col>
 				<cl-col v-if="service.status == 3" span="12" >
-					<view class="qc">已签离店</view>
+					<view class="qc" v-if="customer_qm" @click="createPdf">生成报告</view>
+					<view class="qc" v-else>已签离店</view>
+					
 				</cl-col>
 				<cl-col v-else span="12" @tap="check_out(0)">
-					<view class="qc">签出离店</view>
+					<view class="qc ql_box">
+						<view>签出离店</view>
+						<text class="ql_time">已服务:{{formatTime}}</text>
+					</view>
 				</cl-col>
 			</cl-row>
 		</view>
@@ -153,8 +158,23 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				showDate: false,
 				
 				qlType:'',
+				
+				isTiming: false,
+				time: 0,
+				timer: null,
+				customer_qm:false
 			}
 		},
+		  computed: {
+		    formatTime() {
+		   
+			 var hours = Math.floor(this.time / 3600); // 获取小时数
+		     var minutes = Math.floor((this.time % 3600) / 60); // 获取分钟数
+		     var seconds = this.time % 60; // 获取秒数
+		     
+			 return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+		    }
+		  },
 		onLoad(index) {
 			uni.showLoading({
 				title: '加载中...',
@@ -176,16 +196,51 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 			this.data_select();
 			this.autoInheritEq();
 			
+			this.qianming()
+			
 			// setTimeout(()=>{
 			// 	this.show = true
 			// },2000)
 		},
 		methods: {
+			// 生成PDF
+			createPdf(){
+				let that = this
+				
+				let param = JSON.stringify([{
+				    'job_id':this.jobid,
+				    'job_type':this.jobtype
+				}])
+				uni.showToast({
+					icon:'loading',
+					title:'生成中'
+				})
+				that.$api.makePdf(param).then(res=>{
+					uni.showToast({
+						title:'生成成功',
+						icon:'none'
+					})
+				}).catch(err=>{
+					// console.log(err)
+				})		  
+			},
+			startTimer() {
+			  this.isTiming = true
+			  this.timer = setInterval(() => {
+				this.time++
+			  }, 1000)
+			},
+			stopTimer() {
+			  this.isTiming = false
+			  clearInterval(this.timer)
+			},
 			// 服务暂停、安排下次时间
 			serviceHandle(){
 				console.log('下次服务时间')
 				this.show = false
 				this.showDate = true
+				
+				
 			},
 			// 下次服务选择日期
 			dateChange(v) {
@@ -193,12 +248,33 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 			    this.date = v
 				this.qlType = 2
 				this.check_out(2)
+				
 			},
 			open(){
 				
 			},
 			close(){
 				this.show = false
+			},
+			// 客户签名
+			qianming(){
+				let that = this
+				
+				let params6 = {
+					job_id:that.jobid,
+					job_type:that.jobtype,
+				}
+				that.$api.getSignature(params6).then(res=>{
+					console.log('客户签名:',res.data)
+					
+					if(res.data.cust.customer_signature_url){
+					// 	that.autograph_customer_signature = `${that.$baseUrl_imgs}` + res.data.cust.customer_signature_url + '?t=' + new Date().getTime()
+						this.customer_qm = true
+					}
+					
+				}).catch(err=>{
+					// console.log(err)
+				})
 			},
 			data_select() {
 				let params = {
@@ -207,6 +283,10 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				}
 				this.showContent = false;
 				this.$api.orderStart(params).then(res=>{
+					// console.log(res.data.data.service_time)
+					this.time = res.data.data.service_time	// 服务时间
+					this.startTimer();
+					
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
 					this.service = res.data.data
@@ -323,6 +403,7 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				}
 			},
 			check_out(e) {
+				this.stopTimer()
 				if(e<=0){
 					this.show = true
 					return false
@@ -331,6 +412,7 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 					this.qlType = 1
 					this.date = ''
 				}
+				this.show = false
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
@@ -530,6 +612,17 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 		color: #0e8cf1;
 		text-align: center;
 		line-height: 72rpx;
+	}
+}
+.ql_box{
+	position: relative;
+	.ql_time{
+		position: absolute;
+		bottom: -38rpx;
+		font-size: 24rpx;
+		font-weight: 400;
+		width: 100%;
+		left: 0;
 	}
 }
 </style>

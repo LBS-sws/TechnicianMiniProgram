@@ -252,5 +252,13 @@ export default {
 	editOrderDate(params){
 		return request("/Feedback.Feedback/updateOrderDate", params, 'POST')
 	},
+	// 生成报告
+	makePdf(params){
+		return request("/Order.Order/makePdf", {data:params,sync: 1,send:1}, 'POST')
+	},
+	// 未签离
+	noOrderSign(params){
+		return request("/Order.Order/noSignOrder", params, 'GET')
+	}
 }
 
