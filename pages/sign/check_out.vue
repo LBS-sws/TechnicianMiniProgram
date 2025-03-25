@@ -62,13 +62,13 @@
 		<view>
 			模拟位置:
 			<!-- <cl-select v-model="val" :options="list" @change="changeHandle($event)"></cl-select> -->
-			<view style="width: 120px;"><u-button type="primary" text="100米内" @click="addHandle(0)"></u-button></view>
+			<!-- <view style="width: 120px;"><u-button type="primary" text="100米内" @click="addHandle(0)"></u-button></view>
 			<view style="width: 120px;">
 				<u-button type="warning" text="100米外1000米内" @click="addHandle(1)"></u-button>
 			</view>
 			<view style="width: 120px;">
 				<u-button type="error" text="1000米外" @click="addHandle(2)"></u-button>
-			</view>
+			</view> -->
 		</view>
 		<view>距离：{{distance}}
 			<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
@@ -233,7 +233,8 @@ import amap  from '@/utils/amap-wx.130.js';
 				
 				isTiming: false,
 				time: 0,
-				timer: null
+				timer: null,
+				
 			}
 		},
 		computed: {
@@ -346,6 +347,7 @@ import amap  from '@/utils/amap-wx.130.js';
 			// 异常签离选择事件
 			exceptionHandle(e){
 				console.log(e)
+				
 				this.exceptionStatus = this.abnormalList[e].id
 				this.handleSignin()
 			},
@@ -395,7 +397,7 @@ import amap  from '@/utils/amap-wx.130.js';
 						this.distance = this.getDistance(this.point2, this.point1);
 			            uni.hideLoading(); 
 						 
-						 // this.detail()
+						 this.detail()
 			        }  
 			    });  
 			},
@@ -539,6 +541,11 @@ import amap  from '@/utils/amap-wx.130.js';
 				console.log(this.DistanceType)
 				// 异常签离
 				if(this.DistanceType == 2 && !this.exceptionStatus)
+				{
+					this.show = true
+					return false
+				}
+				if(this.DistanceType == 3 && this.exceptionStatus=='')
 				{
 					this.show = true
 					return false
@@ -706,7 +713,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					lng:this.point2.longitude,
 					lat:this.point2.latitude,
 					// title:this.title,
-					// address:this.address
+					addr:this.address,
 					signdate:'',
 					starttime:''
 				}
@@ -795,12 +802,12 @@ import amap  from '@/utils/amap-wx.130.js';
 					
 					// 红色 系统定位不准
 					let oldArray = this.abnormalList
-					const index = oldArray.findIndex(item => item.id === 2);
-					if (index !== -1) {
-					  oldArray.splice(index, 1);
-					}
+			// 		const index = oldArray.findIndex(item => item.id === 2);
+			// 		if (index !== -1) {
+			// 		  oldArray.splice(index, 1);
+			// 		}
 			
-					this.abnormalList  = oldArray
+			// 		this.abnormalList  = oldArray
 					this.signin.text = '异常签离'
 					return (d / 1000).toFixed(2);
 				} else {

@@ -43,34 +43,6 @@
 					
 				</view>
 			</view>
-			<view>
-				模拟位置:
-				<!-- <cl-select v-model="val" :options="list" @change="changeHandle($event)"></cl-select> -->
-				
-				<view style="width: 120px;"><u-button type="primary" text="100米内" @click="addHandle(0)"></u-button></view>
-				<view style="width: 120px;">
-					<u-button type="warning" text="100米外1000米内" @click="addHandle(1)"></u-button>
-				</view>
-				<view style="width: 120px;">
-					<u-button type="error" text="1000米外" @click="addHandle(2)"></u-button>
-				</view>
-			</view>
-			<!-- <view>
-				客户公司金纬度：
-				<view>lng: {{customerInfo.lng}}</view>
-				<view>lat: {{customerInfo.lat}}</view>
-			</view>
-			<view>
-				高德地图经纬度：
-				<view>lng: {{point2.longitude}}</view>
-				<view>lat: {{point2.latitude}}</view>
-				{{addressName}}
-				
-			</view> -->
-			<view>距离：{{distance}}
-				<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
-				<text v-else>千米</text>
-			</view>
 			<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 			
 			<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
@@ -186,38 +158,7 @@ export default {
 			distance:'', // 距离
 			DistanceType:1,		// 距离类型1米，2千米
 			list:[
-				{
-					label: "华为HUAWEI",
-					value: 1,
-					location:{
-						longitude:'104.076298',
-						latitude:'30.662476'
-					}
-				},
-				{
-					label: "香溢小笼包",
-					value: 2,
-					location:{
-						longitude:'104.077176',
-						latitude:'30.663772'
-					}
-				},
-				// {
-				// 	label: "太升南路B出口",
-				// 	value: 3,
-				// 	location:{
-				// 		longitude:'104.077448',
-				// 		latitude:'30.664168'
-				// 	}
-				// },
-				{
-					label: "东门大桥A出口",
-					value: 3,
-					location:{
-						longitude:'104.08664',
-						latitude:'30.648323'
-					}
-				}
+				
 			],
 			val:1,
 			show: false,
@@ -313,25 +254,8 @@ export default {
 		const systemInfo = uni.getSystemInfoSync()
 		this.windowHeight = systemInfo.windowHeight
 		this.cameraHeight = systemInfo.windowHeight - 80
-		console.log('cameraHeight:',this.cameraHeight)
 	},
 	methods: {
-		addHandle(i){
-			console.log(i)
-			let e = this.list[i].value
-			let obj = this.list.find((item)=>{
-				return item.value === e
-			})
-			// console.log('选择的位置',obj)
-			
-			this.point2.longitude = obj.location.longitude 
-			this.point2.latitude = obj.location.latitude
-			
-			this.distance = this.getDistance(this.point2, this.point1);
-			
-			this.longitude = obj.location.longitude
-			this.latitude = obj.location.latitude
-		},
 		// 异常处理
 		exceptionHandle(e){
 			console.log(e)
@@ -529,10 +453,13 @@ export default {
 					this.point2.latitude = data[0].latitude
 					this.point2.longitude = data[0].longitude
 					
+					this.longitude = this.point2.longitude
+					this.latitude = this.point2.latitude
+					
 					this.distance = this.getDistance(this.point2, this.point1);
 		            uni.hideLoading(); 
 					 
-					 // this.detail()
+					 this.detail()
 		        }  
 		    });  
 		},
@@ -549,10 +476,14 @@ export default {
 				this.point1.longitude = res.data.customer.lng
 				console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
 				
-				console.log('高德',this.point2)
+				console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
+				
+				this.longitude = this.point2.longitude
+				this.latitude = this.point2.latitude
+				
 				this.distance = this.getDistance(this.point2, this.point1);
 				
-				console.log(this.distance);
+				console.log('距离：',this.distance);
 				
 			}).catch(err=>{
 				uni.hideLoading();
