@@ -19,6 +19,9 @@
 			<view class="v_magin">
 				联系地址：<span style="color: black;"><text selectable="true">{{service.addr}}</text></span>
 			</view>
+			<view class="v_magin">
+				服务时长要求：<span style="color: black;"><text selectable="true" v-if="serviceContractTime">{{serviceContractTime}}分钟</text></span>
+			</view>
 			<!-- 流程 -->
 			<cl-divider>
 				<text class="cl-icon-favor"></text>
@@ -37,7 +40,7 @@
 					<view class="jc">检查报告</view>
 				</cl-col>
 				<cl-col v-if="service.status == 3" span="12" >
-					<view class="qc" v-if="customer_qm" @click="createPdf">生成报告</view>
+					<view class="qc" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''">生成报告</view>
 					<view class="qc" v-else>已签离店</view>
 					
 				</cl-col>
@@ -52,6 +55,10 @@
 		<view class="tj_bu" v-else @tap="report()">检查报告</view>
 		
 		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
+			<view v-if="noFillInData.length>0" class="no_box">
+				<view class="title" v-for="(item,i) in noFillInData" :key="i">{{i+1}}.{{item.title}}</view>
+				<!-- <view class="title">2.报告未完整填写</view> -->
+			</view>
 			<view class="signout_ui">
 				<view class="item" @click="close">返回</view>
 				<view class="item" @click="check_out(1)">直接签离</view>
@@ -162,7 +169,10 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				isTiming: false,
 				time: 0,
 				timer: null,
-				customer_qm:false
+				customer_qm:false,
+				
+				serviceContractTime:0,	// 合约服务时长
+				noFillInData:[]
 			}
 		},
 		  computed: {
@@ -266,11 +276,22 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				}
 				that.$api.getSignature(params6).then(res=>{
 					console.log('客户签名:',res.data)
-					
+					this.noFillInData = []
 					if(res.data.cust.customer_signature_url){
 					// 	that.autograph_customer_signature = `${that.$baseUrl_imgs}` + res.data.cust.customer_signature_url + '?t=' + new Date().getTime()
 						this.customer_qm = true
 					}
+					var arr = []
+					// 客户未签字
+					if(res.data.cust.customer_signature_url=='' || res.data.cust.customer_signature_url ==null){
+						
+						this.noFillInData.push({title:'客户未签字'})
+						
+					}
+					if(res.data.staff_sign_urls.length==0){
+						this.noFillInData.push({title:'报告未完整填写'})
+					}
+					
 					
 				}).catch(err=>{
 					// console.log(err)
@@ -287,6 +308,7 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 					this.time = res.data.data.service_time	// 服务时间
 					this.startTimer();
 					
+					this.serviceContractTime = res.data.data.contract_service_time	// 合约服务时长
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
 					this.service = res.data.data
@@ -402,7 +424,20 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 					})
 				}
 			},
+			// 签离出店按钮 第一步
 			check_out(e) {
+				
+				// 1.验证服务时长是否达到
+				let minutes = Math.floor(this.time / 60); // 把已服务时间秒转成分钟
+				// 判断是否已到达合约服务时长
+				if(minutes<this.serviceContractTime){
+					uni.showToast({
+						title:'未达服务时长,不进入后续流程',
+						icon:'none'
+					})
+					return false
+				}
+			
 				this.stopTimer()
 				if(e<=0){
 					this.show = true
@@ -527,8 +562,11 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 		background-color: #007AFF;
 		color: #FFFFFF;
 		border-radius: 15px;
+		
 	}
-
+	.qc.in{
+			background-color: #12900a;
+	}
 	.cl-timeline-item__node::after {
 		content: "";
 		display: block;
@@ -623,6 +661,15 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 		font-weight: 400;
 		width: 100%;
 		left: 0;
+	}
+}
+.no_box{
+	padding-top: 20rpx;
+	.title{
+		font-size: 26rpx;
+		color: red;
+		text-align: center;
+		margin-bottom: 10rpx;
 	}
 }
 </style>
