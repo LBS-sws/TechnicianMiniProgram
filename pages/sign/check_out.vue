@@ -59,21 +59,6 @@
 				
 			</view>
 		</view>
-		<view>
-			模拟位置:
-			<!-- <cl-select v-model="val" :options="list" @change="changeHandle($event)"></cl-select> -->
-			<!-- <view style="width: 120px;"><u-button type="primary" text="100米内" @click="addHandle(0)"></u-button></view>
-			<view style="width: 120px;">
-				<u-button type="warning" text="100米外1000米内" @click="addHandle(1)"></u-button>
-			</view>
-			<view style="width: 120px;">
-				<u-button type="error" text="1000米外" @click="addHandle(2)"></u-button>
-			</view> -->
-		</view>
-		<view>距离：{{distance}}
-			<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
-			<text v-else>千米</text>
-		</view>
 		<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 		
 		<!-- 异常签离弹出 -->
@@ -318,22 +303,6 @@ import amap  from '@/utils/amap-wx.130.js';
 			console.log('cameraHeight:',this.cameraHeight)
 		},
 		methods: {
-			addHandle(i){
-				console.log(i)
-				let e = this.list[i].value
-				let obj = this.list.find((item)=>{
-					return item.value === e
-				})
-				// console.log('选择的位置',obj)
-				
-				this.point2.longitude = obj.location.longitude 
-				this.point2.latitude = obj.location.latitude
-				
-				this.distance = this.getDistance(this.point2, this.point1);
-				
-				this.longitude = obj.location.longitude
-				this.latitude = obj.location.latitude
-			},
 			startTimer() {
 			  this.isTiming = true
 			  this.timer = setInterval(() => {
@@ -358,23 +327,6 @@ import amap  from '@/utils/amap-wx.130.js';
 			// 异常签离 弹窗关闭
 			close(){
 				this.show = false
-			},
-			// 模拟定位选位置
-			changeHandle(e){
-				// console.log(e)
-				let obj = this.list.find((item)=>{
-					return item.value === e
-				})
-				// console.log('选择的位置',obj)
-				
-				this.point2.longitude = obj.location.longitude 
-				this.point2.latitude = obj.location.latitude
-				
-				this.distance = this.getDistance(this.point2, this.point1);
-				
-				this.longitude = obj.location.longitude
-				this.latitude = obj.location.latitude
-				
 			},
 			// 重新定位
 			resetLocation(){
@@ -715,7 +667,8 @@ import amap  from '@/utils/amap-wx.130.js';
 					// title:this.title,
 					addr:this.address,
 					signdate:'',
-					starttime:''
+					starttime:'',
+					status:this.exceptionStatus
 				}
 				
 				this.show = false	// 异常签离 弹窗关闭
