@@ -113,7 +113,33 @@ export default {
 		this.init()
 	},
 	methods: {
+		getDate(){
+			var date = new Date()
+					
+			let y = new Date(date).getFullYear();
+			let m = new Date(date).getMonth()+1;
+			let d = new Date(date).getDate();
+						
+			if(m<10){
+			    m = '0' + m
+			}
+			if(d<10){
+			    d = '0' + d
+			}
+			let datetime = `${y}-${m}-${d}`;
+			return datetime
+		},
 		confirm() {
+			
+			let date = this.getDate()
+			
+			if(date>this._timeValue){
+				uni.showToast({
+					title:'不能选择小于今天的日期',
+					icon:'none'
+				})
+				return false
+			}
 			this.$emit('confirm', this._timeValue)
 		},
 		cancel() {
