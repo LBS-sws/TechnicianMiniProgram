@@ -350,16 +350,16 @@ import popup from '@/components/feedback/popup.vue';
 						}else{
 							this.service_button = '继续服务';
 						}
-						if(res.data.status == 2 && res.data.start_time == null){
+						if(res.data.status == 2 && res.data.start_time == null){	// 1
 							this.service_button = '服务签到';
 						}
 						
 						
-						if(res.data.status == 2 && res.data.start_time != null){
+						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==0){
+							this.service_button = '继续服务'; //
+						}
+						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==1){// 新加
 							this.service_button = '继续服务';
-						}
-						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==0){// 新加
-							this.service_button = '服务签到';
 						}
 						if(res.data.status == 3){
 							this.service_button = '服务已完成';
@@ -413,7 +413,11 @@ import popup from '@/components/feedback/popup.vue';
 								url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
 								.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
 							})
-						}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql !=0){
+						}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==1){
+							uni.navigateTo({
+								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+							})
+						}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==0){
 							uni.navigateTo({
 								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
 							})

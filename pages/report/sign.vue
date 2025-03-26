@@ -232,28 +232,28 @@
 						}
 
 						//更新对应order的pdf
-						if(that.status==3){
-							let formData = {
-								'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
-								'send':1,
-								'sync':1
-							}
-							setTimeout(()=>{
-								uni.request({
-									url: `${that.$baseUrl}/Order.Order/makePdf`,
-									header: {
-										'token': uni.getStorageSync('token'),
-										'Content-type':'application/x-www-form-urlencoded'
-									},
-									method:'POST',
-									data: formData,
-									success: (res) => {
-										console.log(res.data);
-										console.log('更新')
-									}
-								});
-							},500)
-						}
+						// if(that.status==3){
+						// 	let formData = {
+						// 		'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
+						// 		'send':1,
+						// 		'sync':1
+						// 	}
+						// 	setTimeout(()=>{
+						// 		uni.request({
+						// 			url: `${that.$baseUrl}/Order.Order/makePdf`,
+						// 			header: {
+						// 				'token': uni.getStorageSync('token'),
+						// 				'Content-type':'application/x-www-form-urlencoded'
+						// 			},
+						// 			method:'POST',
+						// 			data: formData,
+						// 			success: (res) => {
+						// 				console.log(res.data);
+						// 				console.log('更新')
+						// 			}
+						// 		});
+						// 	},500)
+						// }
 
 						setTimeout(()=>{
 							that.disabled = true

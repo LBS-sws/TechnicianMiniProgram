@@ -608,9 +608,9 @@ import amap  from '@/utils/amap-wx.130.js';
 						}
 
 						//更新工单报表
-						setTimeout(()=>{
-							that.makePdf();
-						},2000)
+						// setTimeout(()=>{
+						// 	that.makePdf();
+						// },2000)
 					} else {
 						this.$refs["message"].open({
 							type: "warn",
