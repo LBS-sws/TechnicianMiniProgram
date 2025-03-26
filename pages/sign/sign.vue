@@ -197,6 +197,9 @@ export default {
 			disable: false,
 			title: '',
 			address: '',
+			
+			longitude:'',
+			latitude:''
 		}
 	},
 	onLoad(index) {
