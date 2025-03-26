@@ -215,3 +215,12 @@ export function getLocation () {
       })
   })
 }
+
+// 获取url params 字符串
+export function getUrlParamsStr(paramsObj) {
+	if (typeof paramsObj === 'object') {
+		return Object.entries(paramsObj).map(ele => `${ele[0]}=${ele[1]}`).join('&')
+	} else {
+		return ''
+	}
+}

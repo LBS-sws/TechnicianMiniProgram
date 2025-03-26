@@ -9,6 +9,16 @@
 				<view class="title">{{customerInfo.name_zh}}</view>
 				<view class="addr">{{customerInfo.addr}}</view>
 			</view>
+			<view class="addrNow" v-if="addressName">
+				<view>当前位置：{{addressName}} 
+				</view>
+				<view>
+					距离门店
+					：{{distance}}
+									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
+									<text v-else>千米</text>
+				</view>
+			</view>
 			<!-- 签到窗 -->
 			<view class="signin-area">
 				
@@ -99,7 +109,7 @@
 </template>
 
 <script>
-import { formatDate } from '@/utils';
+import { formatDate, getUrlParamsStr } from '@/utils';
 //引入高德地图sdk
 import amap  from '@/utils/amap-wx.130.js';
 import preview from '@/components/camera/preview.vue';
@@ -157,9 +167,6 @@ export default {
 			},
 			distance:'', // 距离
 			DistanceType:1,		// 距离类型1米，2千米
-			list:[
-				
-			],
 			val:1,
 			show: false,
 			abnormalList:[
@@ -169,7 +176,6 @@ export default {
 			],
 			flip: '../../static/flip.png', // 反转
 			icon: '../../static/icon.png', // 相机
-			picture: '../../static/picture.png', // 照片
 			cameraContext: {},
 			windowHeight: '',
 			cameraHeight: '',
@@ -209,14 +215,13 @@ export default {
 		this.lat = index.lat
 		this.lng = index.lng
 		this.addr = index.addr
-		// this.getLocation()
+
 		this.getTime()
 		if (this.timerInterval) {
 			clearInterval(this.timerInterval)
 		} else {
 			this.timerInterval = setInterval(this.getTime, 1000)
 		}
-		// this.checkLocationAuth();
 		
 		this.amapPlugin = new amap.AMapWX({
 		    key: this.key  
@@ -232,9 +237,7 @@ export default {
 			})
 		}
 	},
-	computed: {
-		// ...mapGetters(['selectedLocation', 'selectedSearch'])
-	},
+	computed: {},
 	onShow() {
 		// 显示头部消息弹窗
 		// this.$refs.notify.show({
@@ -413,27 +416,12 @@ export default {
 			this.pageType = 1
 			this.imgUrl = ''
 		},
+		// 异常签到弹窗 关闭
 		close(){
 			this.show = false
 		},
+		// 异常签到弹窗
 		open(){
-			
-		},
-		// 模拟定位选位置
-		changeHandle(e){
-			// console.log(e)
-			let obj = this.list.find((item)=>{
-				return item.value === e
-			})
-			// console.log('选择的位置',obj)
-			
-			this.point2.longitude = obj.location.longitude 
-			this.point2.latitude = obj.location.latitude
-			
-			this.distance = this.getDistance(this.point2, this.point1);
-			
-			this.longitude = obj.location.longitude
-			this.latitude = obj.location.latitude
 			
 		},
 		// 重新定位
@@ -465,25 +453,62 @@ export default {
 		},
 		// 详情
 		detail(){
+			let that = this
 			let params = {
 				id: this.jobid,
 				job_type: this.jobtype
 			}
 			this.$api.getOrderInfo(params).then(res=>{
-				// console.log(res)
+				
 				this.customerInfo = res.data.customer
-				this.point1.latitude = res.data.customer.lat
-				this.point1.longitude = res.data.customer.lng
-				console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
 				
-				console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
+				// 坐标转换
+				const paramsObj = {
+					key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
+					locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
+					output: 'json'
+				}
+				const paramsStr = getUrlParamsStr(paramsObj)
+				uni.request({
+					url: 'https://restapi.amap.com/v3/assistant/coordinate/convert?' + paramsStr,
+					method: "get",
+					dataType: "json",
+					header: {
+						'Content-Type': 'application/json'
+					},
+					success: (resx) => {
+						// console.log('resx:',resx.data.locations)
+						if(resx.data.status==1){
+							let arr = resx.data.locations.split(",");
+							console.log(arr)
+							
+							this.point1.longitude = parseFloat(arr[0])
+							this.point1.latitude = parseFloat(arr[1])
+							console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
+							
+							console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
+							
+							this.longitude = this.point2.longitude
+							this.latitude = this.point2.latitude
+							
+							this.distance = this.getDistance(this.point2, this.point1);
+							
+							console.log('距离：',this.distance);
+						}else{
+							uni.showToast({
+								title:'经纬度转换失败',
+								icon:'none'
+							})
+						}
+						
+					},
+					fail: (res) => {
+						reject('经纬度解析地址失败')
+					}
+				});
+
+				// console.log(res)
 				
-				this.longitude = this.point2.longitude
-				this.latitude = this.point2.latitude
-				
-				this.distance = this.getDistance(this.point2, this.point1);
-				
-				console.log('距离：',this.distance);
 				
 			}).catch(err=>{
 				uni.hideLoading();
@@ -563,108 +588,6 @@ export default {
 				var currentdate = year + seperator1 + month + seperator1 + strDate;
 				return currentdate;
 			},
-			//单独提取一个判断用户是否授权定位的函数，在需要的地方直接调用，避免了重复触发getLocation获取定位弹窗
-			checkLocationAuth() {
-				wx.getSetting({
-					success: (res) => {
-						let authSetting = res.authSetting
-						if (authSetting['scope.userLocation']) {
-							// 已授权
-							this.getLocation()
-						} else if (authSetting['scope.userLocation'] === false) {
-							wx.showModal({
-								title: '您未开启地理位置授权',
-								content: '请在系统设置中打开位置授权，以便我们为您提供更好的服务',
-								success: (res) => {
-									if (res.confirm) {
-										wx.openSetting()
-									}
-								}
-							})
-							console.log("失败了4")
-							const address = '本次定位失败，可继续签到。'
-							this.formData.signAddress = address
-							this.location.curLocation = address
-							this.location.loading = false
-							this.location.error = true
-						} else {
-							wx.authorize({
-								scope: 'scope.userLocation',
-								success: () => {
-									this.getLocation()
-								},
-								fail: () => {
-									wx.showModal({
-										title: '您未开启地理位置授权',
-										content: '请在系统设置中打开位置授权，以便我们为您提供更好的服务',
-										success: (res) => {
-											if (res.confirm) {
-												wx.openSetting()
-											}
-										}
-									})
-
-									console.log("失败了3")
-									const address = '本次定位失败，可继续签到。'
-									this.formData.signAddress = address
-									this.location.curLocation = address
-									this.location.loading = false
-									this.location.error = true
-								}
-							})
-						}
-					}
-				})
-			},
-			// 获取当前定位
-			getLocation() {
-				console.log("进来了1");
-				uni.getLocation({
-					type: 'gcj02',
-					success: (res) => {
-						// const {
-						// 	latitude,
-						// 	longitude
-						// } = res;
-						let ret = transformFromGCJToBaidu(res.latitude,res.longitude)
-						console.log("ret")
-						console.log(ret)
-						uni.request({
-							url: `${this.$mapApiUrl}`,
-							data: {
-								ak: `${this.$mapApiKey}`,
-								output: 'json',
-								coordtype: 'gcj02',
-								location: `${ret.latitude},${ret.longitude}`
-							},
-							success: (lres) => {
-								const address = lres.data.result.formatted_address
-								this.formData.signAddress = address
-								this.location.curLocation = address
-								this.location.error = false
-								this.location.loading = false
-								console.log(lres);
-							},
-							error: (e) => {
-								console.log("失败了1")
-								const address = '本次定位失败，可继续签离。'
-								this.formData.signAddress = address
-								this.location.curLocation = address
-								this.location.loading = false
-								this.location.error = true
-							}
-						});
-					},
-					error: (e) => {
-						console.log("失败了2")
-						const address = '本次定位失败，可继续签离。'
-						this.formData.signAddress = address
-						this.location.curLocation = address
-						this.location.loading = false
-						this.location.error = true
-					}
-				});
-			},
 			//根据金纬度计算距离
 			getDistance(point1, point2) {
 				let R = 6371000; // 地球平均半径，单位：米
@@ -716,25 +639,14 @@ export default {
 				}
 			},
 			// end
-		},
+	},
 }
-	/**
-	 *  将GCJ-02(火星坐标)转为百度坐标:
-	 */
-function transformFromGCJToBaidu(latitude, longitude) {
-	  var pi = 3.14159265358979324 * 3000.0 / 180.0;
 
-	  var z = Math.sqrt(longitude * longitude + latitude * latitude) + 0.00002 * Math.sin(latitude * pi);
-	  var theta = Math.atan2(latitude, longitude) + 0.000003 * Math.cos(longitude * pi);
-	  var a_latitude = (z * Math.sin(theta) + 0.006);
-	  var a_longitude = (z * Math.cos(theta) + 0.0065);
-
-	  return { latitude: a_latitude, longitude: a_longitude };
-}
 </script>
 
 <style lang="scss" scoped>
 .signin {
+	position: relative;
 		::v-deep .field-cell {
 			.cell-field {
 				.van-cell {
@@ -805,6 +717,11 @@ function transformFromGCJToBaidu(latitude, longitude) {
 		font-size: 24rpx;
 		color: #7F7F7F;
 	}
+}
+.addrNow{
+	font-size: 24rpx;
+	color: #2196F3;
+	padding:  40rpx 36rpx 0;
 }
 .container-sign{
 	padding: 120rpx 34rpx 0 34rpx;
