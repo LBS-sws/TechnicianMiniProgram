@@ -471,6 +471,7 @@ export default {
 				const paramsObj = {
 					key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
 					locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
+					coordsys:'baidu',
 					output: 'json'
 				}
 				const paramsStr = getUrlParamsStr(paramsObj)

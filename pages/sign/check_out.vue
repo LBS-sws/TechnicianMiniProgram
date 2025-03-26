@@ -228,19 +228,19 @@ import amap  from '@/utils/amap-wx.130.js';
 			this.qlType = index.qlType
 			this.date = index.date
 
-			if (index.staffSign == 0) {
-				this.$refs["message"].open({type: "warn",duration: 5000,top: "200rpx",message: "技术员未签名"});
-				return;
-			}
+			// if (index.staffSign == 0) {
+			// 	this.$refs["message"].open({type: "warn",duration: 5000,top: "200rpx",message: "技术员未签名"});
+			// 	return;
+			// }
 			
-			if (index.autograph == 0) {
-				this.$refs["message"].open({
-					type: "warn",
-					duration: 5000,
-					top: "200rpx",
-					message: "客户未签名",
-				});
-			}
+			// if (index.autograph == 0) {
+			// 	this.$refs["message"].open({
+			// 		type: "warn",
+			// 		duration: 5000,
+			// 		top: "200rpx",
+			// 		message: "客户未签名",
+			// 	});
+			// }
 			
 			this.getTime()
 			if (this.timerInterval) {
@@ -348,6 +348,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					const paramsObj = {
 						key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
 						locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
+						coordsys:'baidu',
 						output: 'json'
 					}
 					const paramsStr = getUrlParamsStr(paramsObj)
@@ -484,10 +485,10 @@ import amap  from '@/utils/amap-wx.130.js';
 			// ...mapMutations(['SET_SELECTED_SEARCH']),
 			//开始服务签离
 			handleSignin() {
-				if (this.staffSign == 0) {
-					uni.showToast({title: '技术员未签名',icon: 'none'})
-					return;
-				}
+				// if (this.staffSign == 0) {
+				// 	uni.showToast({title: '技术员未签名',icon: 'none'})
+				// 	return;
+				// }
 
 				if (this.invoice == -1) {
 					uni.showToast({
