@@ -440,6 +440,8 @@ export default {
 		        success: (data) => {  
 		            console.log(data)  
 		            this.addressName = data[0].name; 
+					this.title = data[0].desc
+					this.address = data[0].name
 					
 					this.point2.latitude = data[0].latitude
 					this.point2.longitude = data[0].longitude
