@@ -18,6 +18,7 @@
 									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
 									<text v-else>千米</text>
 				</view>
+				<view>高德计算距离：{{distanceJs}}</view>
 			</view>
 			<!-- 签到窗 -->
 			<view class="signin-area">
@@ -104,6 +105,10 @@
 		        </view>
 		    </template>
 		</atl-map>
+		<!-- <cl-button @click="WebHandle">h5</cl-button> -->
+		<view class="">
+			<webmap v-if="webShow" :webUrl="webUrl"></webmap>
+		</view>
 		
 	</view>
 </template>
@@ -113,9 +118,10 @@ import { formatDate, getUrlParamsStr } from '@/utils';
 //引入高德地图sdk
 import amap  from '@/utils/amap-wx.130.js';
 import preview from '@/components/camera/preview.vue';
+import webmap from '@/components/web/webmap.vue';
 export default {
 	components:{
-		preview
+		preview, webmap
 	},
 	data() {
 		return {
@@ -184,7 +190,7 @@ export default {
 			imgUrl:'',
 			pageType:1,
 			exceptionStatus:'',	// 异常：1忘记打卡 2定位不准 3地址错误
-			
+			key:'c6631b0a7212536acc8aa68df419f9b3',
 			// 地图
 			marker: {
 			    id: 1,
@@ -198,7 +204,10 @@ export default {
 			address: '',
 			
 			longitude:'',
-			latitude:''
+			latitude:'',
+			distanceJs:'',
+			webUrl:'https://uatapps.lbsapps.cn/nu/map.html',
+			webShow:false
 		}
 	},
 	onLoad(index) {
@@ -259,8 +268,14 @@ export default {
 		const systemInfo = uni.getSystemInfoSync()
 		this.windowHeight = systemInfo.windowHeight
 		this.cameraHeight = systemInfo.windowHeight - 80
+		
+		
 	},
 	methods: {
+		WebHandle(){
+			console.log('123131')
+			this.webShow = true
+		},
 		// 异常处理
 		exceptionHandle(e){
 			console.log(e)
@@ -284,6 +299,7 @@ export default {
 		},
 		confirmAmap(e){
 			console.log('高德选择位置回调',e)
+
 			this.mapShow = false
 			
 			this.longitude = e.longitude;
@@ -511,8 +527,39 @@ export default {
 						reject('经纬度解析地址失败')
 					}
 				});
-
-				// console.log(res)
+				
+				if(this.point2.latitude && this.point2.longitude){}
+					const paramObj = {
+						origins:[`${this.point2.longitude},${this.point2.latitude}`],	// 出发点
+						destination:[`${this.point1.longitude},${this.point1.latitude}`],// 目的地
+						key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
+						type:1
+					}
+					
+					const paramStr = getUrlParamsStr(paramObj)
+					
+					uni.request({
+						
+						url: 'https://restapi.amap.com/v3/distance?' + paramStr,
+						method: "get",
+						
+						success: (resxxx) => {
+							console.log('高德接口计算距离:',resxxx.data)
+							if(resxxx.data.status==1){
+								that.distanceJs = resxxx.data.results[0].distance + '米'
+							}else{
+								// uni.showToast({
+								// 	title:'高德计算距离失败',
+								// 	icon:'none'
+								// })
+							}
+							
+						},
+						fail: (res) => {
+							reject('高德计算错误')
+						}
+					});
+					
 				
 				
 			}).catch(err=>{

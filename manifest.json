@@ -103,8 +103,8 @@
             "maps" : {
                 "amap" : {
                     "key" : "c6631b0a7212536acc8aa68df419f9b3",
-                    "securityJsCode" : "a9b3a18cde1b17673b7cb4a539c3b6e8",
-                    "serviceHost" : ""
+                    "securityJsCode" : "c6631b0a7212536acc8aa68df419f9b3",
+                    "serviceHost" : "c6631b0a7212536acc8aa68df419f9b3"
                 }
             }
         }

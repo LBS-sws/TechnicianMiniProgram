@@ -9,6 +9,7 @@
     "dependencies": {
         "base-64": "^1.0.0",
         "cool": "0.0.1",
+        "coordtransform": "^2.1.2",
         "dayjs": "^1.11.12",
         "url-search-params-polyfill": "^8.2.5",
         "uview-ui": "^2.0.37"
