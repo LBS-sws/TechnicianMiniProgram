@@ -48,7 +48,7 @@
 				</view>
 				<view class="sign_info danger" v-else-if="signType==2">
 					<view class="icon_ui">i</view>
-					<view class="text">检测到你暂未进入可签到区，请距离客户门店<text class="red">100米内</text>,若继续签到将会记录<text class="red">异常签到</text></view>
+					<view class="text">检测到你暂未进入可签到区，请距离客户门店<text class="red">300米内</text>,若继续签到将会记录<text class="red">异常签到</text></view>
 				</view>
 				<view class="sign_info error">
 					
@@ -669,7 +669,7 @@ export default {
 					this.signin.text = '异常签到'
 					return (d / 1000).toFixed(2);	// return (d / 1000).toFixed(2) + "千米";
 				} else {
-					if(d > 100 && d<1000){
+					if(d > 300 && d<1000){
 						this.DistanceType = 2;
 						this.signType = 2
 						this.bgcolor = '#f59a23';
