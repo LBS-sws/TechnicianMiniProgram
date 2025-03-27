@@ -18,7 +18,7 @@
 									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
 									<text v-else>千米</text>
 				</view>
-				<view>高德计算距离：{{distanceJs}}</view>
+				<!-- <view>高德计算距离：{{distanceJs}}</view> -->
 			</view>
 			<!-- 签到窗 -->
 			<view class="signin-area">
@@ -205,7 +205,7 @@ export default {
 			
 			longitude:'',
 			latitude:'',
-			distanceJs:'',
+			// distanceJs:'',
 			webUrl:'https://uatapps.lbsapps.cn/nu/map.html',
 			webShow:false
 		}
@@ -528,37 +528,37 @@ export default {
 					}
 				});
 				
-				if(this.point2.latitude && this.point2.longitude){}
-					const paramObj = {
-						origins:[`${this.point2.longitude},${this.point2.latitude}`],	// 出发点
-						destination:[`${this.point1.longitude},${this.point1.latitude}`],// 目的地
-						key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
-						type:1
-					}
+				// if(this.point2.latitude && this.point2.longitude){}
+				// 	const paramObj = {
+				// 		origins:[`${this.point2.longitude},${this.point2.latitude}`],	// 出发点
+				// 		destination:[`${this.point1.longitude},${this.point1.latitude}`],// 目的地
+				// 		key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
+				// 		type:1
+				// 	}
 					
-					const paramStr = getUrlParamsStr(paramObj)
+				// 	const paramStr = getUrlParamsStr(paramObj)
 					
-					uni.request({
+				// 	uni.request({
 						
-						url: 'https://restapi.amap.com/v3/distance?' + paramStr,
-						method: "get",
+				// 		url: 'https://restapi.amap.com/v3/distance?' + paramStr,
+				// 		method: "get",
 						
-						success: (resxxx) => {
-							console.log('高德接口计算距离:',resxxx.data)
-							if(resxxx.data.status==1){
-								that.distanceJs = resxxx.data.results[0].distance + '米'
-							}else{
-								// uni.showToast({
-								// 	title:'高德计算距离失败',
-								// 	icon:'none'
-								// })
-							}
+				// 		success: (resxxx) => {
+				// 			console.log('高德接口计算距离:',resxxx.data)
+				// 			if(resxxx.data.status==1){
+				// 				that.distanceJs = resxxx.data.results[0].distance + '米'
+				// 			}else{
+				// 				// uni.showToast({
+				// 				// 	title:'高德计算距离失败',
+				// 				// 	icon:'none'
+				// 				// })
+				// 			}
 							
-						},
-						fail: (res) => {
-							reject('高德计算错误')
-						}
-					});
+				// 		},
+				// 		fail: (res) => {
+				// 			reject('高德计算错误')
+				// 		}
+				// 	});
 					
 				
 				
