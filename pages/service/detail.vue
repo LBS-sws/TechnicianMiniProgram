@@ -422,6 +422,10 @@ import popup from '@/components/feedback/popup.vue';
 								url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
 								.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
 							})
+						}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==0){
+							uni.navigateTo({
+								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+							})
 						}else if(this.service.status == 3){
 							uni.navigateTo({
 								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
