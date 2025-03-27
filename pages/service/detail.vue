@@ -355,10 +355,10 @@ import popup from '@/components/feedback/popup.vue';
 						}
 						
 						
-						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==0){
-							this.service_button = '继续服务'; //
+						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==2){// 继续签到、签离
+							this.service_button = '服务签到'; //
 						}
-						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==1){// 新加
+						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==1){// 直接签离了的
 							this.service_button = '继续服务';
 						}
 						if(res.data.status == 3){
@@ -417,9 +417,10 @@ import popup from '@/components/feedback/popup.vue';
 							uni.navigateTo({
 								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
 							})
-						}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==0){
+						}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==2){
 							uni.navigateTo({
-								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+								url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+								.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
 							})
 						}else if(this.service.status == 3){
 							uni.navigateTo({
