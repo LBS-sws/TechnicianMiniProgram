@@ -150,7 +150,6 @@ export default {
 			signType:1,
 			
 			amapPlugin: null,
-			key: 'c6631b0a7212536acc8aa68df419f9b3',  
 			addressName: '',  
 			weather: {  
 			    hasData: false,  
@@ -227,7 +226,7 @@ export default {
 		}
 		
 		this.amapPlugin = new amap.AMapWX({
-		    key: this.key  
+		    key: `${this.$amapApiKey}`
 		}); 
 		
 		if (uni.createCameraContext) {
@@ -469,7 +468,7 @@ export default {
 				
 				// 坐标转换
 				const paramsObj = {
-					key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
+					key: `${this.$amapWebApiKey}`,
 					locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
 					coordsys:'baidu',
 					output: 'json'

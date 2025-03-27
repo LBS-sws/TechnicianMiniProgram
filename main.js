@@ -60,8 +60,10 @@ const app = new Vue({
 app.$mount();
 
 Vue.prototype.$version =2
-Vue.prototype.$mapApiKey="2atTyVGiF8KTsdegg7KKSjGTsdINm8gw" //百度地图 appkey
-Vue.prototype.$mapApiUrl="https://api.map.baidu.com/reverse_geocoding/v3" //百度地图apiURl
+Vue.prototype.$mapApiKey="2atTyVGiF8KTsdegg7KKSjGTsdINm8gw" // 百度地图 appkey
+Vue.prototype.$mapApiUrl="https://api.map.baidu.com/reverse_geocoding/v3" // 百度地图apiURl
+Vue.prototype.$amapApiKey="c6631b0a7212536acc8aa68df419f9b3" // 高德定位 key
+Vue.prototype.$amapWebApiKey="55bf8cc7ac61ce6099e8266ccc8ea0e8" // 高德经纬度解析 key
 
 Vue.prototype.$baseUrl="https://uat.teach.lbsapps.cn/api"   //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
 Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"

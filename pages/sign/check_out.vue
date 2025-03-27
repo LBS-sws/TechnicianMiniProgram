@@ -141,8 +141,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					latitude:''
 				},
 				exceptionStatus:'',
-				amapPlugin: null,
-				key: 'c6631b0a7212536acc8aa68df419f9b3',  
+				amapPlugin: null, 
 				addressName: '',  
 				weather: {  
 				    hasData: false,  
@@ -251,9 +250,9 @@ import amap  from '@/utils/amap-wx.130.js';
 		},
 		onShow() {
 			this.amapPlugin = new amap.AMapWX({
-			    key: this.key  
+			    key: `${this.$amapApiKey}`
 			});
-			console.log('高德地图key:',this.key)
+			console.log('高德地图key:',`${this.$amapApiKey}`)
 			
 			if (uni.createCameraContext) {
 				this.cameraContext = uni.createCameraContext()
@@ -346,7 +345,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					
 					// 坐标转换
 					const paramsObj = {
-						key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
+						key: `${this.$amapWebApiKey}`,
 						locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
 						coordsys:'baidu',
 						output: 'json'
