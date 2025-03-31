@@ -18,6 +18,7 @@
 									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
 									<text v-else>千米</text>
 				</view>
+				<!-- <view>高德计算距离：{{distanceJs}}</view> -->
 			</view>
 			<van-cell class="field-cell" required title-width="70px" title="发票签收：">
 				<view class="location">
@@ -63,7 +64,7 @@
 			</view>
 			<view class="sign_info danger" v-else-if="signType==2">
 				<view class="icon_ui">i</view>
-				<view class="text">检测到你暂未进入可签到区，请距离客户门店<text class="red">100米内</text>,若继续签到将会记录<text class="red">异常签到</text></view>
+				<view class="text">检测到你暂未进入可签到区，请距离客户门店<text class="red">300米内</text>,若继续签到将会记录<text class="red">异常签到</text></view>
 			</view>
 			<view class="sign_info error">
 				
@@ -141,8 +142,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					latitude:''
 				},
 				exceptionStatus:'',
-				amapPlugin: null,
-				key: 'c6631b0a7212536acc8aa68df419f9b3',  
+				amapPlugin: null, 
 				addressName: '',  
 				weather: {  
 				    hasData: false,  
@@ -195,7 +195,8 @@ import amap  from '@/utils/amap-wx.130.js';
 				time: 0,
 				timer: null,
 				longitude:'',
-				latitude:''
+				latitude:'',
+				// distanceJs:''
 			}
 		},
 		computed: {
@@ -251,9 +252,9 @@ import amap  from '@/utils/amap-wx.130.js';
 		},
 		onShow() {
 			this.amapPlugin = new amap.AMapWX({
-			    key: this.key  
+			    key: `${this.$amapApiKey}`
 			});
-			console.log('高德地图key:',this.key)
+			console.log('高德地图key:',`${this.$amapApiKey}`)
 			
 			if (uni.createCameraContext) {
 				this.cameraContext = uni.createCameraContext()
@@ -312,14 +313,29 @@ import amap  from '@/utils/amap-wx.130.js';
 			    });
 			    that.amapPlugin.getRegeo({  
 			        success: (data) => {  
-			            console.log(data)  
-			            this.addressName = data[0].name; 
+			   //          console.log(data)  
+			   //          this.addressName = data[0].name; 
+						
+						// this.point2.latitude = data[0].latitude
+						// this.point2.longitude = data[0].longitude
+						
+						// this.distance = this.getDistance(this.point2, this.point1);
+			   //          uni.hideLoading(); 
+						 
+						//  this.detail()
+						console.log(data)
+						this.addressName = data[0].name; 
+						// this.title = data[0].desc
+						// this.address = data[0].name
 						
 						this.point2.latitude = data[0].latitude
 						this.point2.longitude = data[0].longitude
 						
+						this.longitude = this.point2.longitude
+						this.latitude = this.point2.latitude
+						
 						this.distance = this.getDistance(this.point2, this.point1);
-			            uni.hideLoading(); 
+						uni.hideLoading(); 
 						 
 						 this.detail()
 			        }  
@@ -346,7 +362,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					
 					// 坐标转换
 					const paramsObj = {
-						key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
+						key: `${this.$amapWebApiKey}`,
 						locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
 						coordsys:'baidu',
 						output: 'json'
@@ -389,6 +405,37 @@ import amap  from '@/utils/amap-wx.130.js';
 							reject('经纬度解析地址失败')
 						}
 					});
+					
+					// if(this.point2.latitude && this.point2.longitude){}
+					// 	const paramObj = {
+					// 		origins:[`${this.point2.longitude},${this.point2.latitude}`],	// 出发点
+					// 		destination:[`${this.point1.longitude},${this.point1.latitude}`],// 目的地
+					// 		key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
+					// 	}
+						
+					// 	const paramStr = getUrlParamsStr(paramObj)
+						
+					// 	uni.request({
+							
+					// 		url: 'https://restapi.amap.com/v3/distance?' + paramStr,
+					// 		method: "get",
+							
+					// 		success: (resxxx) => {
+					// 			console.log('高德接口计算距离:',resxxx.data)
+					// 			if(resxxx.data.status==1){
+					// 				this.distanceJs = resxxx.data.results[0].distance + '米'
+					// 			}else{
+					// 				// uni.showToast({
+					// 				// 	title:'高德计算距离失败',
+					// 				// 	icon:'none'
+					// 				// })
+					// 			}
+								
+					// 		},
+					// 		fail: (res) => {
+					// 			reject('高德计算错误')
+					// 		}
+					// 	});
 					
 					this.time = res.data.service_time	// 服务时间
 					this.startTimer();
@@ -678,7 +725,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					this.signin.text = '异常签离'
 					return (d / 1000).toFixed(2);
 				} else {
-					if(d > 100 && d<1000){
+					if(d > 300 && d<1000){
 						this.DistanceType = 2;
 						this.signType = 2
 						this.bgcolor = '#f59a23';
