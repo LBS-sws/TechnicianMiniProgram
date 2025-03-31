@@ -842,7 +842,7 @@
 	position: absolute;
 	width: 100%;
 	height: 102rpx;
-	background: rgb(46 131 241);
+	background: rgba(46,131,241,0);
 	bottom: 0;
 	left: 0;
 	border-radius: 8rpx;
