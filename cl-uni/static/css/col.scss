@@ -27,18 +27,18 @@
 
 @for $i from 1 through 24 {
 	.cl-col-#{$i} {
-		width: 100% / 24 * $i;
+		width: calc(100% / 24 * $i);
 	}
 
 	.cl-col-offset-#{$i} {
-		margin-left: 100% / 24 * $i;
+		margin-left: calc(100% / 24 * $i);
 	}
 
 	.cl-col-pull-#{$i} {
-		right: 100% / 24 * $i;
+		right: calc(100% / 24 * $i);
 	}
 
 	.cl-col-push-#{$i} {
-		left: 100% / 24 * $i;
+		left: calc(100% / 24 * $i);
 	}
 }
