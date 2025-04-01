@@ -136,6 +136,7 @@ import Base64 from 'base-64';
 				equipment_area: "",
 				equipment: "",
 				equipment_lists: [],
+				equipment_total: 0,
 				xz_all: "",
 				all: [],
 				tablename: "equipments",
@@ -204,12 +205,12 @@ import Base64 from 'base-64';
 		},
 		//	上拉触底函数
 		onReachBottom(){
-		  if(this.page <= this.total_page){
-			  this.data_select()  // 列表
-			  this.bottom_load_msg = '上滑显示更多！！'
-		  }else{
-			  this.bottom_load_msg = '已经到底了！！'
-		  }
+			if(this.page <= this.total_page){
+				this.data_select()  // 列表
+				this.bottom_load_msg = '上滑显示更多！！'
+			}else{
+				this.bottom_load_msg = '已经到底了！！'
+			}
 		},
 		methods: {
 			numChange(e){
@@ -275,17 +276,20 @@ import Base64 from 'base-64';
 					// console.log(jd[jd.length-1])
 					var md = '.content_' + jd[jd.length-1] //this.content_scole
 					
-					 setTimeout(()=>{
-						 var view = uni.createSelectorQuery().select(md);
-						 view.boundingClientRect(data => {
-							 
-							 console.log(data)
-						 uni.pageScrollTo({
-						 duration: 300,//过渡时间
-						 scrollTop:data.top,//到达距离顶部的top值
-							})
-						 }).exec();
-					 },500)
+					setTimeout(()=>{
+						var view = uni.createSelectorQuery().select(md);
+						view.boundingClientRect(data => {
+							
+							// console.log(data)
+							if(data){
+								uni.pageScrollTo({
+									duration: 300,//过渡时间
+									scrollTop:data.top,//到达距离顶部的top值
+								})
+							}else
+								return false
+						}).exec();
+					},500)
 				}else{
 					console.log('未找到上次锚点')
 				}
@@ -310,6 +314,7 @@ import Base64 from 'base-64';
 						console.log('res.data',res.data)
 						if (res.data) {
 							let all = res.data.data
+							this.equipment_total = res.data.total//记录总条数
 							if(all != undefined){
 								all.forEach((item,i)=>{
 									item.label = item.equipment_name
@@ -403,49 +408,81 @@ import Base64 from 'base-64';
 
 				uni.scanCode({
 					success: async (res) => {
-						if(res.result==''){
-							uni.showToast({icon: 'none',title: '无效二维码'});
+						if(res.result=='') {
+							uni.showToast({icon: 'none', title: '无效二维码'});
 							return false;
 						}
+						
 						let queryString = res.result.split('?')[1];
 						if (!queryString) {
-							uni.showToast({icon: 'none',title: '无效二维码!'});
+							uni.showToast({icon: 'none', title: '无效二维码!'});
 							return false;
 						}
 
 						let queryParams = new URLSearchParams(queryString);
-						if(!queryParams.get('id') || !queryParams.get('city') || !queryParams.get('office_id')){
-							uni.showToast({icon: 'none',title: '无效的二维码！'});
+						if(!queryParams.get('id') || !queryParams.get('city') || !queryParams.get('office_id')) {
+							uni.showToast({icon: 'none', title: '无效的二维码！'});
 							return false;
 						}
-						// else if(queryParams.get('city') != uni.getStorageSync('city')){
-						// 	uni.showToast({icon: 'none',title: '非本地区二维码！'});
-						// 	return false;
-						// }
 
-						let scan_id = Base64.decode(queryParams.get('id'))//base64 decode
+						let scan_id = Base64.decode(queryParams.get('id')) // base64 decode
 						
 						that.xz_all = [] // 清空选中项
-						//遍历当前设备
-						that.all.forEach(item=>{
-							if(item.qrcode_id!=null && item.qrcode_id == scan_id){
+						let is_add_eq = false // 是否添加设备
+
+						// 遍历当前设备
+						that.all.forEach(item => {
+							if(item.qrcode_id != null && item.qrcode_id == scan_id) {
 								that.xz_all = [item.id]
 							}
-						})
+						});
 
-						//跳转
-						if(that.xz_all.length <= 0){//没有设备，添加
-							that.scan_code = res.result
-							that.add_by_scan(queryParams.get('id'),res.result);
-						}else{//查看对应设备详情
+						// 如果列表中已找到设备，直接跳转
+						if(that.xz_all.length > 0) {
 							let ids = that.xz_all.join(",")
-
 							uni.redirectTo({
-								url: "/pages/service/scan_equipment?jobid="+that.jobid + '&jobtype='+that.jobtype +'&id='+ids
+									url: "/pages/service/scan_equipment?jobid="+that.jobid + '&jobtype='+that.jobtype +'&id='+ids
 							})
+							return;
 						}
-					},fail(err){
-						uni.showToast({icon: 'none',title: '无效二维码'});
+
+						// 列表中没找到设备
+						if(that.equipment_total == that.all.length) { // 设备列表已加载完
+							// 直接添加设备
+							that.scan_code = res.result
+							that.add_by_scan(queryParams.get('id'), res.result);
+						} else { // 设备列表未加载完，需要请求后台
+							let params = {
+								job_type: this.jobtype,
+								job_id: this.jobid,
+								scan_id: scan_id
+							}
+							
+							try {
+								let checkRes = await that.$api.checkQrEquipment(params)
+								if (checkRes.code == 200) {
+										if (checkRes.data.qrStatus == 0 && checkRes.data.equipmentId == 0) {
+											// 没绑定设备，添加设备
+											that.scan_code = res.result
+												that.add_by_scan(queryParams.get('id'), res.result);
+										} else if(checkRes.data.qrStatus == 1) {
+											// 已绑定设备，查看设备
+											that.xz_all.push(checkRes.data.equipmentId)
+											let ids = that.xz_all.join(",")
+											uni.redirectTo({
+												url: "/pages/service/scan_equipment?jobid="+that.jobid + '&jobtype='+that.jobtype +'&id='+ids
+											})
+										}
+								} else {
+									uni.$utils.toast(checkRes.msg || '请求失败')
+								}
+							} catch(err) {
+								uni.$utils.toast(err.msg || '请求失败')
+							}
+						}
+					},
+					fail(err) {
+							uni.showToast({icon: 'none', title: '无效二维码'});
 					}
 				});
 			},
