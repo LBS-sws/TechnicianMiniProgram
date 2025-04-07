@@ -6,21 +6,12 @@
 		</view>
 		<view  class="popup-container">
 			<view class="datecontent" v-for="(item,index) in jobs" :key="index">
-				<view class="new_card" @click="job_detail(index)">
-					<!-- <view class="new_card_title">
-						<view class="new_card_title_left">
-							<text selectable="true">{{item.customer.name_zh}}</text>
-						</view>
-						<span>
-							<view class="new_card_title_right" :style="{ color: item.service_status.color }">{{item.service_status.status}}</view>
-						</span>
-					</view> -->
-					
+				<view class="new_card">
 					<view class="new_card_content order-item">
 						<view>
 							<cl-row v-if="item.order_type !=3 ">
 								<cl-col span="8">
-									<view class="service_name"><text selectable="true">{{item.service_type_info.service_name}}</text></view>
+									<view class="service_name"><text selectable="true">{{item.service_name}}</text></view>
 								</cl-col>
 								<cl-col span="8">
 									<view class="first_job" v-if="item.first_job_flag==1">{{item.first_job}}</view>
@@ -62,8 +53,8 @@
 		</view>
 		
 		<view class="comsub">
-			<view class="other_customer">先做其他客户</view>
-			<view class="sub_btn">确认</view>
+			<view class="other_customer" @click="goSignOut">先做其他客户</view>
+			<view class="sub_btn" @click="nextOrder">确认</view>
 		</view>
 	</view>
 </template>
@@ -74,6 +65,14 @@ export default{
 		jobs:{
 			type:[Array],
 			default:[]
+		},
+		jobId:{
+			type:[Number],
+			default:0
+		},
+		jobType:{
+			type:[Number],
+			default:0
 		}
 	},
 	data(){
@@ -82,12 +81,42 @@ export default{
 		}
 	},
 	methods:{
-		// 列表点击勾选
+		// 去签离
+		goSignOut(){
+			console.log(this.jobId)
+			console.log(this.jobType)
+		},
+		// 确定按钮 - 去做其他单
+		nextOrder(){
+			//console.log(this.jobs)
+			let arr = []
+			this.jobs.forEach((item,i)=>{
+				if(item.has==true){
+					arr.push(item)
+				}
+			})
+			
+			if(arr.length == 0){
+				uni.showToast({
+					title:'请选择工单',
+					icon:'none'
+				})
+				return false
+			}
+			console.log('next')
+		},
+		// 工单点击选中效果
 		checkboxHandle(index){
-			this.jobs[index].has = !this.jobs[index].has
-			// console.log(this.jobs[index].has)
+			this.jobs.forEach((item,i)=>{
+				if(i == index){
+					this.jobs[index].has = !this.jobs[index].has
+				}else{
+					item.has = false
+				}
+			})
 			this.$emit('updateJobList',this.jobs)
 		}
+		// end
 	}
 }
 </script>
@@ -98,46 +127,24 @@ export default{
 	overflow-y: auto;
 }
 .order_title{
-			text-align: center;
-			.title{
-				font-size: 36rpx;
-				color: #333;
-				font-weight: 700;
-				padding: 30rpx 0;
-			}
-			.text{
-				font-size: 26rpx;
-				color: #333;
-				font-weight: 400;
-			}
-		}
+	text-align: center;
+	.title{
+		font-size: 36rpx;
+		color: #333;
+		font-weight: 700;
+		padding: 30rpx 0;
+	}
+	.text{
+		font-size: 26rpx;
+		color: #333;
+		font-weight: 400;
+	}
+}
 .datecontent {
 	margin: 10px 5px;
 	.new_card {
 		background-color: #FFFFFF;
 		border-radius: 10px;
-		// padding-bottom: 10px;
-		// margin-bottom: 10px;
-		.new_card_title {
-			border-bottom: 1px solid #e0dcdc;
-			font-size: 18px;
-			font-weight: bold;
-			padding: 10px 5px;
-			height: 25px;
-			.new_card_title_left {
-				float: left;
-				width: 80%;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-			}
-			.new_card_title_right {
-				font-size: 17px;
-				float: right;
-			}
-		}
-		
-		
 		.order-item{
 			border: 1rpx solid #999;
 			padding: 20rpx 20rpx;
@@ -158,7 +165,6 @@ export default{
 			}
 		}
 		.new_card_content {
-			// margin: 10px 5px;
 			font-size: 16px;
 			view {
 				margin-bottom: 5px;
@@ -195,30 +201,30 @@ export default{
 	}
 }
 .comsub{
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 0 10rpx 30rpx;
-			.other_customer{
-				width: calc(50% - 40rpx);
-				height: 80rpx;
-				border: 1rpx solid #999;
-				border-radius: 6rpx;
-				line-height: 80rpx;
-				font-size: 26rpx;
-				text-align: center;
-				color: #333;
-			}
-			.sub_btn{
-				width: calc(50% - 40rpx);
-				height: 80rpx;
-				border: 1rpx solid #1e98d7;
-				border-radius: 6rpx;
-				line-height: 80rpx;
-				font-size: 26rpx;
-				text-align: center;
-				background: #1e98d7;
-				color: #fff;
-			}
-		}
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 10rpx 30rpx;
+	.other_customer{
+		width: calc(50% - 40rpx);
+		height: 80rpx;
+		border: 1rpx solid #999;
+		border-radius: 6rpx;
+		line-height: 80rpx;
+		font-size: 26rpx;
+		text-align: center;
+		color: #333;
+	}
+	.sub_btn{
+		width: calc(50% - 40rpx);
+		height: 80rpx;
+		border: 1rpx solid #1e98d7;
+		border-radius: 6rpx;
+		line-height: 80rpx;
+		font-size: 26rpx;
+		text-align: center;
+		background: #1e98d7;
+		color: #fff;
+	}
+}
 </style>

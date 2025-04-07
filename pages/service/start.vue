@@ -87,7 +87,7 @@
 		<my-datetime ref="dateTimePop" @ok="timeOk" :shownum="3"></my-datetime>
 		<!--其他工单-->
 		<u-popup :show="orderShow" :round="10" mode="bottom" @close="orderClose" @open="orderOpen">
-			<orderList :jobs="jobs" @updateJobList="updateJobList"></orderList>
+			<orderList :jobs="jobs" @updateJobList="updateJobList" :jobId="jobid" :jobType="jobtype"></orderList>
 		</u-popup>
 		
 	</view>
@@ -201,101 +201,7 @@ import orderList from '@/components/order/item.vue';
 				hopeBeginTime: '',
                 dateKey: '',
 				orderShow: true, // 其他工单
-				
-				jobs:[
-					{
-						"order_type":1,
-						"first_job":"常规服务",
-						"service_status":{"status":"待服务","color":"#007AFF"},
-						"job_order_date":[],
-						"id":4307990,
-						"customer_id":110976,
-						"addr":"四川省成都市锦江区太升南路55",
-						"status":2,
-						"service_type":2,
-						"first_job_flag":0,
-						"job_date":"2025-04-07",
-						"job_start_time":"09:51:59",
-						"job_end_time":"19:52:02",
-						"start_time":null,
-						"finish_time":null,
-						"start_date":null,
-						"finish_date":null,"remarks":"",
-						"customer":{"customer_id":110976,"name_zh":"鸡毛店","addr":"四川省成都市锦江区太升南路55","customer_type":101,"lat":30.668293,"lng":104.082913,"customer_type_text":""},
-						"service_type_info":{"service_id":2,"service_name":"灭虫"},
-						"customer_grade":{"order_id":"","score":""},
-						"has":false
-					},
-					{
-						"order_type":1,
-						"first_job":"常规服务",
-						"service_status":{"status":"待服务","color":"#007AFF"},
-						"job_order_date":[],
-						"id":4307990,
-						"customer_id":110976,
-						"addr":"四川省成都市锦江区太升南路55",
-						"status":2,
-						"service_type":2,
-						"first_job_flag":0,
-						"job_date":"2025-04-07",
-						"job_start_time":"09:51:59",
-						"job_end_time":"19:52:02",
-						"start_time":null,
-						"finish_time":null,
-						"start_date":null,
-						"finish_date":null,"remarks":"",
-						"customer":{"customer_id":110976,"name_zh":"鸡毛店","addr":"四川省成都市锦江区太升南路55","customer_type":101,"lat":30.668293,"lng":104.082913,"customer_type_text":""},
-						"service_type_info":{"service_id":2,"service_name":"灭虫"},
-						"customer_grade":{"order_id":"","score":""},
-						"has":false
-					},
-					{
-						"order_type":1,
-						"first_job":"常规服务",
-						"service_status":{"status":"待服务","color":"#007AFF"},
-						"job_order_date":[],
-						"id":4307990,
-						"customer_id":110976,
-						"addr":"四川省成都市锦江区太升南路55",
-						"status":2,
-						"service_type":2,
-						"first_job_flag":0,
-						"job_date":"2025-04-07",
-						"job_start_time":"09:51:59",
-						"job_end_time":"19:52:02",
-						"start_time":null,
-						"finish_time":null,
-						"start_date":null,
-						"finish_date":null,"remarks":"",
-						"customer":{"customer_id":110976,"name_zh":"鸡毛店","addr":"四川省成都市锦江区太升南路55","customer_type":101,"lat":30.668293,"lng":104.082913,"customer_type_text":""},
-						"service_type_info":{"service_id":2,"service_name":"灭虫"},
-						"customer_grade":{"order_id":"","score":""},
-						"has":false
-					},
-					{
-						"order_type":1,
-						"first_job":"常规服务",
-						"service_status":{"status":"待服务","color":"#007AFF"},
-						"job_order_date":[],
-						"id":4307990,
-						"customer_id":110976,
-						"addr":"四川省成都市锦江区太升南路55",
-						"status":2,
-						"service_type":2,
-						"first_job_flag":0,
-						"job_date":"2025-04-07",
-						"job_start_time":"09:51:59",
-						"job_end_time":"19:52:02",
-						"start_time":null,
-						"finish_time":null,
-						"start_date":null,
-						"finish_date":null,"remarks":"",
-						"customer":{"customer_id":110976,"name_zh":"鸡毛店","addr":"四川省成都市锦江区太升南路55","customer_type":101,"lat":30.668293,"lng":104.082913,"customer_type_text":""},
-						"service_type_info":{"service_id":2,"service_name":"灭虫"},
-						"customer_grade":{"order_id":"","score":""},
-						"has":false
-					},
-				]
+				jobs:[]
 			}
 		},
 		  computed: {
@@ -475,11 +381,14 @@ import orderList from '@/components/order/item.vue';
 					this.time = res.data.data.service_time	// 服务时间
 					this.startTimer();
 					
-					this.serviceContractTime = res.data.data.contract_service_time	// 合约服务时长
+					
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
 					this.service = res.data.data
 					uni.setStorageSync('main_staff',res.data.data.main_staff) // 把工单负责人存到缓存里
+					this.jobs = res.data.orderOther		// 客户其他工单
+					this.serviceContractTime = res.data.data.contract_service_time	// 合约服务时长
+					
 					this.custInfo = {
 						address: res.data.data.customer.addr,
 						customer: res.data.data.customer.name_zh
