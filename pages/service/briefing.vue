@@ -40,8 +40,8 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
   }
   return arr
 }
-	import ldSelect from '@/components/ld-select/ld-select.vue'
-	export default {
+import ldSelect from '@/components/ld-select/ld-select.vue'
+export default {
 		components: {
 			ldSelect
 		},
@@ -146,8 +146,6 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 							}
 						})
 					}
-					console.log(listContent)
-					console.log(listProposal)
 					
 					this.contentData = listContent
 					this.proposalData = listProposal
@@ -160,6 +158,16 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				})
 			},
 			save() {
+				
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
+				
 				if (this.service_content == '') {
 					uni.showToast({
 						title: '信息填写不全',
@@ -196,7 +204,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				}
 			},
 		},
-	}
+}
 </script>
 
 <style>

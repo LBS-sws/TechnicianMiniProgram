@@ -58,7 +58,19 @@
 				</cl-col>
 			</cl-row>
 		</view>
-		<view class="tj_bu" v-else @tap="report()">检查报告</view>
+		<!-- 协助人员 -->
+		<view class="tj_bu_y" v-else>
+			<cl-row gutter="20">
+				<cl-col span="12" @tap="report()">
+					<view class="jc">检查报告</view>
+				</cl-col>
+				<cl-col span="12">
+					
+					<view class="qc" @tap="check_out(0)"  v-if="service.staff_other.end_date ==null " >签出离店</view>
+					<view class="qc" v-else>已签离店</view>
+				</cl-col>
+			</cl-row>
+		</view>
 		
 		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 			<view v-if="noFillInData.length>0" class="no_box">
@@ -73,17 +85,22 @@
 		</u-popup>
 		<!-- 日期 -->
 		<my-datetime ref="dateTimePop" @ok="timeOk" :shownum="3"></my-datetime>
-
+		<!--其他工单-->
+		<u-popup :show="orderShow" :round="10" mode="bottom" @close="orderClose" @open="orderOpen">
+			<orderList :jobs="jobs" @updateJobList="updateJobList"></orderList>
+		</u-popup>
+		
 	</view>
 </template>
 
 <script>
 import color from 'uview-ui/libs/config/color';
-
-import myDatetime from '@/components/my-datetime/my-datetime'
+import myDatetime from '@/components/my-datetime/my-datetime';
+import orderList from '@/components/order/item.vue';
 	export default {
 		components: {
-			'my-datetime': myDatetime
+			'my-datetime': myDatetime,
+			orderList
 		},
 		data() {
 			return {
@@ -171,20 +188,114 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 				show:false,
 				
 				date:'',
-	
-				
 				qlType:'',
 				
 				isTiming: false,
 				time: 0,
 				timer: null,
 				customer_qm:false,
-				
+			
 				serviceContractTime:0,	// 合约服务时长
 				noFillInData:[],
 				
 				hopeBeginTime: '',
-                dateKey: ''
+                dateKey: '',
+				orderShow: true, // 其他工单
+				
+				jobs:[
+					{
+						"order_type":1,
+						"first_job":"常规服务",
+						"service_status":{"status":"待服务","color":"#007AFF"},
+						"job_order_date":[],
+						"id":4307990,
+						"customer_id":110976,
+						"addr":"四川省成都市锦江区太升南路55",
+						"status":2,
+						"service_type":2,
+						"first_job_flag":0,
+						"job_date":"2025-04-07",
+						"job_start_time":"09:51:59",
+						"job_end_time":"19:52:02",
+						"start_time":null,
+						"finish_time":null,
+						"start_date":null,
+						"finish_date":null,"remarks":"",
+						"customer":{"customer_id":110976,"name_zh":"鸡毛店","addr":"四川省成都市锦江区太升南路55","customer_type":101,"lat":30.668293,"lng":104.082913,"customer_type_text":""},
+						"service_type_info":{"service_id":2,"service_name":"灭虫"},
+						"customer_grade":{"order_id":"","score":""},
+						"has":false
+					},
+					{
+						"order_type":1,
+						"first_job":"常规服务",
+						"service_status":{"status":"待服务","color":"#007AFF"},
+						"job_order_date":[],
+						"id":4307990,
+						"customer_id":110976,
+						"addr":"四川省成都市锦江区太升南路55",
+						"status":2,
+						"service_type":2,
+						"first_job_flag":0,
+						"job_date":"2025-04-07",
+						"job_start_time":"09:51:59",
+						"job_end_time":"19:52:02",
+						"start_time":null,
+						"finish_time":null,
+						"start_date":null,
+						"finish_date":null,"remarks":"",
+						"customer":{"customer_id":110976,"name_zh":"鸡毛店","addr":"四川省成都市锦江区太升南路55","customer_type":101,"lat":30.668293,"lng":104.082913,"customer_type_text":""},
+						"service_type_info":{"service_id":2,"service_name":"灭虫"},
+						"customer_grade":{"order_id":"","score":""},
+						"has":false
+					},
+					{
+						"order_type":1,
+						"first_job":"常规服务",
+						"service_status":{"status":"待服务","color":"#007AFF"},
+						"job_order_date":[],
+						"id":4307990,
+						"customer_id":110976,
+						"addr":"四川省成都市锦江区太升南路55",
+						"status":2,
+						"service_type":2,
+						"first_job_flag":0,
+						"job_date":"2025-04-07",
+						"job_start_time":"09:51:59",
+						"job_end_time":"19:52:02",
+						"start_time":null,
+						"finish_time":null,
+						"start_date":null,
+						"finish_date":null,"remarks":"",
+						"customer":{"customer_id":110976,"name_zh":"鸡毛店","addr":"四川省成都市锦江区太升南路55","customer_type":101,"lat":30.668293,"lng":104.082913,"customer_type_text":""},
+						"service_type_info":{"service_id":2,"service_name":"灭虫"},
+						"customer_grade":{"order_id":"","score":""},
+						"has":false
+					},
+					{
+						"order_type":1,
+						"first_job":"常规服务",
+						"service_status":{"status":"待服务","color":"#007AFF"},
+						"job_order_date":[],
+						"id":4307990,
+						"customer_id":110976,
+						"addr":"四川省成都市锦江区太升南路55",
+						"status":2,
+						"service_type":2,
+						"first_job_flag":0,
+						"job_date":"2025-04-07",
+						"job_start_time":"09:51:59",
+						"job_end_time":"19:52:02",
+						"start_time":null,
+						"finish_time":null,
+						"start_date":null,
+						"finish_date":null,"remarks":"",
+						"customer":{"customer_id":110976,"name_zh":"鸡毛店","addr":"四川省成都市锦江区太升南路55","customer_type":101,"lat":30.668293,"lng":104.082913,"customer_type_text":""},
+						"service_type_info":{"service_id":2,"service_name":"灭虫"},
+						"customer_grade":{"order_id":"","score":""},
+						"has":false
+					},
+				]
 			}
 		},
 		  computed: {
@@ -225,6 +336,17 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 			// },2000)
 		},
 		methods: {
+			// 该客户有其他工单回调
+			updateJobList(e){
+				console.log('回调',e)
+				this.jobs = e
+			},
+			orderOpen(){
+				
+			},
+			orderClose(){
+				this.orderShow = false
+			},
 			getDate(){
 				var date = new Date()
 						
@@ -357,6 +479,7 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
 					this.service = res.data.data
+					uni.setStorageSync('main_staff',res.data.data.main_staff) // 把工单负责人存到缓存里
 					this.custInfo = {
 						address: res.data.data.customer.addr,
 						customer: res.data.data.customer.name_zh
@@ -472,6 +595,18 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 			// 签离出店按钮 第一步
 			check_out(e) {
 				
+				// 如果是辅助人员
+				if(this.service.main_staff != this.loginStaff){
+					this.stopTimer()
+					uni.navigateTo({
+						url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+							"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
+							.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+					})
+					return false
+				}
+				
+				
 				// 1.验证服务时长是否达到
 				let minutes = Math.floor(this.time / 60); // 把已服务时间秒转成分钟
 				// 判断是否已到达合约服务时长
@@ -482,8 +617,8 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 					})
 					return false
 				}
-			
-				this.stopTimer()
+					
+				// 点击签离弹出是否直接签离、或者有下次服务
 				if(e<=0){
 					this.show = true
 					return false
@@ -492,6 +627,7 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 					this.qlType = 1
 					this.date = ''
 				}
+				this.stopTimer()
 				this.show = false
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +

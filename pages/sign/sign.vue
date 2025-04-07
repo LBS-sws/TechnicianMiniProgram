@@ -18,7 +18,7 @@
 									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
 									<text v-else>千米</text>
 				</view>
-				<!-- <view>高德计算距离：{{distanceJs}}</view> -->
+				
 			</view>
 			<!-- 签到窗 -->
 			<view class="signin-area">
@@ -54,6 +54,11 @@
 					
 				</view>
 			</view>
+			
+			<!---->
+			<!-- <u-button @click="subSignIn">签到</u-button> -->
+			<!---->
+			
 			<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 			
 			<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
@@ -105,11 +110,7 @@
 		        </view>
 		    </template>
 		</atl-map>
-		<!-- <cl-button @click="WebHandle">h5</cl-button> -->
-		<view class="">
-			<webmap v-if="webShow" :webUrl="webUrl"></webmap>
-		</view>
-		
+	
 	</view>
 </template>
 
@@ -118,10 +119,9 @@ import { formatDate, getUrlParamsStr } from '@/utils';
 //引入高德地图sdk
 import amap  from '@/utils/amap-wx.130.js';
 import preview from '@/components/camera/preview.vue';
-import webmap from '@/components/web/webmap.vue';
 export default {
 	components:{
-		preview, webmap
+		preview, 
 	},
 	data() {
 		return {
@@ -205,9 +205,6 @@ export default {
 			
 			longitude:'',
 			latitude:'',
-			// distanceJs:'',
-			webUrl:'https://uatapps.lbsapps.cn/nu/map.html',
-			webShow:false
 		}
 	},
 	onLoad(index) {
@@ -260,43 +257,74 @@ export default {
 		// })
 		
 		// 二次开发
-		
-		this.detail()
-		
+		this.detail();
 		this.getRegeo();
 		
 		const systemInfo = uni.getSystemInfoSync()
 		this.windowHeight = systemInfo.windowHeight
 		this.cameraHeight = systemInfo.windowHeight - 80
-		
-		
+
 	},
 	methods: {
-		WebHandle(){
-			console.log('123131')
-			this.webShow = true
-		},
-		// 异常处理
-		exceptionHandle(e){
-			console.log(e)
+		// 没有摄像头签到
+		subSignIn(){
+			let lng = this.longitude
+			let lat = this.latitude
 			
-			// 1忘记打开、2系统定位不准、3门店地址错误
+			let params = {
+				job_id: this.jobid,
+				job_type: this.jobtype,
+				img_url:'/123123.png',
+				type:this.DistanceType,
+				status:1,	//1忘记打卡
+				lng:lng,
+				lat:lat,
+				title:this.title,
+				address:this.address
+			}
+			// console.log(params)
+			// return false
+			this.$api.orderSignIn(params).then(res=>{
+				this.signin.isSignin = true
+				uni.showToast({
+					title: '操作成功',
+					icon: 'success'
+				})
+				setTimeout(()=>{
+					uni.redirectTo({
+						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+					})
+				},1500)
+			}).catch(err=>{
+				uni.showToast({
+					title: res.data.msg,
+					icon: 'fail'
+				})
+			})
+		},
+		// 异常处理 - 弹框点击
+		exceptionHandle(e){
+			// console.log(e)
+			
+			// 1 忘记打开
 			if(this.abnormalList[e].id == 1){
 				this.exceptionStatus = 1
 				this.pageType = 2
 				this.paizhao()
 			}
+			// 2 系统定位不准
 			if(this.abnormalList[e].id == 2){
 				this.exceptionStatus = 2
 				this.pageType = 2
 				this.paizhao()
 			}
+			// 3 门店地址错误，打开地图选择
 			if(this.abnormalList[e].id == 3){
 				this.show = false
 				this.mapShow = true;
-				console.log('门店地址错误')
 			}
 		},
+		// 地图选择位置后回调
 		confirmAmap(e){
 			console.log('高德选择位置回调',e)
 
@@ -527,41 +555,6 @@ export default {
 						reject('经纬度解析地址失败')
 					}
 				});
-				
-				// if(this.point2.latitude && this.point2.longitude){}
-				// 	const paramObj = {
-				// 		origins:[`${this.point2.longitude},${this.point2.latitude}`],	// 出发点
-				// 		destination:[`${this.point1.longitude},${this.point1.latitude}`],// 目的地
-				// 		key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
-				// 		type:1
-				// 	}
-					
-				// 	const paramStr = getUrlParamsStr(paramObj)
-					
-				// 	uni.request({
-						
-				// 		url: 'https://restapi.amap.com/v3/distance?' + paramStr,
-				// 		method: "get",
-						
-				// 		success: (resxxx) => {
-				// 			console.log('高德接口计算距离:',resxxx.data)
-				// 			if(resxxx.data.status==1){
-				// 				that.distanceJs = resxxx.data.results[0].distance + '米'
-				// 			}else{
-				// 				// uni.showToast({
-				// 				// 	title:'高德计算距离失败',
-				// 				// 	icon:'none'
-				// 				// })
-				// 			}
-							
-				// 		},
-				// 		fail: (res) => {
-				// 			reject('高德计算错误')
-				// 		}
-				// 	});
-					
-				
-				
 			}).catch(err=>{
 				uni.hideLoading();
 				console.log(err)

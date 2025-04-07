@@ -300,7 +300,6 @@
 						<view class="sign_time">
 							<cl-list v-if="jobtype==1">签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
 							<cl-list v-else>签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
-							<!-- <cl-list>签到地点：江苏省无锡市滨湖区刘唐路2号</cl-list> -->
 						</view>
 					</view>
 					<view class="sign_content">
@@ -726,12 +725,28 @@
 			},
 			// 技术员签名
 			startSign_staff() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=2" + "&status=" + this.basic.status
 				})
 			},
 			// 客户签名
 			startSign_s() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1" + "&status=" + this.basic.status
 				})
@@ -742,6 +757,14 @@
 				}, 1000);
 			},
 			startSign_sadd() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=0"
 				})

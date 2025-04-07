@@ -313,6 +313,15 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 			},
 			// 保存
 			save() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
+				
 				if (!this.material){
 					uni.showToast({
 						title: '信息填写不全',
