@@ -72,10 +72,10 @@
 			</cl-row>
 		</view>
 		
+		<!-- 返回、直接签离、下次服务 -->
 		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 			<view v-if="noFillInData.length>0" class="no_box">
 				<view class="title" v-for="(item,i) in noFillInData" :key="i">{{i+1}}.{{item.title}}</view>
-				<!-- <view class="title">2.报告未完整填写</view> -->
 			</view>
 			<view class="signout_ui">
 				<view class="item" @click="close">返回</view>
@@ -87,7 +87,7 @@
 		<my-datetime ref="dateTimePop" @ok="timeOk" :shownum="3"></my-datetime>
 		<!--其他工单-->
 		<u-popup :show="orderShow" :round="10" mode="bottom" @close="orderClose" @open="orderOpen">
-			<orderList :jobs="jobs" @updateJobList="updateJobList" :jobId="jobid" :jobType="jobtype"></orderList>
+			<orderList :jobs="jobs" :jobId="jobid" :jobType="jobtype" @updateJobList="updateJobList" @signOut="signOut" ></orderList>
 		</u-popup>
 		
 	</view>
@@ -200,7 +200,7 @@ import orderList from '@/components/order/item.vue';
 				
 				hopeBeginTime: '',
                 dateKey: '',
-				orderShow: true, // 其他工单
+				orderShow: false, // 其他工单
 				jobs:[]
 			}
 		},
@@ -237,9 +237,9 @@ import orderList from '@/components/order/item.vue';
 			
 			this.qianming()
 			
-			// setTimeout(()=>{
-			// 	this.show = true
-			// },2000)
+			setTimeout(()=>{
+				this.CustomerOrder()	// 2秒后再加载
+			},2000)
 		},
 		methods: {
 			// 该客户有其他工单回调
@@ -370,6 +370,21 @@ import orderList from '@/components/order/item.vue';
 					// console.log(err)
 				})
 			},
+			// 客户其他工单
+			CustomerOrder(){
+				
+				let params = {
+					job_id:this.jobid,
+					job_type:this.jobtype
+				}
+				this.$api.getCustomerOrder(params).then(res=>{
+					// console.log(res)
+					this.jobs = res.data		
+					
+				}).catch(err=>{
+					
+				})
+			},
 			data_select() {
 				let params = {
 					job_id:this.jobid,
@@ -386,7 +401,7 @@ import orderList from '@/components/order/item.vue';
 					this.staffSign = res.data.staffSign
 					this.service = res.data.data
 					uni.setStorageSync('main_staff',res.data.data.main_staff) // 把工单负责人存到缓存里
-					this.jobs = res.data.orderOther		// 客户其他工单
+					
 					this.serviceContractTime = res.data.data.contract_service_time	// 合约服务时长
 					
 					this.custInfo = {
@@ -509,8 +524,7 @@ import orderList from '@/components/order/item.vue';
 					this.stopTimer()
 					uni.navigateTo({
 						url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-							"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
-							.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+							 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
 					})
 					return false
 				}
@@ -527,21 +541,41 @@ import orderList from '@/components/order/item.vue';
 					return false
 				}
 					
-				// 点击签离弹出是否直接签离、或者有下次服务
-				if(e<=0){
-					this.show = true
-					return false
-				}
+				// 1.直接签离
 				if(e==1){
 					this.qlType = 1
 					this.date = ''
 				}
+				
+				// 2.服务暂停，安排下次时间 - 弹窗 选择日期
+				if(e<=0){
+					this.show = true
+					return false
+				}
+				
+				// 直接签离 - 判断当前客户是否有其他工单
+				if(this.jobs.length>0){
+					this.show = false
+					this.orderShow = true
+					return false
+				}
+				
 				this.stopTimer()
 				this.show = false
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
-						.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+				})
+			},
+			// 直接签离 - 先做其他客户
+			signOut(){
+				
+				this.stopTimer()
+				this.show = false
+				this.orderShow = false
+				uni.navigateTo({
+					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+						"&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
 				})
 			},
 			//继承设备

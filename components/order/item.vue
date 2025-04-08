@@ -53,7 +53,7 @@
 		</view>
 		
 		<view class="comsub">
-			<view class="other_customer" @click="goSignOut">先做其他客户</view>
+			<view class="other_customer" @click="signOut">先做其他客户</view>
 			<view class="sub_btn" @click="nextOrder">确认</view>
 		</view>
 	</view>
@@ -81,10 +81,11 @@ export default{
 		}
 	},
 	methods:{
-		// 去签离
-		goSignOut(){
-			console.log(this.jobId)
-			console.log(this.jobType)
+		// 先做其他客户
+		signOut(){
+			// console.log(this.jobId)
+			// console.log(this.jobType)
+			this.$emit('signOut');
 		},
 		// 确定按钮 - 去做其他单
 		nextOrder(){
@@ -105,7 +106,7 @@ export default{
 			}
 			console.log('next')
 		},
-		// 工单点击选中效果
+		// 点击选中效果
 		checkboxHandle(index){
 			this.jobs.forEach((item,i)=>{
 				if(i == index){
