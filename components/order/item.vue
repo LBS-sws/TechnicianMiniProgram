@@ -54,12 +54,14 @@
 		
 		<view class="comsub">
 			<view class="other_customer" @click="signOut">先做其他客户</view>
-			<view class="sub_btn" @click="nextOrder">确认</view>
+			<view class="sub_btn"  @tap="$noMultipleClicks(nextOrder)">确认</view>
+			<!-- @click="nextOrder" -->
 		</view>
 	</view>
 </template>
 
 <script>
+
 export default{
 	props:{
 		jobs:{
@@ -73,12 +75,15 @@ export default{
 		jobType:{
 			type:[Number],
 			default:0
-		}
+		},
 	},
 	data(){
 		return{
-			
+			noClick: true,
 		}
+	},
+	created() {
+
 	},
 	methods:{
 		// 先做其他客户
@@ -105,6 +110,35 @@ export default{
 				return false
 			}
 			console.log('next')
+			// uni.showToast({
+			// 	title:'none',
+			// 	icon:'loading'
+			// })
+			uni.showLoading({
+				title: '加载中...',
+				mask: true,
+				showContent: false
+			});
+			
+			// return false
+			let params = {
+				job_id:this.jobId,
+				job_type:this.jobType,
+				id:arr[0].job_id,
+				type:arr[0].job_type,
+			}
+			// console.log(params)
+			this.$api.autoNextOrder(params).then(res=>{
+				console.log(res)
+				if(res.code==200){
+					uni.hideLoading();
+					uni.navigateTo({
+						url: "/pages/service/start?jobid=" + arr[0].job_id + "&jobtype=" + arr[0].job_type
+					})
+				}
+			}).catch(err=>{
+				
+			})
 		},
 		// 点击选中效果
 		checkboxHandle(index){

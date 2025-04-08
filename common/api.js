@@ -266,6 +266,9 @@ export default {
 	// 客户其他工单
 	getCustomerOrder(params){
 		return request("/Order.Order/CustomerOrder", params, 'GET')
+	},
+	autoNextOrder(params){
+		return request("/Order.Order/autoNextOrder", params, 'POST')
 	}
 }
 

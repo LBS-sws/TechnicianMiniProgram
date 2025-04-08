@@ -201,7 +201,8 @@ import orderList from '@/components/order/item.vue';
 				hopeBeginTime: '',
                 dateKey: '',
 				orderShow: false, // 其他工单
-				jobs:[]
+				jobs:[],
+		
 			}
 		},
 		  computed: {
@@ -224,8 +225,10 @@ import orderList from '@/components/order/item.vue';
 			this.jobtype = index.jobtype
 			this.ct = uni.getStorageSync('ct')
 			this.loginStaff = uni.getStorageSync('staffname')
+			
 		},
 		onShow(index) {
+			
 			this.service = [];
 			showContent: false;
 			uni.showLoading({
@@ -242,6 +245,7 @@ import orderList from '@/components/order/item.vue';
 			},2000)
 		},
 		methods: {
+			
 			// 该客户有其他工单回调
 			updateJobList(e){
 				console.log('回调',e)
@@ -554,7 +558,7 @@ import orderList from '@/components/order/item.vue';
 				}
 				
 				// 直接签离 - 判断当前客户是否有其他工单
-				if(this.jobs.length>0){
+				if(this.jobs.length>0 && e==1){
 					this.show = false
 					this.orderShow = true
 					return false

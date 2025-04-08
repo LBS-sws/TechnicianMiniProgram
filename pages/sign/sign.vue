@@ -56,7 +56,7 @@
 			</view>
 			
 			<!---->
-			<!-- <u-button @click="subSignIn">签到</u-button> -->
+			<u-button @click="subSignIn">签到</u-button>
 			<!---->
 			
 			<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
@@ -275,8 +275,8 @@ export default {
 				job_id: this.jobid,
 				job_type: this.jobtype,
 				img_url:'/123123.png',
-				type:this.DistanceType,
-				status:1,	//1忘记打卡
+				type:1,		// 1正常 2异常黄色 3异常红色 红色时没有status 2
+				status:0,	// 1忘记打卡 2定位不准 3门店地址错误  
 				lng:lng,
 				lat:lat,
 				title:this.title,
