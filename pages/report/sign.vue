@@ -1,6 +1,7 @@
 <template>
 	<view class="container">
 		<view class="sigh-btns" :class="[disabled?'yes':'no']">
+			
 			<button class="btn cancel-btn" @tap="handleCancel">取 消</button>
 			<button class="btn reset-btn" @tap="handleReset">重 写</button>
 			<button class="btn save-btn" @tap="handleConfirm" >确 认</button>
@@ -11,6 +12,15 @@
 			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:parseInt(height/2)+'px',height:parseInt(width/2)+'px'}"
 				class="canvsborder"></canvas>
 		</view>
+		<div class="orderAll">
+			<view class="title">签字工单</view>
+			<view class="orderList">
+				<view v-for="(item,index) in orderData" :key="index" class="item" @click="orderHandle(index)" :class="item.has ? 'cur':'' ">
+					{{item.title}}
+				</view>
+			</view>
+		</div>
+		
 	</view>
 </template>
 <script>
@@ -38,6 +48,12 @@
 				is_main:0,
 				status:'',
 				disabled:true,
+				
+				orderData:[
+					{id:1, title:'常规服务 - 灭虫', has:false},
+					{id:2, title:'常规服务 - 灭虫', has:false},
+					{id:3, title:'常规服务 - 灭虫', has:false},
+				]
 			}
 		},
 		onLoad(option) {
@@ -65,6 +81,9 @@
 			
 		},
 		methods: {
+			orderHandle(index){
+				this.orderData[index].has = !this.orderData[index].has
+			},
 			//触摸开始，获取到起点
 			touchstart: function(e) {
 				let startX = e.changedTouches[0].x;
@@ -284,6 +303,47 @@
 </script>
 
 <style lang="scss" scoped>
+.orderAll{
+	position: absolute;
+	top: 200rpx;
+	left: -180rpx;
+	z-index: 99;
+	padding:0 20rpx;
+	transform: rotate(90deg);
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	height: 100rpx;
+	.title{
+		width: 70rpx;
+		font-size: 26rpx;
+		color: #333;
+	}
+}
+.orderList{
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	overflow-x: auto;
+	width: 400rpx;
+	
+	.item{
+		min-width: 240rpx;
+		overflow: hidden;
+		font-size: 26rpx;
+		border: 1rpx solid #333;
+		color: #333;
+		border-radius: 10rpx;
+		margin-right: 20rpx;
+		height: 80rpx;
+		line-height: 80rpx;
+		text-align: center;
+	}
+	.item.cur{
+		border:1rpx solid #007aff;
+		color: #007aff;
+	}
+}
 	.handWriting {
 		background: #fff;
 		width: 100%;
@@ -308,6 +368,7 @@
 		flex-direction: column;
 		justify-content: space-around;
 		position: relative;
+		
 	}
 	.sigh-btns.no::after{
 		content: '';
@@ -322,7 +383,8 @@
 
 	.btn {
 		width: 70px;
-		margin: 30px 0rpx;
+		// margin: 30px 0rpx;
+		margin: 14px 0rpx;
 		padding: 1rpx;
 		transform: rotate(90deg);
 		border: grey 1rpx solid;
