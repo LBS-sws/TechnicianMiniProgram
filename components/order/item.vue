@@ -88,13 +88,11 @@ export default{
 	methods:{
 		// 先做其他客户
 		signOut(){
-			// console.log(this.jobId)
-			// console.log(this.jobType)
 			this.$emit('signOut');
 		},
 		// 确定按钮 - 去做其他单
 		nextOrder(){
-			//console.log(this.jobs)
+			
 			let arr = []
 			this.jobs.forEach((item,i)=>{
 				if(item.has==true){
@@ -109,18 +107,13 @@ export default{
 				})
 				return false
 			}
-			console.log('next')
-			// uni.showToast({
-			// 	title:'none',
-			// 	icon:'loading'
-			// })
+			
 			uni.showLoading({
 				title: '加载中...',
 				mask: true,
 				showContent: false
 			});
 			
-			// return false
 			let params = {
 				job_id:this.jobId,
 				job_type:this.jobType,
@@ -129,7 +122,7 @@ export default{
 			}
 			// console.log(params)
 			this.$api.autoNextOrder(params).then(res=>{
-				console.log(res)
+				// console.log(res)
 				if(res.code==200){
 					uni.hideLoading();
 					uni.navigateTo({

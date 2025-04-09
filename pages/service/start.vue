@@ -281,8 +281,7 @@ import orderList from '@/components/order/item.vue';
 			// 下次服务时间关闭弹窗
 			timeOk (str, obj) {
 				console.log(str, obj)
-				// this[this.dateKey] = str || ''
-				// this.showDate = false
+				
 				this.date = str
 				this.qlType = 2
 				this.check_out(2)
@@ -317,29 +316,29 @@ import orderList from '@/components/order/item.vue';
 					// console.log(err)
 				})		  
 			},
+			// 计时开始
 			startTimer() {
 			  this.isTiming = true
 			  this.timer = setInterval(() => {
 				this.time++
 			  }, 1000)
 			},
+			// 暂停计时
 			stopTimer() {
 			  this.isTiming = false
 			  clearInterval(this.timer)
 			},
 			// 服务暂停、安排下次时间
 			serviceHandle(){
-				console.log('下次服务时间')
-				this.show = false
-				// this.showDate = true
 				
+				this.show = false
 				
 				let date = this.getDate()
 				this.$refs.dateTimePop.open(date || '');
 			},
-			open(){
-				
-			},
+			// 弹框 - 直接签离或下次
+			open(){},
+			// 关闭 - 直接签离或下次
 			close(){
 				this.show = false
 			},
@@ -347,29 +346,26 @@ import orderList from '@/components/order/item.vue';
 			qianming(){
 				let that = this
 				
-				let params6 = {
+				let params = {
 					job_id:that.jobid,
 					job_type:that.jobtype,
 				}
-				that.$api.getSignature(params6).then(res=>{
+				that.$api.getSignature(params).then(res=>{
 					console.log('客户签名:',res.data)
 					this.noFillInData = []
 					if(res.data.cust.customer_signature_url){
-					// 	that.autograph_customer_signature = `${that.$baseUrl_imgs}` + res.data.cust.customer_signature_url + '?t=' + new Date().getTime()
 						this.customer_qm = true
 					}
 					var arr = []
+					
 					// 客户未签字
 					if(res.data.cust.customer_signature_url=='' || res.data.cust.customer_signature_url ==null){
-						
 						this.noFillInData.push({title:'客户未签字'})
-						
 					}
 					if(res.data.staff_sign_urls.length==0){
 						this.noFillInData.push({title:'报告未完整填写'})
 					}
-					
-					
+
 				}).catch(err=>{
 					// console.log(err)
 				})
@@ -389,6 +385,7 @@ import orderList from '@/components/order/item.vue';
 					
 				})
 			},
+			//
 			data_select() {
 				let params = {
 					job_id:this.jobid,
@@ -467,6 +464,8 @@ import orderList from '@/components/order/item.vue';
 					console.log("客户信息：")
 					console.log(this.custInfo)
 					
+					this.stopTimer()
+					
 					let new_url = url;
 					if (url === "/pages/service/photo") {
 						uni.removeStorage({
@@ -514,6 +513,8 @@ import orderList from '@/components/order/item.vue';
 						icon: 'none',
 					});
 				} else {
+					this.stopTimer()
+					
 					uni.navigateTo({
 						url: "/pages/report/detail?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 							'&service_type=' + this.service.service_type + '&bk=' + this.bk

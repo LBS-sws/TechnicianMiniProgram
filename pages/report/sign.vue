@@ -45,7 +45,7 @@
 				height: 0,
 				jobid:'',
 				jobtype:'',
-				is_main:0,
+				is_main:0,  // 0附加、1客户、2技术员
 				status:'',
 				disabled:true,
 				

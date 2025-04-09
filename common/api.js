@@ -267,8 +267,13 @@ export default {
 	getCustomerOrder(params){
 		return request("/Order.Order/CustomerOrder", params, 'GET')
 	},
+	// 完成当前工单、签到勾选工单
 	autoNextOrder(params){
 		return request("/Order.Order/autoNextOrder", params, 'POST')
+	},
+	// 获取当天、同一客户、已签到工单
+	getDayCustomerSignOrder(params){
+		return request("/Order.Order/dayCustomerSignOrder", params, 'GET')
 	}
 }
 
