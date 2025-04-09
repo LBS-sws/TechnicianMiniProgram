@@ -16,7 +16,8 @@
 			<view class="title">签字工单</view>
 			<view class="orderList">
 				<view v-for="(item,index) in orderData" :key="index" class="item" @click="orderHandle(index)" :class="item.has ? 'cur':'' ">
-					{{item.title}}
+					{{item.service_text}} - {{item.service_name}}
+					<text class="status_text" v-if="item.finish_date ==null">未签离</text>
 				</view>
 			</view>
 		</div>
@@ -50,9 +51,9 @@
 				disabled:true,
 				
 				orderData:[
-					{id:1, title:'常规服务 - 灭虫', has:false},
-					{id:2, title:'常规服务 - 灭虫', has:false},
-					{id:3, title:'常规服务 - 灭虫', has:false},
+					// {id:1, title:'常规服务 - 灭虫', has:false},
+					// {id:2, title:'常规服务 - 灭虫', has:false},
+					// {id:3, title:'常规服务 - 灭虫', has:false},
 				]
 			}
 		},
@@ -78,9 +79,28 @@
 		},
 		created() {
 			console.log(this.status)
-			
+		},
+		onShow() {
+			if(this.is_main==1){
+				this.getSignOrder()
+			}
 		},
 		methods: {
+			// 当天同一客户单子
+			getSignOrder(){
+				
+				let params = {
+					job_id:that.jobid,
+					job_type:that.jobtype,
+				}
+				that.$api.getDayCustomerSignOrder(params).then(res=>{
+					console.log(res)
+					this.orderData = res.data
+				}).catch(err=>{
+					// console.log(err)
+				})
+			},
+			// 点击已选择工单
 			orderHandle(index){
 				this.orderData[index].has = !this.orderData[index].has
 			},
@@ -142,6 +162,31 @@
 				that.ctx.clearRect(0, 0, that.width, that.height);
 				that.ctx.draw(true);
 				tempPoint = [];
+			},
+			// 客户签名后更新工单完成
+			UpdateOrder:function(){
+				let job_arr = []
+				this.orderData.forEach((item, i)=>{
+					if(item.has == true){
+						job_arr.push({job_id:item.job_id, job_type:item.job_type})
+					}
+				})
+				// console.log(job_arr)
+				job_arr.push({job_id: this.jobid, job_type: this.jobtype })
+				let jobs = JSON.stringify(job_arr)
+				const formData = {
+					
+					is_main: that.is_main,
+			
+					jobs:jobs
+				}
+				// console.log(formData)
+				
+				that.$api.customerSaveOrder(formData).then(res=>{
+					
+				}).catch(err=>{
+					// console.log(err)
+				})
 			},
 			//将签名笔迹上传到服务器，并将返回来的地址存到本地
 			handleConfirm: function() {
@@ -209,14 +254,24 @@
 			updateImage(path){
 				let that = this
 				let url = ''
-
+				
+				let job_arr = []
+				this.orderData.forEach((item, i)=>{
+					if(item.has == true){
+						job_arr.push({job_id:item.job_id, job_type:item.job_type})
+					}
+				})
+				console.log(job_arr)
+				let jobs = JSON.stringify(job_arr)
 				const formData = {
 					job_id: that.jobid,
 					job_type: that.jobtype,
 					is_main: that.is_main,
-					file: path
+					file: path,
+					jobs:jobs
 				}
-
+				console.log(formData)
+						
 				uni.uploadFile({
 					// todo 根据签名角色不同而处理不同的
 					url: `${that.$baseUrl}/Sign.Sign/uploadSign`,
@@ -236,7 +291,7 @@
 							uni.showToast({title: data.msg,icon: 'error',duration: 2000})
 							return false
 						}
-
+						that.UpdateOrder()	// 完成
 						// 上传成功
 						switch(that.is_main){
 							case '0'://附加签名
@@ -249,30 +304,6 @@
 								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data});
 								break;
 						}
-
-						//更新对应order的pdf
-						// if(that.status==3){
-						// 	let formData = {
-						// 		'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
-						// 		'send':1,
-						// 		'sync':1
-						// 	}
-						// 	setTimeout(()=>{
-						// 		uni.request({
-						// 			url: `${that.$baseUrl}/Order.Order/makePdf`,
-						// 			header: {
-						// 				'token': uni.getStorageSync('token'),
-						// 				'Content-type':'application/x-www-form-urlencoded'
-						// 			},
-						// 			method:'POST',
-						// 			data: formData,
-						// 			success: (res) => {
-						// 				console.log(res.data);
-						// 				console.log('更新')
-						// 			}
-						// 		});
-						// 	},500)
-						// }
 
 						setTimeout(()=>{
 							that.disabled = true
@@ -335,9 +366,18 @@
 		color: #333;
 		border-radius: 10rpx;
 		margin-right: 20rpx;
-		height: 80rpx;
-		line-height: 80rpx;
+		height: 96rpx;
+		line-height: 96rpx;
 		text-align: center;
+		position: relative;
+		.status_text{
+			position: absolute;
+			bottom: -28rpx;
+			left: 2rpx;
+			font-size: 24rpx;
+			color: #d04d4d;
+			
+		}
 	}
 	.item.cur{
 		border:1rpx solid #007aff;

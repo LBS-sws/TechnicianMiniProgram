@@ -274,6 +274,10 @@ export default {
 	// 获取当天、同一客户、已签到工单
 	getDayCustomerSignOrder(params){
 		return request("/Order.Order/dayCustomerSignOrder", params, 'GET')
+	},
+	// 客户签名后自动完成工单
+	customerSaveOrder(params){
+		return request("/Order.Order/customerSaveOrder", params, 'POST')
 	}
 }
 
