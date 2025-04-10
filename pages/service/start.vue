@@ -66,7 +66,10 @@
 				</cl-col>
 				<cl-col span="12">
 					
-					<view class="qc" @tap="check_out(0)"  v-if="service.staff_other.end_date ==null " >签出离店</view>
+					<view class="qc ql_box" @tap="check_out(0)"  v-if="service.staff_other.end_date ==null " >
+						<view>签出离店</view>
+						<text class="ql_time">已服务:{{formatTime}}</text>
+					</view>
 					<view class="qc" v-else>已签离店</view>
 				</cl-col>
 			</cl-row>
@@ -265,13 +268,14 @@ import orderList from '@/components/order/item.vue';
 					job_type:this.jobtype
 				}
 				this.$api.OrderStopInfo(params).then(res=>{
-					
-					that.stopText = res.data.stop ? '继续服务' : '暂停服务先做其他客户'
+				
 					if(res.data.stop == 1){
 						this.stopTimer();
 						console.log('返回暂停还是继续',res.data.stop)
+						that.stopText = '继续服务'
 					}else{
 						this.startTimer()
+						that.stopText = '暂停服务先做其他客户'
 					}
 					if(res.data.service_time){
 						
@@ -324,8 +328,8 @@ import orderList from '@/components/order/item.vue';
 							
 							this.$api.OrderStop(params).then(res=>{
 								console.log(stop)
-								this.stopText = this.stop ? '暂停服务先做其他客户' : '继续服务'
-								this.stop = !this.stop
+								// this.stopText = this.stop ? '暂停服务先做其他客户' : '继续服务'
+								// this.stop = !this.stop
 								console.log(res)
 								this.getOrderStopInfo()
 							}).catch(err=>{
@@ -617,15 +621,30 @@ import orderList from '@/components/order/item.vue';
 			// 签离出店按钮 第一步
 			check_out(e) {
 				console.log(e)
-				// 如果是辅助人员
-				// if(this.service.main_staff != this.loginStaff){
-				// 	this.stopTimer()
-				// 	uni.navigateTo({
-				// 		url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-				// 			 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
-				// 	})
-				// 	return false
-				// }
+				console.log('主要人员',this.service.main_staff)
+				console.log('协助人员',this.loginStaff)
+				// return false
+				
+				// 如果是协助人员
+				if(this.service.main_staff != this.loginStaff){
+					console.log(this.jobs)
+					// 直接签离 - 判断当前客户是否有其他工单
+					if(this.jobs.length>0){
+						this.show = false
+						this.orderShow = true
+						return false
+					}else{
+						this.stopTimer()
+						this.show = false
+						uni.navigateTo({
+							url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+								 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+						})
+					}
+					
+					
+					// return false
+				}
 				
 				
 				// 1.验证服务时长是否达到

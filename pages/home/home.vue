@@ -176,7 +176,7 @@ export default {
 		confirm() {
 			this.show = false;
 			uni.navigateTo({
-				url: "/pages/service/detail?jobtype=" + this.noSignOrder.type + "&jobid=" + this.noSignOrder.id
+				url: "/pages/service/detail?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
 			});
 		},
 		// 滑动月份触发事件
@@ -198,8 +198,10 @@ export default {
 		},
 		// 工作单详情
 		job_detail(index) {
+			console.log(this.noSignOrder.job_id)
+			console.log(this.jobs[index].id)
 			// 未完成工单提示
-			if(this.jobs[index].status == 2 && this.noSignOrder.name_zh && this.noSignOrder.id != this.jobs[index].id){
+			if(this.jobs[index].status == 2 && this.noSignOrder.job_id != this.jobs[index].id){
 				this.show = true
 				return false
 			}
