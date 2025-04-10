@@ -56,7 +56,7 @@
 			</view>
 			
 			<!---->
-			<u-button @click="subSignIn">签到</u-button>
+			<!-- <u-button @click="subSignIn">签到</u-button> -->
 			<!---->
 			
 			<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>

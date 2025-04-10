@@ -90,10 +90,15 @@
 			<orderList :jobs="jobs" :jobId="jobid" :jobType="jobtype" @updateJobList="updateJobList" @signOut="signOut" ></orderList>
 		</u-popup>
 		
+		<van-button class="stop-btn" type="primary" round @tap="$noMultipleClicks(stopHandle)">
+			<view>{{stopText}}</view>
+		</van-button>
 	</view>
 </template>
 
 <script>
+//引入高德地图sdk
+import amap  from '@/utils/amap-wx.130.js';
 import color from 'uview-ui/libs/config/color';
 import myDatetime from '@/components/my-datetime/my-datetime';
 import orderList from '@/components/order/item.vue';
@@ -104,6 +109,7 @@ import orderList from '@/components/order/item.vue';
 		},
 		data() {
 			return {
+				noClick: true,
 				name:'开始服务',
 				list: [{
 						content: "服务简报",
@@ -202,12 +208,13 @@ import orderList from '@/components/order/item.vue';
                 dateKey: '',
 				orderShow: false, // 其他工单
 				jobs:[],
-		
+				stop:false,
+				stopText:'暂停服务先做其他客户'
 			}
 		},
 		  computed: {
 		    formatTime() {
-		   
+			
 			 var hours = Math.floor(this.time / 3600); // 获取小时数
 		     var minutes = Math.floor((this.time % 3600) / 60); // 获取分钟数
 		     var seconds = this.time % 60; // 获取秒数
@@ -226,6 +233,9 @@ import orderList from '@/components/order/item.vue';
 			this.ct = uni.getStorageSync('ct')
 			this.loginStaff = uni.getStorageSync('staffname')
 			
+			this.amapPlugin = new amap.AMapWX({
+			    key: `${this.$amapApiKey}`
+			}); 
 		},
 		onShow(index) {
 			
@@ -240,12 +250,76 @@ import orderList from '@/components/order/item.vue';
 			
 			this.qianming()
 			
+			this.getOrderStopInfo();
 			setTimeout(()=>{
 				this.CustomerOrder()	// 2秒后再加载
 			},2000)
+			
 		},
 		methods: {
-			
+			// 获取已服务时间，减去暂停时间
+			getOrderStopInfo(){
+				let params = {
+					job_id:this.jobid,
+					job_type:this.jobtype
+				}
+				this.$api.OrderStopInfo(params).then(res=>{
+					
+					if(res.data.service_time){
+						this.time = res.data.service_time
+					}
+				}).catch(err=>{
+					
+					console.log(err)
+				})
+			},
+			// 暂停|继续
+			stopHandle(){
+				console.log(this.stop)
+				
+				let stop = this.stop ? 0 : 1;
+				if(stop == 1){
+					this.stopTimer()
+				}else{
+					this.startTimer()
+				}
+				
+				uni.showLoading({
+					title: '请稍等'  
+				});  
+				this.amapPlugin.getRegeo({  
+					    success: (data) => {  
+					        console.log(data)  
+					        
+							let addr = data[0].name
+							let lat = data[0].latitude
+							let lng = data[0].longitude
+
+							let params = {
+								stop : stop,
+								lat:lat,
+								lng:lng,
+								addr:addr,
+								job_id:this.jobid,
+								job_type:this.jobtype
+							}
+							console.log(params)
+							
+							this.$api.OrderStop(params).then(res=>{
+								console.log(stop)
+								this.stopText = this.stop ? '暂停服务先做其他客户' : '继续服务'
+								this.stop = !this.stop
+								console.log(res)
+								this.getOrderStopInfo()
+							}).catch(err=>{
+								
+								console.log(err)
+							})
+							
+					        uni.hideLoading(); 
+					    }  
+				});
+			},
 			// 该客户有其他工单回调
 			updateJobList(e){
 				console.log('回调',e)
@@ -812,6 +886,21 @@ import orderList from '@/components/order/item.vue';
 		text-align: center;
 		width: 100%;
 		
+	}
+}
+::v-deep .stop-btn {
+	position: fixed;
+	top: 70%;
+	right: 20rpx;
+	.van-button {
+		// width: 260rpx;
+		// height: 260rpx;
+		width: 164rpx;
+    height: 164rpx;
+    font-size: 24rpx;
+	
+		box-shadow: 0px 12rpx 30rpx 0px rgba(25, 137, 250, 0.34);
+		background-color: #007AFF;
 	}
 }
 </style>

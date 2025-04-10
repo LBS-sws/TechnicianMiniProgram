@@ -278,6 +278,12 @@ export default {
 	// 客户签名后自动完成工单
 	customerSaveOrder(params){
 		return request("/Order.Order/customerSaveOrder", params, 'POST')
+	},
+	OrderStop(params){
+		return request("/Order.Order/OrderStop", params, 'POST')
+	},
+	OrderStopInfo(params){
+	return request("/Order.Order/OrderStopInfo", params, 'GET')
 	}
 }
 
