@@ -259,14 +259,24 @@ import orderList from '@/components/order/item.vue';
 		methods: {
 			// 获取已服务时间，减去暂停时间
 			getOrderStopInfo(){
+				let that = this
 				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
 				}
 				this.$api.OrderStopInfo(params).then(res=>{
 					
+					that.stopText = res.data.stop ? '继续服务' : '暂停服务先做其他客户'
+					if(res.data.stop == 1){
+						this.stopTimer();
+						console.log('返回暂停还是继续',res.data.stop)
+					}else{
+						this.startTimer()
+					}
 					if(res.data.service_time){
-						this.time = res.data.service_time
+						
+						that.time = res.data.service_time
+						
 					}
 				}).catch(err=>{
 					
@@ -275,6 +285,13 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 暂停|继续
 			stopHandle(){
+				if(this.service.service_ql == '1' || this.service.service_ql=='2'){
+					uni.showToast({
+						title:'签离后不能暂停',
+						icon:'none'
+					})
+					return false
+				}
 				console.log(this.stop)
 				
 				let stop = this.stop ? 0 : 1;
@@ -452,9 +469,11 @@ import orderList from '@/components/order/item.vue';
 					job_type:this.jobtype
 				}
 				this.$api.getCustomerOrder(params).then(res=>{
-					// console.log(res)
-					this.jobs = res.data		
-					
+					console.log('当前客户其他工单:',res)
+						
+					if(res.code==200){
+						this.jobs = res.data	
+					}
 				}).catch(err=>{
 					
 				})
@@ -469,7 +488,7 @@ import orderList from '@/components/order/item.vue';
 				this.$api.orderStart(params).then(res=>{
 					// console.log(res.data.data.service_time)
 					this.time = res.data.data.service_time	// 服务时间
-					this.startTimer();
+					// this.startTimer();
 					
 					
 					this.autograph = res.data.autograph
@@ -597,16 +616,16 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 签离出店按钮 第一步
 			check_out(e) {
-				
+				console.log(e)
 				// 如果是辅助人员
-				if(this.service.main_staff != this.loginStaff){
-					this.stopTimer()
-					uni.navigateTo({
-						url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-							 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
-					})
-					return false
-				}
+				// if(this.service.main_staff != this.loginStaff){
+				// 	this.stopTimer()
+				// 	uni.navigateTo({
+				// 		url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+				// 			 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+				// 	})
+				// 	return false
+				// }
 				
 				
 				// 1.验证服务时长是否达到
@@ -619,7 +638,7 @@ import orderList from '@/components/order/item.vue';
 					})
 					return false
 				}
-					
+				console.log('签离.')
 				// 1.直接签离
 				if(e==1){
 					this.qlType = 1
