@@ -166,6 +166,9 @@ export default {
 	equipmentList(params){
 		return request("/Equipment.Equipment/list", params, 'GET')
 	},
+	checkQrEquipment(params){
+		return request("/Equipment.Equipment/checkQrEquipment", params, 'GET')
+	},
 	deviceSelect(params){
 		return request("/Equipment.Equipment/deviceSelect", params, 'GET')
 	},

@@ -568,7 +568,8 @@
 				long: this.$props?.longitude,
 				regeocodeData: {},
 				searchList: [],
-				errorText:''
+				errorText:'',
+				address:''// my新增
 			};
 		},
 		created() {
@@ -640,6 +641,16 @@
 				if (!latitude || !longitude) return;
 				this.getRegeo([longitude, latitude], (pois) => {
 					this.searchList = pois;
+					
+					// 改默认选择第一个
+					if(pois.length>0){
+						console.log(pois)
+						let coordinate = pois[0].location.split(',');
+						this.searchValue = pois[0].name;
+						this.address = pois[0].address;
+						this.getRegeo(coordinate);
+					}
+					
 				})
 			},
 			getInputtips() {
@@ -649,6 +660,7 @@
 					location: this.long + ',' + this.lat,
 					success: (data) => {
 						this.searchList = data.tips.filter((i) => i?.id?.length && i?.location);
+						
 					}
 				});
 			},
@@ -674,6 +686,9 @@
 				this.getInputtips();
 			},
 			getCurrentSingleLocation(data) {
+				console.log('选中',data.address)
+				this.address = data.address	// 新增 my
+				
 				let coordinate = data.location.split(',');
 				this.searchValue = data.name;
 				this.getRegeo(coordinate);
@@ -696,7 +711,8 @@
 					title,
 					latitude: this.lat,
 					longitude: this.long,
-					address: this.addressMap
+					// address: this.addressMap
+					address: this.address
 				}
 
 			},
@@ -842,7 +858,7 @@
 	position: absolute;
 	width: 100%;
 	height: 102rpx;
-	background: rgb(46 131 241);
+	background: rgba(46,131,241,0);
 	bottom: 0;
 	left: 0;
 	border-radius: 8rpx;

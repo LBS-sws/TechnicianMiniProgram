@@ -22,6 +22,7 @@
 			<view class="v_magin">
 				服务时长要求：<span style="color: black;"><text selectable="true" v-if="serviceContractTime">{{serviceContractTime}}分钟</text></span>
 			</view>
+			
 			<!-- 流程 -->
 			<cl-divider>
 				<text class="cl-icon-favor"></text>
@@ -70,16 +71,20 @@
 				<view class="item" @click="serviceHandle">服务暂停、安排下次时间</view>
 			</view>
 		</u-popup>
-		
-		<DatePicker :showLabel="true" :show="showDate" :value="defaultDate" @confirm="dateChange" @cancel="showDate=false" />
+		<!-- 日期 -->
+		<my-datetime ref="dateTimePop" @ok="timeOk" :shownum="3"></my-datetime>
+
 	</view>
 </template>
 
 <script>
 import color from 'uview-ui/libs/config/color';
-import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
+
+import myDatetime from '@/components/my-datetime/my-datetime'
 	export default {
-		components: {DatePicker},
+		components: {
+			'my-datetime': myDatetime
+		},
 		data() {
 			return {
 				name:'开始服务',
@@ -165,9 +170,8 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				
 				show:false,
 				
-				defaultDate: '',
 				date:'',
-				showDate: false,
+	
 				
 				qlType:'',
 				
@@ -177,7 +181,10 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 				customer_qm:false,
 				
 				serviceContractTime:0,	// 合约服务时长
-				noFillInData:[]
+				noFillInData:[],
+				
+				hopeBeginTime: '',
+                dateKey: ''
 			}
 		},
 		  computed: {
@@ -218,6 +225,37 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 			// },2000)
 		},
 		methods: {
+			getDate(){
+				var date = new Date()
+						
+				let y = new Date(date).getFullYear();
+				let m = new Date(date).getMonth()+1;
+				let d = new Date(date).getDate();
+							
+				if(m<10){
+				    m = '0' + m
+				}
+				if(d<10){
+				    d = '0' + d
+				}
+				let datetime = `${y}-${m}-${d}`;
+				return datetime
+			},
+			// 开启弹窗
+			dateOpen (key, date) {
+				this.dateKey = key
+				this.$refs.dateTimePop.open(date || '');
+			},
+			// 下次服务时间关闭弹窗
+			timeOk (str, obj) {
+				console.log(str, obj)
+				// this[this.dateKey] = str || ''
+				// this.showDate = false
+				this.date = str
+				this.qlType = 2
+				this.check_out(2)
+				
+			},
 			// 生成PDF
 			createPdf(){
 				if(this.customer_qm==false)
@@ -261,17 +299,11 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 			serviceHandle(){
 				console.log('下次服务时间')
 				this.show = false
-				this.showDate = true
+				// this.showDate = true
 				
 				
-			},
-			// 下次服务选择日期
-			dateChange(v) {
-			    this.showDate = false
-			    this.date = v
-				this.qlType = 2
-				this.check_out(2)
-				
+				let date = this.getDate()
+				this.$refs.dateTimePop.open(date || '');
 			},
 			open(){
 				
@@ -641,7 +673,7 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 		right: 0;
 		bottom: 0px;
 		line-height: 50px;
-		z-index: 9999;
+		z-index: 9;
 		text-align: center;
 		font-weight: bold;
 		font-size: 18px;
