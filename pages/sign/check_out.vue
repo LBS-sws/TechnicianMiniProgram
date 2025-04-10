@@ -7,7 +7,17 @@
 			<view class="customerInfo">
 				<view class="title">{{customerInfo.name_zh}}</view>
 				<view class="addr">{{customerInfo.addr}}</view>
-				<view class="time">已服务时间:{{formatTime}}</view>
+				<!-- <view class="time">已服务时间:{{formatTime}}</view> -->
+			</view>
+			<view class="addrNow" v-if="addressName">
+				<view>当前位置：{{addressName}} 
+				</view>
+				<view>
+					距离门店
+					：{{distance}}
+									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
+									<text v-else>千米</text>
+				</view>
 			</view>
 			<van-cell class="field-cell" required title-width="70px" title="发票签收：">
 				<view class="location">
@@ -59,21 +69,6 @@
 				
 			</view>
 		</view>
-		<view>
-			模拟位置:
-			<!-- <cl-select v-model="val" :options="list" @change="changeHandle($event)"></cl-select> -->
-			<view style="width: 120px;"><u-button type="primary" text="100米内" @click="addHandle(0)"></u-button></view>
-			<view style="width: 120px;">
-				<u-button type="warning" text="100米外1000米内" @click="addHandle(1)"></u-button>
-			</view>
-			<view style="width: 120px;">
-				<u-button type="error" text="1000米外" @click="addHandle(2)"></u-button>
-			</view>
-		</view>
-		<view>距离：{{distance}}
-			<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
-			<text v-else>千米</text>
-		</view>
 		<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 		
 		<!-- 异常签离弹出 -->
@@ -88,7 +83,7 @@
 </template>
 
 <script>
-import {formatDate} from '@/utils'
+import {formatDate, getUrlParamsStr} from '@/utils'
 //引入高德地图sdk
 import amap  from '@/utils/amap-wx.130.js';
 	export default {
@@ -146,8 +141,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					latitude:''
 				},
 				exceptionStatus:'',
-				amapPlugin: null,
-				key: 'c6631b0a7212536acc8aa68df419f9b3',  
+				amapPlugin: null, 
 				addressName: '',  
 				weather: {  
 				    hasData: false,  
@@ -164,40 +158,6 @@ import amap  from '@/utils/amap-wx.130.js';
 				},
 				distance:'', // 距离
 				DistanceType:1,		// 距离类型1米，2千米
-				list:[
-					{
-						label: "华为HUAWEI",
-						value: 1,
-						location:{
-							longitude:'104.076298',
-							latitude:'30.662476'
-						}
-					},
-					{
-						label: "香溢小笼包",
-						value: 2,
-						location:{
-							longitude:'104.077176',
-							latitude:'30.663772'
-						}
-					},
-					// {
-					// 	label: "太升南路B出口",
-					// 	value: 3,
-					// 	location:{
-					// 		longitude:'104.077448',
-					// 		latitude:'30.664168'
-					// 	}
-					// },
-					{
-						label: "东门大桥A出口",
-						value: 3,
-						location:{
-							longitude:'104.08664',
-							latitude:'30.648323'
-						}
-					}
-				],
 				val:1,
 				show: false,
 				abnormalList:[
@@ -206,7 +166,6 @@ import amap  from '@/utils/amap-wx.130.js';
 				],
 				flip: '../../static/flip.png', // 反转
 				icon: '../../static/icon.png', // 相机
-				picture: '../../static/picture.png', // 照片
 				cameraContext: {},
 				windowHeight: '',
 				cameraHeight: '',
@@ -233,7 +192,9 @@ import amap  from '@/utils/amap-wx.130.js';
 				
 				isTiming: false,
 				time: 0,
-				timer: null
+				timer: null,
+				longitude:'',
+				latitude:''
 			}
 		},
 		computed: {
@@ -266,36 +227,32 @@ import amap  from '@/utils/amap-wx.130.js';
 			this.qlType = index.qlType
 			this.date = index.date
 
-			if (index.staffSign == 0) {
-				this.$refs["message"].open({type: "warn",duration: 5000,top: "200rpx",message: "技术员未签名"});
-				return;
-			}
+			// if (index.staffSign == 0) {
+			// 	this.$refs["message"].open({type: "warn",duration: 5000,top: "200rpx",message: "技术员未签名"});
+			// 	return;
+			// }
 			
-			if (index.autograph == 0) {
-				this.$refs["message"].open({
-					type: "warn",
-					duration: 5000,
-					top: "200rpx",
-					message: "客户未签名",
-				});
-			}
-			// this.getLocation()
+			// if (index.autograph == 0) {
+			// 	this.$refs["message"].open({
+			// 		type: "warn",
+			// 		duration: 5000,
+			// 		top: "200rpx",
+			// 		message: "客户未签名",
+			// 	});
+			// }
+			
 			this.getTime()
 			if (this.timerInterval) {
 				clearInterval(this.timerInterval)
 			} else {
 				this.timerInterval = setInterval(this.getTime, 1000)
 			}
-			// this.checkLocationAuth();
-			
-					
-			
 		},
 		onShow() {
 			this.amapPlugin = new amap.AMapWX({
-			    key: this.key  
+			    key: `${this.$amapApiKey}`
 			});
-			console.log('高德地图key:',this.key)
+			console.log('高德地图key:',`${this.$amapApiKey}`)
 			
 			if (uni.createCameraContext) {
 				this.cameraContext = uni.createCameraContext()
@@ -317,22 +274,6 @@ import amap  from '@/utils/amap-wx.130.js';
 			console.log('cameraHeight:',this.cameraHeight)
 		},
 		methods: {
-			addHandle(i){
-				console.log(i)
-				let e = this.list[i].value
-				let obj = this.list.find((item)=>{
-					return item.value === e
-				})
-				// console.log('选择的位置',obj)
-				
-				this.point2.longitude = obj.location.longitude 
-				this.point2.latitude = obj.location.latitude
-				
-				this.distance = this.getDistance(this.point2, this.point1);
-				
-				this.longitude = obj.location.longitude
-				this.latitude = obj.location.latitude
-			},
 			startTimer() {
 			  this.isTiming = true
 			  this.timer = setInterval(() => {
@@ -346,6 +287,7 @@ import amap  from '@/utils/amap-wx.130.js';
 			// 异常签离选择事件
 			exceptionHandle(e){
 				console.log(e)
+				
 				this.exceptionStatus = this.abnormalList[e].id
 				this.handleSignin()
 			},
@@ -356,23 +298,6 @@ import amap  from '@/utils/amap-wx.130.js';
 			// 异常签离 弹窗关闭
 			close(){
 				this.show = false
-			},
-			// 模拟定位选位置
-			changeHandle(e){
-				// console.log(e)
-				let obj = this.list.find((item)=>{
-					return item.value === e
-				})
-				// console.log('选择的位置',obj)
-				
-				this.point2.longitude = obj.location.longitude 
-				this.point2.latitude = obj.location.latitude
-				
-				this.distance = this.getDistance(this.point2, this.point1);
-				
-				this.longitude = obj.location.longitude
-				this.latitude = obj.location.latitude
-				
 			},
 			// 重新定位
 			resetLocation(){
@@ -395,7 +320,7 @@ import amap  from '@/utils/amap-wx.130.js';
 						this.distance = this.getDistance(this.point2, this.point1);
 			            uni.hideLoading(); 
 						 
-						 // this.detail()
+						 this.detail()
 			        }  
 			    });  
 			},
@@ -409,14 +334,60 @@ import amap  from '@/utils/amap-wx.130.js';
 					
 					// console.log(res)
 					this.customerInfo = res.data.customer
-					this.point1.latitude = res.data.customer.lat
-					this.point1.longitude = res.data.customer.lng
-					console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
+					// this.point1.latitude = res.data.customer.lat
+					// this.point1.longitude = res.data.customer.lng
+					// console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
 					
-					console.log('高德',this.point2)
-					this.distance = this.getDistance(this.point2, this.point1);
+					// console.log('高德',this.point2)
+					// this.distance = this.getDistance(this.point2, this.point1);
 					
-					console.log(this.distance);
+					// console.log(this.distance);
+					
+					// 坐标转换
+					const paramsObj = {
+						key: `${this.$amapWebApiKey}`,
+						locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
+						coordsys:'baidu',
+						output: 'json'
+					}
+					const paramsStr = getUrlParamsStr(paramsObj)
+					uni.request({
+						url: 'https://restapi.amap.com/v3/assistant/coordinate/convert?' + paramsStr,
+						method: "get",
+						dataType: "json",
+						header: {
+							'Content-Type': 'application/json'
+						},
+						success: (resx) => {
+							// console.log('resx:',resx.data.locations)
+							if(resx.data.status==1){
+								let arr = resx.data.locations.split(",");
+								console.log(arr)
+								
+								this.point1.longitude = parseFloat(arr[0])
+								this.point1.latitude = parseFloat(arr[1])
+								console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
+								
+								console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
+								
+								this.longitude = this.point2.longitude
+								this.latitude = this.point2.latitude
+								
+								this.distance = this.getDistance(this.point2, this.point1);
+								
+								console.log('距离：',this.distance);
+							}else{
+								uni.showToast({
+									title:'经纬度转换失败',
+									icon:'none'
+								})
+							}
+							
+						},
+						fail: (res) => {
+							reject('经纬度解析地址失败')
+						}
+					});
 					
 					this.time = res.data.service_time	// 服务时间
 					this.startTimer();
@@ -513,10 +484,10 @@ import amap  from '@/utils/amap-wx.130.js';
 			// ...mapMutations(['SET_SELECTED_SEARCH']),
 			//开始服务签离
 			handleSignin() {
-				if (this.staffSign == 0) {
-					uni.showToast({title: '技术员未签名',icon: 'none'})
-					return;
-				}
+				// if (this.staffSign == 0) {
+				// 	uni.showToast({title: '技术员未签名',icon: 'none'})
+				// 	return;
+				// }
 
 				if (this.invoice == -1) {
 					uni.showToast({
@@ -543,10 +514,15 @@ import amap  from '@/utils/amap-wx.130.js';
 					this.show = true
 					return false
 				}
+				if(this.DistanceType == 3 && this.exceptionStatus=='')
+				{
+					this.show = true
+					return false
+				}
 				// console.log('继续')
 				// return false
 				// if (!this.location.curLocation) {
-				// 	this.getLocation()
+				
 				// } else {
 					uni.showLoading({
 						title: "签离中..."
@@ -582,110 +558,6 @@ import amap  from '@/utils/amap-wx.130.js';
 				var currentdate = year + seperator1 + month + seperator1 + strDate;
 				return currentdate;
 			},
-
-			//单独提取一个判断用户是否授权定位的函数，在需要的地方直接调用，避免了重复触发getLocation获取定位弹窗
-			checkLocationAuth() {
-				wx.getSetting({
-					success: (res) => {
-						let authSetting = res.authSetting
-						if (authSetting['scope.userLocation']) {
-							// 已授权
-							this.getLocation()
-						} else if (authSetting['scope.userLocation'] === false) {
-							wx.showModal({
-								title: '您未开启地理位置授权',
-								content: '请在系统设置中打开位置授权，以便我们为您提供更好的服务',
-								success: (res) => {
-									if (res.confirm) {
-										wx.openSetting()
-									}
-								}
-							})
-							console.log("失败了4")
-							const address = '本次定位失败，可继续签离。'
-							this.formData.signAddress = address
-							this.location.curLocation = address
-							this.location.loading = false
-							this.location.error = true
-						} else {
-							wx.authorize({
-								scope: 'scope.userLocation',
-								success: () => {
-									this.getLocation()
-								},
-								fail: () => {
-									wx.showModal({
-										title: '您未开启地理位置授权',
-										content: '请在系统设置中打开位置授权，以便我们为您提供更好的服务',
-										success: (res) => {
-											if (res.confirm) {
-												wx.openSetting()
-											}
-										}
-									})
-
-									console.log("失败了3")
-									const address = '本次定位失败，可继续签离。'
-									this.formData.signAddress = address
-									this.location.curLocation = address
-									this.location.loading = false
-									this.location.error = true
-								}
-							})
-						}
-					}
-				})
-			},
-			// 获取当前定位
-			getLocation() {
-				console.log("进来了1");
-				uni.getLocation({
-					type: 'gcj02',
-					success: (res) => {
-						// const {
-						// 	latitude,
-						// 	longitude
-						// } = res;
-						let ret = transformFromGCJToBaidu(res.latitude,res.longitude)
-						console.log("ret")
-						console.log(ret)
-						uni.request({
-							url: `${this.$mapApiUrl}`,
-							data: {
-								ak: `${this.$mapApiKey}`,
-								output: 'json',
-								coordtype: 'gcj02',
-								location: `${ret.latitude},${ret.longitude}`
-							},
-							success: (lres) => {
-								const address = lres.data.result.formatted_address
-								this.formData.signAddress = address
-								this.location.curLocation = address
-								this.location.error = false
-								this.location.loading = false
-								console.log(lres);
-							},
-							error: (e) => {
-								console.log("失败了1")
-								const address = '本次定位失败，可继续签离。'
-								this.formData.signAddress = address
-								this.location.curLocation = address
-								this.location.loading = false
-								this.location.error = true
-							}
-						});
-					},
-					error: (e) => {
-						console.log("失败了2")
-						const address = '本次定位失败，可继续签离。'
-						this.formData.signAddress = address
-						this.location.curLocation = address
-						this.location.loading = false
-						this.location.error = true
-					}
-				});
-			},
-
 			rad(d) {
 				return d * Math.PI / 180.0;
 			},
@@ -706,9 +578,10 @@ import amap  from '@/utils/amap-wx.130.js';
 					lng:this.point2.longitude,
 					lat:this.point2.latitude,
 					// title:this.title,
-					// address:this.address
+					addr:this.address,
 					signdate:'',
-					starttime:''
+					starttime:'',
+					status:this.exceptionStatus
 				}
 				
 				this.show = false	// 异常签离 弹窗关闭
@@ -734,9 +607,9 @@ import amap  from '@/utils/amap-wx.130.js';
 						}
 
 						//更新工单报表
-						setTimeout(()=>{
-							that.makePdf();
-						},2000)
+						// setTimeout(()=>{
+						// 	that.makePdf();
+						// },2000)
 					} else {
 						this.$refs["message"].open({
 							type: "warn",
@@ -795,12 +668,12 @@ import amap  from '@/utils/amap-wx.130.js';
 					
 					// 红色 系统定位不准
 					let oldArray = this.abnormalList
-					const index = oldArray.findIndex(item => item.id === 2);
-					if (index !== -1) {
-					  oldArray.splice(index, 1);
-					}
+			// 		const index = oldArray.findIndex(item => item.id === 2);
+			// 		if (index !== -1) {
+			// 		  oldArray.splice(index, 1);
+			// 		}
 			
-					this.abnormalList  = oldArray
+			// 		this.abnormalList  = oldArray
 					this.signin.text = '异常签离'
 					return (d / 1000).toFixed(2);
 				} else {
@@ -1203,5 +1076,10 @@ import amap  from '@/utils/amap-wx.130.js';
 		width: 100%;
 		max-height: 325px;
 	}
+}
+.addrNow{
+	font-size: 24rpx;
+	color: #2196F3;
+	padding:  40rpx 36rpx 0;
 }
 </style>

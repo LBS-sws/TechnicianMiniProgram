@@ -40,12 +40,17 @@
 					<view class="jc">检查报告</view>
 				</cl-col>
 				<cl-col v-if="service.status == 3" span="12" >
-					<view class="qc" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''">生成报告</view>
+					<view class="qc create_bg" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''">生成报告<text>生成报告后不能更改</text></view>
 					<view class="qc" v-else>已签离店</view>
 					
 				</cl-col>
-				<cl-col v-else span="12" @tap="check_out(0)">
-					<view class="qc ql_box">
+				<cl-col v-else span="12" >
+					<view v-if="service.service_ql==1" >
+						
+						<view class="qc" v-if="customer_qm" @click="createPdf">生成报告</view>
+						<view class="qc" v-else>已签离店</view>
+					</view>
+					<view v-else class="qc ql_box" @tap="check_out(0)">
 						<view>签出离店</view>
 						<text class="ql_time">已服务:{{formatTime}}</text>
 					</view>
@@ -215,6 +220,14 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 		methods: {
 			// 生成PDF
 			createPdf(){
+				if(this.customer_qm==false)
+				{
+					uni.showToast({
+						title:'客户未签名不能生成报告',
+						icon:'none'
+					})
+					return false
+				}
 				let that = this
 				
 				let param = JSON.stringify([{
@@ -362,9 +375,9 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 						title: '数据加载中',
 						icon: 'none',
 					});
-				} else if (this.service.status == '3') {
+				} else if (this.service.report) {//} else if (this.service.status == '3') {
 					uni.showToast({
-						title: '已完成不能再修改',
+						title: '生成报告后不能修改', // 已完成不能再修改
 						icon: 'none',
 					});
 				} else {
@@ -670,6 +683,19 @@ import DatePicker from '@/components/dragon-datePicker/dragon-datePicker.vue';
 		color: red;
 		text-align: center;
 		margin-bottom: 10rpx;
+	}
+}
+.create_bg{
+	position: relative;
+	text{
+		position: absolute;
+		top: -30rpx;
+		left: 0;
+		font-size: 20rpx;
+		color: #fff;
+		text-align: center;
+		width: 100%;
+		
 	}
 }
 </style>

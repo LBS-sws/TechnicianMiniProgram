@@ -199,7 +199,7 @@ export default {
 		// 工作单详情
 		job_detail(index) {
 			// 未完成工单提示
-			if(this.noSignOrder.name_zh && this.noSignOrder.id != this.jobs[index].id){
+			if(this.jobs[index].status == 2 && this.noSignOrder.name_zh && this.noSignOrder.id != this.jobs[index].id){
 				this.show = true
 				return false
 			}

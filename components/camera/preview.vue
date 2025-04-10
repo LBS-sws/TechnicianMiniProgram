@@ -38,6 +38,7 @@ export default{
 			formData: {
 				type:0
 			},
+			requestStatus : false
 		}
 	},
 	created() {
@@ -55,6 +56,18 @@ export default{
 				icon:'loading',
 				title:'正在上传'
 			})
+			if(this.requestStatus){
+				// 利用 return 终止函数继续运行
+				return false;
+			}
+			console.log('按钮点击函数执行');
+			// 执行函数
+			this.requestStatus = true;
+			setTimeout(()=>{
+				// 模拟执行完毕
+				// 改变 requestStatus
+				this.requestStatus = false;
+			}, 1000);
 			// return false
 			let that = this
 			const upTask = uni.uploadFile({
