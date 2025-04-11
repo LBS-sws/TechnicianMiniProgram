@@ -51,7 +51,7 @@
 						<view class="qc" v-if="customer_qm" @click="createPdf">生成报告</view>
 						<view class="qc" v-else>已签离店</view>
 					</view>
-					<view v-else class="qc ql_box" @tap="check_out">
+					<view v-else class="qc ql_box" @tap="check_out" :style="{background:stop ?'':'#999999'}">
 						<view>签出离店</view>
 						<text class="ql_time">已服务:{{formatTime}}</text>
 					</view>
@@ -92,10 +92,15 @@
 		<u-popup :show="orderShow" :round="10" mode="bottom" @close="orderClose" @open="orderOpen">
 			<orderList :jobs="jobs" :jobId="jobid" :jobType="jobtype" @updateJobList="updateJobList" @signOut="signOut" ></orderList>
 		</u-popup>
+		<!-- 暂停/继续 按钮-->
+		<block >
+			<van-button class="stop-btn" type="primary" round @tap="$noMultipleClicks(stopHandle)" v-if="service.service_ql==0 && service.status!=3"
+			
+			>
+				<view>{{stopText}}</view>
+			</van-button>
+		</block>
 		
-		<van-button class="stop-btn" type="primary" round @tap="$noMultipleClicks(stopHandle)">
-			<view>{{stopText}}</view>
-		</van-button>
 	</view>
 </template>
 
@@ -275,10 +280,12 @@ import orderList from '@/components/order/item.vue';
 					if(res.data.stop && res.data.stop == 1){
 						console.log('返回暂停还是继续',res.data.stop)
 						that.stopText = '继续服务'
+						this.stop = false
 						this.stopTimer()
 					}else{
 						that.stopText = '暂停服务先做其他客户'
 						this.startTimer()
+						this.stop = true
 					}
 					if(res.data.service_time){
 						
@@ -637,11 +644,19 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 签离出店按钮 第一步
 			check_out() {
-				
+				console.log('sign-01')
 				if(!this.axiosTime){
 					uni.showToast({
 						icon:'none',
 						title:'加载中，请稍等...'
+					})
+					return false
+				}
+				console.log('stop状态:',this.stop)
+				if(this.stop == false){
+					uni.showToast({
+						icon:'none',
+						title:'继续服务后才能签离'
 					})
 					return false
 				}
@@ -679,6 +694,7 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 协助人员签离
 			check_out_tow(){
+				console.log('sign-02')
 				if(!this.axiosTime){
 					uni.showToast({
 						icon:'none',
@@ -686,7 +702,13 @@ import orderList from '@/components/order/item.vue';
 					})
 					return false
 				}
-				
+				if(this.stop==false){
+					uni.showToast({
+						icon:'none',
+						title:'继续服务后才能签离'
+					})
+					return false
+				}
 				// 判断当前客户是否有其他工单
 				if(this.jobs.length>0){
 					this.show = false
@@ -703,6 +725,7 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 直接签离
 			now_check_out(){
+				console.log('sign-03')
 				if(!this.axiosTime){
 					uni.showToast({
 						icon:'none',
@@ -710,7 +733,13 @@ import orderList from '@/components/order/item.vue';
 					})
 					return false
 				}
-				
+				if(this.stop==false){
+					uni.showToast({
+						icon:'none',
+						title:'继续服务后才能签离'
+					})
+					return false
+				}
 				if(this.jobs.length>0){
 					this.show = false
 					this.orderShow = true
