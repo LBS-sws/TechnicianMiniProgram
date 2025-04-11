@@ -758,7 +758,7 @@ import orderList from '@/components/order/item.vue';
 			
 			// 直接签离 - 先做其他客户
 			signOut(){
-				
+				this.qlType = 1
 				this.stopTimer()
 				this.show = false
 				this.orderShow = false
