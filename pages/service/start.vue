@@ -51,7 +51,7 @@
 						<view class="qc" v-if="customer_qm" @click="createPdf">生成报告</view>
 						<view class="qc" v-else>已签离店</view>
 					</view>
-					<view v-else class="qc ql_box" @tap="check_out(0)">
+					<view v-else class="qc ql_box" @tap="check_out">
 						<view>签出离店</view>
 						<text class="ql_time">已服务:{{formatTime}}</text>
 					</view>
@@ -66,7 +66,7 @@
 				</cl-col>
 				<cl-col span="12">
 					
-					<view class="qc ql_box" @tap="check_out(0)"  v-if="service.staff_other.end_date ==null " >
+					<view class="qc ql_box" @tap="check_out_tow"  v-if="service.staff_other.end_date ==null " >
 						<view>签出离店</view>
 						<text class="ql_time">已服务:{{formatTime}}</text>
 					</view>
@@ -82,7 +82,7 @@
 			</view>
 			<view class="signout_ui">
 				<view class="item" @click="close">返回</view>
-				<view class="item" @click="check_out(1)">直接签离</view>
+				<view class="item" @click="now_check_out">直接签离</view>
 				<view class="item" @click="serviceHandle">服务暂停、安排下次时间</view>
 			</view>
 		</u-popup>
@@ -212,15 +212,16 @@ import orderList from '@/components/order/item.vue';
 				orderShow: false, // 其他工单
 				jobs:[],
 				stop:false,
-				stopText:'暂停服务先做其他客户'
+				stopText:'暂停服务先做其他客户',
+				axiosTime:false,	// 2秒后才能请求
 			}
 		},
 		  computed: {
 		    formatTime() {
 			
-			 var hours = Math.floor(this.time / 3600); // 获取小时数
-		     var minutes = Math.floor((this.time % 3600) / 60); // 获取分钟数
-		     var seconds = this.time % 60; // 获取秒数
+			 const hours = Math.floor(this.time / 3600); // 获取小时数
+		     const minutes = Math.floor((this.time % 3600) / 60); // 获取分钟数
+		     const seconds = this.time % 60; // 获取秒数
 		     
 			 return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
 		    }
@@ -256,8 +257,10 @@ import orderList from '@/components/order/item.vue';
 			this.getOrderStopInfo();
 			setTimeout(()=>{
 				this.CustomerOrder()	// 2秒后再加载
+			},1500)
+			setTimeout(()=>{
+				this.axiosTime = true
 			},2000)
-			
 		},
 		methods: {
 			// 获取已服务时间，减去暂停时间
@@ -269,13 +272,13 @@ import orderList from '@/components/order/item.vue';
 				}
 				this.$api.OrderStopInfo(params).then(res=>{
 				
-					if(res.data.stop == 1){
-						this.stopTimer();
+					if(res.data.stop && res.data.stop == 1){
 						console.log('返回暂停还是继续',res.data.stop)
 						that.stopText = '继续服务'
+						this.stopTimer()
 					}else{
-						this.startTimer()
 						that.stopText = '暂停服务先做其他客户'
+						this.startTimer()
 					}
 					if(res.data.service_time){
 						
@@ -298,11 +301,13 @@ import orderList from '@/components/order/item.vue';
 				}
 				console.log(this.stop)
 				
-				let stop = this.stop ? 0 : 1;
-				if(stop == 1){
-					this.stopTimer()
+				let stop = this.stop;
+				if(stop){
+					
+					stop = 0
 				}else{
-					this.startTimer()
+					
+					stop = 1
 				}
 				
 				uni.showLoading({
@@ -324,12 +329,12 @@ import orderList from '@/components/order/item.vue';
 								job_id:this.jobid,
 								job_type:this.jobtype
 							}
-							console.log(params)
 							
 							this.$api.OrderStop(params).then(res=>{
-								console.log(stop)
+								// console.log(stop)
+								
+								this.stop = !this.stop
 								// this.stopText = this.stop ? '暂停服务先做其他客户' : '继续服务'
-								// this.stop = !this.stop
 								console.log(res)
 								this.getOrderStopInfo()
 							}).catch(err=>{
@@ -373,14 +378,19 @@ import orderList from '@/components/order/item.vue';
 				this.dateKey = key
 				this.$refs.dateTimePop.open(date || '');
 			},
-			// 下次服务时间关闭弹窗
+			// 主负责人 - 下次服务时间关闭弹窗
 			timeOk (str, obj) {
 				console.log(str, obj)
 				
 				this.date = str
 				this.qlType = 2
-				this.check_out(2)
-				
+			
+				this.stopTimer()
+				this.show = false
+				uni.navigateTo({
+					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+				})
 			},
 			// 生成PDF
 			createPdf(){
@@ -492,8 +502,6 @@ import orderList from '@/components/order/item.vue';
 				this.$api.orderStart(params).then(res=>{
 					// console.log(res.data.data.service_time)
 					this.time = res.data.data.service_time	// 服务时间
-					// this.startTimer();
-					
 					
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
@@ -546,6 +554,7 @@ import orderList from '@/components/order/item.vue';
 					uni.hideLoading();
 				})
 			},
+			//
 			lc(url, shortcut_type) {
 				if (this.service.length == 0) {
 					uni.showToast({
@@ -603,6 +612,7 @@ import orderList from '@/components/order/item.vue';
 					})
 				}
 			},
+			//
 			report() {
 				if (this.service.length == 0) {
 					uni.showToast({
@@ -619,33 +629,15 @@ import orderList from '@/components/order/item.vue';
 				}
 			},
 			// 签离出店按钮 第一步
-			check_out(e) {
-				console.log(e)
-				console.log('主要人员',this.service.main_staff)
-				console.log('协助人员',this.loginStaff)
-				// return false
+			check_out() {
 				
-				// 如果是协助人员
-				if(this.service.main_staff != this.loginStaff){
-					console.log(this.jobs)
-					// 直接签离 - 判断当前客户是否有其他工单
-					if(this.jobs.length>0){
-						this.show = false
-						this.orderShow = true
-						return false
-					}else{
-						this.stopTimer()
-						this.show = false
-						uni.navigateTo({
-							url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-								 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
-						})
-					}
-					
-					
-					// return false
+				if(!this.axiosTime){
+					uni.showToast({
+						icon:'none',
+						title:'加载中，请稍等...'
+					})
+					return false
 				}
-				
 				
 				// 1.验证服务时长是否达到
 				let minutes = Math.floor(this.time / 60); // 把已服务时间秒转成分钟
@@ -657,21 +649,15 @@ import orderList from '@/components/order/item.vue';
 					})
 					return false
 				}
-				console.log('签离.')
-				// 1.直接签离
-				if(e==1){
-					this.qlType = 1
-					this.date = ''
-				}
-				
-				// 2.服务暂停，安排下次时间 - 弹窗 选择日期
-				if(e<=0){
+
+				// 2.直接签离、安排下次时间 - 弹窗 选择日期
+				if(this.qlType=='' && !this.qlType){
 					this.show = true
 					return false
 				}
 				
-				// 直接签离 - 判断当前客户是否有其他工单
-				if(this.jobs.length>0 && e==1){
+				// 3.直接签离 - 判断当前客户是否有其他工单
+				if(this.jobs.length>0){
 					this.show = false
 					this.orderShow = true
 					return false
@@ -684,6 +670,56 @@ import orderList from '@/components/order/item.vue';
 						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
 				})
 			},
+			// 协助人员签离
+			check_out_tow(){
+				if(!this.axiosTime){
+					uni.showToast({
+						icon:'none',
+						title:'加载中，请稍等...'
+					})
+					return false
+				}
+				
+				// 判断当前客户是否有其他工单
+				if(this.jobs.length>0){
+					this.show = false
+					this.orderShow = true
+					return false
+				}else{
+					this.stopTimer()
+					this.show = false
+					uni.navigateTo({
+						url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+							 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+					})
+				}
+			},
+			// 直接签离
+			now_check_out(){
+				if(!this.axiosTime){
+					uni.showToast({
+						icon:'none',
+						title:'加载中，请稍等...'
+					})
+					return false
+				}
+				
+				if(this.jobs.length>0){
+					this.show = false
+					this.orderShow = true
+					return false
+				}
+				this.qlType = 1
+				this.date = ''
+				this.stopTimer()
+				this.show = false
+				
+				uni.navigateTo({
+					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+				})
+			},
+			
 			// 直接签离 - 先做其他客户
 			signOut(){
 				

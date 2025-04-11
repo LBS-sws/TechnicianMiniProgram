@@ -163,8 +163,12 @@ export default {
 			let params = {}
 			this.$api.noOrderSign(params).then(res=>{
 				if(res.code == 200) {
-			
-					this.noSignOrder = res.data
+					console.log('未签离和暂停工单:',res.data)
+					
+					if(res.data.data.length>0){
+						// console.log(res.data.data[0])
+						this.noSignOrder = res.data.data[0]
+					}
 				}
 			}).catch(err=>{
 				console.log(err)
@@ -176,7 +180,8 @@ export default {
 		confirm() {
 			this.show = false;
 			uni.navigateTo({
-				url: "/pages/service/detail?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
+				// url: "/pages/service/detail?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
+				url: "/pages/service/start?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
 			});
 		},
 		// 滑动月份触发事件
@@ -201,7 +206,7 @@ export default {
 			console.log(this.noSignOrder.job_id)
 			console.log(this.jobs[index].id)
 			// 未完成工单提示
-			if(this.jobs[index].status == 2 && this.noSignOrder.job_id != this.jobs[index].id){
+			if(this.noSignOrder.job_id && this.jobs[index].status == 2 && this.noSignOrder.job_id != this.jobs[index].id){
 				this.show = true
 				return false
 			}
