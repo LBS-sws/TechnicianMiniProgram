@@ -194,6 +194,8 @@ export default {
 			this.Data = e.fullDate;
 			this.Week = this.getWek(e.fullDate);
 			this.getjobs();
+			
+			this.getNoSignOrder()
 		},
 		getWek(day) {
 			var dateObject = new Date(day);

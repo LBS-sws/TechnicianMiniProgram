@@ -292,6 +292,13 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 暂停|继续
 			stopHandle(){
+				if(!this.axiosTime){
+					uni.showToast({
+						icon:'none',
+						title:'加载中，请稍等...'
+					})
+					return false
+				}
 				if(this.service.service_ql == '1' || this.service.service_ql=='2'){
 					uni.showToast({
 						title:'签离后不能暂停',
