@@ -412,6 +412,9 @@ export default {
 	text-align: center;
 	margin-right: 5px;
 }
+.stop_status{
+	color: red;
+}
 .customer_type {
 	background-color: #f6a6a6;
 	color: #e01313;
