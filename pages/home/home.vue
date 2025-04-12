@@ -49,6 +49,10 @@
 							<cl-col span="8">
 								<view class="first_job" v-if="item.first_job_flag==1">{{item.first_job}}</view>
 								<view v-else class="first_job">{{item.first_job}}</view>
+								
+							</cl-col>
+							<cl-col span="4">
+								<view class="first_job stop_status" v-if="item.stop_status==1">暂停</view>
 							</cl-col>
 							<!-- 工厂 -->
 							<cl-col span="8"  v-if="item.customer.customer_type_text">
