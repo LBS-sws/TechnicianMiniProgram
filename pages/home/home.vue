@@ -107,9 +107,9 @@
 		</view>
 		<!-- end -->
 		<u-modal :show="show" @confirm="confirm" @cancel="cancel" ref="uModal" :asyncClose="true" :closeOnClickOverlay="true" title="提示" confirmText="去签离" cancelText="取消"
-		showConfirmButton="true" showCancelButton="true">
+		showConfirmButton="true" showCancelButton="true" v-if="noSignOrder">
 			<view class="slot-content">
-				<rich-text :nodes="noSignOrder.content"></rich-text>
+				<rich-text :nodes="noSignOrder.content" v-if="noSignOrder.content"></rich-text>
 			</view>
 		</u-modal>
 	</view>
@@ -165,9 +165,11 @@ export default {
 				if(res.code == 200) {
 					console.log('未签离和暂停工单:',res.data)
 					
-					if(res.data.data.length>0){
-						// console.log(res.data.data[0])
+					if(res.data.data && res.data.data.length>0){
+						console.log(res.data.data[0])
 						this.noSignOrder = res.data.data[0]
+					}else{
+						this.noSignOrder = {}
 					}
 				}
 			}).catch(err=>{
