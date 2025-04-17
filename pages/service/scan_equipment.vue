@@ -484,7 +484,7 @@ export default {
 						}
 
 						let queryParams = new URLSearchParams(queryString);
-						if(!queryParams.get('id') || !queryParams.get('city') || !queryParams.get('office_id')){
+						if(!queryParams.get('id') || !queryParams.get('office_id')){
 							uni.showToast({icon: 'none',title: '无效二维码！'});
 							return false;
 						}
