@@ -529,6 +529,7 @@
 				
 				popupShow: false,
 				jobs:[],
+				is_main:1, // 1客户 2技术员
 			}
 		},
 		onLoad(index) {
@@ -640,16 +641,18 @@
 			// 批量签名
 			confirm(e){
 				console.log('批量签名：',e)
+				// console.log('is_main:',this.is_main)
+				// return false
 				this.popupShow = false
 				uni.navigateTo({
-					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1" + "&status=" + this.basic.status
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=" + this.is_main + "&status=" + this.basic.status
 					+ '&jobs=' + e
 				})
 			},
 			// 批量签名 当前客户其他工单 取消
 			cancel(){
 				uni.navigateTo({
-					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1" + "&status=" + this.basic.status
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main="+ this.is_main + "&status=" + this.basic.status
 				})
 			},
 			// 该客户有其他工单回调
@@ -792,6 +795,14 @@
 					})
 					return false
 				}
+				this.is_main = 2
+				
+				// 判断是否有其他工单
+				if(this.jobs.length>0){
+					this.popupShow = true
+					return false
+				}
+				
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=2" + "&status=" + this.basic.status
 				})
@@ -806,6 +817,7 @@
 					})
 					return false
 				}
+				this.is_main = 1
 				// 判断是否有其他工单
 				if(this.jobs.length>0){
 					this.popupShow = true
@@ -830,6 +842,7 @@
 					})
 					return false
 				}
+				
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=0"
 				})
