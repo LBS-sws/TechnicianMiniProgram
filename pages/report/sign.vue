@@ -57,9 +57,10 @@
 			this.ctx.lineCap = 'round';
 			this.ctx.lineJoin = 'round';
 			
-			this.jobs = option.jobs.split('_')
-			
-			
+			if(option.jobs){
+				this.jobs = option.jobs.split('_')
+			}
+	
 			uni.getSystemInfo({
 				success: function(res) {
 					that.width = res.windowWidth * 0.8;
