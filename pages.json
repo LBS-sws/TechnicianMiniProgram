@@ -23,6 +23,12 @@
 			"style": {
 				"navigationBarTitleText": "关于我们"
 			}
+		},
+		{
+			"path": "pages/home/demo",
+			"style": {
+				"navigationBarTitleText": "demo"
+			}
 		}
 	],
 	"subPackages": [
@@ -306,6 +312,9 @@
 		"list": [{
 			"name": "首页",
 			"path": "pages/home/home"
+		},{
+			"name": "demo",
+			"path": "pages/home/demo"
 		}]
 	}
 }

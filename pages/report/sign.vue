@@ -12,15 +12,6 @@
 			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:parseInt(height/2)+'px',height:parseInt(width/2)+'px'}"
 				class="canvsborder"></canvas>
 		</view>
-		<div class="orderAll">
-			<view class="title">签字工单</view>
-			<view class="orderList">
-				<view v-for="(item,index) in orderData" :key="index" class="item" @click="orderHandle(index)" :class="item.has ? 'cur':'' ">
-					{{item.service_text}} - {{item.service_name}}
-					<text class="status_text" v-if="item.finish_date ==null">未签离</text>
-				</view>
-			</view>
-		</div>
 		
 	</view>
 </template>
@@ -50,11 +41,7 @@
 				status:'',
 				disabled:true,
 				
-				orderData:[
-					// {id:1, title:'常规服务 - 灭虫', has:false},
-					// {id:2, title:'常规服务 - 灭虫', has:false},
-					// {id:3, title:'常规服务 - 灭虫', has:false},
-				]
+				jobs:[]
 			}
 		},
 		onLoad(option) {
@@ -69,6 +56,10 @@
 			this.ctx.lineWidth = 3;
 			this.ctx.lineCap = 'round';
 			this.ctx.lineJoin = 'round';
+			
+			this.jobs = option.jobs.split('_')
+			
+			
 			uni.getSystemInfo({
 				success: function(res) {
 					that.width = res.windowWidth * 0.8;
@@ -81,29 +72,9 @@
 			console.log(this.status)
 		},
 		onShow() {
-			if(this.is_main==1){
-				this.getSignOrder()
-			}
+			
 		},
 		methods: {
-			// 当天同一客户单子
-			getSignOrder(){
-				
-				let params = {
-					job_id:that.jobid,
-					job_type:that.jobtype,
-				}
-				that.$api.getDayCustomerSignOrder(params).then(res=>{
-					console.log(res)
-					this.orderData = res.data
-				}).catch(err=>{
-					// console.log(err)
-				})
-			},
-			// 点击已选择工单
-			orderHandle(index){
-				this.orderData[index].has = !this.orderData[index].has
-			},
 			//触摸开始，获取到起点
 			touchstart: function(e) {
 				let startX = e.changedTouches[0].x;
@@ -166,18 +137,15 @@
 			// 客户签名后更新工单完成
 			UpdateOrder:function(){
 				let job_arr = []
-				this.orderData.forEach((item, i)=>{
-					if(item.has == true){
-						job_arr.push({job_id:item.job_id, job_type:item.job_type})
-					}
+				this.jobs.forEach((item, i)=>{
+					job_arr.push({job_id:item, job_type:this.jobtype})
 				})
 				// console.log(job_arr)
+				// 当前的工单
 				job_arr.push({job_id: this.jobid, job_type: this.jobtype })
 				let jobs = JSON.stringify(job_arr)
 				const formData = {
-					
 					is_main: that.is_main,
-			
 					jobs:jobs
 				}
 				// console.log(formData)
@@ -255,13 +223,14 @@
 				let that = this
 				let url = ''
 				
+				// 同一客户其他工单 批量签名
 				let job_arr = []
-				this.orderData.forEach((item, i)=>{
-					if(item.has == true){
-						job_arr.push({job_id:item.job_id, job_type:item.job_type})
-					}
+				this.jobs.forEach((item, i)=>{
+					job_arr.push({job_id:item, job_type:this.jobtype})
 				})
-				console.log(job_arr)
+				// console.log(this.jobs)
+				// console.log(job_arr)
+				// return false
 				let jobs = JSON.stringify(job_arr)
 				const formData = {
 					job_id: that.jobid,
@@ -270,7 +239,7 @@
 					file: path,
 					jobs:jobs
 				}
-				console.log(formData)
+				// console.log(formData)
 						
 				uni.uploadFile({
 					// todo 根据签名角色不同而处理不同的
@@ -291,7 +260,7 @@
 							uni.showToast({title: data.msg,icon: 'error',duration: 2000})
 							return false
 						}
-						that.UpdateOrder()	// 完成
+						that.UpdateOrder()	// 完成 如果客户已签名和已签离的更新成完成
 						// 上传成功
 						switch(that.is_main){
 							case '0'://附加签名
@@ -334,56 +303,6 @@
 </script>
 
 <style lang="scss" scoped>
-.orderAll{
-	position: absolute;
-	top: 200rpx;
-	left: -180rpx;
-	z-index: 99;
-	padding:0 20rpx;
-	transform: rotate(90deg);
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	height: 100rpx;
-	.title{
-		width: 70rpx;
-		font-size: 26rpx;
-		color: #333;
-	}
-}
-.orderList{
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	overflow-x: auto;
-	width: 400rpx;
-	
-	.item{
-		min-width: 240rpx;
-		overflow: hidden;
-		font-size: 26rpx;
-		border: 1rpx solid #333;
-		color: #333;
-		border-radius: 10rpx;
-		margin-right: 20rpx;
-		height: 96rpx;
-		line-height: 96rpx;
-		text-align: center;
-		position: relative;
-		.status_text{
-			position: absolute;
-			bottom: -28rpx;
-			left: 2rpx;
-			font-size: 24rpx;
-			color: #d04d4d;
-			
-		}
-	}
-	.item.cur{
-		border:1rpx solid #007aff;
-		color: #007aff;
-	}
-}
 	.handWriting {
 		background: #fff;
 		width: 100%;

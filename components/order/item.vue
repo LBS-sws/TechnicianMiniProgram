@@ -24,7 +24,7 @@
 							</cl-row>
 							<cl-row v-else>
 								<cl-col span="8" >
-									<view class="customer_type kc">勘察服务</view>
+									<view class="customer_type kc"></view>
 								</cl-col>
 							</cl-row>
 							<view>
