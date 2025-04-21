@@ -1,63 +1,60 @@
 <template>
-    <view class="" style="padding: 100px 0;">
-		
-		<u-popup :show="popupShow" @close="popupClose" @open="popupOpen" :round="10">
-            <view>
-               <SignatureList :jobs="jobs" @updateJobList="updateJobList"></SignatureList>
-            </view>
-		</u-popup>
-		<u-button @click="popupShow = true">打开</u-button>
-		
-        
-    </view>
+	<view class="content">
+		<!-- <camera device-position="back" flash="auto" style="width: 100%; height: 300px;"></camera> -->
+		<hycamera v-if="show"  @runMethod="getCarmera"></hycamera>
+		<button type="default" @click="runCarmera">打开摄像机</button>
+	</view>
 </template>
-<script>
-import SignatureList from '@/components/order/SignatureList.vue';
-export default {
-	components:{
-		SignatureList
-	},
-    data() {
-        return {
-			jobid:4334813,
-			jobtype:1,
-			
-			popupShow: true,
-			jobs:[],
-			
-        }
 
-    },
-	onShow() {
-		this.getSignOrder()
-	},
-    methods: {
-		// 该客户有其他工单回调
-		updateJobList(e){
-			console.log('回调',e)
-			this.jobs = e
+<script>
+	import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
+	export default {
+		components: {
+			hycamera
 		},
-		// 当天同一客户单子
-		getSignOrder(){
-			let that = this
-			let params = {
-				job_id:that.jobid,
-				job_type:that.jobtype,
+		data() {
+			return {
+				show:true// false
 			}
-			that.$api.getDayCustomerSignOrder(params).then(res=>{
-				console.log(res)
-				this.jobs = res.data
-			}).catch(err=>{
-				// console.log(err)
-			})
 		},
-		popupOpen() {
-          // console.log('open');
-        },
-        popupClose() {
-          this.popupShow = false
-          // console.log('close');
-        }
-    }
-}
+		onLoad() {
+			
+		},
+		methods: {
+			runCarmera(){
+				this.show = true
+			},
+			getCarmera(type,res){
+				console.log(type,res)
+				
+				uni.showToast({
+				    title: '成功'+type,
+				    duration: 2000
+				});
+			}
+		}
+	}
 </script>
+
+<style>
+	.content {}
+
+	.logo {
+		height: 200rpx;
+		width: 200rpx;
+		margin-top: 200rpx;
+		margin-left: auto;
+		margin-right: auto;
+		margin-bottom: 50rpx;
+	}
+
+	.text-area {
+		display: flex;
+		justify-content: center;
+	}
+
+	.title {
+		font-size: 36rpx;
+		color: #8f8f94;
+	}
+</style>
