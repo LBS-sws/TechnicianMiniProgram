@@ -1,10 +1,14 @@
 import request from "@/common/request.js"
 
 export default {
-	// 密码登录 pages/home/home
+	// 密码登录 pages/login/login
 	passwordLogin(params) {
 		return request("/Staff.Login/login", params, 'POST')
 		// return request("/Staff.Login/login", params)
+	},
+	// 获取openid pages/login/login
+	getOpenid(params) {
+		return request("/Staff.Login/getOpenid", params, 'POST')
 	},
 	
 	// 首页 当日工作单 pages/home/home

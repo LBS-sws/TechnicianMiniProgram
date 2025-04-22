@@ -67,6 +67,8 @@
 		methods: {
 			//账号密码点击登录
 			submit() {
+				let that = this;
+
 				if (!this.validate('userPhone')) return;
 				if (!this.validate("userPwd")) return;
 				uni.showLoading({
@@ -93,6 +95,25 @@
 							title: '登录成功',
 							icon: 'success'
 						})
+
+						//没有openid 则获取
+						if(res.data.openid==null||!res.data.openid){
+							wx.login({
+								success: function (wxres) {
+									// console.log('wx.login:',wxres.code)
+									that.$api.getOpenid({code:wxres.code,user_id:res.data.user_id}).then(res=>{
+										if(res.code == 200){
+											uni.setStorageSync('openid', res.data);
+										}
+									}).catch(err=>{
+										console.log(err)
+									})
+								}
+							})
+						}else{
+							uni.setStorageSync('openid', res.data.openid);
+						}
+
 						setTimeout(() => {
 							uni.switchTab({
 								url: "/pages/home/home"
