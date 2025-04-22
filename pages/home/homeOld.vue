@@ -8,30 +8,11 @@
 			<span>{{Week}}</span>
 		</view> -->
 		<!-- 未完成工作单列表 -->
-		<!-- <cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
+		<cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
 			<view v-for="item in UnFinshLists" :key="item" @click="gotoday(item)">
 				<text class="unfinsh">{{item.job_date}}</text>
 			</view>
-		</cl-dialog> -->
-		<!-- 工单状态 -->
-		<view class="orderStatusBox">
-			<u-tabs
-			        :list="list4"
-			        lineWidth="30"
-			        lineColor="#0e8cf1"
-			        :activeStyle="{
-			            color: '#303133',
-			            fontWeight: 'bold',
-			            transform: 'scale(1.05)'
-			        }"
-			        :inactiveStyle="{
-			            color: '#606266',
-			            transform: 'scale(1)'
-			        }"
-			        itemStyle="padding-left: 15px; padding-right: 15px; height: 34px;"
-			    >
-			    </u-tabs>
-		</view>
+		</cl-dialog>
 		<!-- 搜索框 -->
 		<view class="seachBox">
 			<view class="text-left" style="flex:1;overflow: hidden;">
@@ -47,48 +28,6 @@
 		<!-- 内容 -->
 		<view class="noservice" v-if="jobs.length==0">
 			没有任务哦~~
-		</view>
-		<view class="order-list" >
-			<view class="item" v-for="(item,index) in jobs" :key="index" @click="job_detail(index)">
-				<view class="top_box">
-					<view class="title">{{item.customer.name_zh}}</view>
-					<view class="labs">
-						<view class="lab-item">{{item.service_type_info.service_name}}</view>
-						<view class="lab-item">{{item.first_job}}</view>
-						<view class="lab-item" v-if="item.customer.customer_type_text">{{item.customer.customer_type_text}}</view>
-					</view>
-				</view>
-				<view class="info-box">
-					<view class="date_time">{{item.job_start_time}}-{{item.job_end_time}}</view>
-					<view class="addr">{{item.addr}}</view>
-					<view class="setup">
-						<view class="setup-list">
-							<view class="item" :class="item.sign_info.sign_in ?'cur':' ' ">
-								<view class="icon">
-									<u-icon name='checkmark' size="14" color="#0bc267" v-if="item.sign_info.sign_in"></u-icon>
-								</view>
-								<view class="text">签到</view>
-							</view>
-							<view class="item" :class="item.report_autograph ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.report_autograph"></u-icon></view>
-								<view class="text">客户签字</view>
-							</view>
-							<view class="item" :class="item.sign_info.sign_in ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.sign_info.sign_in"></u-icon></view>
-								<view class="text">签离</view>
-							</view>
-							<view class="item" :class="item.order_report ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.order_report"></u-icon></view>
-								<view class="text">生成报告</view>
-							</view>
-							<view class="item" :class="item.status == 3 ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.status == 3"></u-icon></view>
-								<view class="text">完成</view>
-							</view>
-						</view>
-					</view>
-				</view>
-			</view>
 		</view>
 		<!-- 工作单 -->
 		<view class="datecontent" v-for="(item,index) in jobs" :key="index">
@@ -201,18 +140,7 @@ export default {
 			typeList: [],
 			
 			show: false,
-			noSignOrder:{},
-			
-			list4: [
-				{
-                    name: '待开工(6)'
-                },
-				{
-                    name: '待完工(1)',
-                }, 
-				{
-                    name: '已完成(4)',
-                }],
+			noSignOrder:{}
 		};
 	},
 	onLoad() {
@@ -416,130 +344,6 @@ export default {
 }
 </script>
 <style lang="scss">
-.setup-list{
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	.item{
-		display: block;
-		text-align: center;
-		.icon{
-			width: 36rpx;
-			height: 36rpx;
-			background: #f2f3f5;
-			border-radius: 50%;
-			margin: 0 auto;
-			position: relative;
-			
-			display: flex;
-			    align-items: center;
-			    justify-content: center;
-			text{
-				display: block;
-				margin: 0 auto;
-				color: #0bc267;
-			}
-		}
-		.icon::after{
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			color: #12900a;
-		}
-		.icon::before{
-			content: '';
-			position: absolute;
-			top: 50%;
-			right: -80rpx;
-			width: 80rpx;
-			height: 1rpx;
-			background: #f2f3f5;
-		}
-		.text{
-			font-size: 24rpx;
-			color: rgb(134, 144, 156,1);
-			padding: 10rpx 0;
-		}
-	}
-	.item.cur{
-		.text{
-			font-size: 24rpx;
-			color: #333;
-			padding: 10rpx 0;
-		}
-		.icon::before{
-			background: #0876f1;
-		}
-	}
-	.item:nth-child(5){
-		.icon::before{
-			display: none;
-		}
-	}
-}
-.order-list{
-	.item{
-		background-color: #FFFFFF;
-		border-radius: 10px;
-		
-		margin-bottom: 10px;
-		padding:30rpx 30rpx ;
-		.top_box{
-			display: flex;
-			justify-content: flex-start;
-			align-items: center;
-			border-bottom: 1rpx solid #a5a6a7;
-			padding-bottom: 16rpx;
-			.title{
-				font-size: 28rpx;
-				color: #333333;
-				font-weight: 700;
-			}
-			.labs{
-				display: flex;
-				justify-content: flex-start;
-				align-items: center;
-				.lab-item{
-					font-size: 26rpx;
-					font-weight: 400;
-					color: #555555;
-					border: 1rpx solid rgb(215,215,215,1);
-					border-radius: 8rpx;
-					padding: 6rpx 6rpx;
-					min-width: 100rpx;
-					text-align: center;
-					background: #f2f2f2;
-					margin-left: 16rpx;
-				}
-			}
-		}
-		.info-box{
-			padding: 10rpx 0 0;
-			.date_time{
-				font-size: 32rpx;
-				font-weight: 700;
-				margin-bottom: 16rpx;
-			}
-			.addr{
-				font-size: 24rpx;
-				color: #333333;
-				margin-bottom: 20rpx;
-			}
-		}
-	}
-}
-.slot-icon{
-    width: 21px;
-    height: 21px;
-    background-color: #f9ae3d;
-    border-radius: 100px;
-    font-size: 12px;
-    color: #fff;
-    line-height: 21px;
-    text-align: center;
-}
-
 .datec {
 	background-color: #FFFFFF;
 	border-radius: 15px;
@@ -667,3 +471,4 @@ export default {
 	}
 }
 </style>
+
