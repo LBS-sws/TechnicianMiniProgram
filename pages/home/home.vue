@@ -14,7 +14,7 @@
 			</view>
 		</cl-dialog> -->
 		<!-- 工单状态 -->
-		<view class="orderStatusBox">
+		<view class="orderStatusBox" style="display: none;">
 			<u-tabs
 			        :list="list4"
 			        lineWidth="30"
@@ -48,7 +48,7 @@
 		<view class="noservice" v-if="jobs.length==0">
 			没有任务哦~~
 		</view>
-		<view class="order-list" >
+		<view class="order-list" style="display: none;">
 			<view class="item" v-for="(item,index) in jobs" :key="index" @click="job_detail(index)">
 				<view class="top_box">
 					<view class="title">{{item.customer.name_zh}}</view>
