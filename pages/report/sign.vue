@@ -12,7 +12,12 @@
 			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:parseInt(height/2)+'px',height:parseInt(width/2)+'px'}"
 				class="canvsborder"></canvas>
 		</view>
-		
+		<!-- 摄像头 -->
+		<hycamera v-if="show"  @runMethod="getCarmera" ref="cam"></hycamera>
+		<view class="cam_box">
+			<image src="@/static/cam_success.png" v-if="show" mode="widthFix"></image>
+			<image src="@/static/cam_default.png" v-else mode="widthFix"></image>
+		</view>
 	</view>
 </template>
 <script>
@@ -26,7 +31,11 @@
 	let canvash;
 	let base64String;
 	let signTemp;
+import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 	export default {
+		components: {
+			hycamera
+		},
 		data() {
 			return {
 				userInfo: null,
@@ -41,7 +50,8 @@
 				status:'',
 				disabled:true,
 				
-				jobs:[]
+				jobs:[],
+				show:false
 			}
 		},
 		onLoad(option) {
@@ -73,9 +83,24 @@
 			console.log(this.status)
 		},
 		onShow() {
-			
+			if(this.is_main==1){
+				// 打开相机500毫秒后拍摄
+				this.show = true
+				setTimeout(()=>{
+					this.$refs.cam.buttonStart()
+				},500)
+			}
+
 		},
 		methods: {
+			getCarmera(type,res){
+				console.log(type,res)
+				
+				uni.showToast({
+				    title: '成功'+type,
+				    duration: 2000
+				});
+			},
 			//触摸开始，获取到起点
 			touchstart: function(e) {
 				let startX = e.changedTouches[0].x;
@@ -176,6 +201,11 @@
 				uni.showLoading({
 					title: '保存中...'
 				})
+				
+				if(this.is_main==1){ // 如果是客户签名结束录像
+					this.$refs.cam.buttonEnd()
+				}
+				
 				this.disabled = false
 				uni.canvasToTempFilePath({
 					canvasId: 'mycanvas',
@@ -304,6 +334,19 @@
 </script>
 
 <style lang="scss" scoped>
+.cam_box{
+	position: fixed;
+	top: 0;
+	left: 20rpx;
+	width: 60rpx;
+	height: 60rpx;
+	z-index: 9999;
+	
+	image{
+		width: 100%;
+		transform: rotate(90deg);
+	}
+}
 	.handWriting {
 		background: #fff;
 		width: 100%;

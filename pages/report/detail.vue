@@ -651,6 +651,7 @@
 			},
 			// 批量签名 当前客户其他工单 取消
 			cancel(){
+				this.popupShow = false
 				uni.navigateTo({
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main="+ this.is_main + "&status=" + this.basic.status
 				})
