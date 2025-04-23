@@ -1,7 +1,7 @@
 <template>
 	<view class="hycamera">
 		<!-- front 前置摄像头 , back 后置摄像头 -->
-		<camera class="hycamera-camera" device-position="front" flash="auto"></camera>
+		<camera class="hycamera-camera" device-position="back" flash="auto"></camera>
 		<view class="video">
 			<video v-if="srcUrl" id="myVideo" :src="srcUrl" controls></video>
 		</view>
@@ -61,74 +61,72 @@ export default {
 					success: (res) => {
 						this.$emit("runMethod","vedio",res)
 						console.log(res.tempVideoPath)
-						this.srcUrl = res.tempVideoPath
+						self.srcUrl = res.tempVideoPath
 						
 						//视频在60-70-80M之间，压缩后约为6M
-						uni.compressVideo({
-						    src: res.tempVideoPath,
-						    quality: 'high',//视频质量高低，基本上高质量时60m视频压缩后为6做左右，中质量60m压缩为3m左右，低质量60m压缩为2m左右（看不清人了）
-						    bitrate: 2000,
-						    fps: 30,
-						    resolution: 1,
-						    success: (result) => {
+						// uni.compressVideo({
+						//     src: res.tempVideoPath,
+						//     quality: 'high',//视频质量高低，基本上高质量时60m视频压缩后为6做左右，中质量60m压缩为3m左右，低质量60m压缩为2m左右（看不清人了）
+						//     bitrate: 2000,
+						//     fps: 30,
+						//     resolution: 1,
+						//     success: (result) => {
 						        
-						        console.log('compressVideo.size2', result.size / 1048576)
+						//         console.log('compressVideo.size2', result.size / 1048576)
 						        
-								uni.uploadFile({
-									 // url:  `http://localhost:9526/Index/upload`,
-									// url:  `https://yyl.miyil.com/index/upload`,
-									url: `${self.$baseUrl}/Upload.Upload/video`,
-									filePath:result.tempFilePath,
-									name: 'file',
-									formData: {
-									    // 'user': 'test'
-										'token': uni.getStorageSync('token')
-									},
-									success: (uploadFileRes) => {
-										console.log(uploadFileRes)
+						// 		uni.uploadFile({
+						// 			 // url:  `http://localhost:9526/Index/upload`,
+						// 			// url:  `https://yyl.miyil.com/index/upload`,
+						// 			url: `${self.$baseUrl}/Upload.Upload/video`,
+						// 			filePath:result.tempFilePath,
+						// 			name: 'file',
+						// 			formData: {
+						// 			    // 'user': 'test'
+						// 				'token': uni.getStorageSync('token')
+						// 			},
+						// 			success: (uploadFileRes) => {
+						// 				console.log(uploadFileRes)
 									  
-									},
-									fail: (err) => {
-									    console.log(err, '文件上传失败');
-									    uni.showToast({
-									        title: '视频上传失败，请检查网络或文件格式是否正确',
-									        icon: 'none'
-									    });
-									}
-								});
-						    },
-						    fail: () => {
-						        uni.hideLoading();
-						        uni.showToast({
-						            title: '相机调用失败！',
-						            icon: 'none',
-						            duration: 1500
-						        });
-						    }
-						})
+						// 			},
+						// 			fail: (err) => {
+						// 			    console.log(err, '文件上传失败');
+						// 			    uni.showToast({
+						// 			        title: '视频上传失败，请检查网络或文件格式是否正确',
+						// 			        icon: 'none'
+						// 			    });
+						// 			}
+						// 		});
+						//     },
+						//     fail: () => {
+						//         uni.hideLoading();
+						//         uni.showToast({
+						//             title: '相机调用失败！',
+						//             icon: 'none',
+						//             duration: 1500
+						//         });
+						//     }
+						// })
 						
-						// uni.uploadFile({
-						// 	 // url:  `http://localhost:9526/Index/upload`,
-						// 	// url:  `https://yyl.miyil.com/index/upload`,
-						// 	url: `${self.$baseUrl}/Upload.Upload/video`,
-						// 	filePath: res.tempVideoPath,
-						// 	name: 'file',
-						// 	formData: {
-						// 	    // 'user': 'test'
-						// 		'token': uni.getStorageSync('token')
-						// 	},
-						// 	success: (uploadFileRes) => {
-						// 		console.log(uploadFileRes)
+						uni.uploadFile({
+							url: `${self.$baseUrl}/Upload.Upload/video`,
+							filePath: res.tempVideoPath,
+							name: 'file',
+							formData: {
+							    // 'user': 'test'
+								'token': uni.getStorageSync('token')
+							},
+							success: (uploadFileRes) => {
+								console.log(uploadFileRes)
 							  
-						// 	},
-						// 	fail: (err) => {
-						// 	    console.log(err, '文件上传失败');
-						// 	    uni.showToast({
-						// 	        title: '视频上传失败，请检查网络或文件格式是否正确',
-						// 	        icon: 'none'
-						// 	    });
-						// 	}
-						// });
+							},
+							fail: (err) => {
+							    console.log(err, '文件上传失败');
+							    uni.showToast({
+							        title: '视频上传失败，请检查网络或文件格式是否正确',
+							        icon: 'none'
+							    });
+							}
+						});
 							
 						self.buttonNumber = ""
 					},

@@ -88,7 +88,7 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 				this.show = true
 				setTimeout(()=>{
 					this.$refs.cam.buttonStart()
-				},500)
+				},800)
 			}
 
 		},
