@@ -14,9 +14,9 @@
 			</view>
 		</cl-dialog> -->
 		<!-- 工单状态 -->
-		<view class="orderStatusBox" style="display: none;">
+		<view class="orderStatusBox" >
 			<u-tabs
-			        :list="list4"
+			        :list="list"
 			        lineWidth="30"
 			        lineColor="#0e8cf1"
 			        :activeStyle="{
@@ -29,6 +29,8 @@
 			            transform: 'scale(1)'
 			        }"
 			        itemStyle="padding-left: 15px; padding-right: 15px; height: 34px;"
+					
+					@click="clickHandle"
 			    >
 			    </u-tabs>
 		</view>
@@ -48,7 +50,7 @@
 		<view class="noservice" v-if="jobs.length==0">
 			没有任务哦~~
 		</view>
-		<view class="order-list" style="display: none;">
+		<view class="order-list">
 			<view class="item" v-for="(item,index) in jobs" :key="index" @click="job_detail(index)">
 				<view class="top_box">
 					<view class="title">{{item.customer.name_zh}}</view>
@@ -91,7 +93,7 @@
 			</view>
 		</view>
 		<!-- 工作单 -->
-		<view class="datecontent" v-for="(item,index) in jobs" :key="index">
+		<view class="datecontent" v-for="(item,index) in jobs" :key="index"  style="display: none;">
 			<view class="new_card" @click="job_detail(index)">
 				<view class="new_card_title">
 					<view class="new_card_title_left">
@@ -203,16 +205,19 @@ export default {
 			show: false,
 			noSignOrder:{},
 			
-			list4: [
+			list: [
 				{
-                    name: '待开工(6)'
+                    name: '待开工(0)'
                 },
 				{
-                    name: '待完工(1)',
+                    name: '待完工(0)',
                 }, 
 				{
-                    name: '已完成(4)',
+                    name: '已完成(0)',
                 }],
+			startData:[],
+			conductData:[],
+			successData:[],
 		};
 	},
 	onLoad() {
@@ -234,12 +239,25 @@ export default {
 		this.getNoSignOrder()
 	},
 	methods: {
+		clickHandle(e){
+			// console.log(e)
+			this.jobs = []
+			if(e.index==0){
+				this.jobs = this.startData
+			}
+			if(e.index==1){
+				this.jobs = this.conductData
+			}
+			if(e.index==2){
+				this.jobs = this.successData
+			}
+		},
 		// 未签离工单
 		getNoSignOrder(){
 			let params = {}
 			this.$api.noOrderSign(params).then(res=>{
 				if(res.code == 200) {
-					console.log('未签离和暂停工单:',res.data)
+					// console.log('未签离和暂停工单:',res.data)
 					
 					if(res.data.data && res.data.data.length>0){
 						console.log(res.data.data[0])
@@ -258,7 +276,6 @@ export default {
 		confirm() {
 			this.show = false;
 			uni.navigateTo({
-				// url: "/pages/service/detail?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
 				url: "/pages/service/start?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
 			});
 		},
@@ -268,7 +285,7 @@ export default {
 		},
 		// 点击日 - 事件
 		datechange(e) {
-			console.log('点击日 - 事件',e)
+			// console.log('点击日 - 事件',e)
 			this.Data = e.fullDate;
 			this.Week = this.getWek(e.fullDate);
 			this.getjobs();
@@ -283,8 +300,8 @@ export default {
 		},
 		// 工作单详情
 		job_detail(index) {
-			console.log(this.noSignOrder.job_id)
-			console.log(this.jobs[index].id)
+			// console.log(this.noSignOrder.job_id)
+			// console.log(this.jobs[index].id)
 			// 未完成工单提示
 			if(this.noSignOrder.job_id && this.jobs[index].status == 2 && this.noSignOrder.job_id != this.jobs[index].id){
 				this.show = true
@@ -312,8 +329,20 @@ export default {
 			}
 			this.$api.dayOrderList(params).then(res=>{
 				if(res.code == 200) {
+					// console.log(res)
 					
-					this.jobs = res.data
+					if(res.data.data){
+						this.jobs = res.data.data.start_data
+						
+						this.startData = res.data.data.start_data
+						this.conductData = res.data.data.conduct_data
+						this.successData = res.data.data.success_data
+						
+						this.list = res.data.list
+					}else{
+						this.jobs = []
+					}
+					
 				}
 			}).catch(err=>{
 				console.log(err)
