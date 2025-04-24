@@ -1,7 +1,7 @@
 <template>
 	<view class="hycamera">
 		<!-- front 前置摄像头 , back 后置摄像头 -->
-		<camera class="hycamera-camera" device-position="back" flash="auto"></camera>
+		<camera class="hycamera-camera" device-position="front" flash="auto"></camera>
 		<view class="video">
 			<video v-if="srcUrl" id="myVideo" :src="srcUrl" controls></video>
 		</view>
