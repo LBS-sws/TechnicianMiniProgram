@@ -203,6 +203,12 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 				})
 				
 				if(this.is_main==1){ // 如果是客户签名结束录像
+					this.$refs.cam.job_id = this.jobid
+					this.$refs.cam.job_type = this.jobtype
+					
+		
+					this.$refs.cam.jobs = this.jobs
+				
 					this.$refs.cam.buttonEnd()
 				}
 				
@@ -259,9 +265,7 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 				this.jobs.forEach((item, i)=>{
 					job_arr.push({job_id:item, job_type:this.jobtype})
 				})
-				// console.log(this.jobs)
-				// console.log(job_arr)
-				// return false
+				
 				let jobs = JSON.stringify(job_arr)
 				const formData = {
 					job_id: that.jobid,

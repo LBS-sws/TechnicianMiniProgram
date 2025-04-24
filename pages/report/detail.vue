@@ -615,6 +615,7 @@
 			// 	this.getItems()
 			// 	this.getSignOrder();
 			// },1500)
+			this.getSignOrder();
 		},
 		mounted() {
 			let that = this;
