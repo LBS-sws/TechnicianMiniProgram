@@ -172,7 +172,9 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 				let jobs = JSON.stringify(job_arr)
 				const formData = {
 					is_main: that.is_main,
-					jobs:jobs
+					jobs:jobs,
+					job_id:this.jobid,
+					job_type:this.jobtype
 				}
 				// console.log(formData)
 				

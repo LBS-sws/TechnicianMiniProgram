@@ -17,6 +17,7 @@
 		<view class="orderStatusBox" >
 			<u-tabs
 			        :list="list"
+					:current="current"
 			        lineWidth="30"
 			        lineColor="#0e8cf1"
 			        :activeStyle="{
@@ -75,8 +76,8 @@
 								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.report_autograph"></u-icon></view>
 								<view class="text">客户签字</view>
 							</view>
-							<view class="item" :class="item.sign_info.sign_in ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.sign_info.sign_in"></u-icon></view>
+							<view class="item" :class="item.sign_info.sign_out ? 'cur':''">
+								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.sign_info.sign_out"></u-icon></view>
 								<view class="text">签离</view>
 							</view>
 							<view class="item" :class="item.order_report ? 'cur':''">
@@ -205,6 +206,7 @@ export default {
 			show: false,
 			noSignOrder:{},
 			
+			current:0,
 			list: [
 				{
                     name: '待开工(0)'
@@ -323,7 +325,8 @@ export default {
 		},
 		// 列表
 		getjobs() {
-			
+			this.current = 0;
+			this.list = []
 			let params = {
 				jobdate: this.Data //todayISOString
 			}
@@ -341,6 +344,7 @@ export default {
 						this.list = res.data.list
 					}else{
 						this.jobs = []
+						this.list = [{ name: '待开工(0)' }, { name: '待完工(0)'}, { name: '已完成(0)'}]
 					}
 					
 				}
