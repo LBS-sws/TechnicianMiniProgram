@@ -55,10 +55,6 @@
 				</view>
 			</view>
 			
-			<!---->
-			<!-- <u-button @click="subSignIn">签到</u-button> -->
-			<!---->
-			
 			<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 			
 			<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
@@ -205,6 +201,7 @@ export default {
 			
 			longitude:'',
 			latitude:'',
+			timer:'',
 		}
 	},
 	onLoad(index) {
@@ -263,45 +260,13 @@ export default {
 		const systemInfo = uni.getSystemInfoSync()
 		this.windowHeight = systemInfo.windowHeight
 		this.cameraHeight = systemInfo.windowHeight - 80
-
+		
+		// 高德请求经纬度
+		this.timer = setInterval(() => {
+		  this.getRegeo()
+		}, 3000)
 	},
 	methods: {
-		// 没有摄像头签到
-		subSignIn(){
-			let lng = this.longitude
-			let lat = this.latitude
-			
-			let params = {
-				job_id: this.jobid,
-				job_type: this.jobtype,
-				img_url:'/123123.png',
-				type:1,		// 1正常 2异常黄色 3异常红色 红色时没有status 2
-				status:0,	// 1忘记打卡 2定位不准 3门店地址错误  
-				lng:lng,
-				lat:lat,
-				title:this.title,
-				address:this.address
-			}
-			// console.log(params)
-			// return false
-			this.$api.orderSignIn(params).then(res=>{
-				this.signin.isSignin = true
-				uni.showToast({
-					title: '操作成功',
-					icon: 'success'
-				})
-				setTimeout(()=>{
-					uni.redirectTo({
-						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-					})
-				},1500)
-			}).catch(err=>{
-				uni.showToast({
-					title: res.data.msg,
-					icon: 'fail'
-				})
-			})
-		},
 		// 异常处理 - 弹框点击
 		exceptionHandle(e){
 			// console.log(e)
@@ -373,6 +338,12 @@ export default {
 						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
 					})
 				},1500)
+				
+				clearInterval(this.timerInterval)
+				if(this.timer) {  
+				   clearInterval(this.timer); 
+				   this.timer = null;  
+				} 
 			}).catch(err=>{
 				uni.showToast({
 					title: res.data.msg,
@@ -476,9 +447,7 @@ export default {
 		},
 		// 高德获取位置
 		getRegeo() {
-		    uni.showLoading({  
-		        title: '获取信息中'  
-		    });  
+		     
 		    this.amapPlugin.getRegeo({  
 		        success: (data) => {  
 		            console.log(data)  
@@ -573,28 +542,7 @@ export default {
 				this.show = true
 			}
 			return false
-			clearInterval(this.timerInterval)
-			this.signin.count++
-			this.getTime(new Date())
-			let params = {
-					job_id: this.jobid,
-					job_type: this.jobtype,
-			}
-			this.$api.orderSignIn(params).then(res=>{
-				this.signin.isSignin = true
-				uni.showToast({
-					title: '签到成功',
-					icon: 'success'
-				})
-				uni.redirectTo({
-					url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-				})
-			}).catch(err=>{
-				uni.showToast({
-					title: res.data.msg,
-					icon: 'fail'
-				})
-			})
+			
 		},
 		// 拍照
 		paizhao(){

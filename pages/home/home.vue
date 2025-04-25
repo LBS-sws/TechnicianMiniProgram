@@ -59,6 +59,7 @@
 						<view class="lab-item">{{item.service_type_info.service_name}}</view>
 						<view class="lab-item">{{item.first_job}}</view>
 						<view class="lab-item" v-if="item.customer.customer_type_text">{{item.customer.customer_type_text}}</view>
+						<view  class="lab-item" v-if="item.stop_status==1">已暂停</view>
 					</view>
 				</view>
 				<view class="info-box">
@@ -67,25 +68,23 @@
 					<view class="setup">
 						<view class="setup-list">
 							<view class="item" :class="item.sign_info.sign_in ?'cur':' ' ">
-								<view class="icon">
-									<u-icon name='checkmark' size="14" color="#0bc267" v-if="item.sign_info.sign_in"></u-icon>
-								</view>
+								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.sign_info.sign_in"></u-icon></view>
 								<view class="text">签到</view>
 							</view>
 							<view class="item" :class="item.report_autograph ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.report_autograph"></u-icon></view>
+								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.report_autograph"></u-icon></view>
 								<view class="text">客户签字</view>
 							</view>
 							<view class="item" :class="item.sign_info.sign_out ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.sign_info.sign_out"></u-icon></view>
+								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.sign_info.sign_out"></u-icon></view>
 								<view class="text">签离</view>
 							</view>
 							<view class="item" :class="item.order_report ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.order_report"></u-icon></view>
+								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.order_report"></u-icon></view>
 								<view class="text">生成报告</view>
 							</view>
 							<view class="item" :class="item.status == 3 ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#0bc267" v-if="item.status == 3"></u-icon></view>
+								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.status == 3"></u-icon></view>
 								<view class="text">完成</view>
 							</view>
 						</view>
@@ -93,86 +92,7 @@
 				</view>
 			</view>
 		</view>
-		<!-- 工作单 -->
-		<view class="datecontent" v-for="(item,index) in jobs" :key="index"  style="display: none;">
-			<view class="new_card" @click="job_detail(index)">
-				<view class="new_card_title">
-					<view class="new_card_title_left">
-						<text selectable="true">{{item.customer.name_zh}}</text>
-					</view>
-					<span>
-						<view class="new_card_title_right" :style="{ color: item.service_status.color }">{{item.service_status.status}}</view>
-					</span>
-				</view>
-				<view class="new_card_content">
-					<view>
-						<cl-row v-if="item.order_type !=3 ">
-							<cl-col span="8">
-								<view class="service_name"><text selectable="true">{{item.service_type_info.service_name}}</text></view>
-							</cl-col>
-							<cl-col span="8">
-								<view class="first_job" v-if="item.first_job_flag==1">{{item.first_job}}</view>
-								<view v-else class="first_job">{{item.first_job}}</view>
-								
-							</cl-col>
-							<cl-col span="4">
-								<view class="first_job stop_status" v-if="item.stop_status==1">暂停</view>
-							</cl-col>
-							<!-- 工厂 -->
-							<cl-col span="8"  v-if="item.customer.customer_type_text">
-								<view class="customer_type">{{item.customer.customer_type_text}}</view>
-							</cl-col>
-						</cl-row>
-						<cl-row v-else>
-							<cl-col span="8" >
-								<view class="customer_type kc">勘察服务</view>
-							</cl-col>
-						</cl-row>
-						
-						<view>
-						</view>
-					</view>
-					<view>
-						<span class="content_t">日期:</span>
-						<text selectable="true">{{item.job_date}}</text>
-						
-					</view>
-					<view>
-						<span class="content_t">时间:</span>
-						<text selectable="true">{{item.job_start_time}}-{{item.job_end_time}}</text>
-					</view>
-					<view>
-						<span class="content_t">地址:</span>
-						<text selectable="true">{{item.addr}}</text>
-					</view>
-					<view style="display: flex;height: 20px;" v-if="item.customer_grade.score!=''">
-						<span style="margin-left:10px;">客户点评:</span>
-						<view style="margin-left:10px;">
-							<u-rate :count="3" v-model="item.customer_grade.score" active-color="#ffc800" inactive-color="#dadada" gutter="3" readonly touchable="false"></u-rate>
-						</view>
-					</view>
-					
-					<view class="label-date" v-if="item.job_order_date && item.job_order_date.id">
-						<span class="content_t">是否异常:</span>
-						<text selectable="true">
-							
-							{{item.job_order_date.abnormal_text}}
-							
-						</text>
-					</view>
-					
-					<view class="label-date" v-if="item.job_order_date && item.job_order_date.id">
-						<span class="content_t" style="color: #178bde;">调整日期:</span>
-						<text selectable="true" style="color: #178bde;">{{item.job_order_date.job_date}}</text>
-						<view class="label-status">
-							<span v-if="item.job_order_date.status==1" style="color: red;">审核中</span>
-							<span v-if="item.job_order_date.status==2" style="color: #12900a;">审核通过</span>
-						</view>
-					</view>
-					
-				</view>
-			</view>
-		</view>
+		
 		<!-- end -->
 		<u-modal :show="show" @confirm="confirm" @cancel="cancel" ref="uModal" :asyncClose="true" :closeOnClickOverlay="true" title="提示" confirmText="去签离" cancelText="取消"
 		showConfirmButton="true" showCancelButton="true" v-if="noSignOrder">
@@ -231,6 +151,7 @@ export default {
 		this.Data = todayISOString
 	},
 	onShow(index) {
+		
 		this.getInitInfo()
 		this.getjobs();
 		this.getJobTotal();
@@ -245,12 +166,15 @@ export default {
 			// console.log(e)
 			this.jobs = []
 			if(e.index==0){
+				this.current = 0
 				this.jobs = this.startData
 			}
 			if(e.index==1){
+				this.current = 1
 				this.jobs = this.conductData
 			}
 			if(e.index==2){
+				this.current = 2
 				this.jobs = this.successData
 			}
 		},
@@ -325,12 +249,13 @@ export default {
 		},
 		// 列表
 		getjobs() {
-			this.current = 0;
+			
 			this.list = []
 			let params = {
 				jobdate: this.Data //todayISOString
 			}
 			this.$api.dayOrderList(params).then(res=>{
+				this.current = '0'
 				if(res.code == 200) {
 					// console.log(res)
 					
@@ -496,13 +421,16 @@ export default {
 		}
 	}
 	.item.cur{
+		.icon{
+			background: #0bc267;
+		}
 		.text{
 			font-size: 24rpx;
 			color: #333;
 			padding: 10rpx 0;
 		}
 		.icon::before{
-			background: #0876f1;
+			background: #12900a;
 		}
 	}
 	.item:nth-child(5){
