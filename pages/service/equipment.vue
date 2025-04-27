@@ -551,6 +551,15 @@ import Base64 from 'base-64';
 			},
 			// 新增设备
 			add() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
+				
 				this.scan_code = ''
 				this.$refs["add_confirm"]
 					.open({
@@ -596,6 +605,15 @@ import Base64 from 'base-64';
 			},
 			// 删除设备
 			del() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
+				
 				if (this.xz_all == '') {
 					uni.showToast({icon: 'none',title: '请选择设备'});
 					return;

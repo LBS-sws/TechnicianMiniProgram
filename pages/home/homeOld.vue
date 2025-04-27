@@ -8,33 +8,11 @@
 			<span>{{Week}}</span>
 		</view> -->
 		<!-- 未完成工作单列表 -->
-		<!-- <cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
+		<cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
 			<view v-for="item in UnFinshLists" :key="item" @click="gotoday(item)">
 				<text class="unfinsh">{{item.job_date}}</text>
 			</view>
-		</cl-dialog> -->
-		<!-- 工单状态 -->
-		<view class="orderStatusBox" >
-			<u-tabs
-			        :list="list"
-					:current="current"
-			        lineWidth="30"
-			        lineColor="#0e8cf1"
-			        :activeStyle="{
-			            color: '#303133',
-			            fontWeight: 'bold',
-			            transform: 'scale(1.05)'
-			        }"
-			        :inactiveStyle="{
-			            color: '#606266',
-			            transform: 'scale(1)'
-			        }"
-			        itemStyle="padding-left: 15px; padding-right: 15px; height: 34px;"
-					
-					@click="clickHandle"
-			    >
-			    </u-tabs>
-		</view>
+		</cl-dialog>
 		<!-- 搜索框 -->
 		<view class="seachBox">
 			<view class="text-left" style="flex:1;overflow: hidden;">
@@ -51,48 +29,86 @@
 		<view class="noservice" v-if="jobs.length==0">
 			没有任务哦~~
 		</view>
-		<view class="order-list">
-			<view class="item" v-for="(item,index) in jobs" :key="index" @click="job_detail(index)">
-				<view class="top_box">
-					<view class="title">{{item.customer.name_zh}}</view>
-					<view class="labs">
-						<view class="lab-item">{{item.service_type_info.service_name}}</view>
-						<view class="lab-item">{{item.first_job}}</view>
-						<view class="lab-item" v-if="item.customer.customer_type_text">{{item.customer.customer_type_text}}</view>
-						<view  class="lab-item" v-if="item.stop_status==1">已暂停</view>
+		<!-- 工作单 -->
+		<view class="datecontent" v-for="(item,index) in jobs" :key="index">
+			<view class="new_card" @click="job_detail(index)">
+				<view class="new_card_title">
+					<view class="new_card_title_left">
+						<text selectable="true">{{item.customer.name_zh}}</text>
 					</view>
+					<span>
+						<view class="new_card_title_right" :style="{ color: item.service_status.color }">{{item.service_status.status}}</view>
+					</span>
 				</view>
-				<view class="info-box">
-					<view class="date_time">{{item.job_start_time}}-{{item.job_end_time}}</view>
-					<view class="addr">{{item.addr}}</view>
-					<view class="setup">
-						<view class="setup-list">
-							<view class="item" :class="item.sign_info.sign_in ?'cur':' ' ">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.sign_info.sign_in"></u-icon></view>
-								<view class="text">签到</view>
-							</view>
-							<view class="item" :class="item.report_autograph ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.report_autograph"></u-icon></view>
-								<view class="text">客户签字</view>
-							</view>
-							<view class="item" :class="item.sign_info.sign_out ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.sign_info.sign_out"></u-icon></view>
-								<view class="text">签离</view>
-							</view>
-							<view class="item" :class="item.order_report ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.order_report"></u-icon></view>
-								<view class="text">生成报告</view>
-							</view>
-							<view class="item" :class="item.status == 3 ? 'cur':''">
-								<view class="icon"><u-icon name='checkmark' size="14" color="#ffffff" v-if="item.status == 3"></u-icon></view>
-								<view class="text">完成</view>
-							</view>
+				<view class="new_card_content">
+					<view>
+						<cl-row v-if="item.order_type !=3 ">
+							<cl-col span="8">
+								<view class="service_name"><text selectable="true">{{item.service_type_info.service_name}}</text></view>
+							</cl-col>
+							<cl-col span="8">
+								<view class="first_job" v-if="item.first_job_flag==1">{{item.first_job}}</view>
+								<view v-else class="first_job">{{item.first_job}}</view>
+								
+							</cl-col>
+							<cl-col span="4">
+								<view class="first_job stop_status" v-if="item.stop_status==1">暂停</view>
+							</cl-col>
+							<!-- 工厂 -->
+							<cl-col span="8"  v-if="item.customer.customer_type_text">
+								<view class="customer_type">{{item.customer.customer_type_text}}</view>
+							</cl-col>
+						</cl-row>
+						<cl-row v-else>
+							<cl-col span="8" >
+								<view class="customer_type kc">勘察服务</view>
+							</cl-col>
+						</cl-row>
+						
+						<view>
 						</view>
 					</view>
+					<view>
+						<span class="content_t">日期:</span>
+						<text selectable="true">{{item.job_date}}</text>
+						
+					</view>
+					<view>
+						<span class="content_t">时间:</span>
+						<text selectable="true">{{item.job_start_time}}-{{item.job_end_time}}</text>
+					</view>
+					<view>
+						<span class="content_t">地址:</span>
+						<text selectable="true">{{item.addr}}</text>
+					</view>
+					<view style="display: flex;height: 20px;" v-if="item.customer_grade.score!=''">
+						<span style="margin-left:10px;">客户点评:</span>
+						<view style="margin-left:10px;">
+							<u-rate :count="3" v-model="item.customer_grade.score" active-color="#ffc800" inactive-color="#dadada" gutter="3" readonly touchable="false"></u-rate>
+						</view>
+					</view>
+					
+					<view class="label-date" v-if="item.job_order_date && item.job_order_date.id">
+						<span class="content_t">是否异常:</span>
+						<text selectable="true">
+							
+							{{item.job_order_date.abnormal_text}}
+							
+						</text>
+					</view>
+					
+					<view class="label-date" v-if="item.job_order_date && item.job_order_date.id">
+						<span class="content_t" style="color: #178bde;">调整日期:</span>
+						<text selectable="true" style="color: #178bde;">{{item.job_order_date.job_date}}</text>
+						<view class="label-status">
+							<span v-if="item.job_order_date.status==1" style="color: red;">审核中</span>
+							<span v-if="item.job_order_date.status==2" style="color: #12900a;">审核通过</span>
+						</view>
+					</view>
+					
 				</view>
 			</view>
 		</view>
-		
 		<!-- end -->
 		<u-modal :show="show" @confirm="confirm" @cancel="cancel" ref="uModal" :asyncClose="true" :closeOnClickOverlay="true" title="提示" confirmText="去签离" cancelText="取消"
 		showConfirmButton="true" showCancelButton="true" v-if="noSignOrder">
@@ -124,22 +140,7 @@ export default {
 			typeList: [],
 			
 			show: false,
-			noSignOrder:{},
-			
-			current:0,
-			list: [
-				{
-                    name: '待开工(0)'
-                },
-				{
-                    name: '待完工(0)',
-                }, 
-				{
-                    name: '已完成(0)',
-                }],
-			startData:[],
-			conductData:[],
-			successData:[],
+			noSignOrder:{}
 		};
 	},
 	onLoad() {
@@ -151,7 +152,6 @@ export default {
 		this.Data = todayISOString
 	},
 	onShow(index) {
-		
 		this.getInitInfo()
 		this.getjobs();
 		this.getJobTotal();
@@ -162,28 +162,12 @@ export default {
 		this.getNoSignOrder()
 	},
 	methods: {
-		clickHandle(e){
-			// console.log(e)
-			this.jobs = []
-			if(e.index==0){
-				this.current = 0
-				this.jobs = this.startData
-			}
-			if(e.index==1){
-				this.current = 1
-				this.jobs = this.conductData
-			}
-			if(e.index==2){
-				this.current = 2
-				this.jobs = this.successData
-			}
-		},
 		// 未签离工单
 		getNoSignOrder(){
 			let params = {}
 			this.$api.noOrderSign(params).then(res=>{
 				if(res.code == 200) {
-					// console.log('未签离和暂停工单:',res.data)
+					console.log('未签离和暂停工单:',res.data)
 					
 					if(res.data.data && res.data.data.length>0){
 						console.log(res.data.data[0])
@@ -202,6 +186,7 @@ export default {
 		confirm() {
 			this.show = false;
 			uni.navigateTo({
+				// url: "/pages/service/detail?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
 				url: "/pages/service/start?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
 			});
 		},
@@ -211,7 +196,7 @@ export default {
 		},
 		// 点击日 - 事件
 		datechange(e) {
-			// console.log('点击日 - 事件',e)
+			console.log('点击日 - 事件',e)
 			this.Data = e.fullDate;
 			this.Week = this.getWek(e.fullDate);
 			this.getjobs();
@@ -226,8 +211,8 @@ export default {
 		},
 		// 工作单详情
 		job_detail(index) {
-			// console.log(this.noSignOrder.job_id)
-			// console.log(this.jobs[index].id)
+			console.log(this.noSignOrder.job_id)
+			console.log(this.jobs[index].id)
 			// 未完成工单提示
 			if(this.noSignOrder.job_id && this.jobs[index].status == 2 && this.noSignOrder.job_id != this.jobs[index].id){
 				this.show = true
@@ -250,28 +235,13 @@ export default {
 		// 列表
 		getjobs() {
 			
-			this.list = []
 			let params = {
 				jobdate: this.Data //todayISOString
 			}
 			this.$api.dayOrderList(params).then(res=>{
-				this.current = '0'
 				if(res.code == 200) {
-					// console.log(res)
 					
-					if(res.data.data){
-						this.jobs = res.data.data.start_data
-						
-						this.startData = res.data.data.start_data
-						this.conductData = res.data.data.conduct_data
-						this.successData = res.data.data.success_data
-						
-						this.list = res.data.list
-					}else{
-						this.jobs = []
-						this.list = [{ name: '待开工(0)' }, { name: '待完工(0)'}, { name: '已完成(0)'}]
-					}
-					
+					this.jobs = res.data
 				}
 			}).catch(err=>{
 				console.log(err)
@@ -374,133 +344,6 @@ export default {
 }
 </script>
 <style lang="scss">
-.setup-list{
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	.item{
-		display: block;
-		text-align: center;
-		.icon{
-			width: 36rpx;
-			height: 36rpx;
-			background: #f2f3f5;
-			border-radius: 50%;
-			margin: 0 auto;
-			position: relative;
-			
-			display: flex;
-			    align-items: center;
-			    justify-content: center;
-			text{
-				display: block;
-				margin: 0 auto;
-				color: #0bc267;
-			}
-		}
-		.icon::after{
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			color: #12900a;
-		}
-		.icon::before{
-			content: '';
-			position: absolute;
-			top: 50%;
-			right: -80rpx;
-			width: 80rpx;
-			height: 1rpx;
-			background: #f2f3f5;
-		}
-		.text{
-			font-size: 24rpx;
-			color: rgb(134, 144, 156,1);
-			padding: 10rpx 0;
-		}
-	}
-	.item.cur{
-		.icon{
-			background: #0bc267;
-		}
-		.text{
-			font-size: 24rpx;
-			color: #333;
-			padding: 10rpx 0;
-		}
-		.icon::before{
-			background: #12900a;
-		}
-	}
-	.item:nth-child(5){
-		.icon::before{
-			display: none;
-		}
-	}
-}
-.order-list{
-	.item{
-		background-color: #FFFFFF;
-		border-radius: 10px;
-		
-		margin-bottom: 10px;
-		padding:30rpx 30rpx ;
-		.top_box{
-			display: flex;
-			justify-content: flex-start;
-			align-items: center;
-			border-bottom: 1rpx solid #a5a6a7;
-			padding-bottom: 16rpx;
-			.title{
-				font-size: 28rpx;
-				color: #333333;
-				font-weight: 700;
-			}
-			.labs{
-				display: flex;
-				justify-content: flex-start;
-				align-items: center;
-				.lab-item{
-					font-size: 26rpx;
-					font-weight: 400;
-					color: #555555;
-					border: 1rpx solid rgb(215,215,215,1);
-					border-radius: 8rpx;
-					padding: 6rpx 6rpx;
-					min-width: 100rpx;
-					text-align: center;
-					background: #f2f2f2;
-					margin-left: 16rpx;
-				}
-			}
-		}
-		.info-box{
-			padding: 10rpx 0 0;
-			.date_time{
-				font-size: 32rpx;
-				font-weight: 700;
-				margin-bottom: 16rpx;
-			}
-			.addr{
-				font-size: 24rpx;
-				color: #333333;
-				margin-bottom: 20rpx;
-			}
-		}
-	}
-}
-.slot-icon{
-    width: 21px;
-    height: 21px;
-    background-color: #f9ae3d;
-    border-radius: 100px;
-    font-size: 12px;
-    color: #fff;
-    line-height: 21px;
-    text-align: center;
-}
-
 .datec {
 	background-color: #FFFFFF;
 	border-radius: 15px;
@@ -628,3 +471,4 @@ export default {
 	}
 }
 </style>
+

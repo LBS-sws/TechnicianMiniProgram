@@ -262,6 +262,28 @@ export default {
 	// 未签离
 	noOrderSign(params){
 		return request("/Order.Order/noSignOrder", params, 'GET')
+	},
+	// 客户其他工单
+	getCustomerOrder(params){
+		return request("/Order.Order/CustomerOrder", params, 'GET')
+	},
+	// 完成当前工单、签到勾选工单
+	autoNextOrder(params){
+		return request("/Order.Order/autoNextOrder", params, 'POST')
+	},
+	// 获取当天、同一客户、已签到工单
+	getDayCustomerSignOrder(params){
+		return request("/Order.Order/dayCustomerSignOrder", params, 'GET')
+	},
+	// 客户签名后自动完成工单
+	customerSaveOrder(params){
+		return request("/Order.Order/customerSaveOrder", params, 'POST')
+	},
+	OrderStop(params){
+		return request("/Order.Order/OrderStop", params, 'POST')
+	},
+	OrderStopInfo(params){
+	return request("/Order.Order/OrderStopInfo", params, 'GET')
 	}
 }
 

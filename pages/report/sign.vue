@@ -1,6 +1,7 @@
 <template>
 	<view class="container">
 		<view class="sigh-btns" :class="[disabled?'yes':'no']">
+			
 			<button class="btn cancel-btn" @tap="handleCancel">取 消</button>
 			<button class="btn reset-btn" @tap="handleReset">重 写</button>
 			<button class="btn save-btn" @tap="handleConfirm" >确 认</button>
@@ -10,6 +11,12 @@
 				canvas-id="mycanvas" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
 			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:parseInt(height/2)+'px',height:parseInt(width/2)+'px'}"
 				class="canvsborder"></canvas>
+		</view>
+		<!-- 摄像头 -->
+		<hycamera v-if="show"  @runMethod="getCarmera" ref="cam"></hycamera>
+		<view class="cam_box">
+			<image src="@/static/cam_success.png" v-if="show" mode="widthFix"></image>
+			<image src="@/static/cam_default.png" v-else mode="widthFix"></image>
 		</view>
 	</view>
 </template>
@@ -24,7 +31,11 @@
 	let canvash;
 	let base64String;
 	let signTemp;
+import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 	export default {
+		components: {
+			hycamera
+		},
 		data() {
 			return {
 				userInfo: null,
@@ -35,9 +46,12 @@
 				height: 0,
 				jobid:'',
 				jobtype:'',
-				is_main:0,
+				is_main:0,  // 0附加、1客户、2技术员
 				status:'',
 				disabled:true,
+				
+				jobs:[],
+				show:false
 			}
 		},
 		onLoad(option) {
@@ -52,6 +66,11 @@
 			this.ctx.lineWidth = 3;
 			this.ctx.lineCap = 'round';
 			this.ctx.lineJoin = 'round';
+			
+			if(option.jobs){
+				this.jobs = option.jobs.split('_')
+			}
+	
 			uni.getSystemInfo({
 				success: function(res) {
 					that.width = res.windowWidth * 0.8;
@@ -62,9 +81,26 @@
 		},
 		created() {
 			console.log(this.status)
-			
+		},
+		onShow() {
+			if(this.is_main==1){
+				// 打开相机500毫秒后拍摄
+				this.show = true
+				setTimeout(()=>{
+					this.$refs.cam.buttonStart()
+				},800)
+			}
+
 		},
 		methods: {
+			getCarmera(type,res){
+				console.log(type,res)
+				
+				uni.showToast({
+				    title: '成功'+type,
+				    duration: 2000
+				});
+			},
 			//触摸开始，获取到起点
 			touchstart: function(e) {
 				let startX = e.changedTouches[0].x;
@@ -124,6 +160,30 @@
 				that.ctx.draw(true);
 				tempPoint = [];
 			},
+			// 客户签名后更新工单完成
+			UpdateOrder:function(){
+				let job_arr = []
+				this.jobs.forEach((item, i)=>{
+					job_arr.push({job_id:item, job_type:this.jobtype})
+				})
+				// console.log(job_arr)
+				// 当前的工单
+				job_arr.push({job_id: this.jobid, job_type: this.jobtype })
+				let jobs = JSON.stringify(job_arr)
+				const formData = {
+					is_main: that.is_main,
+					jobs:jobs,
+					job_id:this.jobid,
+					job_type:this.jobtype
+				}
+				// console.log(formData)
+				
+				that.$api.customerSaveOrder(formData).then(res=>{
+					
+				}).catch(err=>{
+					// console.log(err)
+				})
+			},
 			//将签名笔迹上传到服务器，并将返回来的地址存到本地
 			handleConfirm: function() {
 				let that = this
@@ -143,6 +203,17 @@
 				uni.showLoading({
 					title: '保存中...'
 				})
+				
+				if(this.is_main==1){ // 如果是客户签名结束录像
+					this.$refs.cam.job_id = this.jobid
+					this.$refs.cam.job_type = this.jobtype
+					
+		
+					this.$refs.cam.jobs = this.jobs
+				
+					this.$refs.cam.buttonEnd()
+				}
+				
 				this.disabled = false
 				uni.canvasToTempFilePath({
 					canvasId: 'mycanvas',
@@ -190,14 +261,23 @@
 			updateImage(path){
 				let that = this
 				let url = ''
-
+				
+				// 同一客户其他工单 批量签名
+				let job_arr = []
+				this.jobs.forEach((item, i)=>{
+					job_arr.push({job_id:item, job_type:this.jobtype})
+				})
+				
+				let jobs = JSON.stringify(job_arr)
 				const formData = {
 					job_id: that.jobid,
 					job_type: that.jobtype,
 					is_main: that.is_main,
-					file: path
+					file: path,
+					jobs:jobs
 				}
-
+				// console.log(formData)
+						
 				uni.uploadFile({
 					// todo 根据签名角色不同而处理不同的
 					url: `${that.$baseUrl}/Sign.Sign/uploadSign`,
@@ -217,7 +297,7 @@
 							uni.showToast({title: data.msg,icon: 'error',duration: 2000})
 							return false
 						}
-
+						that.UpdateOrder()	// 完成 如果客户已签名和已签离的更新成完成
 						// 上传成功
 						switch(that.is_main){
 							case '0'://附加签名
@@ -230,30 +310,6 @@
 								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data});
 								break;
 						}
-
-						//更新对应order的pdf
-						// if(that.status==3){
-						// 	let formData = {
-						// 		'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
-						// 		'send':1,
-						// 		'sync':1
-						// 	}
-						// 	setTimeout(()=>{
-						// 		uni.request({
-						// 			url: `${that.$baseUrl}/Order.Order/makePdf`,
-						// 			header: {
-						// 				'token': uni.getStorageSync('token'),
-						// 				'Content-type':'application/x-www-form-urlencoded'
-						// 			},
-						// 			method:'POST',
-						// 			data: formData,
-						// 			success: (res) => {
-						// 				console.log(res.data);
-						// 				console.log('更新')
-						// 			}
-						// 		});
-						// 	},500)
-						// }
 
 						setTimeout(()=>{
 							that.disabled = true
@@ -284,6 +340,19 @@
 </script>
 
 <style lang="scss" scoped>
+.cam_box{
+	position: fixed;
+	top: 0;
+	left: 20rpx;
+	width: 60rpx;
+	height: 60rpx;
+	z-index: 9999;
+	
+	image{
+		width: 100%;
+		transform: rotate(90deg);
+	}
+}
 	.handWriting {
 		background: #fff;
 		width: 100%;
@@ -308,6 +377,7 @@
 		flex-direction: column;
 		justify-content: space-around;
 		position: relative;
+		
 	}
 	.sigh-btns.no::after{
 		content: '';
@@ -322,7 +392,8 @@
 
 	.btn {
 		width: 70px;
-		margin: 30px 0rpx;
+		// margin: 30px 0rpx;
+		margin: 14px 0rpx;
 		padding: 1rpx;
 		transform: rotate(90deg);
 		border: grey 1rpx solid;

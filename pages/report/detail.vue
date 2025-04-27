@@ -300,7 +300,6 @@
 						<view class="sign_time">
 							<cl-list v-if="jobtype==1">签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
 							<cl-list v-else>签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
-							<!-- <cl-list>签到地点：江苏省无锡市滨湖区刘唐路2号</cl-list> -->
 						</view>
 					</view>
 					<view class="sign_content">
@@ -374,6 +373,13 @@
 				</view>
 			</view>
 		</u-modal>
+		
+		<u-popup :show="popupShow" @close="popupClose" @open="popupOpen" :round="10">
+		    <view>
+		       <SignatureList :jobs="jobs" @updateJobList="updateJobList" @cancel="cancel" @confirm="confirm"></SignatureList>
+		    </view>
+		</u-popup>
+		
 	</view>
 </template>
 <script>
@@ -384,6 +390,7 @@
 	import Signature from '@/components/sin-signature/sin-signature.vue';
 	import luPopupWrapper from "@/components/lu-popup-wrapper/lu-popup-wrapper.vue";
 	import isYes from '@/components/risk/assessment.vue';
+	import SignatureList from '@/components/order/SignatureList.vue';
 	export default {
 		components: {
 			tTable,
@@ -392,7 +399,8 @@
 			tTd,
 			Signature,
 			luPopupWrapper,
-			isYes
+			isYes,
+			SignatureList
 		},
 		data() {
 			return {
@@ -505,7 +513,7 @@
 				radioData:[{t: '是　Yes', v: 1}, {t: '否　No', v: 0}],	// 是、否
 				isShowAdd:false,
 				isdp:false,
-				current:0,
+				current:0, 
 				bk:[] ,// 板块
 				kczj_model:{
 					ms_action:'',
@@ -518,6 +526,10 @@
 				
 				windowHeight:0,
 				isHeight:false,
+				
+				popupShow: false,
+				jobs:[],
+				is_main:1, // 1客户 2技术员
 			}
 		},
 		onLoad(index) {
@@ -597,7 +609,13 @@
 				// console.log(data.height)
 				this.windowHeight = data.height - 90
 			}).exec();
-
+			
+			// setTimeout(()=>{
+			// 	this.current_tab = 6
+			// 	this.getItems()
+			// 	this.getSignOrder();
+			// },1500)
+			this.getSignOrder();
 		},
 		mounted() {
 			let that = this;
@@ -621,6 +639,50 @@
 			uni.$off('startSign_sadd', this.onStartSign_sadd)//销毁监听保存附加签名
 		},
 		methods: {
+			// 批量签名
+			confirm(e){
+				console.log('批量签名：',e)
+				// console.log('is_main:',this.is_main)
+				// return false
+				this.popupShow = false
+				uni.navigateTo({
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=" + this.is_main + "&status=" + this.basic.status
+					+ '&jobs=' + e
+				})
+			},
+			// 批量签名 当前客户其他工单 取消
+			cancel(){
+				this.popupShow = false
+				uni.navigateTo({
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main="+ this.is_main + "&status=" + this.basic.status
+				})
+			},
+			// 该客户有其他工单回调
+			updateJobList(e){
+				console.log('回调',e)
+				this.jobs = e
+			},
+			// 当天同一客户单子
+			getSignOrder(){
+				let that = this
+				let params = {
+					job_id:that.jobid,
+					job_type:that.jobtype,
+				}
+				that.$api.getDayCustomerSignOrder(params).then(res=>{
+					console.log(res)
+					this.jobs = res.data
+				}).catch(err=>{
+					// console.log(err)
+				})
+			},
+			popupOpen() {
+			  // console.log('open');
+			},
+			popupClose() {
+			  this.popupShow = false
+			  // console.log('close');
+			},
 			// 风险评估跳转
 			goRiskPinggu(e){
 				uni.navigateTo({
@@ -690,6 +752,7 @@
 				}
 				if(this.tab_bar[index].data == '9'){
 					this.getItems()			// 签名
+					this.getSignOrder()		// 客户其他工单
 				}
 				
 				if(this.tab_bar[index].id=='risk_assessment'){
@@ -726,12 +789,43 @@
 			},
 			// 技术员签名
 			startSign_staff() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
+				this.is_main = 2
+				
+				// 判断是否有其他工单
+				if(this.jobs.length>0){
+					this.popupShow = true
+					return false
+				}
+				
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=2" + "&status=" + this.basic.status
 				})
 			},
 			// 客户签名
 			startSign_s() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
+				this.is_main = 1
+				// 判断是否有其他工单
+				if(this.jobs.length>0){
+					this.popupShow = true
+					return false
+				}
+				
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=1" + "&status=" + this.basic.status
 				})
@@ -742,6 +836,15 @@
 				}, 1000);
 			},
 			startSign_sadd() {
+				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
+				{
+					uni.showToast({
+						title:'协助人员不能编辑',
+						icon:'none'
+					})
+					return false
+				}
+				
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=0"
 				})

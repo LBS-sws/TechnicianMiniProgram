@@ -858,7 +858,7 @@
 	position: absolute;
 	width: 100%;
 	height: 102rpx;
-	background: rgba(46,131,241,0);
+	background: rgba(46,131,241,1);
 	bottom: 0;
 	left: 0;
 	border-radius: 8rpx;
