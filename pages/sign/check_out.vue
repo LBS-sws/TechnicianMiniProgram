@@ -134,8 +134,8 @@ import amap  from '@/utils/amap-wx.130.js';
 				amapPlugin: null, 
 				addressName: '',  
 				weather: {  
-				    hasData: false,  
-				    data: []  
+					hasData: false,
+					data: []
 				},
 				distance:'', // 距离
 				DistanceType:1,		// 距离类型1米，2千米
@@ -229,7 +229,7 @@ import amap  from '@/utils/amap-wx.130.js';
 		},
 		onShow() {
 			this.amapPlugin = new amap.AMapWX({
-			    key: `${this.$amapApiKey}`
+				key: `${this.$amapApiKey}`
 			});
 			console.log('高德地图key:',`${this.$amapApiKey}`)
 			
@@ -256,8 +256,8 @@ import amap  from '@/utils/amap-wx.130.js';
 			startTimer() {
 				this.isTiming = true
 				this.timer = setInterval(() => {
-				this.time++
-			}, 1000)
+					this.time++
+				}, 1000)
 			},
 			stopTimer() {
 				this.isTiming = false
@@ -285,11 +285,11 @@ import amap  from '@/utils/amap-wx.130.js';
 			// 高德获取位置
 			getRegeo() {
 				let that = this
-			    uni.showLoading({  
-			        title: '获取信息中'  
-			    });
-			    that.amapPlugin.getRegeo({  
-			        success: (data) => {  
+				uni.showLoading({
+					title: '获取信息中'
+				});
+				that.amapPlugin.getRegeo({  
+					success: (data) => {  
 			   //          console.log(data)  
 			
 						//  this.detail()
@@ -304,10 +304,10 @@ import amap  from '@/utils/amap-wx.130.js';
 						
 						this.distance = this.getDistance(this.point2, this.point1);
 						uni.hideLoading(); 
-						 
-						 this.detail()
-			        }  
-			    });  
+
+						this.detail()
+				}  
+				});  
 			},
 			// 详情
 			detail(){
