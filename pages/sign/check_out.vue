@@ -254,14 +254,14 @@ import amap  from '@/utils/amap-wx.130.js';
 		},
 		methods: {
 			startTimer() {
-			  this.isTiming = true
-			  this.timer = setInterval(() => {
+				this.isTiming = true
+				this.timer = setInterval(() => {
 				this.time++
-			  }, 1000)
+			}, 1000)
 			},
 			stopTimer() {
-			  this.isTiming = false
-			  clearInterval(this.timer)
+				this.isTiming = false
+				clearInterval(this.timer)
 			},
 			// 异常签离选择事件
 			exceptionHandle(e){

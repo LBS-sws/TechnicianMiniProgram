@@ -229,7 +229,7 @@ export default {
 		}
 		
 		this.amapPlugin = new amap.AMapWX({
-		    key: `${this.$amapApiKey}`
+			key: `${this.$amapApiKey}`
 		}); 
 		
 		if (uni.createCameraContext) {
@@ -263,8 +263,22 @@ export default {
 		
 		// 高德请求经纬度
 		this.timer = setInterval(() => {
-		  this.getRegeo()
+			this.getRegeo()
 		}, 3000)
+	},
+	onUnload() {
+    // 清除定时器
+    if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+    }
+	},
+	onHide() {
+			// 如果需要在页面隐藏时也清除定时器，可以在这里添加
+			if (this.timer) {
+				clearInterval(this.timer)
+				this.timer = null
+			}
 	},
 	methods: {
 		// 异常处理 - 弹框点击
@@ -341,8 +355,8 @@ export default {
 				
 				clearInterval(this.timerInterval)
 				if(this.timer) {  
-				   clearInterval(this.timer); 
-				   this.timer = null;  
+					clearInterval(this.timer);
+					this.timer = null;
 				} 
 			}).catch(err=>{
 				uni.showToast({
