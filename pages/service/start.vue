@@ -51,42 +51,73 @@
 						<view class="qc" v-if="customer_qm" @click="createPdf">生成报告</view>
 						<view class="qc" v-else>已签离店</view>
 					</view>
-					<view v-else class="qc ql_box" @tap="check_out(0)">
+					<view v-else class="qc ql_box" @tap="check_out" :style="{background:stop ?'':'#999999'}">
 						<view>签出离店</view>
 						<text class="ql_time">已服务:{{formatTime}}</text>
 					</view>
 				</cl-col>
 			</cl-row>
 		</view>
-		<view class="tj_bu" v-else @tap="report()">检查报告</view>
+		<!-- 协助人员 -->
+		<view class="tj_bu_y" v-else>
+			<cl-row gutter="20">
+				<cl-col span="12" @tap="report()">
+					<view class="jc">检查报告</view>
+				</cl-col>
+				<cl-col span="12">
+					
+					<view class="qc ql_box" @tap="check_out_tow"  v-if="service.staff_other.end_date ==null " >
+						<view>签出离店</view>
+						<text class="ql_time">已服务:{{formatTime}}</text>
+					</view>
+					<view class="qc" v-else>已签离店</view>
+				</cl-col>
+			</cl-row>
+		</view>
 		
+		<!-- 返回、直接签离、下次服务 -->
 		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 			<view v-if="noFillInData.length>0" class="no_box">
 				<view class="title" v-for="(item,i) in noFillInData" :key="i">{{i+1}}.{{item.title}}</view>
-				<!-- <view class="title">2.报告未完整填写</view> -->
 			</view>
 			<view class="signout_ui">
 				<view class="item" @click="close">返回</view>
-				<view class="item" @click="check_out(1)">直接签离</view>
+				<view class="item" @click="now_check_out">直接签离</view>
 				<view class="item" @click="serviceHandle">服务暂停、安排下次时间</view>
 			</view>
 		</u-popup>
 		<!-- 日期 -->
 		<my-datetime ref="dateTimePop" @ok="timeOk" :shownum="3"></my-datetime>
-
+		<!--其他工单-->
+		<u-popup :show="orderShow" :round="10" mode="bottom" @close="orderClose" @open="orderOpen">
+			<orderList :jobs="jobs" :jobId="jobid" :jobType="jobtype" @updateJobList="updateJobList" @signOut="signOut" ></orderList>
+		</u-popup>
+		<!-- 暂停/继续 按钮-->
+		<block >
+			<van-button class="stop-btn" type="primary" round @tap="$noMultipleClicks(stopHandle)" v-if="service.service_ql==0 && service.status!=3"
+			
+			>
+				<view>{{stopText}}</view>
+			</van-button>
+		</block>
+		
 	</view>
 </template>
 
 <script>
+//引入高德地图sdk
+import amap  from '@/utils/amap-wx.130.js';
 import color from 'uview-ui/libs/config/color';
-
-import myDatetime from '@/components/my-datetime/my-datetime'
+import myDatetime from '@/components/my-datetime/my-datetime';
+import orderList from '@/components/order/item.vue';
 	export default {
 		components: {
-			'my-datetime': myDatetime
+			'my-datetime': myDatetime,
+			orderList
 		},
 		data() {
 			return {
+				noClick: true,
 				name:'开始服务',
 				list: [{
 						content: "服务简报",
@@ -171,28 +202,31 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 				show:false,
 				
 				date:'',
-	
-				
 				qlType:'',
 				
 				isTiming: false,
 				time: 0,
 				timer: null,
 				customer_qm:false,
-				
+			
 				serviceContractTime:0,	// 合约服务时长
 				noFillInData:[],
 				
 				hopeBeginTime: '',
-                dateKey: ''
+                dateKey: '',
+				orderShow: false, // 其他工单
+				jobs:[],
+				stop:false,
+				stopText:'暂停服务先做其他客户',
+				axiosTime:false,	// 2秒后才能请求
 			}
 		},
 		  computed: {
 		    formatTime() {
-		   
-			 var hours = Math.floor(this.time / 3600); // 获取小时数
-		     var minutes = Math.floor((this.time % 3600) / 60); // 获取分钟数
-		     var seconds = this.time % 60; // 获取秒数
+			
+			 const hours = Math.floor(this.time / 3600); // 获取小时数
+		     const minutes = Math.floor((this.time % 3600) / 60); // 获取分钟数
+		     const seconds = this.time % 60; // 获取秒数
 		     
 			 return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
 		    }
@@ -207,8 +241,13 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 			this.jobtype = index.jobtype
 			this.ct = uni.getStorageSync('ct')
 			this.loginStaff = uni.getStorageSync('staffname')
+			
+			this.amapPlugin = new amap.AMapWX({
+			    key: `${this.$amapApiKey}`
+			}); 
 		},
 		onShow(index) {
+			
 			this.service = [];
 			showContent: false;
 			uni.showLoading({
@@ -220,11 +259,118 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 			
 			this.qianming()
 			
-			// setTimeout(()=>{
-			// 	this.show = true
-			// },2000)
+			this.getOrderStopInfo();
+			setTimeout(()=>{
+				this.CustomerOrder()	// 2秒后再加载
+			},1500)
+			setTimeout(()=>{
+				this.axiosTime = true
+			},2000)
 		},
 		methods: {
+			// 获取已服务时间，减去暂停时间
+			getOrderStopInfo(){
+				let that = this
+				let params = {
+					job_id:this.jobid,
+					job_type:this.jobtype
+				}
+				this.$api.OrderStopInfo(params).then(res=>{
+				
+					if(res.data.stop && res.data.stop == 1){
+						console.log('返回暂停还是继续',res.data.stop)
+						that.stopText = '继续服务'
+						this.stop = false
+						this.stopTimer()
+					}else{
+						that.stopText = '暂停服务先做其他客户'
+						this.startTimer()
+						this.stop = true
+					}
+					if(res.data.service_time){
+						
+						that.time = res.data.service_time
+						
+					}
+				}).catch(err=>{
+					
+					console.log(err)
+				})
+			},
+			// 暂停|继续
+			stopHandle(){
+				if(!this.axiosTime){
+					uni.showToast({
+						icon:'none',
+						title:'加载中，请稍等...'
+					})
+					return false
+				}
+				if(this.service.service_ql == '1' || this.service.service_ql=='2'){
+					uni.showToast({
+						title:'签离后不能暂停',
+						icon:'none'
+					})
+					return false
+				}
+				console.log(this.stop)
+				
+				let stop = this.stop;
+				if(stop){
+					
+					stop = 0
+				}else{
+					
+					stop = 1
+				}
+				
+				uni.showLoading({
+					title: '请稍等'  
+				});  
+				this.amapPlugin.getRegeo({  
+					    success: (data) => {  
+					        console.log(data)  
+					        
+							let addr = data[0].name
+							let lat = data[0].latitude
+							let lng = data[0].longitude
+
+							let params = {
+								stop : stop,
+								lat:lat,
+								lng:lng,
+								addr:addr,
+								job_id:this.jobid,
+								job_type:this.jobtype
+							}
+							
+							this.$api.OrderStop(params).then(res=>{
+								// console.log(stop)
+								
+								this.stop = !this.stop
+								// this.stopText = this.stop ? '暂停服务先做其他客户' : '继续服务'
+								console.log(res)
+								this.getOrderStopInfo()
+							}).catch(err=>{
+								
+								console.log(err)
+							})
+							
+					        uni.hideLoading(); 
+					    }  
+				});
+			},
+			// 该客户有其他工单回调
+			updateJobList(e){
+				console.log('回调',e)
+				this.jobs = e
+			},
+			orderOpen(){
+				
+			},
+			orderClose(){
+				this.orderShow = false
+			},
 			getDate(){
 				var date = new Date()
 						
@@ -246,15 +392,19 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 				this.dateKey = key
 				this.$refs.dateTimePop.open(date || '');
 			},
-			// 下次服务时间关闭弹窗
+			// 主负责人 - 下次服务时间关闭弹窗
 			timeOk (str, obj) {
 				console.log(str, obj)
-				// this[this.dateKey] = str || ''
-				// this.showDate = false
+				
 				this.date = str
 				this.qlType = 2
-				this.check_out(2)
-				
+			
+				this.stopTimer()
+				this.show = false
+				uni.navigateTo({
+					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+				})
 			},
 			// 生成PDF
 			createPdf(){
@@ -285,29 +435,29 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 					// console.log(err)
 				})		  
 			},
+			// 计时开始
 			startTimer() {
 			  this.isTiming = true
 			  this.timer = setInterval(() => {
 				this.time++
 			  }, 1000)
 			},
+			// 暂停计时
 			stopTimer() {
 			  this.isTiming = false
 			  clearInterval(this.timer)
 			},
 			// 服务暂停、安排下次时间
 			serviceHandle(){
-				console.log('下次服务时间')
-				this.show = false
-				// this.showDate = true
 				
+				this.show = false
 				
 				let date = this.getDate()
 				this.$refs.dateTimePop.open(date || '');
 			},
-			open(){
-				
-			},
+			// 弹框 - 直接签离或下次
+			open(){},
+			// 关闭 - 直接签离或下次
 			close(){
 				this.show = false
 			},
@@ -315,33 +465,48 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 			qianming(){
 				let that = this
 				
-				let params6 = {
+				let params = {
 					job_id:that.jobid,
 					job_type:that.jobtype,
 				}
-				that.$api.getSignature(params6).then(res=>{
+				that.$api.getSignature(params).then(res=>{
 					console.log('客户签名:',res.data)
 					this.noFillInData = []
 					if(res.data.cust.customer_signature_url){
-					// 	that.autograph_customer_signature = `${that.$baseUrl_imgs}` + res.data.cust.customer_signature_url + '?t=' + new Date().getTime()
 						this.customer_qm = true
 					}
 					var arr = []
+					
 					// 客户未签字
 					if(res.data.cust.customer_signature_url=='' || res.data.cust.customer_signature_url ==null){
-						
 						this.noFillInData.push({title:'客户未签字'})
-						
 					}
 					if(res.data.staff_sign_urls.length==0){
 						this.noFillInData.push({title:'报告未完整填写'})
 					}
-					
-					
+
 				}).catch(err=>{
 					// console.log(err)
 				})
 			},
+			// 客户其他工单
+			CustomerOrder(){
+				
+				let params = {
+					job_id:this.jobid,
+					job_type:this.jobtype
+				}
+				this.$api.getCustomerOrder(params).then(res=>{
+					console.log('当前客户其他工单:',res)
+						
+					if(res.code==200){
+						this.jobs = res.data	
+					}
+				}).catch(err=>{
+					
+				})
+			},
+			//
 			data_select() {
 				let params = {
 					job_id:this.jobid,
@@ -351,12 +516,14 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 				this.$api.orderStart(params).then(res=>{
 					// console.log(res.data.data.service_time)
 					this.time = res.data.data.service_time	// 服务时间
-					this.startTimer();
 					
-					this.serviceContractTime = res.data.data.contract_service_time	// 合约服务时长
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
 					this.service = res.data.data
+					uni.setStorageSync('main_staff',res.data.data.main_staff) // 把工单负责人存到缓存里
+					
+					this.serviceContractTime = res.data.data.contract_service_time	// 合约服务时长
+					
 					this.custInfo = {
 						address: res.data.data.customer.addr,
 						customer: res.data.data.customer.name_zh
@@ -401,6 +568,7 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 					uni.hideLoading();
 				})
 			},
+			//
 			lc(url, shortcut_type) {
 				if (this.service.length == 0) {
 					uni.showToast({
@@ -415,6 +583,8 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 				} else {
 					console.log("客户信息：")
 					console.log(this.custInfo)
+					
+					this.stopTimer()
 					
 					let new_url = url;
 					if (url === "/pages/service/photo") {
@@ -456,6 +626,7 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 					})
 				}
 			},
+			//
 			report() {
 				if (this.service.length == 0) {
 					uni.showToast({
@@ -463,6 +634,8 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 						icon: 'none',
 					});
 				} else {
+					this.stopTimer()
+					
 					uni.navigateTo({
 						url: "/pages/report/detail?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
 							'&service_type=' + this.service.service_type + '&bk=' + this.bk
@@ -470,7 +643,23 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 				}
 			},
 			// 签离出店按钮 第一步
-			check_out(e) {
+			check_out() {
+				console.log('sign-01')
+				if(!this.axiosTime){
+					uni.showToast({
+						icon:'none',
+						title:'加载中，请稍等...'
+					})
+					return false
+				}
+				console.log('stop状态:',this.stop)
+				if(this.stop == false){
+					uni.showToast({
+						icon:'none',
+						title:'继续服务后才能签离'
+					})
+					return false
+				}
 				
 				// 1.验证服务时长是否达到
 				let minutes = Math.floor(this.time / 60); // 把已服务时间秒转成分钟
@@ -482,21 +671,100 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 					})
 					return false
 				}
-			
-				this.stopTimer()
-				if(e<=0){
+
+				// 2.直接签离、安排下次时间 - 弹窗 选择日期
+				if(this.qlType=='' && !this.qlType){
 					this.show = true
 					return false
 				}
-				if(e==1){
-					this.qlType = 1
-					this.date = ''
+				
+				// 3.直接签离 - 判断当前客户是否有其他工单
+				if(this.jobs.length>0){
+					this.show = false
+					this.orderShow = true
+					return false
 				}
+				
+				this.stopTimer()
 				this.show = false
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-						"&lat=" + this.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service
-						.Addr + "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+				})
+			},
+			// 协助人员签离
+			check_out_tow(){
+				console.log('sign-02')
+				if(!this.axiosTime){
+					uni.showToast({
+						icon:'none',
+						title:'加载中，请稍等...'
+					})
+					return false
+				}
+				if(this.stop==false){
+					uni.showToast({
+						icon:'none',
+						title:'继续服务后才能签离'
+					})
+					return false
+				}
+				// 判断当前客户是否有其他工单
+				if(this.jobs.length>0){
+					this.show = false
+					this.orderShow = true
+					return false
+				}else{
+					this.stopTimer()
+					this.show = false
+					uni.navigateTo({
+						url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+							 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+					})
+				}
+			},
+			// 直接签离
+			now_check_out(){
+				console.log('sign-03')
+				if(!this.axiosTime){
+					uni.showToast({
+						icon:'none',
+						title:'加载中，请稍等...'
+					})
+					return false
+				}
+				if(this.stop==false){
+					uni.showToast({
+						icon:'none',
+						title:'继续服务后才能签离'
+					})
+					return false
+				}
+				if(this.jobs.length>0){
+					this.show = false
+					this.orderShow = true
+					return false
+				}
+				this.qlType = 1
+				this.date = ''
+				this.stopTimer()
+				this.show = false
+				
+				uni.navigateTo({
+					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+				})
+			},
+			
+			// 直接签离 - 先做其他客户
+			signOut(){
+				this.qlType = 1
+				this.stopTimer()
+				this.show = false
+				this.orderShow = false
+				uni.navigateTo({
+					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
+						"&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
 				})
 			},
 			//继承设备
@@ -728,6 +996,21 @@ import myDatetime from '@/components/my-datetime/my-datetime'
 		text-align: center;
 		width: 100%;
 		
+	}
+}
+::v-deep .stop-btn {
+	position: fixed;
+	top: 70%;
+	right: 20rpx;
+	.van-button {
+		// width: 260rpx;
+		// height: 260rpx;
+		width: 164rpx;
+    height: 164rpx;
+    font-size: 24rpx;
+	
+		box-shadow: 0px 12rpx 30rpx 0px rgba(25, 137, 250, 0.34);
+		background-color: #007AFF;
 	}
 }
 </style>

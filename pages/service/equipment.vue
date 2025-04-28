@@ -596,6 +596,7 @@ import Base64 from 'base-64';
 			},
 			// 删除设备
 			del() {
+				
 				if (this.xz_all == '') {
 					uni.showToast({icon: 'none',title: '请选择设备'});
 					return;

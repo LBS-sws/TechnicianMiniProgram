@@ -2,6 +2,9 @@
 
 	<div class="signin">
 		<cl-message ref="message"></cl-message>
+		<van-loading v-if="location.loading" size="26rpx">
+			定位中...
+		</van-loading>
 		<view class="location">
 			<!-- 客户名称 -->
 			<view class="customerInfo">
@@ -18,7 +21,6 @@
 									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
 									<text v-else>千米</text>
 				</view>
-				<!-- <view>高德计算距离：{{distanceJs}}</view> -->
 			</view>
 			<van-cell class="field-cell" required title-width="70px" title="发票签收：">
 				<view class="location">
@@ -97,11 +99,6 @@ import amap  from '@/utils/amap-wx.130.js';
 					isSignin: false ,//是否签到
 					text:''
 				},
-				// formData: {
-				// 	signAddress: '', // 签到地址
-				// 	longitude: '', // 经度
-				// 	latitude: '' // 维度
-				// },
 				location: {
 					loading: true,
 					error: false,
@@ -110,12 +107,7 @@ import amap  from '@/utils/amap-wx.130.js';
 				},
 				jobid: '',
 				jobtype: '',
-				lat: '',
-				lng: '',
 				sign_whether: 1,
-				addr: '',
-				addrlat: '',
-				addrlng: '',
 				invoice: -1, // 0
 				pictures: [],
 				picturesx:[],		// 带http
@@ -133,7 +125,7 @@ import amap  from '@/utils/amap-wx.130.js';
 				customerInfo:{},
 				bgcolor:'',
 				signType:1,
-				point1:{
+				point1:{	// 当前定位
 					longitude:'',
 					latitude:''
 				},
@@ -145,17 +137,8 @@ import amap  from '@/utils/amap-wx.130.js';
 				amapPlugin: null, 
 				addressName: '',  
 				weather: {  
-				    hasData: false,  
-				    data: []  
-				},
-				// 当前定位
-				point1:{
-					longitude:'',
-					latitude:''
-				},
-				point2:{
-					longitude:'',
-					latitude:''
+					hasData: false,
+					data: []
 				},
 				distance:'', // 距离
 				DistanceType:1,		// 距离类型1米，2千米
@@ -196,11 +179,10 @@ import amap  from '@/utils/amap-wx.130.js';
 				timer: null,
 				longitude:'',
 				latitude:'',
-				// distanceJs:''
 			}
 		},
 		computed: {
-			// ...mapGetters(['selectedLocation', 'selectedSearch'])
+			// ...mapGetters(['selectedSearch'])
 			formatTime() {
 					   
 			 var hours = Math.floor(this.time / 3600); // 获取小时数
@@ -222,9 +204,7 @@ import amap  from '@/utils/amap-wx.130.js';
 
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
-			this.lat = index.lat
-			this.lng = index.lng
-			this.addr = index.addr
+			
 			this.staffSign = index.staffSign
 			this.qlType = index.qlType
 			this.date = index.date
@@ -249,10 +229,12 @@ import amap  from '@/utils/amap-wx.130.js';
 			} else {
 				this.timerInterval = setInterval(this.getTime, 1000)
 			}
+			this.checkLocationAuth();
 		},
 		onShow() {
+			
 			this.amapPlugin = new amap.AMapWX({
-			    key: `${this.$amapApiKey}`
+				key: `${this.$amapApiKey}`
 			});
 			console.log('高德地图key:',`${this.$amapApiKey}`)
 			
@@ -276,15 +258,68 @@ import amap  from '@/utils/amap-wx.130.js';
 			console.log('cameraHeight:',this.cameraHeight)
 		},
 		methods: {
+			//单独提取一个判断用户是否授权定位的函数，在需要的地方直接调用，避免了重复触发getLocation获取定位弹窗
+			checkLocationAuth() {
+				wx.getSetting({
+					success: (res) => {
+						let authSetting = res.authSetting
+						if (authSetting['scope.userLocation']) {
+							// 已授权
+							this.getRegeo()
+						} else if (authSetting['scope.userLocation'] === false) {
+							wx.showModal({
+								title: '您未开启地理位置授权',
+								content: '请在系统设置中打开位置授权，以便我们为您提供更好的服务',
+								success: (res) => {
+									if (res.confirm) {
+										wx.openSetting()
+									}
+								}
+							})
+							console.log("失败了4")
+							const address = '本次定位失败，可继续签离。'
+							this.formData.signAddress = address
+							this.location.curLocation = address
+							this.location.loading = false
+							this.location.error = true
+						} else {
+							wx.authorize({
+								scope: 'scope.userLocation',
+								success: () => {
+									this.getRegeo()
+								},
+								fail: () => {
+									wx.showModal({
+										title: '您未开启地理位置授权',
+										content: '请在系统设置中打开位置授权，以便我们为您提供更好的服务',
+										success: (res) => {
+											if (res.confirm) {
+												wx.openSetting()
+											}
+										}
+									})
+
+									console.log("失败了3")
+									const address = '本次定位失败，可继续签离。'
+									this.formData.signAddress = address
+									this.location.curLocation = address
+									this.location.loading = false
+									this.location.error = true
+								}
+							})
+						}
+					}
+				})
+			},
 			startTimer() {
-			  this.isTiming = true
-			  this.timer = setInterval(() => {
-				this.time++
-			  }, 1000)
+				this.isTiming = true
+				this.timer = setInterval(() => {
+					this.time++
+				}, 1000)
 			},
 			stopTimer() {
-			  this.isTiming = false
-			  clearInterval(this.timer)
+				this.isTiming = false
+				clearInterval(this.timer)
 			},
 			// 异常签离选择事件
 			exceptionHandle(e){
@@ -308,25 +343,16 @@ import amap  from '@/utils/amap-wx.130.js';
 			// 高德获取位置
 			getRegeo() {
 				let that = this
-			    uni.showLoading({  
-			        title: '获取信息中'  
-			    });
-			    that.amapPlugin.getRegeo({  
-			        success: (data) => {  
+				uni.showLoading({
+					title: '获取信息中'
+				});
+				that.amapPlugin.getRegeo({  
+					success: (data) => {  
 			   //          console.log(data)  
-			   //          this.addressName = data[0].name; 
-						
-						// this.point2.latitude = data[0].latitude
-						// this.point2.longitude = data[0].longitude
-						
-						// this.distance = this.getDistance(this.point2, this.point1);
-			   //          uni.hideLoading(); 
-						 
+			
 						//  this.detail()
 						console.log(data)
 						this.addressName = data[0].name; 
-						// this.title = data[0].desc
-						// this.address = data[0].name
 						
 						this.point2.latitude = data[0].latitude
 						this.point2.longitude = data[0].longitude
@@ -336,10 +362,10 @@ import amap  from '@/utils/amap-wx.130.js';
 						
 						this.distance = this.getDistance(this.point2, this.point1);
 						uni.hideLoading(); 
-						 
-						 this.detail()
-			        }  
-			    });  
+
+						this.detail()
+				}  
+				});  
 			},
 			// 详情
 			detail(){
@@ -351,14 +377,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					
 					// console.log(res)
 					this.customerInfo = res.data.customer
-					// this.point1.latitude = res.data.customer.lat
-					// this.point1.longitude = res.data.customer.lng
-					// console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
 					
-					// console.log('高德',this.point2)
-					// this.distance = this.getDistance(this.point2, this.point1);
-					
-					// console.log(this.distance);
 					
 					// 坐标转换
 					const paramsObj = {
@@ -405,37 +424,6 @@ import amap  from '@/utils/amap-wx.130.js';
 							reject('经纬度解析地址失败')
 						}
 					});
-					
-					// if(this.point2.latitude && this.point2.longitude){}
-					// 	const paramObj = {
-					// 		origins:[`${this.point2.longitude},${this.point2.latitude}`],	// 出发点
-					// 		destination:[`${this.point1.longitude},${this.point1.latitude}`],// 目的地
-					// 		key: '55bf8cc7ac61ce6099e8266ccc8ea0e8',
-					// 	}
-						
-					// 	const paramStr = getUrlParamsStr(paramObj)
-						
-					// 	uni.request({
-							
-					// 		url: 'https://restapi.amap.com/v3/distance?' + paramStr,
-					// 		method: "get",
-							
-					// 		success: (resxxx) => {
-					// 			console.log('高德接口计算距离:',resxxx.data)
-					// 			if(resxxx.data.status==1){
-					// 				this.distanceJs = resxxx.data.results[0].distance + '米'
-					// 			}else{
-					// 				// uni.showToast({
-					// 				// 	title:'高德计算距离失败',
-					// 				// 	icon:'none'
-					// 				// })
-					// 			}
-								
-					// 		},
-					// 		fail: (res) => {
-					// 			reject('高德计算错误')
-					// 		}
-					// 	});
 					
 					this.time = res.data.service_time	// 服务时间
 					this.startTimer();
@@ -747,18 +735,7 @@ import amap  from '@/utils/amap-wx.130.js';
 			},
 		},
 		watch: {
-			selectedLocation(newData) {
-				if (newData) {
-					const {
-						title,
-						location
-					} = newData
-					this.formData.signAddress = title
-					this.formData.longitude = location.lng
-					this.formData.latitude = location.lat
-					this.location.curLocation = newData
-				}
-			}
+	
 		}
 	}
 	/**

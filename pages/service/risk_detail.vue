@@ -363,6 +363,7 @@
 			},
 			// 新增
 			submit() {
+				
 				if (this.ct == 0) {
 					console.log('this.upload_site_photos',this.upload_site_photos)
 					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {

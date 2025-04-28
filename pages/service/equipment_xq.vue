@@ -271,6 +271,7 @@
 				this.site_photos = index
 			},
 			save() {
+				
 				var imgs = JSON.parse(JSON.stringify(this.site_photos))
 				if (this.equipment_area == '' || this.check_datas == '') {
 					uni.showToast({

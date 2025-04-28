@@ -40,8 +40,8 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
   }
   return arr
 }
-	import ldSelect from '@/components/ld-select/ld-select.vue'
-	export default {
+import ldSelect from '@/components/ld-select/ld-select.vue'
+export default {
 		components: {
 			ldSelect
 		},
@@ -146,8 +146,6 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 							}
 						})
 					}
-					console.log(listContent)
-					console.log(listProposal)
 					
 					this.contentData = listContent
 					this.proposalData = listProposal
@@ -196,7 +194,7 @@ export const fuzzyQuery = (list, keyWord, attribute = 'value') => {
 				}
 			},
 		},
-	}
+}
 </script>
 
 <style>
