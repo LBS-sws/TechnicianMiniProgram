@@ -7,6 +7,7 @@
 			<button class="btn save-btn" @tap="handleConfirm" >确 认</button>
 		</view>
 		<view class="handCenter">
+			<cover-view class="msg-ui" v-if="is_main !=2"><cover-view></cover-view>为保证您的利益及服务的真实性，签字过程将会被拍摄记录，望理解，谢谢！</cover-view>
 			<canvas class="handWriting" disable-scroll="true" :style="{width:width +'px',height:height +'px'}"
 				canvas-id="mycanvas" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
 			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:parseInt(height/2)+'px',height:parseInt(width/2)+'px'}"
@@ -416,4 +417,20 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 		border: #15f16b 1rpx solid;
 		background-color: #00a854;
 	}
+.msg-ui{
+	background: rgba(245, 154, 35, 0.4);
+	width: 1080rpx;
+	height: 64rpx;
+	font-size: 24rpx;
+	color: #333;
+	border: 1rpx solid rgba(245, 154, 35, 0.8);
+	border-radius: 8rpx;
+	line-height: 64rpx;
+	transform: rotate(90deg);
+	position: absolute;
+    top: 45%;
+    right: -510rpx;
+	z-index: 999;
+	padding: 0rpx 10rpx;
+}
 </style>
