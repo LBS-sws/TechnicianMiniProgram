@@ -363,14 +363,6 @@
 			},
 			// 新增
 			submit() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
 				
 				if (this.ct == 0) {
 					console.log('this.upload_site_photos',this.upload_site_photos)
@@ -475,14 +467,7 @@
 			},
 			// 保存
 			save() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
+				
 				if(this.ct == 0){
 					if (this.upload_site_photos == '' || this.upload_site_photos == undefined  || this.upload_site_photos.length == 0) {
 						uni.showToast({

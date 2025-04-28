@@ -789,14 +789,7 @@
 			},
 			// 技术员签名
 			startSign_staff() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
+				
 				this.is_main = 2
 				
 				// 判断是否有其他工单
@@ -811,14 +804,7 @@
 			},
 			// 客户签名
 			startSign_s() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
+				
 				this.is_main = 1
 				// 判断是否有其他工单
 				if(this.jobs.length>0){
@@ -836,14 +822,6 @@
 				}, 1000);
 			},
 			startSign_sadd() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
 				
 				uni.navigateTo({ 
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=0"

@@ -284,14 +284,7 @@
 			},
 			// 添加
 			add() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
+				
 				if (this.upload_site_photos == '' || this.upload_site_photos == undefined || this.upload_site_photos.length == 0) {
 					uni.showToast({icon: 'none', title: `没选择工作照(⊙_⊙)?`});
 				    return false;
@@ -354,14 +347,7 @@
 			},
 			// 保存
 			save() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
+				
 				//console.log("保存图片信息：")
 				if (this.upload_site_photos == '' || this.upload_site_photos == undefined || this.upload_site_photos.length == 0) {
 					uni.showToast({icon: 'none', title: `没选择工作照(⊙_⊙)?`});
