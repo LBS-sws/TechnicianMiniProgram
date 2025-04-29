@@ -265,7 +265,11 @@ import orderList from '@/components/order/item.vue';
 			},1500)
 			setTimeout(()=>{
 				this.axiosTime = true
-			},2000)
+			},2500)
+			
+			this.qlType = ''
+			this.date = ''
+			this.service.job_date = ''
 		},
 		methods: {
 			// 获取已服务时间，减去暂停时间
@@ -694,7 +698,7 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 协助人员签离
 			check_out_tow(){
-				console.log('sign-02')
+				// console.log('sign-02')
 				if(!this.axiosTime){
 					uni.showToast({
 						icon:'none',
@@ -717,9 +721,11 @@ import orderList from '@/components/order/item.vue';
 				}else{
 					this.stopTimer()
 					this.show = false
+					
+					// 协助人员签离 date = job_date
 					uni.navigateTo({
 						url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-							 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+							 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.service.job_date
 					})
 				}
 			},
@@ -752,7 +758,7 @@ import orderList from '@/components/order/item.vue';
 				
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.service.job_date
 				})
 			},
 			
