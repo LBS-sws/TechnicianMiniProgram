@@ -171,7 +171,7 @@ import amap  from '@/utils/amap-wx.130.js';
 				disable: false,
 				title: '',
 				address: '',
-				qlType:1,
+				qlType:0,
 				date:'',
 				
 				isTiming: false,
@@ -520,10 +520,14 @@ import amap  from '@/utils/amap-wx.130.js';
 			// ...mapMutations(['SET_SELECTED_SEARCH']),
 			//开始服务签离
 			handleSignin() {
-				// if (this.staffSign == 0) {
-				// 	uni.showToast({title: '技术员未签名',icon: 'none'})
-				// 	return;
-				// }
+				if(this.signType==0){
+					uni.showToast({
+						title:'请稍等，正在定位！',
+						icon:'none'
+					})
+					return false
+				}
+				
 
 				if (this.invoice == -1) {
 					uni.showToast({
@@ -639,7 +643,10 @@ import amap  from '@/utils/amap-wx.130.js';
 								url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
 							});
 						}else{
-							uni.navigateBack();
+							// uni.navigateBack();
+							uni.redirectTo({
+								url:"/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
+							})
 						}
 
 						//更新工单报表

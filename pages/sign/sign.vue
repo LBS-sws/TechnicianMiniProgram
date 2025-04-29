@@ -23,13 +23,13 @@
 			<!-- 签到窗 -->
 			<view class="signin-area">
 				
-				<van-button v-if="sign_whether==1" class="signin-btn" type="primary" round :disabled="signin.isSignin"
+				<van-button v-if="sign_whether==1" class="signin-btn" type="primary" round 
 					@click="handleSignin"
 					:color="bgcolor">
 					<view class="label">{{signin.text}}</view>
 					<view class="time">{{ signin.time }}</view>
 				</van-button>
-				<van-button v-else class="signin-btn" type="primary" round :disabled="signin.isSignin">
+				<van-button v-else class="signin-btn" type="primary" round >
 					<view class="label">请在一公里内签到</view>
 				</van-button>
 			
@@ -147,7 +147,7 @@ export default {
 			
 			customerInfo:{},
 			bgcolor:'',
-			signType:1,
+			signType:0,
 			
 			amapPlugin: null,
 			addressName: '',  
@@ -200,6 +200,8 @@ export default {
 			longitude:'',
 			latitude:'',
 			timer:'',
+			
+			isButtonDisabled: false, // 控制按钮是否禁用
 		}
 	},
 	onLoad(index) {
@@ -555,6 +557,15 @@ export default {
 		},
 		// 签到按钮
 		handleSignin() {
+			
+			if(this.signType==0){
+				uni.showToast({
+					title:'请稍等，正在定位！',
+					icon:'none'
+				})
+				return false
+			}
+			
 			
 			if(this.DistanceType == 1){
 				this.pageType = 2

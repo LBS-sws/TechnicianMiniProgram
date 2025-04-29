@@ -367,27 +367,40 @@ import popup from '@/components/feedback/popup.vue';
 					}else{
 						console.log('协助人员:', res.data.staff_other)
 						// 协助人员
-						if(res.data.status == -1 && res.data.start_time == null){
-							this.service_button = '等待服务人员完成';
-						}
-						// else{
+						// if(res.data.status == -1 && res.data.start_time == null){
+						// 	this.service_button = '等待服务人员完成';
+						// }
+						// // else{
+						// // 	this.service_button = '查看服务报告';
+						// // }
+						// // if(res.data.status == 2 && res.data.start_time == null){
+						// // 	this.service_button = '服务签到'; // 等待服务人员签到
+						// // }
+						// // if(res.data.status == 2 && res.data.start_time != null){
+						// // 	this.service_button = '查看服务报告';
+						// // }
+						// if(res.data.status == 3){
 						// 	this.service_button = '查看服务报告';
 						// }
-						// if(res.data.status == 2 && res.data.start_time == null){
-						// 	this.service_button = '服务签到'; // 等待服务人员签到
+						// if(res.data.status == 2 && !res.data.staff_other.start_date && !res.data.staff_other.end_date){
+						// 	this.service_button = '服务签到'
 						// }
-						// if(res.data.status == 2 && res.data.start_time != null){
-						// 	this.service_button = '查看服务报告';
+						// if(res.data.status == 2 && res.data.staff_other.start_date != null){
+						// 	this.service_button = '继续服务'
 						// }
-						if(res.data.status == 3){
-							this.service_button = '查看服务报告';
-						}
-						if(res.data.status == 2 && !res.data.staff_other.start_date && !res.data.staff_other.end_date){
+						
+						if(!this.service.sign_in_info)
+						{
+							console.log('协助人员没有签到记录')
 							this.service_button = '服务签到'
-						}
-						if(res.data.status == 2 && res.data.staff_other.start_date != null){
+						} else if(this.service.status == 3 && !this.service.sign_in_info){
+							this.service_button = '服务签到'
+						} else if(this.service.status == 3 && this.service.sign_in_info && this.service.sign_in_info.type){
+							this.service_button = '继续服务'
+						} else{
 							this.service_button = '继续服务'
 						}
+						
 					}
 					
 					if(res.data.order_type == 3)
@@ -415,43 +428,7 @@ import popup from '@/components/feedback/popup.vue';
 						});
 						return ;
 					} else {
-						// if(this.service.status == 2 && this.service.start_time == null && this.service.finish_time == null)
-						// {
-						// 	console.log('分派未签到')
-						// 	uni.navigateTo({
-						// 		url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-						// 		.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-						// 	})
-						// }else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==1){
-						// 	uni.navigateTo({
-						// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-						// 	})
-						// }else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==2){
-						// 	uni.navigateTo({
-						// 		url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-						// 		.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-						// 	})
-						// }else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==0){
-						// 	uni.navigateTo({
-						// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-						// 	})
-						// }else if(this.service.status == 3){
-						// 	uni.navigateTo({
-						// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-						// 	})
-						// }else{
-						// 		if (this.service.staff.main == uni.getStorageSync('staffname')) {
-						// 			uni.navigateTo({
-						// 				url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-						// 					.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-						// 			})
-						// 		}else{
-						// 			uni.showToast({
-						// 				icon: 'none',
-						// 				title: '等待服务人员签到！'
-						// 			});
-						// 		}
-						// }
+						
 						// 主要负责人
 						// console.log(this.service)
 						if (this.service.staff.main == uni.getStorageSync('staffname')) {
@@ -486,34 +463,53 @@ import popup from '@/components/feedback/popup.vue';
 							}
 							
 						}else{
+							
 							// 已完成
-							if(this.service.status == 3){
-								uni.navigateTo({
-									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-								})
-							// 协助人 未签到和未签离
-							}else if(this.service.status == 2 && !this.service.staff_other.start_date && !this.service.staff_other.end_date){
-								uni.navigateTo({
-									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
-								})
-							// 
-							// }else if(this.service.status == 2 && this.service.staff_other.start_date=='' && this.service.staff_other.end_date==''){
+							// if(this.service.status == 3){
+							// 	uni.navigateTo({
+							// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+							// 	})
+							// // 协助人 未签到和未签离
+							// }else if(this.service.status == 2 && !this.service.staff_other.start_date && !this.service.staff_other.end_date){
 							// 	uni.navigateTo({
 							// 		url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
 							// 		.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
 							// 	})
-							// 协助人 已签到
-							}else if(this.service.status == 2 && this.service.staff_other.start_date !=''){
+							// // 协助人 已签到
+							// }else if(this.service.status == 2 && this.service.staff_other.start_date !=''){
+							// 	uni.navigateTo({
+							// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+							// 	})
+							// }else{
+							// 	uni.navigateTo({
+							// 		url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+							// 	})
+							// }
+							if(!this.service.sign_in_info)
+							{
+								console.log('协助人员没有签到记录')
+								// 服务签到
 								uni.navigateTo({
-									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
 								})
-							}else{
+							} else if(this.service.status == 3 && !this.service.sign_in_info){
+								// this.service_button = '服务签到'
 								uni.navigateTo({
-									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
+									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
 								})
+							} else if(this.service.status == 3 && this.service.sign_in_info){
+								// this.service_button = '查看服务报告'
+									uni.navigateTo({
+										url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+									})
+							} else{
+								//继续服务
+									uni.navigateTo({
+										url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+									})
 							}
-							
 						}
 					}
 				}).catch(err=>{
