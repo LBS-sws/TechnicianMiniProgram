@@ -340,25 +340,37 @@ export default {
 				address:this.address
 			}
 			this.$api.orderSignIn(params).then(res=>{
-				this.signin.isSignin = true
-				uni.showToast({
-					title: '操作成功',
-					icon: 'success'
-				})
-				setTimeout(()=>{
-					uni.redirectTo({
-						url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+				console.log('resresresres',res)
+				if(res.code != 200){
+					
+					uni.showModal({
+						title: '提示',//标题
+						content: res.msg,//提示内容
+						showCancel: false//不显示取消按钮
 					})
-				},1500)
 				
-				clearInterval(this.timerInterval)
-				if(this.timer) {  
-					clearInterval(this.timer);
-					this.timer = null;
-				} 
+
+				}else{
+					this.signin.isSignin = true
+					uni.showToast({
+						title: '操作成功',
+						icon: 'success'
+					})
+					setTimeout(()=>{
+						uni.redirectTo({
+							url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+						})
+					},1500)
+					
+					clearInterval(this.timerInterval)
+					if(this.timer) {  
+						clearInterval(this.timer);
+						this.timer = null;
+					} 
+				}
 			}).catch(err=>{
 				uni.showToast({
-					title: res.data.msg,
+					title: res.msg,
 					icon: 'fail'
 				})
 			})
