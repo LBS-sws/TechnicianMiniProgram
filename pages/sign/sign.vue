@@ -98,13 +98,11 @@
 		</view>
 		
 		<atl-map :disable="disable" v-if="mapShow" :longitude="longitude" :latitude="latitude" :marker="marker" :mapKey="key" :mapType="mapType" @confirm="confirmAmap">
-		    <template v-slot:content>
-		        <view style="position: absolute; bottom: 0; width: 100%; height: 24px; background-color: white">
-		            <view style="display: flex; align-items: center; justify-content: center">
-		                <text></text>
-		            </view>
-		        </view>
-		    </template>
+			<template v-slot:content>
+				<view style="position: absolute; bottom: 0; width: 100%; height: 24px; background-color: white">
+					<view style="display: flex; align-items: center; justify-content: center"><text></text></view>
+				</view>
+			</template>
 		</atl-map>
 	
 	</view>
@@ -154,8 +152,8 @@ export default {
 			amapPlugin: null,
 			addressName: '',  
 			weather: {  
-			    hasData: false,  
-			    data: []  
+				hasData: false,  
+				data: []  
 			},
 			// 当前定位
 			point1:{
@@ -189,9 +187,9 @@ export default {
 			key:'c6631b0a7212536acc8aa68df419f9b3',
 			// 地图
 			marker: {
-			    id: 1,
-			    height: 50,
-			    width: 40
+				id: 1,
+				height: 50,
+				width: 40
 			},
 			mapType: 'amap',
 			mapShow: false,
@@ -229,7 +227,7 @@ export default {
 		}
 		
 		this.amapPlugin = new amap.AMapWX({
-		    key: `${this.$amapApiKey}`
+			key: `${this.$amapApiKey}`
 		}); 
 		
 		if (uni.createCameraContext) {
@@ -261,10 +259,24 @@ export default {
 		this.windowHeight = systemInfo.windowHeight
 		this.cameraHeight = systemInfo.windowHeight - 80
 		
-		// 高德请求经纬度
+		// 高德请求经纬度 三秒一次
 		this.timer = setInterval(() => {
-		  this.getRegeo()
+			this.getRegeo()
 		}, 3000)
+	},
+	onUnload() {
+    // 清除定时器
+    if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+    }
+	},
+	onHide() {
+			// 页面隐藏时清除定时器
+			if (this.timer) {
+				clearInterval(this.timer)
+				this.timer = null
+			}
 	},
 	methods: {
 		// 异常处理 - 弹框点击
@@ -341,8 +353,8 @@ export default {
 				
 				clearInterval(this.timerInterval)
 				if(this.timer) {  
-				   clearInterval(this.timer); 
-				   this.timer = null;  
+					clearInterval(this.timer);
+					this.timer = null;
 				} 
 			}).catch(err=>{
 				uni.showToast({

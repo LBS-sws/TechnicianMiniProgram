@@ -2,6 +2,9 @@
 
 	<div class="signin">
 		<cl-message ref="message"></cl-message>
+		<van-loading v-if="location.loading" size="26rpx">
+			定位中...
+		</van-loading>
 		<view class="location">
 			<!-- 客户名称 -->
 			<view class="customerInfo">
@@ -134,8 +137,8 @@ import amap  from '@/utils/amap-wx.130.js';
 				amapPlugin: null, 
 				addressName: '',  
 				weather: {  
-				    hasData: false,  
-				    data: []  
+					hasData: false,
+					data: []
 				},
 				distance:'', // 距离
 				DistanceType:1,		// 距离类型1米，2千米
@@ -226,10 +229,12 @@ import amap  from '@/utils/amap-wx.130.js';
 			} else {
 				this.timerInterval = setInterval(this.getTime, 1000)
 			}
+			this.checkLocationAuth();
 		},
 		onShow() {
+			
 			this.amapPlugin = new amap.AMapWX({
-			    key: `${this.$amapApiKey}`
+				key: `${this.$amapApiKey}`
 			});
 			console.log('高德地图key:',`${this.$amapApiKey}`)
 			
@@ -253,15 +258,68 @@ import amap  from '@/utils/amap-wx.130.js';
 			console.log('cameraHeight:',this.cameraHeight)
 		},
 		methods: {
+			//单独提取一个判断用户是否授权定位的函数，在需要的地方直接调用，避免了重复触发getLocation获取定位弹窗
+			checkLocationAuth() {
+				wx.getSetting({
+					success: (res) => {
+						let authSetting = res.authSetting
+						if (authSetting['scope.userLocation']) {
+							// 已授权
+							this.getRegeo()
+						} else if (authSetting['scope.userLocation'] === false) {
+							wx.showModal({
+								title: '您未开启地理位置授权',
+								content: '请在系统设置中打开位置授权，以便我们为您提供更好的服务',
+								success: (res) => {
+									if (res.confirm) {
+										wx.openSetting()
+									}
+								}
+							})
+							console.log("失败了4")
+							const address = '本次定位失败，可继续签离。'
+							this.formData.signAddress = address
+							this.location.curLocation = address
+							this.location.loading = false
+							this.location.error = true
+						} else {
+							wx.authorize({
+								scope: 'scope.userLocation',
+								success: () => {
+									this.getRegeo()
+								},
+								fail: () => {
+									wx.showModal({
+										title: '您未开启地理位置授权',
+										content: '请在系统设置中打开位置授权，以便我们为您提供更好的服务',
+										success: (res) => {
+											if (res.confirm) {
+												wx.openSetting()
+											}
+										}
+									})
+
+									console.log("失败了3")
+									const address = '本次定位失败，可继续签离。'
+									this.formData.signAddress = address
+									this.location.curLocation = address
+									this.location.loading = false
+									this.location.error = true
+								}
+							})
+						}
+					}
+				})
+			},
 			startTimer() {
-			  this.isTiming = true
-			  this.timer = setInterval(() => {
-				this.time++
-			  }, 1000)
+				this.isTiming = true
+				this.timer = setInterval(() => {
+					this.time++
+				}, 1000)
 			},
 			stopTimer() {
-			  this.isTiming = false
-			  clearInterval(this.timer)
+				this.isTiming = false
+				clearInterval(this.timer)
 			},
 			// 异常签离选择事件
 			exceptionHandle(e){
@@ -285,11 +343,11 @@ import amap  from '@/utils/amap-wx.130.js';
 			// 高德获取位置
 			getRegeo() {
 				let that = this
-			    uni.showLoading({  
-			        title: '获取信息中'  
-			    });
-			    that.amapPlugin.getRegeo({  
-			        success: (data) => {  
+				uni.showLoading({
+					title: '获取信息中'
+				});
+				that.amapPlugin.getRegeo({  
+					success: (data) => {  
 			   //          console.log(data)  
 			
 						//  this.detail()
@@ -304,10 +362,10 @@ import amap  from '@/utils/amap-wx.130.js';
 						
 						this.distance = this.getDistance(this.point2, this.point1);
 						uni.hideLoading(); 
-						 
-						 this.detail()
-			        }  
-			    });  
+
+						this.detail()
+				}  
+				});  
 			},
 			// 详情
 			detail(){

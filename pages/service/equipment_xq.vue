@@ -271,14 +271,6 @@
 				this.site_photos = index
 			},
 			save() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
 				
 				var imgs = JSON.parse(JSON.stringify(this.site_photos))
 				if (this.equipment_area == '' || this.check_datas == '') {

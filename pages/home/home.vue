@@ -416,7 +416,7 @@ export default {
 		}
 		.text{
 			font-size: 24rpx;
-			color: rgb(134, 144, 156,1);
+			color: rgba(134, 144, 156,1);
 			padding: 10rpx 0;
 		}
 	}
@@ -465,7 +465,7 @@ export default {
 					font-size: 26rpx;
 					font-weight: 400;
 					color: #555555;
-					border: 1rpx solid rgb(215,215,215,1);
+					border: 1rpx solid rgba(215,215,215,1);
 					border-radius: 8rpx;
 					padding: 6rpx 6rpx;
 					min-width: 100rpx;

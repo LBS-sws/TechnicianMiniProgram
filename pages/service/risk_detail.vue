@@ -363,14 +363,6 @@
 			},
 			// 新增
 			submit() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
 				
 				if (this.ct == 0) {
 					console.log('this.upload_site_photos',this.upload_site_photos)
