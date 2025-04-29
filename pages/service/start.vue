@@ -693,7 +693,7 @@ import orderList from '@/components/order/item.vue';
 				this.show = false
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.service.job_date
 				})
 			},
 			// 协助人员签离
@@ -770,7 +770,7 @@ import orderList from '@/components/order/item.vue';
 				this.orderShow = false
 				uni.navigateTo({
 					url: "/pages/sign/check_out?jobid=" + this.jobid + '&jobtype=' + this.jobtype +
-						"&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
+						"&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.service.job_date
 				})
 			},
 			//继承设备
