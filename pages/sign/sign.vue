@@ -557,7 +557,13 @@ export default {
 		},
 		// 签到按钮
 		handleSignin() {
-			
+			if(!this.addressName){
+				uni.showToast({
+					title:'请开启定位服务',
+					icon:'none'
+				})
+				return false
+			}
 			if(this.signType==0){
 				uni.showToast({
 					title:'请稍等，正在定位！',
