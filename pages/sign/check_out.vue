@@ -639,7 +639,10 @@ import amap  from '@/utils/amap-wx.130.js';
 								url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
 							});
 						}else{
-							uni.navigateBack();
+							// uni.navigateBack();
+							uni.redirectTo({
+								url:"/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
+							})
 						}
 
 						//更新工单报表
