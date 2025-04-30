@@ -494,6 +494,7 @@ export default {
 					this.detail()
 				},
 				fail: (err) => {
+					console.log(err)
 					uni.hideLoading();
 					uni.showToast({
 						title: '获取位置信息失败',
