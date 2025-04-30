@@ -18,8 +18,8 @@
 				<view>
 					距离门店
 					：{{distance}}
-									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
-									<text v-else>千米</text>
+					<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
+					<text v-else>千米</text>
 				</view>
 			</view>
 			<van-cell class="field-cell" required title-width="70px" title="发票签收：">
@@ -171,12 +171,14 @@ import amap  from '@/utils/amap-wx.130.js';
 				disable: false,
 				title: '',
 				address: '',
-				qlType:0,
+				qlType:1,
 				date:'',
 				
 				isTiming: false,
 				time: 0,
 				timer: null,
+				lastRequestTime: 0, // 上次请求时间
+				requestInterval: 5000, // 请求间隔时间(ms)
 				longitude:'',
 				latitude:'',
 			}
@@ -250,12 +252,38 @@ import amap  from '@/utils/amap-wx.130.js';
 			
 			this.detail()
 			
+			// 初始化获取位置
 			this.getRegeo();
 			
 			const systemInfo = uni.getSystemInfoSync()
 			this.windowHeight = systemInfo.windowHeight
 			this.cameraHeight = systemInfo.windowHeight - 80
-			console.log('cameraHeight:',this.cameraHeight)
+			
+			// 设置定时器，每5秒请求一次位置
+			// this.timer = setInterval(() => {
+			// 	const now = Date.now();
+			// 	if (now - this.lastRequestTime >= this.requestInterval) {
+			// 		this.getRegeo();
+			// 		this.lastRequestTime = now;
+			// 	}
+			// }, this.requestInterval);
+			if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff')){
+				this.qlType = 1
+			}
+		},
+		onHide() {
+			// 页面隐藏时清除定时器
+			if (this.timer) {
+				clearInterval(this.timer);
+				this.timer = null;
+			}
+		},
+		onUnload() {
+			// 页面卸载时清除定时器
+			if (this.timer) {
+				clearInterval(this.timer);
+				this.timer = null;
+			}
 		},
 		methods: {
 			//单独提取一个判断用户是否授权定位的函数，在需要的地方直接调用，避免了重复触发getLocation获取定位弹窗
@@ -342,30 +370,93 @@ import amap  from '@/utils/amap-wx.130.js';
 			},
 			// 高德获取位置
 			getRegeo() {
-				let that = this
+				let that = this;
+				
+				// 如果正在加载中，直接返回
+				if (this.location.loading) {
+					return;
+				}
+				
+				this.location.loading = true;
 				uni.showLoading({
-					title: '获取信息中'
+					title: '获取位置中...',
+					mask: true
 				});
-				that.amapPlugin.getRegeo({  
-					success: (data) => {  
-			   //          console.log(data)  
-			
-						//  this.detail()
-						console.log(data)
-						this.addressName = data[0].name; 
+				
+				// 先检查位置权限
+				uni.getSetting({
+					success: (res) => {
+						if (!res.authSetting['scope.userLocation']) {
+							// 未授权位置权限
+							uni.hideLoading();
+							this.location.loading = false;
+							uni.showModal({
+								title: '提示',
+								content: '需要您授权位置信息才能正常使用签离功能',
+								confirmText: '去授权',
+								success: (res) => {
+									if (res.confirm) {
+										uni.openSetting({
+											success: (res) => {
+												if (res.authSetting['scope.userLocation']) {
+													// 用户同意授权，重新获取位置
+													that.getRegeo();
+												} else {
+													uni.showToast({
+														title: '未授权位置信息',
+														icon: 'none'
+													});
+												}
+											}
+										});
+									} else {
+										uni.showToast({
+											title: '未授权位置信息',
+											icon: 'none'
+										});
+									}
+								}
+							});
+							return;
+						}
 						
-						this.point2.latitude = data[0].latitude
-						this.point2.longitude = data[0].longitude
-						
-						this.longitude = this.point2.longitude
-						this.latitude = this.point2.latitude
-						
-						this.distance = this.getDistance(this.point2, this.point1);
-						uni.hideLoading(); 
+						// 已授权，获取位置信息
+						that.amapPlugin.getRegeo({  
+							success: (data) => {  
+								console.log(data);
+								this.addressName = data[0].name; 
+								
+								this.point2.latitude = data[0].latitude;
+								this.point2.longitude = data[0].longitude;
+								
+								this.longitude = this.point2.longitude;
+								this.latitude = this.point2.latitude;
+								
+								this.distance = this.getDistance(this.point2, this.point1);
+								uni.hideLoading();
+								this.location.loading = false;
 
-						this.detail()
-				}  
-				});  
+								this.detail();
+							},
+							fail: (err) => {
+								uni.hideLoading();
+								this.location.loading = false;
+								uni.showToast({
+									title: '获取位置信息失败',
+									icon: 'none'
+								});
+							}
+						});  
+					},
+					fail: (err) => {
+						uni.hideLoading();
+						this.location.loading = false;
+						uni.showToast({
+							title: '检查权限失败',
+							icon: 'none'
+						});
+					}
+				});
 			},
 			// 详情
 			detail(){
@@ -520,14 +611,14 @@ import amap  from '@/utils/amap-wx.130.js';
 			// ...mapMutations(['SET_SELECTED_SEARCH']),
 			//开始服务签离
 			handleSignin() {
-				if(this.signType==0){
-					uni.showToast({
-						title:'请稍等，正在定位！',
-						icon:'none'
-					})
-					return false
-				}
 				
+				// if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff')){
+				// 	this.qlType = 1
+				// }
+				// if (this.staffSign == 0) {
+				// 	uni.showToast({title: '技术员未签名',icon: 'none'})
+				// 	return;
+				// }
 
 				if (this.invoice == -1) {
 					uni.showToast({
@@ -643,10 +734,7 @@ import amap  from '@/utils/amap-wx.130.js';
 								url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
 							});
 						}else{
-							// uni.navigateBack();
-							uni.redirectTo({
-								url:"/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
-							})
+							uni.navigateBack();
 						}
 
 						//更新工单报表
