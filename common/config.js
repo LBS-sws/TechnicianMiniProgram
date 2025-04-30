@@ -2,4 +2,4 @@
 
 // export const BASE_URL = 'https://v1.teach.lbsapps.cn/api' //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
 // export const BASE_URL = 'http://localhost:10005/api' //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
-export const BASE_URL = 'http://uat.teach.lbsapps.cn/api' //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
+export const BASE_URL = 'https://uat.teach.lbsapps.cn/api' //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
