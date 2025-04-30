@@ -94,13 +94,10 @@
 		</u-popup>
 		<!-- 暂停/继续 按钮-->
 		<block >
-			<van-button class="stop-btn" type="primary" round @tap="$noMultipleClicks(stopHandle)" v-if="service.service_ql==0 && service.status!=3"
-			
-			>
+			<van-button class="stop-btn" type="primary" round @tap="$noMultipleClicks(stopHandle)">
 				<view>{{stopText}}</view>
 			</van-button>
 		</block>
-		
 	</view>
 </template>
 
@@ -260,12 +257,12 @@ import orderList from '@/components/order/item.vue';
 			this.qianming()
 			
 			this.getOrderStopInfo();
-			setTimeout(()=>{
+			// setTimeout(()=>{
 				this.CustomerOrder()	// 2秒后再加载
-			},1500)
-			setTimeout(()=>{
-				this.axiosTime = true
-			},2500)
+			// },1500)
+			// setTimeout(()=>{
+			// 	this.axiosTime = true
+			// },2500)
 			
 			this.qlType = ''
 			this.date = ''
@@ -303,13 +300,15 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 暂停|继续
 			stopHandle(){
-				if(!this.axiosTime){
-					uni.showToast({
-						icon:'none',
-						title:'加载中，请稍等...'
-					})
-					return false
-				}
+				
+				// if(!this.axiosTime){
+				// 	uni.showToast({
+				// 		icon:'none',
+				// 		title:'加载中，请稍等...'
+				// 	})
+				// 	return false
+				// }
+				console.log('1')
 				if(this.service.service_ql == '1' || this.service.service_ql=='2'){
 					uni.showToast({
 						title:'签离后不能暂停',
@@ -321,47 +320,104 @@ import orderList from '@/components/order/item.vue';
 				
 				let stop = this.stop;
 				if(stop){
-					
 					stop = 0
 				}else{
-					
 					stop = 1
 				}
 				
 				uni.showLoading({
 					title: '请稍等'  
 				});  
-				this.amapPlugin.getRegeo({  
-					    success: (data) => {  
-					        console.log(data)  
-					        
-							let addr = data[0].name
-							let lat = data[0].latitude
-							let lng = data[0].longitude
 
-							let params = {
-								stop : stop,
-								lat:lat,
-								lng:lng,
-								addr:addr,
-								job_id:this.jobid,
-								job_type:this.jobtype
-							}
-							
-							this.$api.OrderStop(params).then(res=>{
-								// console.log(stop)
-								
-								this.stop = !this.stop
-								// this.stopText = this.stop ? '暂停服务先做其他客户' : '继续服务'
-								console.log(res)
-								this.getOrderStopInfo()
-							}).catch(err=>{
-								
-								console.log(err)
-							})
-							
-					        uni.hideLoading(); 
-					    }  
+				// 检查位置授权状态
+				uni.getSetting({
+					success: (res) => {
+						if (!res.authSetting['scope.userLocation']) {
+							uni.hideLoading();
+							uni.showModal({
+								title: '提示',
+								content: '需要获取您的位置信息，是否授权？',
+								success: (res) => {
+									if (res.confirm) {
+										uni.authorize({
+											scope: 'scope.userLocation',
+											success: () => {
+												this.getLocationAndUpdate(stop);
+											},
+											fail: () => {
+												// 用户拒绝授权，引导去设置页面
+												uni.showModal({
+													title: '提示',
+													content: '需要您授权位置信息才能继续操作，是否去设置页面开启授权？',
+													success: (res) => {
+														if (res.confirm) {
+															uni.openSetting({
+																success: (res) => {
+																	if (res.authSetting['scope.userLocation']) {
+																		// 用户重新授权成功
+																		this.getLocationAndUpdate(stop);
+																	} else {
+																		uni.showToast({
+																			title: '您未授权位置信息',
+																			icon: 'none'
+																		});
+																	}
+																}
+															});
+														}
+													}
+												});
+											}
+										});
+									}
+								}
+							});
+						} else {
+							this.getLocationAndUpdate(stop);
+						}
+					}
+				});
+			},
+			// 新增方法：获取位置并更新状态
+			getLocationAndUpdate(stop) {
+				this.amapPlugin.getRegeo({  
+					success: (data) => {  
+						console.log(data)  
+						
+						let addr = data[0].name
+						let lat = data[0].latitude
+						let lng = data[0].longitude
+
+						let params = {
+							stop : stop,
+							lat:lat,
+							lng:lng,
+							addr:addr,
+							job_id:this.jobid,
+							job_type:this.jobtype
+						}
+						
+						this.$api.OrderStop(params).then(res=>{
+							this.stop = !this.stop
+							console.log(res)
+							this.getOrderStopInfo()
+						}).catch(err=>{
+							console.log(err)
+							uni.showToast({
+								title: '操作失败，请重试',
+								icon: 'none'
+							});
+						})
+						
+						uni.hideLoading(); 
+					},
+					fail: (err) => {
+						uni.hideLoading();
+						uni.showToast({
+							title: '获取位置信息失败',
+							icon: 'none'
+						});
+					}
 				});
 			},
 			// 该客户有其他工单回调
@@ -648,14 +704,14 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 签离出店按钮 第一步
 			check_out() {
-				console.log('sign-01')
-				if(!this.axiosTime){
-					uni.showToast({
-						icon:'none',
-						title:'加载中，请稍等...'
-					})
-					return false
-				}
+				console.log('2')
+				// if(!this.axiosTime){
+				// 	uni.showToast({
+				// 		icon:'none',
+				// 		title:'加载中，请稍等...'
+				// 	})
+				// 	return false
+				// }
 				console.log('stop状态:',this.stop)
 				if(this.stop == false){
 					uni.showToast({
@@ -699,13 +755,14 @@ import orderList from '@/components/order/item.vue';
 			// 协助人员签离
 			check_out_tow(){
 				// console.log('sign-02')
-				if(!this.axiosTime){
-					uni.showToast({
-						icon:'none',
-						title:'加载中，请稍等...'
-					})
-					return false
-				}
+				// if(!this.axiosTime){
+				// 	uni.showToast({
+				// 		icon:'none',
+				// 		title:'加载中，请稍等...'
+				// 	})
+				// 	return false
+				// }
+				console.log('3')
 				if(this.stop==false){
 					uni.showToast({
 						icon:'none',
@@ -731,14 +788,14 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 直接签离
 			now_check_out(){
-				console.log('sign-03')
-				if(!this.axiosTime){
-					uni.showToast({
-						icon:'none',
-						title:'加载中，请稍等...'
-					})
-					return false
-				}
+				console.log('4')
+				// if(!this.axiosTime){
+				// 	uni.showToast({
+				// 		icon:'none',
+				// 		title:'加载中，请稍等...'
+				// 	})
+				// 	return false
+				// }
 				if(this.stop==false){
 					uni.showToast({
 						icon:'none',
