@@ -364,7 +364,9 @@ export default {
 			}
 			this.$api.dayOrderList(params).then(res=>{
 				if(res.code == 200) {
-					this.jobs = res.data
+					//默认显示第一个tab
+					this.current = 0
+					this.jobs = this.startData
 				}
 			}).catch(err=>{
 				console.log(err)
