@@ -406,7 +406,7 @@ import amap  from '@/utils/amap-wx.130.js';
 							icon: 'none'
 						});
 					}
-				});  
+				}); 
 				// 先检查位置权限
 				// uni.getSetting({
 				// 	success: (res) => {

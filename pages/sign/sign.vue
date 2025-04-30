@@ -476,8 +476,8 @@ export default {
 			uni.showLoading({
 				title: '获取信息中'
 			});
-			
-			that.amapPlugin.getRegeo({
+			// 已授权，获取位置信息
+			that.amapPlugin.getRegeo({  
 				success: (data) => {  
 					console.log(data)
 					this.addressName = data[0].name; 
@@ -494,14 +494,13 @@ export default {
 					this.detail()
 				},
 				fail: (err) => {
-					console.log(err)
 					uni.hideLoading();
 					uni.showToast({
 						title: '获取位置信息失败',
 						icon: 'none'
 					});
 				}
-			});
+			});  
 			// 先检查位置权限
 			// uni.getSetting({
 			// 	success: (res) => {
