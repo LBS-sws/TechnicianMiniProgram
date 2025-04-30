@@ -23,13 +23,13 @@
 			<!-- 签到窗 -->
 			<view class="signin-area">
 				
-				<van-button v-if="sign_whether==1" class="signin-btn" type="primary" round 
+				<van-button v-if="sign_whether==1" class="signin-btn" type="primary" round :disabled="signin.isSignin"
 					@click="handleSignin"
 					:color="bgcolor">
 					<view class="label">{{signin.text}}</view>
 					<view class="time">{{ signin.time }}</view>
 				</van-button>
-				<van-button v-else class="signin-btn" type="primary" round >
+				<van-button v-else class="signin-btn" type="primary" round :disabled="signin.isSignin">
 					<view class="label">请在一公里内签到</view>
 				</van-button>
 			
@@ -147,7 +147,7 @@ export default {
 			
 			customerInfo:{},
 			bgcolor:'',
-			signType:0,
+			signType:1,
 			
 			amapPlugin: null,
 			addressName: '',  
@@ -200,8 +200,6 @@ export default {
 			longitude:'',
 			latitude:'',
 			timer:'',
-			
-			isButtonDisabled: false, // 控制按钮是否禁用
 		}
 	},
 	onLoad(index) {
@@ -263,8 +261,9 @@ export default {
 		
 		// 高德请求经纬度 三秒一次
 		// this.timer = setInterval(() => {
-		// 	this.getRegeo()
+			
 		// }, 3000)
+		// this.getRegeo()
 	},
 	onUnload() {
     // 清除定时器
@@ -342,37 +341,37 @@ export default {
 				address:this.address
 			}
 			this.$api.orderSignIn(params).then(res=>{
-				console.log('resresresres',res)
+				// this.signin.isSignin = true
 				if(res.code != 200){
-					
-					uni.showModal({
-						title: '提示',//标题
-						content: res.msg,//提示内容
-						showCancel: false//不显示取消按钮
-					})
-				
+				                    
+                    uni.showModal({
+                        title: '提示',//标题
+                        content: res.msg,//提示内容
+                        showCancel: false//不显示取消按钮
+                    })
+                
 
-				}else{
-					this.signin.isSignin = true
-					uni.showToast({
-						title: '操作成功',
-						icon: 'success'
-					})
-					setTimeout(()=>{
-						uni.redirectTo({
-							url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-						})
-					},1500)
-					
-					clearInterval(this.timerInterval)
-					if(this.timer) {  
-						clearInterval(this.timer);
-						this.timer = null;
-					} 
-				}
+                }else{
+                    this.signin.isSignin = true
+                    uni.showToast({
+                        title: '操作成功',
+                        icon: 'success'
+                    })
+                    setTimeout(()=>{
+                        uni.redirectTo({
+                            url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+                        })
+                    },1500)
+                    
+                    clearInterval(this.timerInterval)
+                    if(this.timer) {  
+                        clearInterval(this.timer);
+                        this.timer = null;
+                    } 
+                }
 			}).catch(err=>{
 				uni.showToast({
-					title: res.msg,
+					title: res.data.msg,
 					icon: 'fail'
 				})
 			})
@@ -478,76 +477,100 @@ export default {
 				title: '获取信息中'
 			});
 			
-			// 先检查位置权限
-			uni.getSetting({
-				success: (res) => {
-					if (!res.authSetting['scope.userLocation']) {
-						// 未授权位置权限
-						uni.showModal({
-							title: '提示',
-							content: '需要您授权位置信息才能正常使用签到功能',
-							confirmText: '去授权',
-							success: (res) => {
-								if (res.confirm) {
-									uni.openSetting({
-										success: (res) => {
-											if (res.authSetting['scope.userLocation']) {
-												// 用户同意授权，重新获取位置
-												that.getRegeo();
-											} else {
-												uni.showToast({
-													title: '未授权位置信息',
-													icon: 'none'
-												});
-											}
-										}
-									});
-								} else {
-									uni.showToast({
-										title: '未授权位置信息',
-										icon: 'none'
-									});
-								}
-							}
-						});
-						uni.hideLoading();
-						return;
-					}
+			that.amapPlugin.getRegeo({
+				success: (data) => {  
+					console.log(data)
+					this.addressName = data[0].name; 
 					
-					// 已授权，获取位置信息
-					that.amapPlugin.getRegeo({  
-						success: (data) => {  
-							console.log(data)
-							this.addressName = data[0].name; 
-							
-							this.point2.latitude = data[0].latitude
-							this.point2.longitude = data[0].longitude
-							
-							this.longitude = this.point2.longitude
-							this.latitude = this.point2.latitude
-							
-							this.distance = this.getDistance(this.point2, this.point1);
-							uni.hideLoading(); 
-
-							this.detail()
-						},
-						fail: (err) => {
-							uni.hideLoading();
-							uni.showToast({
-								title: '获取位置信息失败',
-								icon: 'none'
-							});
-						}
-					});  
+					this.point2.latitude = data[0].latitude
+					this.point2.longitude = data[0].longitude
+					
+					this.longitude = this.point2.longitude
+					this.latitude = this.point2.latitude
+					
+					this.distance = this.getDistance(this.point2, this.point1);
+					uni.hideLoading(); 
+			
+					this.detail()
 				},
 				fail: (err) => {
 					uni.hideLoading();
 					uni.showToast({
-						title: '检查权限失败',
+						title: '获取位置信息失败',
 						icon: 'none'
 					});
 				}
 			});
+			// 先检查位置权限
+			// uni.getSetting({
+			// 	success: (res) => {
+			// 		if (!res.authSetting['scope.userLocation']) {
+			// 			// 未授权位置权限
+			// 			uni.showModal({
+			// 				title: '提示',
+			// 				content: '需要您授权位置信息才能正常使用签到功能',
+			// 				confirmText: '去授权',
+			// 				success: (res) => {
+			// 					if (res.confirm) {
+			// 						uni.openSetting({
+			// 							success: (res) => {
+			// 								if (res.authSetting['scope.userLocation']) {
+			// 									// 用户同意授权，重新获取位置
+			// 									that.getRegeo();
+			// 								} else {
+			// 									uni.showToast({
+			// 										title: '未授权位置信息',
+			// 										icon: 'none'
+			// 									});
+			// 								}
+			// 							}
+			// 						});
+			// 					} else {
+			// 						uni.showToast({
+			// 							title: '未授权位置信息',
+			// 							icon: 'none'
+			// 						});
+			// 					}
+			// 				}
+			// 			});
+			// 			uni.hideLoading();
+			// 			return;
+			// 		}
+					
+			// 		// 已授权，获取位置信息
+			// 		that.amapPlugin.getRegeo({  
+			// 			success: (data) => {  
+			// 				console.log(data)
+			// 				this.addressName = data[0].name; 
+							
+			// 				this.point2.latitude = data[0].latitude
+			// 				this.point2.longitude = data[0].longitude
+							
+			// 				this.longitude = this.point2.longitude
+			// 				this.latitude = this.point2.latitude
+							
+			// 				this.distance = this.getDistance(this.point2, this.point1);
+			// 				uni.hideLoading(); 
+
+			// 				this.detail()
+			// 			},
+			// 			fail: (err) => {
+			// 				uni.hideLoading();
+			// 				uni.showToast({
+			// 					title: '获取位置信息失败',
+			// 					icon: 'none'
+			// 				});
+			// 			}
+			// 		});  
+			// 	},
+			// 	fail: (err) => {
+			// 		uni.hideLoading();
+			// 		uni.showToast({
+			// 			title: '检查权限失败',
+			// 			icon: 'none'
+			// 		});
+			// 	}
+			// });
 		},
 		// 详情
 		detail(){
@@ -612,15 +635,6 @@ export default {
 		},
 		// 签到按钮
 		handleSignin() {
-			
-			if(this.signType==0){
-				uni.showToast({
-					title:'请稍等，正在定位！',
-					icon:'none'
-				})
-				return false
-			}
-			
 			
 			if(this.DistanceType == 1){
 				this.pageType = 2
