@@ -70,3 +70,4 @@ Vue.prototype.$baseUrl="https://uat.teach.lbsapps.cn/api"   //api.technician.com
 Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"
 
 // wx68b6f3ef0a8ab2f1		test
+// wx3f3ad415ff3abb7d		v1		

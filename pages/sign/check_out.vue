@@ -2,9 +2,6 @@
 
 	<div class="signin">
 		<cl-message ref="message"></cl-message>
-		<van-loading v-if="location.loading" size="26rpx">
-			定位中...
-		</van-loading>
 		<view class="location">
 			<!-- 客户名称 -->
 			<view class="customerInfo">
@@ -370,14 +367,16 @@ import amap  from '@/utils/amap-wx.130.js';
 			},
 			// 高德获取位置
 			getRegeo() {
+				console.log('高德获取位置1111')
+				
 				let that = this;
 				
 				// 如果正在加载中，直接返回
-				if (this.location.loading) {
-					return;
-				}
+				// if (this.location.loading) {
+					// return;
+				// }
 				
-				this.location.loading = true;
+				// this.location.loading = true;
 				uni.showLoading({
 					title: '获取位置中...',
 					mask: true
@@ -419,11 +418,11 @@ import amap  from '@/utils/amap-wx.130.js';
 							});
 							return;
 						}
-						
+						console.log('判断以获取授权位置')
 						// 已授权，获取位置信息
 						that.amapPlugin.getRegeo({  
 							success: (data) => {  
-								console.log(data);
+								console.log('高德请求结果：',data);
 								this.addressName = data[0].name; 
 								
 								this.point2.latitude = data[0].latitude;
