@@ -129,10 +129,10 @@ export default {
 			current:0,
 			list: [
 				{
-                    name: '待开工(0)'
+                    name: '待开始(0)'
                 },
 				{
-                    name: '待完工(0)',
+                    name: '进行中(0)',
                 }, 
 				{
                     name: '已完成(0)',
@@ -269,7 +269,7 @@ export default {
 						this.list = res.data.list
 					}else{
 						this.jobs = []
-						this.list = [{ name: '待开工(0)' }, { name: '待完工(0)'}, { name: '已完成(0)'}]
+						this.list = [{ name: '待开始(0)' }, { name: '进行中(0)'}, { name: '已完成(0)'}]
 					}
 					
 				}
@@ -357,6 +357,13 @@ export default {
 		},
 		//搜索
 		seach(){
+			if(this.query.type=='' && this.query.value==''){
+				uni.showToast({
+					title:'请选择服务类型或者输入搜索关键词',
+					icon:'none'
+				})
+				return false
+			}
 			let params = {
 				jobdate: this.Data, //todayISOString
 				service: this.query.type,
