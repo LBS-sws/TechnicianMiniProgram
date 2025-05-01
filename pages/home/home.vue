@@ -269,6 +269,9 @@ export default {
 						this.list = res.data.list
 					}else{
 						this.jobs = []
+						this.startData = []
+						this.conductData = []
+						this.successData = []
 						this.list = [{ name: '待开始(0)' }, { name: '进行中(0)'}, { name: '已完成(0)'}]
 					}
 					
