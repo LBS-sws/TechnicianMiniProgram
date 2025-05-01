@@ -328,55 +328,56 @@ import orderList from '@/components/order/item.vue';
 				uni.showLoading({
 					title: '请稍等'  
 				});  
-
+				
+				this.getLocationAndUpdate(stop);
 				// 检查位置授权状态
-				uni.getSetting({
-					success: (res) => {
-						if (!res.authSetting['scope.userLocation']) {
-							uni.hideLoading();
-							uni.showModal({
-								title: '提示',
-								content: '需要获取您的位置信息，是否授权？',
-								success: (res) => {
-									if (res.confirm) {
-										uni.authorize({
-											scope: 'scope.userLocation',
-											success: () => {
-												this.getLocationAndUpdate(stop);
-											},
-											fail: () => {
-												// 用户拒绝授权，引导去设置页面
-												uni.showModal({
-													title: '提示',
-													content: '需要您授权位置信息才能继续操作，是否去设置页面开启授权？',
-													success: (res) => {
-														if (res.confirm) {
-															uni.openSetting({
-																success: (res) => {
-																	if (res.authSetting['scope.userLocation']) {
-																		// 用户重新授权成功
-																		this.getLocationAndUpdate(stop);
-																	} else {
-																		uni.showToast({
-																			title: '您未授权位置信息',
-																			icon: 'none'
-																		});
-																	}
-																}
-															});
-														}
-													}
-												});
-											}
-										});
-									}
-								}
-							});
-						} else {
-							this.getLocationAndUpdate(stop);
-						}
-					}
-				});
+				// uni.getSetting({
+				// 	success: (res) => {
+				// 		if (!res.authSetting['scope.userLocation']) {
+				// 			uni.hideLoading();
+				// 			uni.showModal({
+				// 				title: '提示',
+				// 				content: '需要获取您的位置信息，是否授权？',
+				// 				success: (res) => {
+				// 					if (res.confirm) {
+				// 						uni.authorize({
+				// 							scope: 'scope.userLocation',
+				// 							success: () => {
+				// 								this.getLocationAndUpdate(stop);
+				// 							},
+				// 							fail: () => {
+				// 								// 用户拒绝授权，引导去设置页面
+				// 								uni.showModal({
+				// 									title: '提示',
+				// 									content: '需要您授权位置信息才能继续操作，是否去设置页面开启授权？',
+				// 									success: (res) => {
+				// 										if (res.confirm) {
+				// 											uni.openSetting({
+				// 												success: (res) => {
+				// 													if (res.authSetting['scope.userLocation']) {
+				// 														// 用户重新授权成功
+				// 														this.getLocationAndUpdate(stop);
+				// 													} else {
+				// 														uni.showToast({
+				// 															title: '您未授权位置信息',
+				// 															icon: 'none'
+				// 														});
+				// 													}
+				// 												}
+				// 											});
+				// 										}
+				// 									}
+				// 								});
+				// 							}
+				// 						});
+				// 					}
+				// 				}
+				// 			});
+				// 		} else {
+				// 			this.getLocationAndUpdate(stop);
+				// 		}
+				// 	}
+				// });
 			},
 			// 新增方法：获取位置并更新状态
 			getLocationAndUpdate(stop) {
