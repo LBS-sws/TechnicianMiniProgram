@@ -11,6 +11,7 @@
         "cool": "0.0.1",
         "coordtransform": "^2.1.2",
         "dayjs": "^1.11.12",
+        "scss": "^0.2.4",
         "url-search-params-polyfill": "^8.2.5",
         "uview-ui": "^2.0.37"
     }
