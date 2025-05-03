@@ -35,13 +35,27 @@
 				</cl-timeline-item>
 			</cl-timeline>
 		</view>
-		<view class="tj_bu_y" v-if="service.main_staff == loginStaff">
+		<view class="tj_bu_y" v-if="hos==1">
+			<cl-row gutter="20">
+				<cl-col span="12" @tap="report()">
+					<view class="jc">检查报告</view>
+				</cl-col>
+				<cl-col span="12" >
+					<view class="jc" v-if="service.status==3">已完成</view>
+					<view class="jc" v-else-if="service.status==-1">未完成</view>
+					<view class="jc qc" v-else> </view>
+				</cl-col>
+			</cl-row>
+		</view>
+		<view class="tj_bu_y" v-else-if="service.main_staff == loginStaff">
 			<cl-row gutter="20">
 				<cl-col span="12" @tap="report()">
 					<view class="jc">检查报告</view>
 				</cl-col>
 				<cl-col v-if="service.status == 3" span="12" >
-					<view class="qc create_bg" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''">生成报告<text>生成报告后不能更改</text></view>
+					<view class="qc create_bg" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''"
+					
+					>生成报告<text>生成报告后不能更改</text></view>
 					<view class="qc" v-else>已签离店</view>
 					
 				</cl-col>
@@ -93,7 +107,7 @@
 			<orderList :jobs="jobs" :jobId="jobid" :jobType="jobtype" @updateJobList="updateJobList" @signOut="signOut" ></orderList>
 		</u-popup>
 		<!-- 暂停/继续 按钮-->
-		<block >
+		<block v-if="hos == 0">
 			<van-button class="stop-btn" type="primary" round @tap="$noMultipleClicks(stopHandle)">
 				<view>{{stopText}}</view>
 			</van-button>
@@ -216,6 +230,8 @@ import orderList from '@/components/order/item.vue';
 				stop:false,
 				stopText:'暂停服务先做其他客户',
 				axiosTime:false,	// 2秒后才能请求
+				hos:0,
+
 			}
 		},
 		  computed: {
@@ -238,6 +254,10 @@ import orderList from '@/components/order/item.vue';
 			this.jobtype = index.jobtype
 			this.ct = uni.getStorageSync('ct')
 			this.loginStaff = uni.getStorageSync('staffname')
+			
+			if(index.hos){
+				this.hos = index.hos
+			}
 			
 			this.amapPlugin = new amap.AMapWX({
 			    key: `${this.$amapApiKey}`
@@ -267,6 +287,8 @@ import orderList from '@/components/order/item.vue';
 			this.qlType = ''
 			this.date = ''
 			this.service.job_date = ''
+			
+			
 		},
 		methods: {
 			// 获取已服务时间，减去暂停时间
@@ -477,6 +499,7 @@ import orderList from '@/components/order/item.vue';
 					})
 					return false
 				}
+				
 				let that = this
 				
 				let param = JSON.stringify([{
@@ -639,12 +662,7 @@ import orderList from '@/components/order/item.vue';
 						title: '数据加载中',
 						icon: 'none',
 					});
-				} else if (this.service.report) {//} else if (this.service.status == '3') {
-					uni.showToast({
-						title: '生成报告后不能修改', // 已完成不能再修改
-						icon: 'none',
-					});
-				} else {
+				}else {
 					console.log("客户信息：")
 					console.log(this.custInfo)
 					

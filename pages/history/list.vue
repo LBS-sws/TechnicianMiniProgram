@@ -264,7 +264,7 @@ import dayjs from 'dayjs';
 				// 	url: "/pages/history/job_detail?jobid=" + e.id +"&jobtype="+ e.type
 				// })
 				uni.navigateTo({
-					url: "/pages/service/detail?jobtype=" + e.type + "&jobid=" + e.id
+					url: "/pages/service/detail?jobtype=" + e.type + "&jobid=" + e.id + "&hos=1"
 				});
 			},
 			//...

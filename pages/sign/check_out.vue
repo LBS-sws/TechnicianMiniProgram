@@ -754,9 +754,10 @@ import amap  from '@/utils/amap-wx.130.js';
 						})
 						
 						if(this.qlType==2){
-							uni.navigateTo({
-								url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
-							});
+							// uni.navigateTo({
+							// 	url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
+							// });
+							uni.navigateBack();
 						}else{
 							uni.navigateBack();
 						}
