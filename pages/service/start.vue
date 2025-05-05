@@ -488,12 +488,15 @@ import orderList from '@/components/order/item.vue';
 					title:'生成中'
 				})
 				that.$api.makePdf(param).then(res=>{
+					console.log(res)
+					
 					uni.showToast({
-						title:'生成成功',
+						title:res.msg,
 						icon:'none'
 					})
+					
 				}).catch(err=>{
-					// console.log(err)
+					console.log(err)
 				})		  
 			},
 			// 计时开始
