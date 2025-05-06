@@ -23,19 +23,31 @@
 			<!-- 签到窗 -->
 			<view class="signin-area">
 				
-				<van-button v-if="sign_whether==1" class="signin-btn" type="primary" round :disabled="signin.isSignin"
+				<van-button
+					v-if="sign_whether==1"
+					class="signin-btn"
+					type="primary"
+					round
+					:disabled="signState.isSignin"
 					@click="handleSignin"
-					:color="bgcolor">
-					<view class="label">{{signin.text}}</view>
-					<view class="time">{{ signin.time }}</view>
+					:color="bgcolor"
+				>
+					<view class="label">{{ signState.text }}</view>
+					<view class="time">{{ signState.time }}</view>
 				</van-button>
-				<van-button v-else class="signin-btn" type="primary" round :disabled="signin.isSignin">
+				<van-button
+					v-else
+					class="signin-btn"
+					type="primary"
+					round
+					:disabled="signState.isSignin"
+				>
 					<view class="label">请在一公里内签到</view>
 				</van-button>
 			
 				<view class="signin-result" style="font-size: 16px;">
-					<van-icon v-if="signin.count" name="checked" size="30rpx" color="#4cd964" style="margin-right:10rpx" />
-					<text v-if="signin.count">签到成功</text>
+					<van-icon v-if="signState.count" name="checked" size="30rpx" color="#4cd964" style="margin-right:10rpx" />
+					<text v-if="signState.count">签到成功</text>
 					<text v-else>
 						<!-- 您还未签到 -->
 					</text>
@@ -113,28 +125,29 @@ import { formatDate, getUrlParamsStr } from '@/utils';
 //引入高德地图sdk
 import amap  from '@/utils/amap-wx.130.js';
 import preview from '@/components/camera/preview.vue';
+import { debounce } from 'lodash';
 export default {
 	components:{
 		preview, 
 	},
 	data() {
 		return {
-			signin: {
-				time: '', // 签到时间
-				count: 0, // 签到时间
-				isSignin: false ,//是否签到
-				text:'拍照签到'
+			locationState: {
+				loading: true,
+				error: false,
+				errorInfo: '',
+				curLocation: null
+			},
+			signState: {
+				isSignin: false,
+				time: '',
+				count: 0,
+				text: '拍照签到'
 			},
 			formData: {
 				signAddress: '', // 签到地址
 				longitude: '', // 经度
 				latitude: '' // 维度
-			},
-			location: {
-				loading: true,
-				error: false,
-				errorInfo: '定位失败',
-				curLocation: null // 当前位置信息
 			},
 			jobid: '',
 			jobtype: '',
@@ -199,7 +212,8 @@ export default {
 			
 			longitude:'',
 			latitude:'',
-			timer:'',
+			timer: null,
+			timerInterval: null  // 这个定时器在代码中使用了但没有在data中定义
 		}
 	},
 	onLoad(index) {
@@ -239,6 +253,10 @@ export default {
 				content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
 			})
 		}
+
+		// 检查权限
+		this.checkLocationPermission();
+		this.checkCameraPermission();
 	},
 	computed: {},
 	onShow() {
@@ -266,11 +284,7 @@ export default {
 		// this.getRegeo()
 	},
 	onUnload() {
-    // 清除定时器
-    if (this.timer) {
-        clearInterval(this.timer)
-        this.timer = null
-    }
+		this.clearAllTimers();
 	},
 	onHide() {
 			// 页面隐藏时清除定时器
@@ -280,6 +294,16 @@ export default {
 			}
 	},
 	methods: {
+		clearAllTimers() {
+			if (this.timer) {
+				clearInterval(this.timer);
+				this.timer = null;
+			}
+			if (this.timerInterval) {
+				clearInterval(this.timerInterval);
+				this.timerInterval = null;
+			}
+		},
 		// 异常处理 - 弹框点击
 		exceptionHandle(e){
 			// console.log(e)
@@ -323,7 +347,7 @@ export default {
 			this.imgUrl = `${this.$baseUrl_imgs}` + e.detault_url
 			// return false
 			clearInterval(this.timerInterval)
-			this.signin.count++
+			this.signState.count++
 			this.getTime(new Date())
 			
 			let lng = this.longitude
@@ -343,32 +367,29 @@ export default {
 			this.$api.orderSignIn(params).then(res=>{
 				// this.signin.isSignin = true
 				if(res.code != 200){
-				                    
-                    uni.showModal({
-                        title: '提示',//标题
-                        content: res.msg,//提示内容
-                        showCancel: false//不显示取消按钮
-                    })
-                
-
-                }else{
-                    this.signin.isSignin = true
-                    uni.showToast({
-                        title: '操作成功',
-                        icon: 'success'
-                    })
-                    setTimeout(()=>{
-                        uni.redirectTo({
-                            url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
-                        })
-                    },1500)
-                    
-                    clearInterval(this.timerInterval)
-                    if(this.timer) {  
-                        clearInterval(this.timer);
-                        this.timer = null;
-                    } 
-                }
+					uni.showModal({
+						title: '提示',//标题
+						content: res.msg,//提示内容
+						showCancel: false//不显示取消按钮
+					})
+				}else{
+					this.signState.isSignin = true
+					uni.showToast({
+						title: '操作成功',
+						icon: 'success'
+					})
+					setTimeout(()=>{
+						uni.redirectTo({
+							url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+						})
+					},1500)
+					
+					clearInterval(this.timerInterval)
+					if(this.timer) {   
+						clearInterval(this.timer);
+						this.timer = null;
+					} 
+				}
 			}).catch(err=>{
 				uni.showToast({
 					title: res.data.msg,
@@ -467,17 +488,16 @@ export default {
 			
 		},
 		// 重新定位
-		resetLocation(){
-			this.getRegeo()
-		},
+		resetLocation: debounce(function() {
+			this.getRegeo();
+		}, 500),
 		// 高德获取位置
 		getRegeo() {
 			let that = this
 			uni.showLoading({
 				title: '获取信息中'
 			});
-			// 已授权，获取位置信息
-			that.amapPlugin.getRegeo({  
+			this.amapPlugin.getRegeo({  
 				success: (data) => {  
 					console.log(data)
 					this.addressName = data[0].name; 
@@ -495,82 +515,16 @@ export default {
 				},
 				fail: (err) => {
 					uni.hideLoading();
+					let errorMsg = '获取位置信息失败';
+					if(err.code) {
+						errorMsg += `，错误码：${err.code}`;
+					}
 					uni.showToast({
-						title: '获取位置信息失败',
+						title: errorMsg,
 						icon: 'none'
 					});
 				}
 			});  
-			// 先检查位置权限
-			// uni.getSetting({
-			// 	success: (res) => {
-			// 		if (!res.authSetting['scope.userLocation']) {
-			// 			// 未授权位置权限
-			// 			uni.showModal({
-			// 				title: '提示',
-			// 				content: '需要您授权位置信息才能正常使用签到功能',
-			// 				confirmText: '去授权',
-			// 				success: (res) => {
-			// 					if (res.confirm) {
-			// 						uni.openSetting({
-			// 							success: (res) => {
-			// 								if (res.authSetting['scope.userLocation']) {
-			// 									// 用户同意授权，重新获取位置
-			// 									that.getRegeo();
-			// 								} else {
-			// 									uni.showToast({
-			// 										title: '未授权位置信息',
-			// 										icon: 'none'
-			// 									});
-			// 								}
-			// 							}
-			// 						});
-			// 					} else {
-			// 						uni.showToast({
-			// 							title: '未授权位置信息',
-			// 							icon: 'none'
-			// 						});
-			// 					}
-			// 				}
-			// 			});
-			// 			uni.hideLoading();
-			// 			return;
-			// 		}
-					
-			// 		// 已授权，获取位置信息
-			// 		that.amapPlugin.getRegeo({  
-			// 			success: (data) => {  
-			// 				console.log(data)
-			// 				this.addressName = data[0].name; 
-							
-			// 				this.point2.latitude = data[0].latitude
-			// 				this.point2.longitude = data[0].longitude
-							
-			// 				this.longitude = this.point2.longitude
-			// 				this.latitude = this.point2.latitude
-							
-			// 				this.distance = this.getDistance(this.point2, this.point1);
-			// 				uni.hideLoading(); 
-
-			// 				this.detail()
-			// 			},
-			// 			fail: (err) => {
-			// 				uni.hideLoading();
-			// 				uni.showToast({
-			// 					title: '获取位置信息失败',
-			// 					icon: 'none'
-			// 				});
-			// 			}
-			// 		});  
-			// 	},
-			// 	fail: (err) => {
-			// 		uni.hideLoading();
-			// 		uni.showToast({
-			// 			title: '检查权限失败',
-			// 			icon: 'none'
-			// 		});
-			// 	}
-			// });
 		},
 		// 详情
 		detail(){
@@ -664,7 +618,7 @@ export default {
 			// 获取当前时间时分秒
 			getTime(time) {
 				time = time ? new Date(time) : new Date()
-				this.signin.time = formatDate(time, 'HH:mm:ss')
+				this.signState.time = formatDate(time, 'HH:mm:ss')
 			},
 			/**
 			 * 获取当前时间
@@ -711,7 +665,7 @@ export default {
 					}
 
 					this.abnormalList  = oldArray
-					this.signin.text = '异常签到'
+					this.signState.text = '异常签到'
 					return (d / 1000).toFixed(2);	// return (d / 1000).toFixed(2) + "千米";
 				} else {
 					if(d > 300 && d<1000){
@@ -724,18 +678,104 @@ export default {
 							{id:2, name:'系统定位不准'},
 							{id:3, name:'门店地址错误'}
 						]
-						this.signin.text = '异常签到'
+						this.signState.text = '异常签到'
 					}else{
 						this.DistanceType = 1;
 						this.signType = 1
 						this.bgcolor = '#007AFF'
-						this.signin.text = '拍照签到'
+						this.signState.text = '拍照签到'
 					}
 					
 					return d.toFixed(0); // return d + "米";
 				}
 			},
-			// end
+			// 检查位置权限
+			checkLocationPermission() {
+				uni.getSetting({
+					success: (res) => {
+						if (!res.authSetting['scope.userLocation']) {
+							uni.showModal({
+								title: '提示',
+								content: '需要您授权位置信息才能正常使用签到功能',
+								confirmText: '去授权',
+								success: (res) => {
+									if (res.confirm) {
+										uni.openSetting({
+											success: (res) => {
+												if (res.authSetting['scope.userLocation']) {
+													// 用户同意授权，重新获取位置
+													this.getRegeo();
+												} else {
+													uni.showToast({
+														title: '未授权位置信息',
+														icon: 'none'
+													});
+												}
+											}
+										});
+									} else {
+										uni.showToast({
+											title: '未授权位置信息',
+											icon: 'none'
+										});
+									}
+								}
+							});
+						} else {
+							// 已授权，直接获取位置
+							this.getRegeo();
+						}
+					},
+					fail: (err) => {
+						console.error('检查位置权限失败:', err);
+						uni.showToast({
+							title: '检查权限失败',
+							icon: 'none'
+						});
+					}
+				});
+			},
+
+			// 检查相机权限
+			checkCameraPermission() {
+				uni.getSetting({
+					success: (res) => {
+						if (!res.authSetting["scope.camera"]) {
+							uni.showModal({
+								title: '提示',
+								content: '需要您授权相机权限才能正常使用拍照功能',
+								confirmText: '去授权',
+								success: (res) => {
+									if (res.confirm) {
+										uni.openSetting({
+											success: (res) => {
+												if (!res.authSetting["scope.camera"]) {
+													uni.showToast({
+														title: '未授权相机权限',
+														icon: 'none'
+													});
+												}
+											}
+										});
+									} else {
+										uni.showToast({
+											title: '未授权相机权限',
+											icon: 'none'
+										});
+									}
+								}
+							});
+						}
+					},
+					fail: (err) => {
+						console.error('检查相机权限失败:', err);
+						uni.showToast({
+							title: '检查权限失败',
+							icon: 'none'
+						});
+					}
+				});
+			},
 	},
 }
 
