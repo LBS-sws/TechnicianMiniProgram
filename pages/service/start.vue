@@ -727,13 +727,7 @@ import orderList from '@/components/order/item.vue';
 			// 签离出店按钮 第一步
 			check_out() {
 				console.log('2')
-				// if(!this.axiosTime){
-				// 	uni.showToast({
-				// 		icon:'none',
-				// 		title:'加载中，请稍等...'
-				// 	})
-				// 	return false
-				// }
+				
 				console.log('stop状态:',this.stop)
 				if(this.stop == false){
 					uni.showToast({
@@ -776,14 +770,6 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 协助人员签离
 			check_out_tow(){
-				// console.log('sign-02')
-				// if(!this.axiosTime){
-				// 	uni.showToast({
-				// 		icon:'none',
-				// 		title:'加载中，请稍等...'
-				// 	})
-				// 	return false
-				// }
 				console.log('3')
 				if(this.stop==false){
 					uni.showToast({
@@ -811,13 +797,7 @@ import orderList from '@/components/order/item.vue';
 			// 直接签离
 			now_check_out(){
 				console.log('4')
-				// if(!this.axiosTime){
-				// 	uni.showToast({
-				// 		icon:'none',
-				// 		title:'加载中，请稍等...'
-				// 	})
-				// 	return false
-				// }
+				
 				if(this.stop==false){
 					uni.showToast({
 						icon:'none',
