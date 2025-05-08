@@ -229,7 +229,6 @@ import orderList from '@/components/order/item.vue';
 				jobs:[],
 				stop:false,
 				stopText:'暂停服务先做其他客户',
-				axiosTime:false,	// 2秒后才能请求
 				hos:0,
 
 			}
@@ -277,18 +276,11 @@ import orderList from '@/components/order/item.vue';
 			this.qianming()
 			
 			this.getOrderStopInfo();
-			// setTimeout(()=>{
-				this.CustomerOrder()	// 2秒后再加载
-			// },1500)
-			// setTimeout(()=>{
-			// 	this.axiosTime = true
-			// },2500)
+			this.CustomerOrder()
 			
 			this.qlType = ''
 			this.date = ''
 			this.service.job_date = ''
-			
-			
 		},
 		methods: {
 			// 获取已服务时间，减去暂停时间
@@ -311,9 +303,7 @@ import orderList from '@/components/order/item.vue';
 						this.stop = true
 					}
 					if(res.data.service_time){
-						
 						that.time = res.data.service_time
-						
 					}
 				}).catch(err=>{
 					
@@ -322,15 +312,7 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 暂停|继续
 			stopHandle(){
-				
-				// if(!this.axiosTime){
-				// 	uni.showToast({
-				// 		icon:'none',
-				// 		title:'加载中，请稍等...'
-				// 	})
-				// 	return false
-				// }
-				console.log('1')
+			
 				if(this.service.service_ql == '1' || this.service.service_ql=='2'){
 					uni.showToast({
 						title:'签离后不能暂停',
@@ -338,7 +320,7 @@ import orderList from '@/components/order/item.vue';
 					})
 					return false
 				}
-				console.log(this.stop)
+				console.log('stop:',this.stop)
 				
 				let stop = this.stop;
 				if(stop){
@@ -351,55 +333,7 @@ import orderList from '@/components/order/item.vue';
 					title: '请稍等'  
 				});  
 				
-				this.getLocationAndUpdate(stop);
-				// 检查位置授权状态
-				// uni.getSetting({
-				// 	success: (res) => {
-				// 		if (!res.authSetting['scope.userLocation']) {
-				// 			uni.hideLoading();
-				// 			uni.showModal({
-				// 				title: '提示',
-				// 				content: '需要获取您的位置信息，是否授权？',
-				// 				success: (res) => {
-				// 					if (res.confirm) {
-				// 						uni.authorize({
-				// 							scope: 'scope.userLocation',
-				// 							success: () => {
-				// 								this.getLocationAndUpdate(stop);
-				// 							},
-				// 							fail: () => {
-				// 								// 用户拒绝授权，引导去设置页面
-				// 								uni.showModal({
-				// 									title: '提示',
-				// 									content: '需要您授权位置信息才能继续操作，是否去设置页面开启授权？',
-				// 									success: (res) => {
-				// 										if (res.confirm) {
-				// 											uni.openSetting({
-				// 												success: (res) => {
-				// 													if (res.authSetting['scope.userLocation']) {
-				// 														// 用户重新授权成功
-				// 														this.getLocationAndUpdate(stop);
-				// 													} else {
-				// 														uni.showToast({
-				// 															title: '您未授权位置信息',
-				// 															icon: 'none'
-				// 														});
-				// 													}
-				// 												}
-				// 											});
-				// 										}
-				// 									}
-				// 								});
-				// 							}
-				// 						});
-				// 					}
-				// 				}
-				// 			});
-				// 		} else {
-				// 			this.getLocationAndUpdate(stop);
-				// 		}
-				// 	}
-				// });
+				this.getLocationAndUpdate(stop)
 			},
 			// 新增方法：获取位置并更新状态
 			getLocationAndUpdate(stop) {
