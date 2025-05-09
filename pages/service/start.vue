@@ -112,6 +112,17 @@
 				<view>{{stopText}}</view>
 			</van-button>
 		</block>
+		
+		<u-modal
+			:show="showPdf"
+			:show-cancel-button="true"
+			title="提示"
+			:content="content"
+			@confirm="confirm"
+			@cancel="onModalCancel"
+			confirmText="确认"
+			cancelText="取消"
+		  ></u-modal>
 	</view>
 </template>
 
@@ -230,7 +241,8 @@ import orderList from '@/components/order/item.vue';
 				stop:false,
 				stopText:'暂停服务先做其他客户',
 				hos:0,
-
+				showPdf:false,
+				content:'是否确定生成报告'
 			}
 		},
 		  computed: {
@@ -423,17 +435,8 @@ import orderList from '@/components/order/item.vue';
 						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
 				})
 			},
-			// 生成PDF
-			createPdf(){
-				if(this.customer_qm==false)
-				{
-					uni.showToast({
-						title:'客户未签名不能生成报告',
-						icon:'none'
-					})
-					return false
-				}
-				
+			confirm() {
+				console.log('确认生成报告')
 				let that = this
 				
 				let param = JSON.stringify([{
@@ -454,7 +457,30 @@ import orderList from '@/components/order/item.vue';
 					
 				}).catch(err=>{
 					console.log(err)
-				})		  
+				})	
+				setTimeout(() => {
+					// 3秒后自动关闭
+					this.showPdf = false;
+				}, 3000)
+			},
+			onModalCancel(){
+				this.showPdf = false
+			},
+			// 生成PDF
+			createPdf(){
+				
+				
+				if(this.customer_qm==false)
+				{
+					uni.showToast({
+						title:'客户未签名不能生成报告',
+						icon:'none'
+					})
+					return false
+				}
+				this.showPdf = true
+				
+					  
 			},
 			// 计时开始
 			startTimer() {

@@ -1133,6 +1133,7 @@
 				})
 			},
 			download() {
+				
 				uni.showLoading({
 					title: "数据加载中..."
 				});
@@ -1140,6 +1141,8 @@
 					job_id: this.jobid,
 					job_type: this.jobtype,
 				}
+				let time = new Date().getTime();
+				
 				uni.request({
 					url: `${this.$baseUrl}/Preview.Preview/getHtmlContent`,
 					header: {
@@ -1151,8 +1154,7 @@
 					responseType: "arraybuffer", //注意这里的responseType
 					success: (result) => {
 						var fileManager = uni.getFileSystemManager();
-						// var FilePath = `${wx.env.USER_DATA_PATH}/${this.basic.CustomerName}-${this.jobid}-${this.basic.JobDate}.pdf`;
-						var FilePath = `${wx.env.USER_DATA_PATH}/${this.basic.customer.name_zh}-${this.jobid}-${this.basic.job_date}.pdf`;
+						var FilePath = `${wx.env.USER_DATA_PATH}/${this.basic.customer.name_zh}-${this.jobid}-${this.basic.job_date}-`+time+`.pdf`;
 						fileManager.writeFile({
 							filePath: FilePath,
 							data: result.data,
