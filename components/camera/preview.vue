@@ -8,7 +8,7 @@
 				<view class="back" @click="retake">
 					重拍
 				</view>
-				<view class="back" @click="confirm">
+				<view class="back" @tap="$noMultipleClicks(confirm)">
 					使用照片
 				</view>
 			</view>
@@ -31,6 +31,7 @@ export default{
 	},
 	data(){
 		return{
+			noClick: true,
 			uploadUrl: `${this.$baseUrl}/Upload.Upload/image`,
 			headerUpload: {
 				'token': uni.getStorageSync('token')

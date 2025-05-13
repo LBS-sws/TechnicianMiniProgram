@@ -762,10 +762,6 @@ import amap  from '@/utils/amap-wx.130.js';
 							uni.navigateBack();
 						}
 
-						//更新工单报表
-						// setTimeout(()=>{
-						// 	that.makePdf();
-						// },2000)
 					} else {
 						this.$refs["message"].open({
 							type: "warn",
@@ -781,30 +777,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					})
 				})
 			},
-			makePdf(){
-				let that = this
-
-				//更新工单报告
-				let formData = {
-						'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
-						'send':1,
-						'sync':1
-					}
-				uni.request({
-					url: `${that.$baseUrl}/Order.Order/makePdf`,
-					header: {
-						'token': uni.getStorageSync('token'),
-						'Content-type':'application/x-www-form-urlencoded'
-					},
-					method:'POST',
-					data: formData,
-					success: (res) => {
-						// console.log(res.data);
-						console.log('更新工单成功')
-					}
-				});
-			},
-						//根据金纬度计算距离
+			//根据金纬度计算距离
 			getDistance(point1, point2) {
 				let R = 6371000; // 地球平均半径，单位：米
 				let lat1 = point1.latitude * Math.PI / 180;
