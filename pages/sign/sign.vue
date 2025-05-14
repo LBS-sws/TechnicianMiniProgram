@@ -271,7 +271,7 @@ export default {
 		
 		// 二次开发
 		this.detail();
-		this.getRegeo();
+		// this.getRegeo();
 		
 		const systemInfo = uni.getSystemInfoSync()
 		this.windowHeight = systemInfo.windowHeight
@@ -537,51 +537,14 @@ export default {
 				
 				this.customerInfo = res.data.customer
 				
-				// 坐标转换
-				const paramsObj = {
-					key: `${this.$amapWebApiKey}`,
-					locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
-					coordsys:'baidu',
-					output: 'json'
-				}
-				const paramsStr = getUrlParamsStr(paramsObj)
-				uni.request({
-					url: 'https://restapi.amap.com/v3/assistant/coordinate/convert?' + paramsStr,
-					method: "get",
-					dataType: "json",
-					header: {
-						'Content-Type': 'application/json'
-					},
-					success: (resx) => {
-						// console.log('resx:',resx.data.locations)
-						if(resx.data.status==1){
-							let arr = resx.data.locations.split(",");
-							console.log(arr)
-							
-							this.point1.longitude = parseFloat(arr[0])
-							this.point1.latitude = parseFloat(arr[1])
-							console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
-							
-							console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
-							
-							this.longitude = this.point2.longitude
-							this.latitude = this.point2.latitude
-							
-							this.distance = this.getDistance(this.point2, this.point1);
-							
-							console.log('距离：',this.distance);
-						}else{
-							uni.showToast({
-								title:'经纬度转换失败',
-								icon:'none'
-							})
-						}
-						
-					},
-					fail: (res) => {
-						reject('经纬度解析地址失败')
-					}
-				});
+				this.point1.longitude = res.data.customer.lng
+				this.point1.latitude = res.data.customer.lat
+				console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
+				console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
+				
+				this.distance = this.getDistance(this.point2, this.point1);
+				console.log('距离：',this.distance);
+				
 			}).catch(err=>{
 				uni.hideLoading();
 				console.log(err)

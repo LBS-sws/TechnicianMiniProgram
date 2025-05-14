@@ -562,7 +562,7 @@ import orderList from '@/components/order/item.vue';
 				this.showContent = false;
 				this.$api.orderStart(params).then(res=>{
 					// console.log(res.data.data.service_time)
-					this.time = res.data.data.service_time	// 服务时间
+					// this.time = res.data.data.service_time	// 服务时间
 					
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
