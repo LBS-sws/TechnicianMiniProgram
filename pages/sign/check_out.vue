@@ -208,20 +208,6 @@ import amap  from '@/utils/amap-wx.130.js';
 			this.qlType = index.qlType
 			this.date = index.date
 
-			// if (index.staffSign == 0) {
-			// 	this.$refs["message"].open({type: "warn",duration: 5000,top: "200rpx",message: "技术员未签名"});
-			// 	return;
-			// }
-			
-			// if (index.autograph == 0) {
-			// 	this.$refs["message"].open({
-			// 		type: "warn",
-			// 		duration: 5000,
-			// 		top: "200rpx",
-			// 		message: "客户未签名",
-			// 	});
-			// }
-			
 			this.getTime()
 			if (this.timerInterval) {
 				clearInterval(this.timerInterval)
@@ -256,14 +242,6 @@ import amap  from '@/utils/amap-wx.130.js';
 			this.windowHeight = systemInfo.windowHeight
 			this.cameraHeight = systemInfo.windowHeight - 80
 			
-			// 设置定时器，每5秒请求一次位置
-			// this.timer = setInterval(() => {
-			// 	const now = Date.now();
-			// 	if (now - this.lastRequestTime >= this.requestInterval) {
-			// 		this.getRegeo();
-			// 		this.lastRequestTime = now;
-			// 	}
-			// }, this.requestInterval);
 			if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff')){
 				this.qlType = 1
 			}
@@ -367,16 +345,9 @@ import amap  from '@/utils/amap-wx.130.js';
 			},
 			// 高德获取位置
 			getRegeo() {
-				console.log('高德获取位置1111')
 				
 				let that = this;
 				
-				// 如果正在加载中，直接返回
-				// if (this.location.loading) {
-					// return;
-				// }
-				
-				// this.location.loading = true;
 				uni.showLoading({
 					title: '获取位置中...',
 					mask: true
@@ -406,81 +377,7 @@ import amap  from '@/utils/amap-wx.130.js';
 							icon: 'none'
 						});
 					}
-				}); 
-				// 先检查位置权限
-				// uni.getSetting({
-				// 	success: (res) => {
-				// 		if (!res.authSetting['scope.userLocation']) {
-				// 			// 未授权位置权限
-				// 			uni.hideLoading();
-				// 			this.location.loading = false;
-				// 			uni.showModal({
-				// 				title: '提示',
-				// 				content: '需要您授权位置信息才能正常使用签离功能',
-				// 				confirmText: '去授权',
-				// 				success: (res) => {
-				// 					if (res.confirm) {
-				// 						uni.openSetting({
-				// 							success: (res) => {
-				// 								if (res.authSetting['scope.userLocation']) {
-				// 									// 用户同意授权，重新获取位置
-				// 									that.getRegeo();
-				// 								} else {
-				// 									uni.showToast({
-				// 										title: '未授权位置信息',
-				// 										icon: 'none'
-				// 									});
-				// 								}
-				// 							}
-				// 						});
-				// 					} else {
-				// 						uni.showToast({
-				// 							title: '未授权位置信息',
-				// 							icon: 'none'
-				// 						});
-				// 					}
-				// 				}
-				// 			});
-				// 			return;
-				// 		}
-				// 		console.log('判断以获取授权位置')
-				// 		// 已授权，获取位置信息
-				// 		that.amapPlugin.getRegeo({  
-				// 			success: (data) => {  
-				// 				console.log('高德请求结果：',data);
-				// 				this.addressName = data[0].name; 
-								
-				// 				this.point2.latitude = data[0].latitude;
-				// 				this.point2.longitude = data[0].longitude;
-								
-				// 				this.longitude = this.point2.longitude;
-				// 				this.latitude = this.point2.latitude;
-								
-				// 				this.distance = this.getDistance(this.point2, this.point1);
-				// 				uni.hideLoading();
-				// 				this.location.loading = false;
-
-				// 				this.detail();
-				// 			},
-				// 			fail: (err) => {
-				// 				uni.hideLoading();
-				// 				this.location.loading = false;
-				// 				uni.showToast({
-				// 					title: '获取位置信息失败',
-				// 					icon: 'none'
-				// 				});
-				// 			}
-				// 		});  
-				// 	},
-				// 	fail: (err) => {
-				// 		uni.hideLoading();
-				// 		this.location.loading = false;
-				// 		uni.showToast({
-				// 			title: '检查权限失败',
-				// 			icon: 'none'
-				// 		});
-				// 	}
-				// });
+				})
 			},
 			// 详情
 			detail(){
@@ -493,53 +390,19 @@ import amap  from '@/utils/amap-wx.130.js';
 					// console.log(res)
 					this.customerInfo = res.data.customer
 					
+					this.point1.longitude = res.data.customer.lng
+					this.point1.latitude = res.data.customer.lat
+					console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
 					
-					// 坐标转换
-					const paramsObj = {
-						key: `${this.$amapWebApiKey}`,
-						locations: [`${res.data.customer.lng},${res.data.customer.lat}`],
-						coordsys:'baidu',
-						output: 'json'
-					}
-					const paramsStr = getUrlParamsStr(paramsObj)
-					uni.request({
-						url: 'https://restapi.amap.com/v3/assistant/coordinate/convert?' + paramsStr,
-						method: "get",
-						dataType: "json",
-						header: {
-							'Content-Type': 'application/json'
-						},
-						success: (resx) => {
-							// console.log('resx:',resx.data.locations)
-							if(resx.data.status==1){
-								let arr = resx.data.locations.split(",");
-								console.log(arr)
-								
-								this.point1.longitude = parseFloat(arr[0])
-								this.point1.latitude = parseFloat(arr[1])
-								console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
-								
-								console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
-								
-								this.longitude = this.point2.longitude
-								this.latitude = this.point2.latitude
-								
-								this.distance = this.getDistance(this.point2, this.point1);
-								
-								console.log('距离：',this.distance);
-							}else{
-								uni.showToast({
-									title:'经纬度转换失败',
-									icon:'none'
-								})
-							}
-							
-						},
-						fail: (res) => {
-							reject('经纬度解析地址失败')
-						}
-					});
+					console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
 					
+					this.longitude = this.point2.longitude
+					this.latitude = this.point2.latitude
+					
+					this.distance = this.getDistance(this.point2, this.point1);
+					
+					console.log('距离：',this.distance);
+
 					this.time = res.data.service_time	// 服务时间
 					this.startTimer();
 					
@@ -754,17 +617,14 @@ import amap  from '@/utils/amap-wx.130.js';
 						})
 						
 						if(this.qlType==2){
-							uni.navigateTo({
-								url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
-							});
+							// uni.navigateTo({
+							// 	url: "/pages/service/detail?jobtype=" + this.jobtype + "&jobid=" + this.jobid
+							// });
+							uni.navigateBack();
 						}else{
 							uni.navigateBack();
 						}
 
-						//更新工单报表
-						// setTimeout(()=>{
-						// 	that.makePdf();
-						// },2000)
 					} else {
 						this.$refs["message"].open({
 							type: "warn",
@@ -780,30 +640,7 @@ import amap  from '@/utils/amap-wx.130.js';
 					})
 				})
 			},
-			makePdf(){
-				let that = this
-
-				//更新工单报告
-				let formData = {
-						'data':JSON.stringify([{'job_id':that.jobid,'job_type':that.jobtype}]),
-						'send':1,
-						'sync':1
-					}
-				uni.request({
-					url: `${that.$baseUrl}/Order.Order/makePdf`,
-					header: {
-						'token': uni.getStorageSync('token'),
-						'Content-type':'application/x-www-form-urlencoded'
-					},
-					method:'POST',
-					data: formData,
-					success: (res) => {
-						// console.log(res.data);
-						console.log('更新工单成功')
-					}
-				});
-			},
-						//根据金纬度计算距离
+			//根据金纬度计算距离
 			getDistance(point1, point2) {
 				let R = 6371000; // 地球平均半径，单位：米
 				let lat1 = point1.latitude * Math.PI / 180;

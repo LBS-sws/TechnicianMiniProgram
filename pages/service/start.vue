@@ -35,13 +35,27 @@
 				</cl-timeline-item>
 			</cl-timeline>
 		</view>
-		<view class="tj_bu_y" v-if="service.main_staff == loginStaff">
+		<view class="tj_bu_y" v-if="hos==1">
+			<cl-row gutter="20">
+				<cl-col span="12" @tap="report()">
+					<view class="jc">检查报告</view>
+				</cl-col>
+				<cl-col span="12" >
+					<view class="jc" v-if="service.status==3">已完成</view>
+					<view class="jc" v-else-if="service.status==-1">未完成</view>
+					<view class="jc qc" v-else> </view>
+				</cl-col>
+			</cl-row>
+		</view>
+		<view class="tj_bu_y" v-else-if="service.main_staff == loginStaff">
 			<cl-row gutter="20">
 				<cl-col span="12" @tap="report()">
 					<view class="jc">检查报告</view>
 				</cl-col>
 				<cl-col v-if="service.status == 3" span="12" >
-					<view class="qc create_bg" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''">生成报告<text>生成报告后不能更改</text></view>
+					<view class="qc create_bg" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''"
+					
+					>生成报告<text>生成报告后不能更改</text></view>
 					<view class="qc" v-else>已签离店</view>
 					
 				</cl-col>
@@ -93,11 +107,22 @@
 			<orderList :jobs="jobs" :jobId="jobid" :jobType="jobtype" @updateJobList="updateJobList" @signOut="signOut" ></orderList>
 		</u-popup>
 		<!-- 暂停/继续 按钮-->
-		<block >
+		<block v-if="hos == 0">
 			<van-button class="stop-btn" type="primary" round @tap="$noMultipleClicks(stopHandle)">
 				<view>{{stopText}}</view>
 			</van-button>
 		</block>
+		
+		<u-modal
+			:show="showPdf"
+			:show-cancel-button="true"
+			title="提示"
+			:content="content"
+			@confirm="confirm"
+			@cancel="onModalCancel"
+			confirmText="确认"
+			cancelText="取消"
+		  ></u-modal>
 	</view>
 </template>
 
@@ -215,7 +240,9 @@ import orderList from '@/components/order/item.vue';
 				jobs:[],
 				stop:false,
 				stopText:'暂停服务先做其他客户',
-				axiosTime:false,	// 2秒后才能请求
+				hos:0,
+				showPdf:false,
+				content:'是否确定生成报告'
 			}
 		},
 		  computed: {
@@ -239,6 +266,10 @@ import orderList from '@/components/order/item.vue';
 			this.ct = uni.getStorageSync('ct')
 			this.loginStaff = uni.getStorageSync('staffname')
 			
+			if(index.hos){
+				this.hos = index.hos
+			}
+			
 			this.amapPlugin = new amap.AMapWX({
 			    key: `${this.$amapApiKey}`
 			}); 
@@ -257,12 +288,7 @@ import orderList from '@/components/order/item.vue';
 			this.qianming()
 			
 			this.getOrderStopInfo();
-			// setTimeout(()=>{
-				this.CustomerOrder()	// 2秒后再加载
-			// },1500)
-			// setTimeout(()=>{
-			// 	this.axiosTime = true
-			// },2500)
+			this.CustomerOrder()
 			
 			this.qlType = ''
 			this.date = ''
@@ -289,9 +315,7 @@ import orderList from '@/components/order/item.vue';
 						this.stop = true
 					}
 					if(res.data.service_time){
-						
 						that.time = res.data.service_time
-						
 					}
 				}).catch(err=>{
 					
@@ -300,15 +324,7 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 暂停|继续
 			stopHandle(){
-				
-				// if(!this.axiosTime){
-				// 	uni.showToast({
-				// 		icon:'none',
-				// 		title:'加载中，请稍等...'
-				// 	})
-				// 	return false
-				// }
-				console.log('1')
+			
 				if(this.service.service_ql == '1' || this.service.service_ql=='2'){
 					uni.showToast({
 						title:'签离后不能暂停',
@@ -316,7 +332,7 @@ import orderList from '@/components/order/item.vue';
 					})
 					return false
 				}
-				console.log(this.stop)
+				console.log('stop:',this.stop)
 				
 				let stop = this.stop;
 				if(stop){
@@ -329,55 +345,7 @@ import orderList from '@/components/order/item.vue';
 					title: '请稍等'  
 				});  
 				
-				this.getLocationAndUpdate(stop);
-				// 检查位置授权状态
-				// uni.getSetting({
-				// 	success: (res) => {
-				// 		if (!res.authSetting['scope.userLocation']) {
-				// 			uni.hideLoading();
-				// 			uni.showModal({
-				// 				title: '提示',
-				// 				content: '需要获取您的位置信息，是否授权？',
-				// 				success: (res) => {
-				// 					if (res.confirm) {
-				// 						uni.authorize({
-				// 							scope: 'scope.userLocation',
-				// 							success: () => {
-				// 								this.getLocationAndUpdate(stop);
-				// 							},
-				// 							fail: () => {
-				// 								// 用户拒绝授权，引导去设置页面
-				// 								uni.showModal({
-				// 									title: '提示',
-				// 									content: '需要您授权位置信息才能继续操作，是否去设置页面开启授权？',
-				// 									success: (res) => {
-				// 										if (res.confirm) {
-				// 											uni.openSetting({
-				// 												success: (res) => {
-				// 													if (res.authSetting['scope.userLocation']) {
-				// 														// 用户重新授权成功
-				// 														this.getLocationAndUpdate(stop);
-				// 													} else {
-				// 														uni.showToast({
-				// 															title: '您未授权位置信息',
-				// 															icon: 'none'
-				// 														});
-				// 													}
-				// 												}
-				// 											});
-				// 										}
-				// 									}
-				// 								});
-				// 							}
-				// 						});
-				// 					}
-				// 				}
-				// 			});
-				// 		} else {
-				// 			this.getLocationAndUpdate(stop);
-				// 		}
-				// 	}
-				// });
+				this.getLocationAndUpdate(stop)
 			},
 			// 新增方法：获取位置并更新状态
 			getLocationAndUpdate(stop) {
@@ -467,16 +435,8 @@ import orderList from '@/components/order/item.vue';
 						 "&autograph=" + this.autograph + "&staffSign="+this.staffSign +"&qlType="+this.qlType + '&date=' + this.date
 				})
 			},
-			// 生成PDF
-			createPdf(){
-				if(this.customer_qm==false)
-				{
-					uni.showToast({
-						title:'客户未签名不能生成报告',
-						icon:'none'
-					})
-					return false
-				}
+			confirm() {
+				console.log('确认生成报告')
 				let that = this
 				
 				let param = JSON.stringify([{
@@ -497,7 +457,30 @@ import orderList from '@/components/order/item.vue';
 					
 				}).catch(err=>{
 					console.log(err)
-				})		  
+				})	
+				setTimeout(() => {
+					// 3秒后自动关闭
+					this.showPdf = false;
+				}, 3000)
+			},
+			onModalCancel(){
+				this.showPdf = false
+			},
+			// 生成PDF
+			createPdf(){
+				
+				
+				if(this.customer_qm==false)
+				{
+					uni.showToast({
+						title:'客户未签名不能生成报告',
+						icon:'none'
+					})
+					return false
+				}
+				this.showPdf = true
+				
+					  
 			},
 			// 计时开始
 			startTimer() {
@@ -579,7 +562,7 @@ import orderList from '@/components/order/item.vue';
 				this.showContent = false;
 				this.$api.orderStart(params).then(res=>{
 					// console.log(res.data.data.service_time)
-					this.time = res.data.data.service_time	// 服务时间
+					// this.time = res.data.data.service_time	// 服务时间
 					
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
@@ -639,12 +622,7 @@ import orderList from '@/components/order/item.vue';
 						title: '数据加载中',
 						icon: 'none',
 					});
-				} else if (this.service.report) {//} else if (this.service.status == '3') {
-					uni.showToast({
-						title: '生成报告后不能修改', // 已完成不能再修改
-						icon: 'none',
-					});
-				} else {
+				}else {
 					console.log("客户信息：")
 					console.log(this.custInfo)
 					
@@ -709,13 +687,7 @@ import orderList from '@/components/order/item.vue';
 			// 签离出店按钮 第一步
 			check_out() {
 				console.log('2')
-				// if(!this.axiosTime){
-				// 	uni.showToast({
-				// 		icon:'none',
-				// 		title:'加载中，请稍等...'
-				// 	})
-				// 	return false
-				// }
+				
 				console.log('stop状态:',this.stop)
 				if(this.stop == false){
 					uni.showToast({
@@ -758,14 +730,6 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 协助人员签离
 			check_out_tow(){
-				// console.log('sign-02')
-				// if(!this.axiosTime){
-				// 	uni.showToast({
-				// 		icon:'none',
-				// 		title:'加载中，请稍等...'
-				// 	})
-				// 	return false
-				// }
 				console.log('3')
 				if(this.stop==false){
 					uni.showToast({
@@ -793,13 +757,7 @@ import orderList from '@/components/order/item.vue';
 			// 直接签离
 			now_check_out(){
 				console.log('4')
-				// if(!this.axiosTime){
-				// 	uni.showToast({
-				// 		icon:'none',
-				// 		title:'加载中，请稍等...'
-				// 	})
-				// 	return false
-				// }
+				
 				if(this.stop==false){
 					uni.showToast({
 						icon:'none',

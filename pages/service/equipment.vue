@@ -551,14 +551,6 @@ import Base64 from 'base-64';
 			},
 			// 新增设备
 			add() {
-				if(uni.getStorageSync('staffname') != uni.getStorageSync('main_staff'))
-				{
-					uni.showToast({
-						title:'协助人员不能编辑',
-						icon:'none'
-					})
-					return false
-				}
 				
 				this.scan_code = ''
 				this.$refs["add_confirm"]

@@ -129,10 +129,10 @@ export default {
 			current:0,
 			list: [
 				{
-                    name: '待开工(0)'
+                    name: '待开始(0)'
                 },
 				{
-                    name: '待完工(0)',
+                    name: '进行中(0)',
                 }, 
 				{
                     name: '已完成(0)',
@@ -269,7 +269,10 @@ export default {
 						this.list = res.data.list
 					}else{
 						this.jobs = []
-						this.list = [{ name: '待开工(0)' }, { name: '待完工(0)'}, { name: '已完成(0)'}]
+						this.startData = []
+						this.conductData = []
+						this.successData = []
+						this.list = [{ name: '待开始(0)' }, { name: '进行中(0)'}, { name: '已完成(0)'}]
 					}
 					
 				}
@@ -357,6 +360,13 @@ export default {
 		},
 		//搜索
 		seach(){
+			if(this.query.type=='' && this.query.value ==''){
+				uni.showToast({
+					title:'请选择服务类型和输入搜索关键词',
+					icon:'none'
+				})
+				return false
+			}
 			let params = {
 				jobdate: this.Data, //todayISOString
 				service: this.query.type,
@@ -364,7 +374,22 @@ export default {
 			}
 			this.$api.dayOrderList(params).then(res=>{
 				if(res.code == 200) {
-					this.jobs = res.data
+					// this.jobs = res.data
+					if(res.data.data){
+						this.jobs = res.data.data.start_data
+						
+						this.startData = res.data.data.start_data
+						this.conductData = res.data.data.conduct_data
+						this.successData = res.data.data.success_data
+						
+						this.list = res.data.list
+					}else{
+						this.jobs = []
+						this.startData = []
+						this.conductData = []
+						this.successData = []
+						this.list = [{ name: '待开始(0)' }, { name: '进行中(0)'}, { name: '已完成(0)'}]
+					}
 				}
 			}).catch(err=>{
 				console.log(err)

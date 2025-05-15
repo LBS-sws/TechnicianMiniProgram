@@ -172,13 +172,17 @@ import popup from '@/components/feedback/popup.vue';
 				menuShow:false,
 				
 				menuData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
-				user_id:''
+				user_id:'',
+				hos:0,
 			}
 		},
 		onLoad(index) {
 			this.fileUrl = this.$baseUrl_imgs
 			this.jobid = index.jobid
 			this.jobtype = index.jobtype
+			if(index.hos){
+				this.hos = index.hos
+			}
 		},
 		onShow(index) {
 			this.staffOther = uni.getStorageSync('staffname')
@@ -344,7 +348,9 @@ import popup from '@/components/feedback/popup.vue';
 						this.photosArr = photosArr
 					}
 					console.log('工单主负责人:',res.data.staff.main)
-					if(res.data.staff.main == uni.getStorageSync('staffname')){
+					if(this.hos == 1 ){
+						this.service_button = '查看服务报告'
+					}else if(res.data.staff.main == uni.getStorageSync('staffname')){
 						if(res.data.status == -1 && res.data.start_time == null){
 							this.service_button = '服务未完成';
 						}else{
@@ -414,34 +420,38 @@ import popup from '@/components/feedback/popup.vue';
 						
 						// 主要负责人
 						// console.log(this.service)
-						if (this.service.staff.main == uni.getStorageSync('staffname')) {
+						if(this.hos == 1){
+							uni.navigateTo({
+								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype + '&hos=' + this.hos
+							})
+						}else if (this.service.staff.main == uni.getStorageSync('staffname')) {
 							if(this.service.status == 3){
 								uni.navigateTo({
-									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype  + '&hos=' + this.hos
 								})
 							}
 							if(this.service.status == 2 && this.service.start_time == null && this.service.finish_time == null)
 							{
 								uni.navigateTo({
 									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr  + '&hos=' + this.hos
 								})
 							}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==1){
 								uni.navigateTo({
-									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype  + '&hos=' + this.hos
 								})
 							}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==2){
 								uni.navigateTo({
 									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr  + '&hos=' + this.hos
 								})
 							}else if(this.service.status == 2 && this.service.start_time != null && this.service.finish_time == null && this.service.service_ql ==0){
 								uni.navigateTo({
-									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype  + '&hos=' + this.hos
 								})
 							}else{
 								uni.navigateTo({
-									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+									url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype + '&hos=' + this.hos
 								})
 							}
 							
@@ -453,23 +463,23 @@ import popup from '@/components/feedback/popup.vue';
 								// 服务签到
 								uni.navigateTo({
 									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr  + '&hos=' + this.hos
 								})
 							} else if(this.service.status == 3 && !this.service.sign_in_info){
 								// this.service_button = '服务签到'
 								uni.navigateTo({
 									url: "/pages/sign/sign?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&lat=" + this
-									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr
+									.service.lat + "&lng=" + this.service.lng + "&addr=" + this.service.customer.addr  + '&hos=' + this.hos
 								})
 							} else if(this.service.status == 3 && this.service.sign_in_info){
 								// this.service_button = '查看服务报告'
 									uni.navigateTo({
-										url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+										url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype  + '&hos=' + this.hos
 									})
 							} else{
 								//继续服务
 									uni.navigateTo({
-										url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype
+										url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype  + '&hos=' + this.hos
 									})
 							}
 						}
