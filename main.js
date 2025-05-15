@@ -67,7 +67,7 @@ Vue.prototype.$amapWebApiKey="55bf8cc7ac61ce6099e8266ccc8ea0e8" // 高德经纬�
 
 // Vue.prototype.$baseUrl="http://localhost:10005/api"
 // Vue.prototype.$baseUrl="https://uat.teach.lbsapps.cn/api"   //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
-Vue.prototype.$baseUrl="https://v1.teach.lbsapps.cn/api"   //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
+Vue.prototype.$baseUrl="https://uat.teach.lbsapps.cn/api"   //api.technician.com   uat.teach.lbsapps.cn   v1.teach.lbsapps.cn
 Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"
 
 // wx68b6f3ef0a8ab2f1		test
