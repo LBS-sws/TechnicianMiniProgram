@@ -257,7 +257,7 @@ export default {
 	},
 	// 生成报告
 	makePdf(params){
-		return request("/Order.Order/makePdf", {data:params, sync: 1, send:0}, 'POST')
+		return request("/Order.Order/makePdf", {data:params, sync: 0, send:0}, 'POST')
 	},
 	// 未签离
 	noOrderSign(params){
