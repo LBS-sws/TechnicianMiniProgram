@@ -293,6 +293,8 @@ import orderList from '@/components/order/item.vue';
 			this.qlType = ''
 			this.date = ''
 			this.service.job_date = ''
+			
+			this.orderShow = false
 		},
 		methods: {
 			// 获取已服务时间，减去暂停时间
@@ -538,7 +540,7 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 客户其他工单
 			CustomerOrder(){
-				
+				this.orderShow = false
 				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
@@ -547,7 +549,12 @@ import orderList from '@/components/order/item.vue';
 					console.log('当前客户其他工单:',res)
 						
 					if(res.code==200){
-						this.jobs = res.data	
+						
+						if(res.data.length>0){
+							this.jobs = res.data
+						}else{
+							this.jobs = []
+						}
 					}
 				}).catch(err=>{
 					
