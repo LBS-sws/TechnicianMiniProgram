@@ -22,7 +22,9 @@
 			<view class="v_magin">
 				服务时长要求：<span style="color: black;"><text selectable="true" v-if="serviceContractTime">{{serviceContractTime}}分钟</text></span>
 			</view>
-			
+			<view class="v_magin">
+				数据来源：<span style="color: black;"><text selectable="true" v-if="service.customer.upload_source">{{service.customer.upload_source.name}}</text></span>
+			</view>
 			<!-- 流程 -->
 			<cl-divider>
 				<text class="cl-icon-favor"></text>

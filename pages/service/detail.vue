@@ -25,6 +25,9 @@
 					<cl-col span="8" v-if="service.customer.customer_type_text">
 						<view class="customer_type">{{service.customer.customer_type_text}}</view>
 					</cl-col>
+					<cl-col span="8" v-if="service.customer.upload_source">
+						<view class="customer_type">{{service.customer.upload_source.name}}</view>
+					</cl-col>
 				</cl-row>
 				
 				<cl-row v-if="service.order_type == 3">
