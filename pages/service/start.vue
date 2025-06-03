@@ -465,7 +465,8 @@ import orderList from '@/components/order/item.vue';
 				setTimeout(() => {
 					// 3秒后自动关闭
 					this.showPdf = false;
-				}, 3000)
+					this.service.report = {id:1}
+				}, 2500)
 			},
 			onModalCancel(){
 				this.showPdf = false
