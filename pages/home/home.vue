@@ -59,7 +59,8 @@
 						<view class="lab-item">{{item.service_type_info.service_name}}</view>
 						<view class="lab-item">{{item.first_job}}</view>
 						<view class="lab-item" v-if="item.customer.customer_type_text">{{item.customer.customer_type_text}}</view>
-						<view  class="lab-item" v-if="item.stop_status==1">已暂停</view>
+						<view class="lab-item" v-if="item.stop_status==1">已暂停</view>
+						<view class="lab-item" v-if="item.customer.upload_source.name">{{item.customer.upload_source.name}}</view>
 					</view>
 				</view>
 				<view class="info-box">
@@ -486,6 +487,8 @@ export default {
 				display: flex;
 				justify-content: flex-start;
 				align-items: center;
+				width: 506rpx;
+				overflow-x: auto;
 				.lab-item{
 					font-size: 26rpx;
 					font-weight: 400;
@@ -493,7 +496,7 @@ export default {
 					border: 1rpx solid rgba(215,215,215,1);
 					border-radius: 8rpx;
 					padding: 6rpx 6rpx;
-					min-width: 100rpx;
+					min-width: 110rpx;
 					text-align: center;
 					background: #f2f2f2;
 					margin-left: 16rpx;

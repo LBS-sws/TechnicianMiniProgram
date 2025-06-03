@@ -22,7 +22,9 @@
 			<view class="v_magin">
 				服务时长要求：<span style="color: black;"><text selectable="true" v-if="serviceContractTime">{{serviceContractTime}}分钟</text></span>
 			</view>
-			
+			<view class="v_magin">
+				数据来源：<span style="color: black;"><text selectable="true" v-if="service.customer.upload_source">{{service.customer.upload_source.name}}</text></span>
+			</view>
 			<!-- 流程 -->
 			<cl-divider>
 				<text class="cl-icon-favor"></text>
@@ -293,6 +295,8 @@ import orderList from '@/components/order/item.vue';
 			this.qlType = ''
 			this.date = ''
 			this.service.job_date = ''
+			
+			this.orderShow = false
 		},
 		methods: {
 			// 获取已服务时间，减去暂停时间
@@ -538,7 +542,7 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 客户其他工单
 			CustomerOrder(){
-				
+				this.orderShow = false
 				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
@@ -547,7 +551,12 @@ import orderList from '@/components/order/item.vue';
 					console.log('当前客户其他工单:',res)
 						
 					if(res.code==200){
-						this.jobs = res.data	
+						
+						if(res.data.length>0){
+							this.jobs = res.data
+						}else{
+							this.jobs = []
+						}
 					}
 				}).catch(err=>{
 					
