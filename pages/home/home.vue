@@ -168,7 +168,7 @@ export default {
 			startData:[],
 			conductData:[],
 			successData:[],
-			reportShow: true
+			reportShow: false
 		};
 	},
 	onLoad() {
