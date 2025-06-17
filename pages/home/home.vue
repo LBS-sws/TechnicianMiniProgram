@@ -101,6 +101,33 @@
 				<rich-text :nodes="noSignOrder.content" v-if="noSignOrder.content"></rich-text>
 			</view>
 		</u-modal>
+		
+		<u-popup :show="reportShow" :round="4" mode="center" @close="close" @open="open">
+			<view class="report_container">
+				<view class="report_header">
+					<view class="title">待生成报告</view>
+				</view>
+				<view class="report_content">
+					<view class="item">
+						<view class="order-info">
+							<view class="date">2025-06-10</view>
+							<view class="company">非常好吃的</view>
+							<view class="lab">
+								<view class="lab-item">灭虫</view>
+							</view>
+						</view>
+						<view class="handle-ck">
+							<view class="h-item">去完善</view>
+							<view class="h-item">生成报告</view>
+						</view>
+					</view>
+				</view>
+				<view class="report_footer">
+					<view class="item first">一键生成报告</view>
+					<view class="item">关闭弹窗</view>
+				</view>
+			</view>
+		</u-popup>
 	</view>
 </template>
 <script>
@@ -141,6 +168,7 @@ export default {
 			startData:[],
 			conductData:[],
 			successData:[],
+			reportShow: true
 		};
 	},
 	onLoad() {
@@ -163,6 +191,13 @@ export default {
 		this.getNoSignOrder()
 	},
 	methods: {
+		open() {
+			// console.log('open');
+		},
+		close() {
+			this.reportShow = false
+			// console.log('close');
+		},
 		clickHandle(e){
 			// console.log(e)
 			this.jobs = []
@@ -400,6 +435,34 @@ export default {
 }
 </script>
 <style lang="scss">
+.report_container{
+	width: 680rpx;
+	.report_header{
+		padding-left: 36rpx;
+		.title{
+			font-size: 28rpx;
+			color: #333;
+			padding: 34rpx 0;
+		}
+	}
+	.report_footer{
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		border-top: 1rpx solid #eee;
+		height: 110rpx;
+		.item{
+			width: calc(50% - 1rpx);
+			height: 110rpx;
+			line-height: 110rpx;
+			font-size: 26rpx;
+			color: #0374e8;
+			text-align: center;
+			border-left: 1rpx solid #e0dcdc;
+		}
+		.item.first{ border-left: none;}
+	}
+}
 .setup-list{
 	display: flex;
 	justify-content: space-between;
