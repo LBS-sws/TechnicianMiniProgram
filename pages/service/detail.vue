@@ -644,7 +644,7 @@ import popup from '@/components/feedback/popup.vue';
 		float: right;
 		position: absolute;
 		right: 20px;
-		top: 70px;
+		top: 0;
 	}
 
 	.new_card_content {
@@ -699,6 +699,7 @@ import popup from '@/components/feedback/popup.vue';
 	.cust_name {
 		font-size: 20px;
 		font-weight: bold;
+		position: relative;
 	}
 
 	.service_title {
