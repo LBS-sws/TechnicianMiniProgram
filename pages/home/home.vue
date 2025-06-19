@@ -108,7 +108,7 @@
 					<view class="title">待生成报告</view>
 				</view>
 				<view class="report_content">
-					<view class="item">
+					<view class="item" v-for="(item,i) in 14">
 						<view class="order-info">
 							<view class="date">2025-06-10</view>
 							<view class="company">非常好吃的</view>
@@ -168,7 +168,7 @@ export default {
 			startData:[],
 			conductData:[],
 			successData:[],
-			reportShow: false
+			reportShow: true
 		};
 	},
 	onLoad() {
@@ -439,10 +439,75 @@ export default {
 	width: 680rpx;
 	.report_header{
 		padding-left: 36rpx;
+		border-bottom: 1rpx solid #e0dcdc;
 		.title{
 			font-size: 28rpx;
 			color: #333;
 			padding: 34rpx 0;
+		}
+	}
+	.report_content{
+		padding: 20rpx 0;
+		height: 600rpx;
+		overflow-y: auto;
+		.item{
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0 36rpx;
+			.order-info{
+				.date{
+					font-size: 26rpx;
+					color: #333;
+					margin-bottom: 20rpx;
+					position: relative;
+					padding-left: 20rpx;
+				}
+				.date::after{
+					content:'';
+					width: 12rpx;
+					height: 12rpx;
+					background: #0374e8;
+					border-radius: 50%;
+					position: absolute;
+					top: 12rpx;
+					left: 0;
+				}
+				.company{
+					font-size: 25rpx;
+					color: #000000;
+					font-weight: 600;
+					margin-bottom: 10rpx;
+				}
+				.lab{
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+					margin-bottom: 10rpx;
+					.lab-item{
+						font-size: 26rpx;
+						font-weight: 400;
+						color: #555555;
+						border: 1rpx solid #d7d7d7;
+						border-radius: 8rpx;
+						padding: 6rpx 6rpx;
+						min-width: 110rpx;
+						text-align: center;
+						background: #f2f2f2;
+						margin-right: 16rpx;
+					}
+				}
+			}
+			.handle-ck{
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				.h-item{
+					font-size: 26rpx;
+					color: #0374e8;
+					margin-left: 36rpx;
+				}
+			}
 		}
 	}
 	.report_footer{
