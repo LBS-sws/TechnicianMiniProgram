@@ -124,7 +124,7 @@
 				</view>
 				<view class="report_footer">
 					<view class="item first">一键生成报告</view>
-					<view class="item">关闭弹窗</view>
+					<view class="item" @click="close">关闭弹窗</view>
 				</view>
 			</view>
 		</u-popup>
@@ -195,6 +195,7 @@ export default {
 			// console.log('open');
 		},
 		close() {
+			console.log('123')
 			this.reportShow = false
 			// console.log('close');
 		},
