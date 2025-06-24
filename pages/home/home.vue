@@ -8,11 +8,11 @@
 			<span>{{Week}}</span>
 		</view> -->
 		<!-- 未完成工作单列表 -->
-		<!-- <cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
+		<cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
 			<view v-for="item in UnFinshLists" :key="item" @click="gotoday(item)">
 				<text class="unfinsh">{{item.job_date}}</text>
 			</view>
-		</cl-dialog> -->
+		</cl-dialog><!--  -->
 		<!-- 工单状态 -->
 		<view class="orderStatusBox" >
 			<u-tabs
