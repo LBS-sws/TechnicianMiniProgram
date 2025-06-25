@@ -8,11 +8,11 @@
 			<span>{{Week}}</span>
 		</view> -->
 		<!-- 未完成工作单列表 -->
-		<!-- <cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
+		<cl-dialog title="未完成工单" :visible="show_dislog" :closeOnClickModal="false" :showCloseBtn="true">
 			<view v-for="item in UnFinshLists" :key="item" @click="gotoday(item)">
 				<text class="unfinsh">{{item.job_date}}</text>
 			</view>
-		</cl-dialog> -->
+		</cl-dialog><!--  -->
 		<!-- 工单状态 -->
 		<view class="orderStatusBox" >
 			<u-tabs
@@ -108,23 +108,23 @@
 					<view class="title">待生成报告</view>
 				</view>
 				<view class="report_content">
-					<view class="item">
+					<view class="item" v-for="(item,i) in pdfData" :key="i">
 						<view class="order-info">
-							<view class="date">2025-06-10</view>
-							<view class="company">非常好吃的</view>
+							<view class="date">{{item.job_date}}</view>
+							<view class="company">{{item.customer.name_zh}}</view>
 							<view class="lab">
-								<view class="lab-item">灭虫</view>
+								<view class="lab-item">{{item.service_type_info.service_name}}</view>
 							</view>
 						</view>
 						<view class="handle-ck">
-							<view class="h-item">去完善</view>
-							<view class="h-item">生成报告</view>
+							<view class="h-item" @click="goDetail(item)">去完善</view>
+							<view class="h-item" @click="createPdf(i)">生成报告</view>
 						</view>
 					</view>
 				</view>
 				<view class="report_footer">
-					<view class="item first">一键生成报告</view>
-					<view class="item">关闭弹窗</view>
+					<view class="item first" @click="createPdfAll">一键生成报告</view>
+					<view class="item" @click="close(1)">关闭弹窗</view>
 				</view>
 			</view>
 		</u-popup>
@@ -168,7 +168,9 @@ export default {
 			startData:[],
 			conductData:[],
 			successData:[],
-			reportShow: false
+			reportShow: false,
+			pdfData:[],
+			openPdf:0,
 		};
 	},
 	onLoad() {
@@ -178,6 +180,8 @@ export default {
 		const date = String(now.getDate()).padStart(2, '0');  
 		let todayISOString = `${year}-${month}-${date}`;   
 		this.Data = todayISOString
+		
+		this.openPdf = uni.getStorageSync('pdfOpen')
 	},
 	onShow(index) {
 		
@@ -189,14 +193,87 @@ export default {
 		}
 		
 		this.getNoSignOrder()
+		
+		this.getOrderList()
+		
+		this.openPdf = uni.getStorageSync('pdfOpen')
+		setTimeout(()=>{
+			if(this.openPdf ==1 && this.pdfData.length>0){
+				this.reportShow = true
+			}
+		},800)
 	},
 	methods: {
+		createPdfAll(){
+			if(this.pdfData.length==0){
+				uni.showToast({
+					title:'暂无报告可以生成！',
+					icon:'none'
+				})
+				return false
+			}
+			
+			let arr = [];
+			this.pdfData.forEach((item,i)=>{
+				arr.push({job_id:item.job_id, job_type:item.job_type})
+			})
+			console.log(arr)
+			let param = JSON.stringify(arr)
+			console.log(param)
+			uni.showToast({
+				icon:'loading',
+				title:'生成中'
+			})
+			
+			this.$api.makePdf(param).then(res=>{
+				console.log(res)
+				uni.showToast({
+					title:res.msg,
+					icon:'none'
+				})
+				this.pdfData = []
+			}).catch(err=>{
+				console.log(err)
+			})	
+		},
+		createPdf(index){
+			let param = JSON.stringify([{
+			    'job_id':this.pdfData[index].job_id,
+			    'job_type':this.pdfData[index].job_type
+			}])
+			uni.showToast({
+				icon:'loading',
+				title:'生成中'
+			})
+			console.log(param)
+			this.$api.makePdf(param).then(res=>{
+				console.log(res)
+				uni.showToast({
+					title:res.msg,
+					icon:'none'
+				})
+				this.pdfData.splice(index, 1)
+			}).catch(err=>{
+				console.log(err)
+			})	
+		},
+		getOrderList(){
+			let param = {}
+			this.$api.OrderMakePdf(param).then(res=>{
+				this.pdfData = res.data
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
 		open() {
 			// console.log('open');
 		},
-		close() {
+		close(e) {
+			console.log(e)
+			if(e==1){
+				uni.setStorageSync('pdfOpen',0)
+			}
 			this.reportShow = false
-			// console.log('close');
 		},
 		clickHandle(e){
 			// console.log(e)
@@ -259,6 +336,11 @@ export default {
 			var wekdate = dateObject.getDay();
 			var weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
 			return weekday[wekdate];
+		},
+		goDetail(item){
+			uni.navigateTo({
+				url: "/pages/service/start?jobtype=" + item.job_type + "&jobid=" + item.job_id + '&hos=0'
+			})
 		},
 		// 工作单详情
 		job_detail(index) {
@@ -439,10 +521,75 @@ export default {
 	width: 680rpx;
 	.report_header{
 		padding-left: 36rpx;
+		border-bottom: 1rpx solid #e0dcdc;
 		.title{
 			font-size: 28rpx;
 			color: #333;
 			padding: 34rpx 0;
+		}
+	}
+	.report_content{
+		padding: 20rpx 0;
+		height: 600rpx;
+		overflow-y: auto;
+		.item{
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0 36rpx;
+			.order-info{
+				.date{
+					font-size: 26rpx;
+					color: #333;
+					margin-bottom: 20rpx;
+					position: relative;
+					padding-left: 20rpx;
+				}
+				.date::after{
+					content:'';
+					width: 12rpx;
+					height: 12rpx;
+					background: #0374e8;
+					border-radius: 50%;
+					position: absolute;
+					top: 12rpx;
+					left: 0;
+				}
+				.company{
+					font-size: 25rpx;
+					color: #000000;
+					font-weight: 600;
+					margin-bottom: 10rpx;
+				}
+				.lab{
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+					margin-bottom: 10rpx;
+					.lab-item{
+						font-size: 26rpx;
+						font-weight: 400;
+						color: #555555;
+						border: 1rpx solid #d7d7d7;
+						border-radius: 8rpx;
+						padding: 6rpx 6rpx;
+						min-width: 110rpx;
+						text-align: center;
+						background: #f2f2f2;
+						margin-right: 16rpx;
+					}
+				}
+			}
+			.handle-ck{
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				.h-item{
+					font-size: 26rpx;
+					color: #0374e8;
+					margin-left: 36rpx;
+				}
+			}
 		}
 	}
 	.report_footer{

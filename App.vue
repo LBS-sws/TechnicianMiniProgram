@@ -47,7 +47,7 @@
 					confirmText: "知道了"
 				});
 			});
-
+			uni.setStorageSync('pdfOpen',1)
 		},
 		onHide: function() {
 			console.log("App Hide");
