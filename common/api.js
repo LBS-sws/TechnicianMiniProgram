@@ -283,7 +283,10 @@ export default {
 		return request("/Order.Order/OrderStop", params, 'POST')
 	},
 	OrderStopInfo(params){
-	return request("/Order.Order/OrderStopInfo", params, 'GET')
+		return request("/Order.Order/OrderStopInfo", params, 'GET')
+	},
+	OrderMakePdf(params){
+		return request("/Order.Order/pdfList", params, 'GET')
 	}
 }
 
