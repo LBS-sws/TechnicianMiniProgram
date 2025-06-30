@@ -56,7 +56,7 @@
 					</view>
 					<view style="border-bottom: 1px solid #eeeeee;">
 						<cl-list-item label="服务时间(开始)：">
-							<text selectable="true">{{ basic.start_date || '-' }}  &nbsp; {{ basic.start_time || '-' }}</text>
+							<text selectable="true">{{ basic.start_date_text || '-' }}  &nbsp; {{ basic.start_time_text || '-' }}</text>
 						</cl-list-item>
 					</view>
 					<view style="border-bottom: 1px solid #eeeeee;">
