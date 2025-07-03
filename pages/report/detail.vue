@@ -1,385 +1,385 @@
 <template>
-	<view class="container" :class="isHeight ? 'heightHide':''">
-		<view class="download" @tap="download()" v-if="current_tab==0">
-			<cl-icon name="cl-icon-cloud-download" color="#007AFF" :size="80"></cl-icon>
+	<view>
+		<!-- 只加一次 loading 遮罩 -->
+		<view v-if="loading" class="loading-mask">
+			<cl-loading size="60" color="#007AFF" text="加载中..."></cl-loading>
 		</view>
-		<view>
-			<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1) && is_add">
-				<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
+		<!-- 数据加载好后，所有内容一起显示 -->
+		<view v-else class="container" :class="isHeight ? 'heightHide':''">
+			<view class="download" @tap="download()" v-if="current_tab==0">
+				<cl-icon name="cl-icon-cloud-download" color="#007AFF" :size="80"></cl-icon>
 			</view>
-		</view>
-		<scroll-view scroll-x="true" class="tab-h" v-bind:scroll-into-view="scroll_into"
-			v-bind:scroll-with-animation="true">
-			<view v-for="(item, index) in tab_bar" class="tab-item"
-				v-bind:class="current_tab==index ? 'tab-bar-active' : ''" v-bind:key="index" v-bind:data-current="index"
-				v-bind:id="item.id" v-on:click="change_tab">{{item.tit}}</view>
-		</scroll-view> 
-		<view class="hr"></view>
-		<swiper class="swiper" v-bind:current="current_tab" duration="300" @change="change_swiper">
-			<!-- 基础信息 -->
-			<swiper-item>
-				<view style="border-bottom: 1px solid #eeeeee;">
-					<cl-list-item label="客户名称：">
-						<text selectable="true">{{basic.customer.name_zh}}</text>
-					</cl-list-item>
+			<view>
+				<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1) && is_add">
+					<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
 				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
-					<cl-list-item label="客户地址：">
-						<text selectable="true">{{basic.addr}}</text>
-					</cl-list-item>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
-					<cl-list-item label="联系人员：">
-						<text selectable="true">{{basic.contact_name}}</text>
-					</cl-list-item>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
-					<cl-list-item label="联系方式：">
-						<text selectable="true">{{basic.mobile}}</text>
-					</cl-list-item>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
-					<cl-list-item label="服务类型：">
-						<text selectable="true">{{basic.service_type_info.service_name}}</text>
-					</cl-list-item>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;" v-if="basic.order_type != 3">
-					<cl-list-item label="服务项目：">
-						<text selectable="true">{{basic.project}}</text>
-					</cl-list-item>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
-					<cl-list-item label="服务时间(开始)：">
-						<text selectable="true">{{basic.start_date}}  &nbsp; {{basic.start_time}}</text>
-					</cl-list-item>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
-					<cl-list-item label="服务时间(结束)：">
-						<text v-if="basic.finish_date">{{basic.finish_date}}  &nbsp; {{basic.finish_time}}</text>
-					</cl-list-item>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;">
-					<cl-list-item label="服务人员：">
-						<text selectable="true">{{basic.staff.main}}</text> <text selectable="true">{{basic.staff.other}}</text>
-					</cl-list-item>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;" v-if="basic.order_type != 3">
-					<cl-list-item label="设备巡查：">
-						<text selectable="true">{{basic.equipments}}</text>
-					</cl-list-item>
-				</view>
-			</swiper-item>
-			<!-- 服务简报 -->
-			<swiper-item v-if="show_briefing">
-				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="briefing.content">
-					<view class="service_title">服务内容</view>
-					<view class="service_content">
-						<text selectable="true">{{briefing.content}}</text>
+			</view>
+			<scroll-view scroll-x="true" class="tab-h" v-bind:scroll-into-view="scroll_into"
+				v-bind:scroll-with-animation="true">
+				<view v-for="(item, index) in tab_bar" class="tab-item"
+					v-bind:class="current_tab==index ? 'tab-bar-active' : ''" v-bind:key="index" v-bind:data-current="index"
+					v-bind:id="item.id" v-on:click="change_tab">{{item.tit}}</view>
+			</scroll-view> 
+			<view class="hr"></view>
+			<swiper class="swiper" v-bind:current="current_tab" duration="300" @change="change_swiper">
+				<!-- 基础信息 -->
+				<swiper-item>
+					<view style="border-bottom: 1px solid #eeeeee;">
+						<cl-list-item label="客户名称：">
+							<text selectable="true">{{basic.customer.name_zh}}</text>
+						</cl-list-item>
 					</view>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="briefing.proposal">
-					<view class="service_title">跟进与建议</view>
-					<view class="service_content">
-						<text selectable="true">{{briefing.proposal}}</text>
+					<view style="border-bottom: 1px solid #eeeeee;">
+						<cl-list-item label="客户地址：">
+							<text selectable="true">{{basic.addr}}</text>
+						</cl-list-item>
 					</view>
-				</view>
-			</swiper-item>
-			<!-- 物料使用 -->
-			<swiper-item v-if="show_material">
-				<cl-scroller>
-					<view style="background-color: #FFFFFF;" v-for="(item,index) in material">
-						<view class="material_title" style="border-bottom: 1px solid #eeeeee;display: flex;justify-content: space-between;">
-							{{item.material_name}}
-							<view>
-								
-							</view>
-							<view style="padding: 3px 5px;border: 1px solid #ffffff;background: #2b9cec;color: #ffffff;border-radius: 3px;letter-spacing: 4px;"
-								v-if="item.img_arr==1" @click="goMaterial(item.id)">
-								物料证件
-							</view>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="农药登记证号：">
-								<text>{{item.material_registration_no}}</text>
-							</cl-list-item>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="有效成分：">
-								<text>{{item.material_active_ingredient}}</text>
-							</cl-list-item>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="药物配比：">
-								<text>{{item.material_ratio}}</text>
-							</cl-list-item>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="靶标：">
-								<text>{{item.targets}}</text>
-							</cl-list-item>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="使用方式：">
-								<text>{{item.use_mode}}</text>
-							</cl-list-item>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="使用区域：">
-								<text>{{item.use_area}}</text>
-							</cl-list-item>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="处理空间/面积：">
-								<text>{{item.processing_space}}</text>
-							</cl-list-item>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="药物用量：">
-								<text>{{item.dosage}}{{item.unit}}</text>
-							</cl-list-item>
-						</view>
-						<view style="border-bottom: 1px solid #eeeeee;">
-							<cl-list-item label="注意事项：">
-								<text>{{item.matters_needing_attention}}</text>
-							</cl-list-item>
+					<view style="border-bottom: 1px solid #eeeeee;">
+						<cl-list-item label="联系人员：">
+							<text selectable="true">{{basic.contact_name}}</text>
+						</cl-list-item>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;">
+						<cl-list-item label="联系方式：">
+							<text selectable="true">{{basic.mobile}}</text>
+						</cl-list-item>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;">
+						<cl-list-item label="服务类型：">
+							<text selectable="true">{{basic.service_type_info.service_name}}</text>
+						</cl-list-item>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;" v-if="basic.order_type != 3">
+						<cl-list-item label="服务项目：">
+							<text selectable="true">{{basic.project}}</text>
+						</cl-list-item>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;">
+						<cl-list-item label="服务时间(开始)：">
+							<text selectable="true">{{ basic.start_date_text || '-' }}  &nbsp; {{ basic.start_time_text || '-' }}</text>
+						</cl-list-item>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;">
+						<cl-list-item label="服务时间(结束)：">
+							<text v-if="basic.finish_date || basic.finish_time">{{ basic.finish_date || '-' }}  &nbsp; {{ basic.finish_time || '-' }}</text>
+						</cl-list-item>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;">
+						<cl-list-item label="服务人员：">
+							<text selectable="true">{{basic.staff.main}}</text> <text selectable="true">{{basic.staff.other}}</text>
+						</cl-list-item>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;" v-if="basic.order_type != 3">
+						<cl-list-item label="设备巡查：">
+							<text selectable="true">{{basic.equipments}}</text>
+						</cl-list-item>
+					</view>
+				</swiper-item>
+				<!-- 服务简报 -->
+				<swiper-item v-if="show_briefing">
+					<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="briefing.content">
+						<view class="service_title">服务内容</view>
+						<view class="service_content">
+							<text selectable="true">{{briefing.content}}</text>
 						</view>
 					</view>
-				</cl-scroller>
-			</swiper-item>
-			<!-- 设备巡查 -->
-			<swiper-item style="background-color: #FFFFFF;" v-if="show_equipment">
-				<cl-scroller>
-					<view class="new_card" v-for="(item, index) in equipment">
-						<view class="new_card_title">
-							<view class="new_card_title_left">
-								<span class="xh">|</span>
-								{{item.equipment_name}}({{item.use_count}}/{{item.total_count}})
-							</view>
-						</view>
-						<view class="new_card_content" v-if="item.table_data.length > 0">
-						    <t-table>
-						        <t-tr>
-						            <t-th v-for="(table_title, index_t) in item.table_title" :key="index_t">{{table_title}}</t-th>
-						        </t-tr>
-						        <t-tr v-if="JSON.stringify(item.content) != '{}'"
-						            v-for="(contents, index_cs) in item.table_data" :key="index_cs">
-						            <t-td v-for="(content, index_c) in contents" :key="index_c">
-						                <text v-if="content !== 'null' && content !== '' && content !== null">{{content}}</text>
-						            </t-td>
-						        </t-tr>
-						    </t-table>
+					<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="briefing.proposal">
+						<view class="service_title">跟进与建议</view>
+						<view class="service_content">
+							<text selectable="true">{{briefing.proposal}}</text>
 						</view>
 					</view>
-				</cl-scroller>
-			</swiper-item>
-			<!-- 风险跟进 -->
-			<swiper-item v-if="show_risk">
-				<cl-scroller>
-					<view class="risk" v-for="(item,index) in risk" @tap="risk_detail(item.id)">
-						<cl-row>
-							<cl-col span="9">
-								<img :src="item.img" />
-							</cl-col>
-							<cl-col span="15" style="text-align: left;line-height: 22px;">
-								<cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
-								<cl-list v-if="ct==1"><span>风险区域：</span>{{item.risk_area}}</cl-list>
-								<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
-								<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
-								<cl-row>
-									<cl-col span="12">
-										<view class="fx">风险等级：{{item.risk_rank}}</view>
-									</cl-col>
-									<cl-col span="12">
-										<view class="gj">跟进次数：{{item.follow_times}}</view>
-									</cl-col>
-								</cl-row>
-							</cl-col>
-
-						</cl-row>
-					</view>
-				</cl-scroller>
-			</swiper-item>
-			<!-- 现场工作照 -->
-			<swiper-item class="photo" v-if="show_photo">
-				<cl-scroller>
-					<view class="sign_content" v-for="(item, index) in photo" :key="index">
-						<view class="block">
-							<cl-image size="150rpx" v-for="(site_photo, index_p) in item.site_photos" :key="index_p" :src="site_photo"
-								:preview-list="[site_photo]">
-							</cl-image>
-						</view>
-						<view class="sign_time">
-							<cl-list>{{item.remarks}}</cl-list>
-						</view>
-					</view>
-				</cl-scroller>
-			</swiper-item>
-			<!-- 6. 勘察总结 -->
-			<swiper-item class="sumup" v-if="show_sumup">
-				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.risk_desc">
-					<view class="service_title">风险问题描述</view>
-					<view class="service_content">
-						<text selectable="true">{{kczj_model.risk_desc}}</text>
-					</view>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.store_coordinate">
-					<view class="service_title">门店建议措施</view>
-					<view class="service_content">
-						<text selectable="true">{{kczj_model.store_coordinate}}</text>
-					</view>
-				</view>
-				<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.ms_action">
-					<view class="service_title">本次行动方案</view>
-					<view class="service_content">
-						<text selectable="true">{{kczj_model.ms_action}}</text>
-					</view>
-				</view>
-			</swiper-item>
-			<!-- 7. 风险评估 -->
-			<swiper-item class="evaluate" v-if="show_evaluate">
-				<!-- <scroll-view scroll-y="true"
-					:scroll-into-view="bottomId" scroll-with-animation="true"
-					
-					:style="{height:windowHeight + 'px'}">
-					
-				</scroll-view> -->
-				
-				<view>
-					<view style="overflow-y: auto;" :style="{height:windowHeight + 'px'}">
-						<view v-for="(item,i) in reportRiskData" :key="i" class="risk_list">
-							<view class="cat_title">
-								{{item.name}}
-							</view>
-							<view class="child_list">
-								<view class="list-item" v-for="(item_c,index) in item.list" :key="index">
-									<view class="list-title"  @click="goRiskPinggu(item)">{{item_c.title}}</view>
-									<view style="width: 320rpx;">
-										<isYes :value="item_c.is_conform" :i="i" :ii="index" :reportRiskData="reportRiskData"></isYes>
+				</swiper-item>
+				<!-- 物料使用 -->
+				<swiper-item v-if="show_material">
+					<cl-scroller>
+						<view style="background-color: #FFFFFF;" v-for="(item,index) in material">
+							<view class="material_title" style="border-bottom: 1px solid #eeeeee;display: flex;justify-content: space-between;">
+								{{item.material_name}}
+								<view>
 									
+								</view>
+								<view style="padding: 3px 5px;border: 1px solid #ffffff;background: #2b9cec;color: #ffffff;border-radius: 3px;letter-spacing: 4px;"
+									v-if="item.img_arr==1" @click="goMaterial(item.id)">
+									物料证件
+								</view>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="农药登记证号：">
+									<text>{{item.material_registration_no}}</text>
+								</cl-list-item>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="有效成分：">
+									<text>{{item.material_active_ingredient}}</text>
+								</cl-list-item>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="药物配比：">
+									<text>{{item.material_ratio}}</text>
+								</cl-list-item>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="靶标：">
+									<text>{{item.targets}}</text>
+								</cl-list-item>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="使用方式：">
+									<text>{{item.use_mode}}</text>
+								</cl-list-item>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="使用区域：">
+									<text>{{item.use_area}}</text>
+								</cl-list-item>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="处理空间/面积：">
+									<text>{{item.processing_space}}</text>
+								</cl-list-item>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="药物用量：">
+									<text>{{item.dosage}}{{item.unit}}</text>
+								</cl-list-item>
+							</view>
+							<view style="border-bottom: 1px solid #eeeeee;">
+								<cl-list-item label="注意事项：">
+									<text>{{item.matters_needing_attention}}</text>
+								</cl-list-item>
+							</view>
+						</view>
+					</cl-scroller>
+				</swiper-item>
+				<!-- 设备巡查 -->
+				<swiper-item style="background-color: #FFFFFF;" v-if="show_equipment">
+					<cl-scroller>
+						<view class="new_card" v-for="(item, index) in equipment">
+							<view class="new_card_title">
+								<view class="new_card_title_left">
+									<span class="xh">|</span>
+									{{item.equipment_name}}({{item.use_count}}/{{item.total_count}})
+								</view>
+							</view>
+							<view class="new_card_content" v-if="item.table_data.length > 0">
+							    <t-table>
+							        <t-tr>
+							            <t-th v-for="(table_title, index_t) in item.table_title" :key="index_t">{{table_title}}</t-th>
+							        </t-tr>
+							        <t-tr v-if="JSON.stringify(item.content) != '{}'"
+							            v-for="(contents, index_cs) in item.table_data" :key="index_cs">
+							            <t-td v-for="(content, index_c) in contents" :key="index_c">
+							                <text v-if="content !== 'null' && content !== '' && content !== null">{{content}}</text>
+							            </t-td>
+							        </t-tr>
+							    </t-table>
+							</view>
+						</view>
+					</cl-scroller>
+				</swiper-item>
+				<!-- 风险跟进 -->
+				<swiper-item v-if="show_risk">
+					<cl-scroller>
+						<view class="risk" v-for="(item,index) in risk" @tap="risk_detail(item.id)">
+							<cl-row>
+								<cl-col span="9">
+									<img :src="item.img" />
+								</cl-col>
+								<cl-col span="15" style="text-align: left;line-height: 22px;">
+									<cl-list><span>标靶：</span>{{item.risk_targets}}</cl-list>
+									<cl-list v-if="ct==1"><span>风险区域：</span>{{item.risk_area}}</cl-list>
+									<cl-list><span>风险类别：</span>{{item.risk_types}}</cl-list>
+									<cl-list><span>跟进时间：</span>{{item.follow_date}}</cl-list>
+									<cl-row>
+										<cl-col span="12">
+											<view class="fx">风险等级：{{item.risk_rank}}</view>
+										</cl-col>
+										<cl-col span="12">
+											<view class="gj">跟进次数：{{item.follow_times}}</view>
+										</cl-col>
+									</cl-row>
+								</cl-col>
+
+							</cl-row>
+						</view>
+					</cl-scroller>
+				</swiper-item>
+				<!-- 现场工作照 -->
+				<swiper-item class="photo" v-if="show_photo">
+					<cl-scroller>
+						<view class="sign_content" v-for="(item, index) in photo" :key="index">
+							<view class="block">
+								<cl-image size="150rpx" v-for="(site_photo, index_p) in item.site_photos" :key="index_p" :src="site_photo"
+									:preview-list="[site_photo]">
+								</cl-image>
+							</view>
+							<view class="sign_time">
+								<cl-list>{{item.remarks}}</cl-list>
+							</view>
+						</view>
+					</cl-scroller>
+				</swiper-item>
+				<!-- 6. 勘察总结 -->
+				<swiper-item class="sumup" v-if="show_sumup">
+					<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.risk_desc">
+						<view class="service_title">风险问题描述</view>
+						<view class="service_content">
+							<text selectable="true">{{kczj_model.risk_desc}}</text>
+						</view>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.store_coordinate">
+						<view class="service_title">门店建议措施</view>
+						<view class="service_content">
+							<text selectable="true">{{kczj_model.store_coordinate}}</text>
+						</view>
+					</view>
+					<view style="border-bottom: 1px solid #eeeeee;background-color: #FFFFFF;" v-if="kczj_model.ms_action">
+						<view class="service_title">本次行动方案</view>
+						<view class="service_content">
+							<text selectable="true">{{kczj_model.ms_action}}</text>
+						</view>
+					</view>
+				</swiper-item>
+				<!-- 7. 风险评估 -->
+				<swiper-item class="evaluate" v-if="show_evaluate">
+					<view>
+						<view style="overflow-y: auto;" :style="{height:windowHeight + 'px'}">
+							<view v-for="(item,i) in reportRiskData" :key="i" class="risk_list">
+								<view class="cat_title">
+									{{item.name}}
+								</view>
+								<view class="child_list">
+									<view class="list-item" v-for="(item_c,index) in item.list" :key="index">
+										<view class="list-title"  @click="goRiskPinggu(item)">{{item_c.title}}</view>
+										<view style="width: 320rpx;">
+											<isYes :value="item_c.is_conform" :i="i" :ii="index" :reportRiskData="reportRiskData"></isYes>
+										
+										</view>
 									</view>
 								</view>
 							</view>
 						</view>
 					</view>
-				</view>
-			</swiper-item>
-			<!-- 8.风险情况 -->
-			<swiper-item class="condition" v-if="show_condition">
-				<cl-scroller>
-					<view class="risk" v-for="(item,index) in conditionData" :key="index" @tap="risk_qk_detail(item.id)" v-if="conditionData.length>0">
-					
-						<view class="item">
-							<view class="thumb">
-								<img :src="item.img" />
-							</view>
-							<view class="info">
-								<view class="item-x"><text class="span">风险区域：</text>{{item.check_area || ''}}</view>
-								<view class="item-x"><text class="span">风险程度：</text>{{item.cd || ''}}</view>
-								<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time || ''}}</view>
-							</view>
-						</view>
+				</swiper-item>
+				<!-- 8.风险情况 -->
+				<swiper-item class="condition" v-if="show_condition">
+					<cl-scroller>
+						<view class="risk" v-for="(item,index) in conditionData" :key="index" @tap="risk_qk_detail(item.id)" v-if="conditionData.length>0">
 						
-					</view>
-				</cl-scroller>
-			</swiper-item>
-			
-			<!-- 签名点评 -->
-			<swiper-item  class="sign-review">
-				<cl-scroller>
-					<!-- 选中[签名点评]时 弹窗 -->
-					<view>
-						<u-modal :show="signReview_popshow"
-							:title="signReview_poptitle" 
-							:content='signReview_popcontent'
-							@confirm="signReview_popshow=false"
+							<view class="item">
+								<view class="thumb">
+									<img :src="item.img" />
+								</view>
+								<view class="info">
+									<view class="item-x"><text class="span">风险区域：</text>{{item.check_area || ''}}</view>
+									<view class="item-x"><text class="span">风险程度：</text>{{item.cd || ''}}</view>
+									<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time || ''}}</view>
+								</view>
+							</view>
 							
-						></u-modal>
-					</view>
-					<view class="sign_content">
-						<view class="sign_title">现场签到</view>
-						<view class="sign_time">
-							<cl-list v-if="jobtype==1">签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
-							<cl-list v-else>签到时间：{{basic.start_date}} &nbsp;{{basic.start_time}}</cl-list>
 						</view>
-					</view>
-					<view class="sign_content">
-						<view class="sign_title">员工签名</view>
-						<cl-row>
-							<cl-col span="16">
-								<view class="eblock">
-								<cl-image size="200rpx" v-for="(img_url, index) in staff_signature" :key="index" :src="img_url" :preview-list="[img_url]">
-								</cl-image>
-								</view>
-							</cl-col>
-							<cl-col span="8" class="sign_qm">
-								<cl-button @tap="startSign_staff">签名</cl-button>
-							</cl-col>
-						</cl-row>
-					</view>
-					<view class="sign_content">
-						<view class="sign_title">客户签名<span style="font-size: 12px;color: #999999;"></span></view>
-						<cl-row>
-							<cl-col span="16">
-								<view class="eblock" >
-									<cl-image size="300rpx" mode="aspectFit"  :style="autograph_customer_style" :src="autograph_customer_signature" >
-									</cl-image> 
-								</view>
-							</cl-col>
-							<cl-col span="8" class="sign_qm">
-								<!-- <cl-button @tap="startSign">签名</cl-button> -->
-								<cl-button @tap="startSign_s">签名</cl-button>
-							</cl-col>
-						</cl-row>
-						<!-- 增加客户签名栏位 -->
-						<cl-row>
-							<cl-col span="16">
-								<view class="eblock">
-									<cl-image size="300rpx" :style="autograph_customer_style_add" :src="autograph_customer_signature_add">
-									</cl-image>
-								</view>
-							</cl-col>
-							<cl-col span="8" class="sign_qm">
-								<cl-button @tap="startSign_sadd">附加签名</cl-button>
-							</cl-col>
-						</cl-row>
-					</view>
-					<view class="sign_content">
-						<view class="sign_title">客户点评</view>
-						<cl-rate :max="3" :value="0" v-model="autograph_customer_grade" color="#ffc800" void-color="#dadada" disabled="true"></cl-rate>
-					</view>
-				</cl-scroller>
-			</swiper-item>
-		</swiper>
-		<!-- 点评弹窗  -->
-		<u-modal
-			position="center"
-			:show="startSign_sData.show"
-			@leave="startSign_sData.show=false"
-			@click-overlay="startSign_sData.show=false"
-			@confirm="submitStartSign_sDialog"
-			width="100%"
-			:z-index="9999">
-			<view class="review_popup">
-				<view class="review_popup_title">请点评</view>
+					</cl-scroller>
+				</swiper-item>
 				
-				<view class="review_popup_box" :key="i" v-for="(itemx, i) in questionsData">
-					<view class="review_popup_box_title">{{ i+1 }}. {{itemx.question}}</view>
-					<view class="review_popup_box_entitle">　　{{itemx.en_question}}</view>
-					<radio-group @change="radioChange($event,i)">
-						<label class="uni-list-cell uni-list-cell-pd" v-for="(item, index) in itemx.options" :key="item.v">
-							<radio :value="item.v" :checked="item.v == itemx.answer" />{{item.t}}
-						</label>
-					</radio-group>
+				<!-- 签名点评 -->
+				<swiper-item  class="sign-review">
+					<cl-scroller>
+						<!-- 选中[签名点评]时 弹窗 -->
+						<view>
+							<u-modal :show="signReview_popshow"
+								:title="signReview_poptitle" 
+								:content='signReview_popcontent'
+								@confirm="signReview_popshow=false"
+								
+							></u-modal>
+						</view>
+						<view class="sign_content">
+							<view class="sign_title">现场签到</view>
+							<view class="sign_time">
+								<cl-list v-if="jobtype==1">签到时间：{{ basic.start_date || '-' }} &nbsp;{{ basic.start_time || '-' }}</cl-list>
+								<cl-list v-else>签到时间：{{ basic.start_date || '-' }} &nbsp;{{ basic.start_time || '-' }}</cl-list>
+							</view>
+						</view>
+						<view class="sign_content">
+							<view class="sign_title">员工签名</view>
+							<cl-row>
+								<cl-col span="16">
+									<view class="eblock">
+									<cl-image size="200rpx" v-for="(img_url, index) in staff_signature" :key="index" :src="img_url" :preview-list="[img_url]">
+									</cl-image>
+									</view>
+								</cl-col>
+								<cl-col span="8" class="sign_qm">
+									<cl-button @tap="startSign_staff">签名</cl-button>
+								</cl-col>
+							</cl-row>
+						</view>
+						<view class="sign_content">
+							<view class="sign_title">客户签名<span style="font-size: 12px;color: #999999;"></span></view>
+							<cl-row>
+								<cl-col span="16">
+									<view class="eblock" >
+										<cl-image size="300rpx" mode="aspectFit"  :style="autograph_customer_style" :src="autograph_customer_signature" >
+										</cl-image> 
+									</view>
+								</cl-col>
+								<cl-col span="8" class="sign_qm">
+									<!-- <cl-button @tap="startSign">签名</cl-button> -->
+									<cl-button @tap="startSign_s">签名</cl-button>
+								</cl-col>
+							</cl-row>
+							<!-- 增加客户签名栏位 -->
+							<cl-row>
+								<cl-col span="16">
+									<view class="eblock">
+										<cl-image size="300rpx" :style="autograph_customer_style_add" :src="autograph_customer_signature_add">
+										</cl-image>
+									</view>
+								</cl-col>
+								<cl-col span="8" class="sign_qm">
+									<cl-button @tap="startSign_sadd">附加签名</cl-button>
+								</cl-col>
+							</cl-row>
+						</view>
+						<view class="sign_content">
+							<view class="sign_title">客户点评</view>
+							<cl-rate :max="3" :value="0" v-model="autograph_customer_grade" color="#ffc800" void-color="#dadada" disabled="true"></cl-rate>
+						</view>
+					</cl-scroller>
+				</swiper-item>
+			</swiper>
+			<!-- 点评弹窗  -->
+			<u-modal
+				position="center"
+				:show="startSign_sData.show"
+				@leave="startSign_sData.show=false"
+				@click-overlay="startSign_sData.show=false"
+				@confirm="submitStartSign_sDialog"
+				width="100%"
+				:z-index="9999">
+				<view class="review_popup">
+					<view class="review_popup_title">请点评</view>
+					
+					<view class="review_popup_box" :key="i" v-for="(itemx, i) in questionsData">
+						<view class="review_popup_box_title">{{ i+1 }}. {{itemx.question}}</view>
+						<view class="review_popup_box_entitle">　　{{itemx.en_question}}</view>
+						<radio-group @change="radioChange($event,i)">
+							<label class="uni-list-cell uni-list-cell-pd" v-for="(item, index) in itemx.options" :key="item.v">
+								<radio :value="item.v" :checked="item.v == itemx.answer" />{{item.t}}
+							</label>
+						</radio-group>
+					</view>
 				</view>
-			</view>
-		</u-modal>
-		
-		<u-popup :show="popupShow" @close="popupClose" @open="popupOpen" :round="10">
-		    <view>
-		       <SignatureList :jobs="jobs" @updateJobList="updateJobList" @cancel="cancel" @confirm="confirm"></SignatureList>
-		    </view>
-		</u-popup>
-		
+			</u-modal>
+			
+			<u-popup :show="popupShow" @close="popupClose" @open="popupOpen" :round="10">
+			    <view>
+			       <SignatureList :jobs="jobs" @updateJobList="updateJobList" @cancel="cancel" @confirm="confirm"></SignatureList>
+			    </view>
+			</u-popup>
+			
+		</view>
 	</view>
 </template>
 <script>
@@ -530,6 +530,7 @@
 				popupShow: false,
 				jobs:[],
 				is_main:1, // 1客户 2技术员
+				loading: true,
 			}
 		},
 		onLoad(index) {
@@ -603,12 +604,17 @@
 			})
 			
 			
-			const query = uni.createSelectorQuery().in(this);
-			query.select('.swiper').boundingClientRect(data => {
-				//获取 页面高度
-				// console.log(data.height)
-				this.windowHeight = data.height - 90
-			}).exec();
+			this.loading = false;
+			this.$nextTick(() => {
+				const query = uni.createSelectorQuery().in(this);
+				query.select('.swiper').boundingClientRect(data => {
+					if (data && data.height) {
+						this.windowHeight = data.height - 90
+					} else {
+						this.windowHeight = 500
+					}
+				}).exec();
+			});
 			
 			// setTimeout(()=>{
 			// 	this.current_tab = 6
@@ -723,7 +729,7 @@
 				console.log('this.tab_bar[index]',this.tab_bar[index])
 				this.isHeight = false
 				if(index == 0){
-					this.getBriefing()		// 基础
+					this.getBaseinfo()		// 基础
 				}
 				if(this.tab_bar[index].data == '1'){
 					this.getBriefing()		// 简报
@@ -1697,5 +1703,14 @@
 .heightHide{
 	height: 100%;
 	overflow: hidden;
+}
+.loading-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.7);
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
