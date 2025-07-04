@@ -201,7 +201,7 @@ export default {
 			if(this.openPdf ==1 && this.pdfData.length>0){
 				this.reportShow = true
 			}
-		},800)
+		},400)
 	},
 	methods: {
 		createPdfAll(){
@@ -224,7 +224,13 @@ export default {
 				icon:'loading',
 				title:'生成中'
 			})
-			
+			setTimeout(()=>{
+				uni.showToast({
+					icon:'loading',
+					title:'请等一会查看报告！'
+				})
+			},1500)
+			uni.setStorageSync('pdfOpen',0)
 			this.$api.makePdf(param).then(res=>{
 				console.log(res)
 				uni.showToast({
@@ -232,6 +238,7 @@ export default {
 					icon:'none'
 				})
 				this.pdfData = []
+				this.reportShow = false
 			}).catch(err=>{
 				console.log(err)
 			})	

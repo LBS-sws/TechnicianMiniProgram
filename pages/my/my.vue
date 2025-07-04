@@ -79,6 +79,7 @@ export default {
 									title: res.msg,
 									icon: 'none',
 								});	
+								uni.setStorageSync('pdfOpen',1)
 							}).catch(err=>{
 								uni.showToast({
 									title: res.msg,
