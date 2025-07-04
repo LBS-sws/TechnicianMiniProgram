@@ -227,18 +227,22 @@ export default {
 			setTimeout(()=>{
 				uni.showToast({
 					icon:'loading',
-					title:'请等一会查看报告！'
+					title:'请等一会查看！'
 				})
+				
 			},1500)
+			setTimeout(()=>{
+				this.reportShow = false
+			},2500)
 			uni.setStorageSync('pdfOpen',0)
 			this.$api.makePdf(param).then(res=>{
 				console.log(res)
-				uni.showToast({
-					title:res.msg,
-					icon:'none'
-				})
+				// uni.showToast({
+				// 	title:res.msg,
+				// 	icon:'none'
+				// })
 				this.pdfData = []
-				this.reportShow = false
+				
 			}).catch(err=>{
 				console.log(err)
 			})	
