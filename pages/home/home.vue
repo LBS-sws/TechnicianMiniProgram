@@ -128,6 +128,20 @@
 				</view>
 			</view>
 		</u-popup>
+		<u-popup :show="showModal" :round="4" mode="center">
+			<view class="dr-box">
+				<view class="title">是否确定批量生成报告？</view>
+				<view class="item-list">
+					<view class="item">
+						<u-button type="primary" text="确定" @click="open1()"></u-button>
+					</view>
+					<view class="item">
+						<u-button type="warning" text="取消" @click="close1()"></u-button>
+					</view>
+				</view>
+			</view>
+			
+		</u-popup>
 	</view>
 </template>
 <script>
@@ -171,6 +185,8 @@ export default {
 			reportShow: false,
 			pdfData:[],
 			openPdf:0,
+			showModal: false,
+			isCreate:false,
 		};
 	},
 	onLoad() {
@@ -204,12 +220,25 @@ export default {
 		},400)
 	},
 	methods: {
+		open1() {
+			this.isCreate = true
+			this.showModal = false
+			this.createPdfAll()
+		},
+		close1(e) {
+			// this.isCreate = false
+			this.showModal = false
+		},
 		createPdfAll(){
 			if(this.pdfData.length==0){
 				uni.showToast({
 					title:'暂无报告可以生成！',
 					icon:'none'
 				})
+				return false
+			}
+			if(!this.isCreate){
+				this.showModal = true
 				return false
 			}
 			
@@ -230,6 +259,7 @@ export default {
 					title:'请等一会查看报告！'
 				})
 			},1500)
+			
 			uni.setStorageSync('pdfOpen',0)
 			this.$api.makePdf(param).then(res=>{
 				console.log(res)
@@ -870,6 +900,27 @@ export default {
 		top: 20rpx;
 		right: 30rpx;
 		font-size: 26rpx;
+	}
+}
+.dr-box{
+	box-shadow: 0px 0px 5px 0px #9cadb1;
+    border-radius: 7px;
+    padding: 20px 20px;
+    max-width: 100%;
+    display: block;
+	.title{
+		font-size: 32rpx;
+		color: #e01313;
+		text-align: center;
+		padding: 20rpx 0 40rpx;
+	}
+	.item-list{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		.item{
+			width: calc(50% - 25rpx);
+		}
 	}
 }
 </style>
