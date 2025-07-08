@@ -131,7 +131,12 @@
 		<u-popup :show="showModal" :round="4" mode="center">
 			<view class="dr-box">
 				<view class="title">是否确定批量生成报告？</view>
-				<view class="item-list">
+				<view style="width: 400rpx; height: 300rpx; overflow: hidden;" v-if="isJs">
+					<countDownTime ref="countDownTime" :percent="jsnum" :size="200" :textFontSize= "28" progressColor="#0bc267" id='a'
+					v-if="isJs">
+					</countDownTime>
+				</view>
+				<view class="item-list" v-if="!isJs">
 					<view class="item">
 						<u-button type="primary" text="确定" @click="open1()"></u-button>
 					</view>
@@ -139,16 +144,20 @@
 						<u-button type="warning" text="取消" @click="close1()"></u-button>
 					</view>
 				</view>
+				<view v-if="isJs" @click="close1()">
+					<u-button type="warning" text="取消生成" ></u-button>
+				</view>
 			</view>
 			
 		</u-popup>
 	</view>
 </template>
 <script>
-import zzxCalendar from "@/components/zzx-calendar/zzx-calendar.vue"
+import zzxCalendar from "@/components/zzx-calendar/zzx-calendar.vue";
+import countDownTime from '@/components/count-down-time/count-down-time.vue'
 export default {
 	components: {
-		zzxCalendar
+		zzxCalendar,countDownTime
 	},
 	data() {
 		return {
@@ -187,6 +196,8 @@ export default {
 			openPdf:0,
 			showModal: false,
 			isCreate:false,
+			isJs:false,
+			jsnum:10
 		};
 	},
 	onLoad() {
@@ -219,15 +230,30 @@ export default {
 			}
 		},400)
 	},
+	watch: {
+	    // 监听fullName的变化，尽管fullName不是原始数据，但你可以通过计算属性间接监听依赖的数据变化
+	    jsnum(newVal, oldVal) {
+	      console.log(`Full name changed from ${oldVal} to ${newVal}`);
+	      // 在这里执行你需要的操作
+	    }
+	},
 	methods: {
+		cancelPdf(){
+			console.log('取消')
+			this.isJs = false
+			this.isCreate = false
+			this.showModal =false
+		},
 		open1() {
-			this.isCreate = true
-			this.showModal = false
-			this.createPdfAll()
+			// this.isCreate = true
+			// this.showModal = false
+			// this.createPdfAll()
+			this.isJs = true
 		},
 		close1(e) {
 			// this.isCreate = false
 			this.showModal = false
+			this.isJs = false
 		},
 		createPdfAll(){
 			if(this.pdfData.length==0){
@@ -921,11 +947,30 @@ export default {
 	}
 	.item-list{
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		align-items: center;
 		.item{
 			width: calc(50% - 25rpx);
 		}
 	}
 }
+//
+	.progressBox {
+		padding-top: 100upx;
+	}
+	
+	.centerTxt {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	
+		.num {
+			font-size: 20px;
+			font-family: Arial;
+			font-weight: bold;
+			color: #38393A;
+		}
+	
+	}
 </style>
