@@ -1,12 +1,12 @@
 <template>
 	<view v-if="isShowContent" class="content">
-		<view class="countdown">
+		<view class="countdown" v-if="batchShow">
 			<view class="title">倒计时</view>
 			<view class="time">
 				{{timeLeft}}
 			</view>
 			<view class="btn">
-				<u-button size="small" type="warning" text="取消生成" ></u-button>
+				<u-button size="small" type="warning" text="取消生成" @click="cancelCreateAll()"></u-button>
 			</view>
 		</view>
 		<view class="datec">
@@ -140,12 +140,8 @@
 		<u-popup :show="showModal" :round="4" mode="center">
 			<view class="dr-box">
 				<view class="title">是否确定批量生成报告？</view>
-				<view style="" v-if="batchShow">
-					<countDownTime ref="countDownTime" :percent="10" :size="200" :textFontSize= "28" progressColor="#0bc267" id='a'
-					v-if="batchShow" @makepdf="makepdf">
-					</countDownTime>
-				</view>
-				<view class="item-list" v-if="!batchShow">
+				
+				<view class="item-list">
 					<view class="item">
 						<u-button type="primary" text="确定" @click="batchConfirm()"></u-button>
 					</view>
@@ -153,9 +149,7 @@
 						<u-button type="warning" text="取消" @click="batchCancel()"></u-button>
 					</view>
 				</view>
-				<view v-if="batchShow" @click="cancelCreateAll()">
-					<u-button type="warning" text="取消生成" ></u-button>
-				</view>
+				
 			</view>
 			
 		</u-popup>
@@ -206,7 +200,8 @@ export default {
 			showModal: false,
 			isCreate:false,
 			batchShow:false,
-			timeLeft: 10 // 假设倒计时从10秒开始
+			timeLeft: 10 ,// 假设倒计时从10秒开始
+			intervalId: null // 用于存储setInterval的ID，以便之后可以清除它
 		};
 	},
 	onLoad() {
@@ -240,24 +235,30 @@ export default {
 		},400)
 	},
 	mounted() {
-		this.startCountdown(); // 页面加载完成后开始倒计时
+		
+	},
+	beforeDestroy() {
+		clearTimeout(this.intervalId);
 	},
 	methods: {
 		startCountdown() {
 		  if (this.timeLeft > 0) {
-			setTimeout(() => {
+			  
+			this.intervalId = setTimeout(() => {
 			  this.timeLeft -= 1;
-			  this.startCountdown(); // 递归调用，实现倒计时
+			  this.startCountdown();
 			}, 1000);
 		  } else {
-			console.log('倒计时结束');
-			// 倒计时结束后的操作
+				clearTimeout(this.intervalId);
+				console.log('倒计时结束');
+				console.log(this.timeLeft)
+				if(this.timeLeft == 0){
+					this.makepdf()
+				}
 		  }
 		},
 		makepdf(){
-			// return false
-			this.showModal = false
-			console.log('倒计时结束')
+
 			let arr = [];
 			this.pdfData.forEach((item,i)=>{
 				arr.push({job_id:item.job_id, job_type:item.job_type})
@@ -276,11 +277,8 @@ export default {
 				})
 				
 			},1500)
-			
-			setTimeout(()=>{
-				this.reportShow = false
-			},2500)
-			
+			this.batchShow = false
+
 			uni.setStorageSync('pdfOpen',0)
 			this.$api.makePdf(param).then(res=>{
 				console.log(res)
@@ -293,12 +291,19 @@ export default {
 		},
 		// 倒计时取消
 		cancelCreateAll(){
-			this.$refs.countDownTime.demo()
-			this.showModal = false
+	
+			this.batchShow = false
+			clearTimeout(this.intervalId);
 		},
 		// 批量确认
 		batchConfirm() {
+			this.reportShow = false
+			this.showModal = false
+			
 			this.batchShow = true
+			this.intervalId = setTimeout(()=>{
+				this.startCountdown();
+			},500)
 		},
 		// 批量取消
 		batchCancel(e) {
