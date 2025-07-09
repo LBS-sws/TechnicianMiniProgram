@@ -1,5 +1,14 @@
 <template>
 	<view v-if="isShowContent" class="content">
+		<view class="countdown" v-if="batchShow">
+			<view class="title">倒计时</view>
+			<view class="time">
+				{{timeLeft}}
+			</view>
+			<view class="btn">
+				<u-button size="small" type="warning" text="取消生成" @click="cancelCreateAll()"></u-button>
+			</view>
+		</view>
 		<view class="datec">
 			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists" :cilck_time="cilck_time"></zzx-calendar>
 		</view>
@@ -128,13 +137,30 @@
 				</view>
 			</view>
 		</u-popup>
+		<u-popup :show="showModal" :round="4" mode="center">
+			<view class="dr-box">
+				<view class="title">是否确定批量生成报告？</view>
+				
+				<view class="item-list">
+					<view class="item">
+						<u-button type="primary" text="确定" @click="batchConfirm()"></u-button>
+					</view>
+					<view class="item">
+						<u-button type="warning" text="取消" @click="batchCancel()"></u-button>
+					</view>
+				</view>
+				
+			</view>
+			
+		</u-popup>
 	</view>
 </template>
 <script>
-import zzxCalendar from "@/components/zzx-calendar/zzx-calendar.vue"
+import zzxCalendar from "@/components/zzx-calendar/zzx-calendar.vue";
+import countDownTime from '@/components/count-down-time/count-down-time.vue'
 export default {
 	components: {
-		zzxCalendar
+		zzxCalendar,countDownTime
 	},
 	data() {
 		return {
@@ -171,6 +197,11 @@ export default {
 			reportShow: false,
 			pdfData:[],
 			openPdf:0,
+			showModal: false,
+			isCreate:false,
+			batchShow:false,
+			timeLeft: 10 ,// 假设倒计时从10秒开始
+			intervalId: null // 用于存储setInterval的ID，以便之后可以清除它
 		};
 	},
 	onLoad() {
@@ -203,7 +234,82 @@ export default {
 			}
 		},400)
 	},
+	mounted() {
+		
+	},
+	beforeDestroy() {
+		clearTimeout(this.intervalId);
+	},
 	methods: {
+		startCountdown() {
+		  if (this.timeLeft > 0) {
+			  
+			this.intervalId = setTimeout(() => {
+			  this.timeLeft -= 1;
+			  this.startCountdown();
+			}, 1000);
+		  } else {
+				clearTimeout(this.intervalId);
+				console.log('倒计时结束');
+				console.log(this.timeLeft)
+				if(this.timeLeft == 0){
+					this.makepdf()
+				}
+		  }
+		},
+		makepdf(){
+
+			let arr = [];
+			this.pdfData.forEach((item,i)=>{
+				arr.push({job_id:item.job_id, job_type:item.job_type})
+			})
+			
+			let param = JSON.stringify(arr)
+			
+			uni.showToast({
+				icon:'loading',
+				title:'生成中'
+			})
+			setTimeout(()=>{
+				uni.showToast({
+					icon:'loading',
+					title:'请等一会查看！'
+				})
+				
+			},1500)
+			this.batchShow = false
+
+			uni.setStorageSync('pdfOpen',0)
+			this.$api.makePdf(param).then(res=>{
+				console.log(res)
+				
+				this.pdfData = []
+				
+			}).catch(err=>{
+				console.log(err)
+			})
+		},
+		// 倒计时取消
+		cancelCreateAll(){
+	
+			this.batchShow = false
+			clearTimeout(this.intervalId);
+		},
+		// 批量确认
+		batchConfirm() {
+			this.reportShow = false
+			this.showModal = false
+			
+			this.batchShow = true
+			this.intervalId = setTimeout(()=>{
+				this.startCountdown();
+			},500)
+		},
+		// 批量取消
+		batchCancel(e) {
+			this.showModal = false
+		},
+		// 一件生成报告
 		createPdfAll(){
 			if(this.pdfData.length==0){
 				uni.showToast({
@@ -213,36 +319,12 @@ export default {
 				return false
 			}
 			
-			let arr = [];
-			this.pdfData.forEach((item,i)=>{
-				arr.push({job_id:item.job_id, job_type:item.job_type})
-			})
-			console.log(arr)
-			let param = JSON.stringify(arr)
-			console.log(param)
-			uni.showToast({
-				icon:'loading',
-				title:'生成中'
-			})
-			setTimeout(()=>{
-				uni.showToast({
-					icon:'loading',
-					title:'请等一会查看报告！'
-				})
-			},1500)
-			uni.setStorageSync('pdfOpen',0)
-			this.$api.makePdf(param).then(res=>{
-				console.log(res)
-				uni.showToast({
-					title:res.msg,
-					icon:'none'
-				})
-				this.pdfData = []
-				this.reportShow = false
-			}).catch(err=>{
-				console.log(err)
-			})	
+			this.showModal = true	// 是否确定批量生成报告？ 
+			this.batchShow = false  // 显示 确定和取消
+			console.log('批量')
+		
 		},
+		// 单个生成报告
 		createPdf(index){
 			let param = JSON.stringify([{
 			    'job_id':this.pdfData[index].job_id,
@@ -870,6 +952,60 @@ export default {
 		top: 20rpx;
 		right: 30rpx;
 		font-size: 26rpx;
+	}
+}
+.dr-box{
+	box-shadow: 0px 0px 5px 0px #9cadb1;
+    border-radius: 7px;
+    padding: 20px 20px;
+    max-width: 100%;
+    display: block;
+	.title{
+		font-size: 32rpx;
+		color: #e01313;
+		text-align: center;
+		padding: 20rpx 0 40rpx;
+	}
+	.item-list{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.item{
+			width: calc(50% - 25rpx);
+			margin: 0 10rpx;
+		}
+	}
+}
+//
+.countdown{
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 999;
+	width: 220rpx;
+	background: #fff;
+	border-radius: 10rpx;
+	box-sizing: border-box;
+	padding: 20rpx 20rpx;
+	border: 1rpx solid #eee;
+	.title{
+		text-align: center;
+		font-size: 24rpx;
+		color: #333;
+		font-weight: 600;
+	}
+	.time{
+		width: 80rpx;
+		height: 80rpx;
+		font-size: 32rpx;
+		font-weight: 600;
+		border-radius: 50%;
+		background: #eee;
+		color: #666;
+		margin: 10rpx auto;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 }
 </style>
