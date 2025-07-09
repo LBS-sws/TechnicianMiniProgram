@@ -131,20 +131,20 @@
 		<u-popup :show="showModal" :round="4" mode="center">
 			<view class="dr-box">
 				<view class="title">是否确定批量生成报告？</view>
-				<view style="width: 400rpx; height: 300rpx; overflow: hidden;" v-if="isJs">
-					<countDownTime ref="countDownTime" :percent="jsnum" :size="200" :textFontSize= "28" progressColor="#0bc267" id='a'
-					v-if="isJs">
+				<view style="width: 400rpx; height: 300rpx; overflow: hidden;" v-if="batchShow">
+					<countDownTime ref="countDownTime" :percent="10" :size="200" :textFontSize= "28" progressColor="#0bc267" id='a'
+					v-if="batchShow" @makepdf="makepdf">
 					</countDownTime>
 				</view>
-				<view class="item-list" v-if="!isJs">
+				<view class="item-list" v-if="!batchShow">
 					<view class="item">
-						<u-button type="primary" text="确定" @click="open1()"></u-button>
+						<u-button type="primary" text="确定" @click="batchConfirm()"></u-button>
 					</view>
 					<view class="item">
-						<u-button type="warning" text="取消" @click="close1()"></u-button>
+						<u-button type="warning" text="取消" @click="batchCancel()"></u-button>
 					</view>
 				</view>
-				<view v-if="isJs" @click="close1()">
+				<view v-if="batchShow" @click="cancelCreateAll()">
 					<u-button type="warning" text="取消生成" ></u-button>
 				</view>
 			</view>
@@ -196,8 +196,7 @@ export default {
 			openPdf:0,
 			showModal: false,
 			isCreate:false,
-			isJs:false,
-			jsnum:10
+			batchShow:false,
 		};
 	},
 	onLoad() {
@@ -230,44 +229,10 @@ export default {
 			}
 		},400)
 	},
-	watch: {
-	    // 监听fullName的变化，尽管fullName不是原始数据，但你可以通过计算属性间接监听依赖的数据变化
-	    jsnum(newVal, oldVal) {
-	      console.log(`Full name changed from ${oldVal} to ${newVal}`);
-	      // 在这里执行你需要的操作
-	    }
-	},
 	methods: {
-		cancelPdf(){
-			console.log('取消')
-			this.isJs = false
-			this.isCreate = false
-			this.showModal =false
-		},
-		open1() {
-			// this.isCreate = true
-			// this.showModal = false
-			// this.createPdfAll()
-			this.isJs = true
-		},
-		close1(e) {
-			// this.isCreate = false
+		makepdf(){
 			this.showModal = false
-			this.isJs = false
-		},
-		createPdfAll(){
-			if(this.pdfData.length==0){
-				uni.showToast({
-					title:'暂无报告可以生成！',
-					icon:'none'
-				})
-				return false
-			}
-			if(!this.isCreate){
-				this.showModal = true
-				return false
-			}
-			
+			console.log('倒计时结束')
 			let arr = [];
 			this.pdfData.forEach((item,i)=>{
 				arr.push({job_id:item.job_id, job_type:item.job_type})
@@ -290,20 +255,46 @@ export default {
 			setTimeout(()=>{
 				this.reportShow = false
 			},2500)
-
+			
 			uni.setStorageSync('pdfOpen',0)
 			this.$api.makePdf(param).then(res=>{
 				console.log(res)
-				// uni.showToast({
-				// 	title:res.msg,
-				// 	icon:'none'
-				// })
+				
 				this.pdfData = []
 				
 			}).catch(err=>{
 				console.log(err)
-			})	
+			})
 		},
+		// 倒计时取消
+		cancelCreateAll(){
+			this.$refs.countDownTime.demo()
+			this.showModal = false
+		},
+		// 批量确认
+		batchConfirm() {
+			this.batchShow = true
+		},
+		// 批量取消
+		batchCancel(e) {
+			this.showModal = false
+		},
+		// 一件生成报告
+		createPdfAll(){
+			if(this.pdfData.length==0){
+				uni.showToast({
+					title:'暂无报告可以生成！',
+					icon:'none'
+				})
+				return false
+			}
+			
+			this.showModal = true	// 是否确定批量生成报告？ 
+			this.batchShow = false  // 显示 确定和取消
+			console.log('批量')
+		
+		},
+		// 单个生成报告
 		createPdf(index){
 			let param = JSON.stringify([{
 			    'job_id':this.pdfData[index].job_id,
@@ -951,26 +942,24 @@ export default {
 		align-items: center;
 		.item{
 			width: calc(50% - 25rpx);
+			margin: 0 10rpx;
 		}
 	}
 }
 //
-	.progressBox {
-		padding-top: 100upx;
+.progressBox {
+	padding-top: 100upx;
+}
+.centerTxt {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	.num {
+		font-size: 20px;
+		font-family: Arial;
+		font-weight: bold;
+		color: #38393A;
 	}
-	
-	.centerTxt {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	
-		.num {
-			font-size: 20px;
-			font-family: Arial;
-			font-weight: bold;
-			color: #38393A;
-		}
-	
-	}
+}
 </style>

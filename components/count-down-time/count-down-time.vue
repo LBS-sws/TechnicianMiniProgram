@@ -121,6 +121,14 @@
 				ctx.draw(true)
 				this.cTime = cTime
 				console.log(this.cTime)
+				if(this.cTime==0){
+					this.$emit('makepdf')
+				}
+			},
+			// 取消
+			demo(){
+				console.log('组件demo方法')
+				clearInterval(this.timer)
 			}
 		},
 		watch: {
