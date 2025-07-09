@@ -1,5 +1,14 @@
 <template>
 	<view v-if="isShowContent" class="content">
+		<view class="countdown">
+			<view class="title">倒计时</view>
+			<view class="time">
+				{{timeLeft}}
+			</view>
+			<view class="btn">
+				<u-button size="small" type="warning" text="取消生成" ></u-button>
+			</view>
+		</view>
 		<view class="datec">
 			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists" :cilck_time="cilck_time"></zzx-calendar>
 		</view>
@@ -131,7 +140,7 @@
 		<u-popup :show="showModal" :round="4" mode="center">
 			<view class="dr-box">
 				<view class="title">是否确定批量生成报告？</view>
-				<view style="width: 400rpx; height: 300rpx; overflow: hidden;" v-if="batchShow">
+				<view style="" v-if="batchShow">
 					<countDownTime ref="countDownTime" :percent="10" :size="200" :textFontSize= "28" progressColor="#0bc267" id='a'
 					v-if="batchShow" @makepdf="makepdf">
 					</countDownTime>
@@ -197,6 +206,7 @@ export default {
 			showModal: false,
 			isCreate:false,
 			batchShow:false,
+			timeLeft: 10 // 假设倒计时从10秒开始
 		};
 	},
 	onLoad() {
@@ -229,17 +239,32 @@ export default {
 			}
 		},400)
 	},
+	mounted() {
+		this.startCountdown(); // 页面加载完成后开始倒计时
+	},
 	methods: {
+		startCountdown() {
+		  if (this.timeLeft > 0) {
+			setTimeout(() => {
+			  this.timeLeft -= 1;
+			  this.startCountdown(); // 递归调用，实现倒计时
+			}, 1000);
+		  } else {
+			console.log('倒计时结束');
+			// 倒计时结束后的操作
+		  }
+		},
 		makepdf(){
+			// return false
 			this.showModal = false
 			console.log('倒计时结束')
 			let arr = [];
 			this.pdfData.forEach((item,i)=>{
 				arr.push({job_id:item.job_id, job_type:item.job_type})
 			})
-			console.log(arr)
+			
 			let param = JSON.stringify(arr)
-			console.log(param)
+			
 			uni.showToast({
 				icon:'loading',
 				title:'生成中'
@@ -947,19 +972,35 @@ export default {
 	}
 }
 //
-.progressBox {
-	padding-top: 100upx;
-}
-.centerTxt {
+.countdown{
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	.num {
-		font-size: 20px;
-		font-family: Arial;
-		font-weight: bold;
-		color: #38393A;
+	top: 0;
+	right: 0;
+	z-index: 999;
+	width: 220rpx;
+	background: #fff;
+	border-radius: 10rpx;
+	box-sizing: border-box;
+	padding: 20rpx 20rpx;
+	border: 1rpx solid #eee;
+	.title{
+		text-align: center;
+		font-size: 24rpx;
+		color: #333;
+		font-weight: 600;
+	}
+	.time{
+		width: 80rpx;
+		height: 80rpx;
+		font-size: 32rpx;
+		font-weight: 600;
+		border-radius: 50%;
+		background: #eee;
+		color: #666;
+		margin: 10rpx auto;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 }
 </style>

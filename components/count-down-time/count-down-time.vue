@@ -1,12 +1,16 @@
 <template>
 	<view class="progressBox">
-		<view class="dots" :style="pColor"></view>
-		<canvas :canvas-id="'progress'+id" :style="{width: sizeNum + 'px', height: sizeNum + 'px'}"></canvas>
 		<view class="centerTxt">
-			<view class="num" :style="tFontSize">
+			<view class="num" :style="tFontSize" v-if="cTime>1">
+				{{cTime-1}}
+			</view>
+			<view class="num" :style="tFontSize" v-else>
 				{{cTime}}
 			</view>
 		</view>
+		<view class="dots" :style="pColor"></view>
+		<!-- <canvas :canvas-id="'progress'+id" :style="{width: sizeNum + 'px', height: sizeNum + 'px'}"></canvas> -->
+		
 
 	</view>
 </template>
@@ -81,9 +85,12 @@
 								this.drawProgress(100,0)
 								clearInterval(this.timer)
 							}
+							console.log(this.cTime)
+							
 						}, 1000)
 					}
 				}
+				
 			},
 			drawProgress(percent, cTime) {
 				//尺寸与轨道宽度自适应处理	
@@ -120,7 +127,6 @@
 				ctx.stroke()
 				ctx.draw(true)
 				this.cTime = cTime
-				console.log(this.cTime)
 				if(this.cTime==0){
 					this.$emit('makepdf')
 				}
@@ -148,7 +154,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
-		z-index: 1000;
+		z-index: 2;
+		background: #e2e2e2;
 	}
 
 	/* 	.dots::before {
@@ -168,7 +175,7 @@
 		width: 200upx;
 		height: 200upx;
 		margin: 0 auto;
-		margin-top: 33upx;
+		// margin-top: 33upx;
 		text-align: center;
 	}
 	canvas{
@@ -183,7 +190,7 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-
+		z-index: 1000;
 		.num {
 			font-size: var(--fos);
 			font-family: Arial;
@@ -200,7 +207,7 @@
 			width: 400upx;
 			height: 400upx;
 			margin: 0 auto;
-			margin-top: 33upx;
+			// margin-top: 33upx;
 			text-align: center;
 		}
 	}
