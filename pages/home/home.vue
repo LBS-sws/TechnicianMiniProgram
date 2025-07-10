@@ -1,6 +1,5 @@
 <template>
 	<view v-if="isShowContent" class="content">
-		
 		<view class="datec">
 			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists" :cilck_time="cilck_time"></zzx-calendar>
 		</view>
@@ -143,7 +142,6 @@
 				</view>
 				
 			</view>
-			
 		</u-popup>
 	</view>
 </template>
@@ -220,6 +218,7 @@ export default {
 				this.reportShow = true
 			}
 		},400)
+
 	},
 	methods: {
 		// 批量确认
@@ -245,7 +244,6 @@ export default {
 				})
 				
 			},1500)
-			
 			uni.setStorageSync('pdfOpen',0)
 			this.$api.makePdf(param).then(res=>{
 				console.log(res)
