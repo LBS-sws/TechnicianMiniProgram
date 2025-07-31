@@ -94,11 +94,11 @@
 			</template>
 		</atl-map>
 		
-		<!-- <view class="debug-list">
-			<view class="item" @click="debug(1)">正常</view>
-			<view class="item" @click="debug(2)">异常</view>
-			<view class="item" @click="debug(3)">异常</view>
-		</view> -->
+		<view class="debug-list" v-if="demoList && demoList.length>0">
+			<view class="debug-item"  v-for="(item,index) in demoList" :key="index"  @click="debug(index)">{{item.title}}</view>
+			<view class="debug-item">{{point2.longitude}}</view>
+			<view class="debug-item">{{point2.latitude}}</view>
+		</view>
 	</view>
 </template>
 
@@ -194,7 +194,8 @@ export default {
 			longitude:'',
 			latitude:'',
 			timer: null,
-			timerInterval: null  // 这个定时器在代码中使用了但没有在data中定义
+			timerInterval: null  ,// 这个定时器在代码中使用了但没有在data中定义
+			demoList:[]
 		}
 	},
 	onLoad(index) {
@@ -274,19 +275,9 @@ export default {
         }
     },
 	methods: {
-		debug(val){
-			if(val==1){
-				this.point2.longitude = 104.063402
-				this.point2.latitude = 30.568744
-			}
-			if(val==2){
-				this.point2.longitude = 104.069192
-				this.point2.latitude = 30.568431
-			}
-			if(val==3){
-				this.point2.longitude = 104.077115
-				this.point2.latitude = 30.571817
-			}
+		debug(index){
+			this.point2.longitude = this.demoList[index].lng
+			this.point2.latitude = this.demoList[index].lat
 		},
 		clearAllTimers() {
 			if (this.timer) {
@@ -541,6 +532,7 @@ export default {
 				
 				this.distance = this.getDistance(this.point2, this.point1);
 				
+				this.demoList = res.data.demoList
 			}).catch(err=>{
 				uni.hideLoading();
 				console.log(err)
@@ -998,4 +990,16 @@ export default {
 		color: #ff0000;
 		width: 400rpx;
 	}
+.debug-list{
+	position: absolute;
+	top: 240rpx;
+	right: 20rpx;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	.debug-item{
+		margin-bottom: 30rpx;
+		text-align: right;
+	}
+}
 </style>

@@ -75,11 +75,11 @@
 				<view class="item" v-for="(item,i) in abnormalList"  @click="exceptionHandle(i)">{{item.name}}</view>
 			</view>
 		</u-popup>
-		<!-- <view class="debug-list">
-			<view class="item" @click="debug(1)">正常</view>
-			<view class="item" @click="debug(2)">异常</view>
-			<view class="item" @click="debug(3)">异常</view>
-		</view> -->
+		<view class="debug-list" v-if="demoList && demoList.length>0">
+			<view class="debug-item"  v-for="(item,index) in demoList" :key="index"  @click="debug(index)">{{item.title}}</view>
+			<view class="debug-item">{{point2.longitude}}</view>
+			<view class="debug-item">{{point2.latitude}}</view>
+		</view>
 	</div>
 </template>
 
@@ -179,6 +179,7 @@ import amap  from '@/utils/amap-wx.130.js';
 				requestInterval: 5000, // 请求间隔时间(ms)
 				longitude:'',
 				latitude:'',
+				demoList:[]
 			}
 		},
 		computed: {
@@ -273,19 +274,9 @@ import amap  from '@/utils/amap-wx.130.js';
 		    }
 		},
 		methods: {
-			debug(val){
-				if(val==1){
-					this.point2.longitude = 104.063402
-					this.point2.latitude = 30.568744
-				}
-				if(val==2){
-					this.point2.longitude = 104.069192
-					this.point2.latitude = 30.568431
-				}
-				if(val==3){
-					this.point2.longitude = 104.077115
-					this.point2.latitude = 30.571817
-				}
+			debug(index){
+				this.point2.longitude = this.demoList[index].lng
+				this.point2.latitude = this.demoList[index].lat
 			},
 			//单独提取一个判断用户是否授权定位的函数，在需要的地方直接调用，避免了重复触发getLocation获取定位弹窗
 			checkLocationAuth() {
@@ -427,6 +418,8 @@ import amap  from '@/utils/amap-wx.130.js';
 					
 					this.time = res.data.service_time	// 服务时间
 					this.startTimer();
+					
+					this.demoList = res.data.demoList
 					
 				}).catch(err=>{
 					uni.hideLoading();
@@ -1081,5 +1074,18 @@ import amap  from '@/utils/amap-wx.130.js';
 	font-size: 24rpx;
 	color: #2196F3;
 	padding:  40rpx 36rpx 0;
+}
+
+.debug-list{
+	position: absolute;
+	top: 240rpx;
+	right: 20rpx;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	.debug-item{
+		margin-bottom: 30rpx;
+		text-align: right;
+	}
 }
 </style>
