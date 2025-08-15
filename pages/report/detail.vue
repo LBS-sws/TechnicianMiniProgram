@@ -341,6 +341,22 @@
 									<cl-button @tap="startSign_sadd">附加签名</cl-button>
 								</cl-col>
 							</cl-row>
+							<view>
+								<cl-row v-for="(item,index) in qmData" :key="index">
+									<cl-col span="16">
+										<view class="eblock">
+											<cl-image size="300rpx" :src="item.url" v-if="item.url">
+											</cl-image>
+										</view>
+									</cl-col>
+									<cl-col span="8" class="sign_qm">
+										<cl-button @tap="startSign_sadd_more(index)">附加签名{{index +1}}</cl-button>
+									</cl-col>
+								</cl-row>
+							</view>
+							<view>
+								<cl-button @click="addCustomerQm()">增加签名</cl-button>
+							</view>
 						</view>
 						<view class="sign_content">
 							<view class="sign_title">客户点评</view>
@@ -391,6 +407,7 @@
 	import luPopupWrapper from "@/components/lu-popup-wrapper/lu-popup-wrapper.vue";
 	import isYes from '@/components/risk/assessment.vue';
 	import SignatureList from '@/components/order/SignatureList.vue';
+import dayjs from "@/cl-uni/utils/dayjs";
 	export default {
 		components: {
 			tTable,
@@ -531,6 +548,8 @@
 				jobs:[],
 				is_main:1, // 1客户 2技术员
 				loading: true,
+				qmData:[],
+				qmNumber:10,
 			}
 		},
 		onLoad(index) {
@@ -622,6 +641,7 @@
 			// 	this.getSignOrder();
 			// },1500)
 			this.getSignOrder();
+			
 		},
 		mounted() {
 			let that = this;
@@ -645,11 +665,20 @@
 			uni.$off('startSign_sadd', this.onStartSign_sadd)//销毁监听保存附加签名
 		},
 		methods: {
+			addCustomerQm(){
+				if(this.qmData.length>=this.qmNumber){
+					uni.showToast({
+						title:'附加签名数量达到上线',
+						icon:'none'
+					})
+					return false;
+				}
+				console.log('123')
+				this.qmData.push({url:''})
+			},
 			// 批量签名
 			confirm(e){
 				console.log('批量签名：',e)
-				// console.log('is_main:',this.is_main)
-				// return false
 				this.popupShow = false
 				uni.navigateTo({
 					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=" + this.is_main + "&status=" + this.basic.status
@@ -827,10 +856,16 @@
 					clearTimeout(timer);
 				}, 1000);
 			},
+			// 客户附加签名
 			startSign_sadd() {
-				
 				uni.navigateTo({ 
-					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=0"
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=0&qm_key=-1"
+				})
+			},
+			// 客户更多附加签名
+			startSign_sadd_more(e) {
+				uni.navigateTo({ 
+					url: "/pages/report/sign?jobid=" + this.jobid +"&jobtype="+ this.jobtype + "&is_main=0&qm_key="+e
 				})
 			},
 			// 保存签名时
@@ -839,6 +874,22 @@
 
 				if(data.is_main == '0'){//保存附加签名时
 					that.autograph_customer_signature_add = `${that.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
+					console.log('123131313:',data)
+					// console.log(data.img_more)
+					if(data.img_more){
+						let arr = data.img_more.split(',')
+						console.log(arr)
+						let newArr = []
+						if(arr.length>0){
+							arr.forEach((item,i)=>{
+								newArr.push({url:`${that.$baseUrl_imgs}` + item + '?t='+dayjs().valueOf()})
+							})
+						}
+						this.qmData = newArr
+						console.log(this.qmData)
+					}
+					
+					
 				}else if(data.is_main == '1'){//保存客户签名时
 					that.autograph_customer_signature = `${that.$baseUrl_imgs}` + data.img_url + '?t=' + new Date().getTime()
 				}else if(data.is_main == '2'){//保存技术员签名时
@@ -847,10 +898,13 @@
 						this.staff_signature.push(`${that.$baseUrl_imgs}` + item + '?t=' + new Date().getTime())
 					})
 				}
+				
+				console.log('12311111111111111111111111111111111111')
 			},
 			//保存附加签名时
 			onStartSign_sadd(code) {
 				console.log('onStartSign_sadd: ' + String(code))
+				
 			},
 			//评价
 			bottom: function() {
@@ -905,6 +959,10 @@
 					// 客户附加签名
 					if(res.data.cust.customer_signature_url_add){
 						that.autograph_customer_signature_add = `${that.$baseUrl_imgs}` + res.data.cust.customer_signature_url_add + '?t=' + new Date().getTime()
+					}
+					if(res.data.cust.customer_signature_url_other){
+						console.log(res.data.cust.customer_signature_url_other)
+						that.qmData = res.data.cust.customer_signature_url_other
 					}
 					// 客户点评 星星
 					that.autograph_customer_grade = res.data.evaluates.score
@@ -1146,6 +1204,7 @@
 				let param = {
 					job_id: this.jobid,
 					job_type: this.jobtype,
+					preview:1
 				}
 				let time = new Date().getTime();
 				

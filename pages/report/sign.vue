@@ -7,18 +7,11 @@
 			<button class="btn save-btn" @tap="handleConfirm" >确 认</button>
 		</view>
 		<view class="handCenter">
-			<!-- <cover-view class="msg-ui" v-if="is_main !=2"><cover-view></cover-view>为保证您的利益及服务的真实性，签字过程将会被拍摄记录，望理解，谢谢！</cover-view> -->
 			<canvas class="handWriting" disable-scroll="true" :style="{width:width +'px',height:height +'px'}"
 				canvas-id="mycanvas" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
 			<canvas canvas-id="camCacnvs" disable-scroll="true" :style="{width:parseInt(height/2)+'px',height:parseInt(width/2)+'px'}"
 				class="canvsborder"></canvas>
 		</view>
-		<!-- 摄像头 -->
-		<!-- <hycamera v-if="show"  @runMethod="getCarmera" ref="cam"></hycamera> -->
-		<!-- <view class="cam_box">
-			<image src="@/static/cam_success.png" v-if="show" mode="widthFix"></image>
-			<image src="@/static/cam_default.png" v-else mode="widthFix"></image>
-		</view> -->
 	</view>
 </template>
 <script>
@@ -32,11 +25,7 @@
 	let canvash;
 	let base64String;
 	let signTemp;
-import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 	export default {
-		components: {
-			hycamera
-		},
 		data() {
 			return {
 				userInfo: null,
@@ -50,9 +39,8 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 				is_main:0,  // 0附加、1客户、2技术员
 				status:'',
 				disabled:true,
-				
 				jobs:[],
-				show:false
+				qm_key:''
 			}
 		},
 		onLoad(option) {
@@ -62,6 +50,9 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 			this.jobtype = option.jobtype
 			this.is_main = option.is_main
 			this.status = option.status
+			if(option.qm_key){
+				this.qm_key = option.qm_key
+			}
 			this.ctx = uni.createCanvasContext('mycanvas', this); //创建绘图对象
 			//设置画笔样式
 			this.ctx.lineWidth = 3;
@@ -83,25 +74,8 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 		created() {
 			console.log(this.status)
 		},
-		onShow() {
-			// if(this.is_main==1){
-			// 	// 打开相机500毫秒后拍摄
-			// 	this.show = true
-			// 	setTimeout(()=>{
-			// 		this.$refs.cam.buttonStart()
-			// 	},800)
-			// }
-
-		},
+		onShow() {},
 		methods: {
-			getCarmera(type,res){
-				console.log(type,res)
-				
-				uni.showToast({
-				    title: '成功'+type,
-				    duration: 2000
-				});
-			},
 			//触摸开始，获取到起点
 			touchstart: function(e) {
 				let startX = e.changedTouches[0].x;
@@ -204,18 +178,8 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 				uni.showLoading({
 					title: '保存中...'
 				})
-				
-		// 		if(this.is_main==1){ // 如果是客户签名结束录像
-		// 			this.$refs.cam.job_id = this.jobid
-		// 			this.$refs.cam.job_type = this.jobtype
-					
-		
-		// 			this.$refs.cam.jobs = this.jobs
-				
-		// 			this.$refs.cam.buttonEnd()
-		// 		}
-				
-				this.disabled = false
+
+				// this.disabled = false
 				uni.canvasToTempFilePath({
 					canvasId: 'mycanvas',
 					success: function(res) {
@@ -275,9 +239,11 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 					job_type: that.jobtype,
 					is_main: that.is_main,
 					file: path,
-					jobs:jobs
+					jobs:jobs,
+					qm_key:this.qm_key
 				}
 				// console.log(formData)
+				// return false
 						
 				uni.uploadFile({
 					// todo 根据签名角色不同而处理不同的
@@ -302,10 +268,10 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 						// 上传成功
 						switch(that.is_main){
 							case '0'://附加签名
-								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url_add});
+								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url_add,date:'222',img_more:data.data.customer_signature_url_other});
 								break;
 							case '1'://客户签名
-								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url});
+								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data.customer_signature_url,date:'111'});
 								break;
 							case '2'://技术员签名
 								uni.$emit('startSign_s', {is_main:that.is_main,img_url:data.data});
@@ -341,19 +307,7 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 </script>
 
 <style lang="scss" scoped>
-.cam_box{
-	position: fixed;
-	top: 0;
-	left: 20rpx;
-	width: 60rpx;
-	height: 60rpx;
-	z-index: 9999;
-	
-	image{
-		width: 100%;
-		transform: rotate(90deg);
-	}
-}
+
 	.handWriting {
 		background: #fff;
 		width: 100%;
@@ -417,20 +371,4 @@ import hycamera from "@/components/shusheng-hycamera/shusheng-hycamera.vue"
 		border: #15f16b 1rpx solid;
 		background-color: #00a854;
 	}
-.msg-ui{
-	background: rgba(245, 154, 35, 0.4);
-	width: 1080rpx;
-	height: 64rpx;
-	font-size: 24rpx;
-	color: #333;
-	border: 1rpx solid rgba(245, 154, 35, 0.8);
-	border-radius: 8rpx;
-	line-height: 64rpx;
-	transform: rotate(90deg);
-	position: absolute;
-    top: 45%;
-    right: -510rpx;
-	z-index: 999;
-	padding: 0rpx 10rpx;
-}
 </style>
