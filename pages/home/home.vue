@@ -329,21 +329,21 @@ export default {
 		},
 		// 未签离工单
 		getNoSignOrder(){
-			let params = {}
-			this.$api.noOrderSign(params).then(res=>{
-				if(res.code == 200) {
-					// console.log('未签离和暂停工单:',res.data)
+			// let params = {}
+			// this.$api.noOrderSign(params).then(res=>{
+			// 	if(res.code == 200) {
+			// 		// console.log('未签离和暂停工单:',res.data)
 					
-					if(res.data.data && res.data.data.length>0){
-						console.log(res.data.data[0])
-						this.noSignOrder = res.data.data[0]
-					}else{
-						this.noSignOrder = {}
-					}
-				}
-			}).catch(err=>{
-				console.log(err)
-			})
+			// 		if(res.data.data && res.data.data.length>0){
+			// 			console.log(res.data.data[0])
+			// 			this.noSignOrder = res.data.data[0]
+			// 		}else{
+			// 			this.noSignOrder = {}
+			// 		}
+			// 	}
+			// }).catch(err=>{
+			// 	console.log(err)
+			// })
 		},
 		cancel(){
 			this.show = false

@@ -133,6 +133,13 @@
 		
 	</view>
 
+		<u-modal :show="showDetail" @confirm="confirmDetail" @cancel="cancelDetail" ref="uModal" :asyncClose="true" :closeOnClickOverlay="true" title="提示" confirmText="去签离" cancelText="取消"
+			showConfirmButton="true" showCancelButton="true" v-if="noSignOrder">
+			<view class="slot-content">
+				<rich-text :nodes="noSignOrder.content" v-if="noSignOrder.content"></rich-text>
+			</view>
+		</u-modal>
+		
 	</view>
 </template>
 <script>
@@ -177,6 +184,8 @@ import popup from '@/components/feedback/popup.vue';
 				menuData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
 				user_id:'',
 				hos:0,
+				noSignOrder:{},
+				showDetail:false
 			}
 		},
 		onLoad(index) {
@@ -201,8 +210,35 @@ import popup from '@/components/feedback/popup.vue';
 				this.user_id = user_id
 				// console.log(user_id,user_name)
 			}
+			this.getNoSignOrder()
 		},
 		methods: {
+			cancelDetail(){
+				this.showDetail = false
+			},
+			confirmDetail() {
+				this.showDetail = false;
+				uni.navigateTo({
+					url: "/pages/service/start?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
+				});
+			},
+			getNoSignOrder(){
+				let params = {}
+				this.$api.noOrderSign(params).then(res=>{
+					if(res.code == 200) {
+						// console.log('未签离和暂停工单:',res.data)
+						
+						if(res.data.data && res.data.data.length>0){
+							console.log(res.data.data[0])
+							this.noSignOrder = res.data.data[0]
+						}else{
+							this.noSignOrder = {}
+						}
+					}
+				}).catch(err=>{
+					console.log(err)
+				})
+			},
 			updateJobDate(params){
 				console.log('callback:',params)
 				
@@ -408,6 +444,11 @@ import popup from '@/components/feedback/popup.vue';
 				})
 			},
 			start() {
+				if(this.noSignOrder.job_id && this.service.status == 2 && this.noSignOrder.job_id != this.service.job_id){
+					this.showDetail = true
+					return false
+				}
+				
 				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
