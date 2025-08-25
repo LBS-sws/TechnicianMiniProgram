@@ -448,13 +448,15 @@ import orderList from '@/components/order/item.vue';
 					'job_type':this.jobtype
 				}
 				that.$api.pdfCheck(param).then(res=>{
-					if(res.data.status){
+					console.log(res)
+					if(res.code==200){
+						
 						uni.showToast({
 							icon:'none',
 							title:res.data.msg
 						})
 						this.showPdf = false
-						if(res.data.status==1){
+						if(res.data.status==0){
 							that.queCreatePdf()
 						}
 					}
