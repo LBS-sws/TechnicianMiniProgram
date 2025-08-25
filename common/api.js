@@ -287,6 +287,15 @@ export default {
 	},
 	OrderMakePdf(params){
 		return request("/Order.Order/pdfList", params, 'GET')
-	}
+	},
+	getMosquitoIdentifier(params){
+		return request("/Equipment.Equipment/getMosquitoIdentifier", params, 'POST')
+	},
+	pdfCheck(params){
+		return request("/Order.Order/pdfCheck", params, 'POST')
+	},
+	pdfCheckAll(params){
+		return request("/Order.Order/pdfCheckAll", params, 'POST')
+	},
 }
 

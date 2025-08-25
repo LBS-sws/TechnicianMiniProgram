@@ -443,6 +443,26 @@ import orderList from '@/components/order/item.vue';
 				console.log('确认生成报告')
 				let that = this
 				
+				let param = {
+					'job_id':this.jobid,
+					'job_type':this.jobtype
+				}
+				that.$api.pdfCheck(param).then(res=>{
+					if(res.data.status){
+						uni.showToast({
+							icon:'none',
+							title:res.data.msg
+						})
+						this.showPdf = false
+						if(res.data.status==1){
+							that.queCreatePdf()
+						}
+					}
+				})
+				
+			},
+			queCreatePdf(){
+				let that = this
 				let param = JSON.stringify([{
 				    'job_id':this.jobid,
 				    'job_type':this.jobtype
@@ -451,6 +471,7 @@ import orderList from '@/components/order/item.vue';
 					icon:'loading',
 					title:'生成中'
 				})
+							
 				that.$api.makePdf(param).then(res=>{
 					console.log(res)
 					
@@ -473,8 +494,6 @@ import orderList from '@/components/order/item.vue';
 			},
 			// 生成PDF
 			createPdf(){
-				
-				
 				if(this.customer_qm==false)
 				{
 					uni.showToast({
@@ -484,8 +503,6 @@ import orderList from '@/components/order/item.vue';
 					return false
 				}
 				this.showPdf = true
-				
-					  
 			},
 			// 计时开始
 			startTimer() {
