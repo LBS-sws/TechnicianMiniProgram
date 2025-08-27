@@ -57,7 +57,7 @@
 				<cl-col v-if="service.status == 3" span="12" >
 					<view class="qc create_bg" v-if="customer_qm" @click="createPdf" :class="service.report.id?'in':''"
 					
-					>生成报告<text>生成报告后不能更改</text></view>
+					>{{dataText}}<text>生成报告后不能更改</text></view>
 					<view class="qc" v-else>已签离店</view>
 					
 				</cl-col>
@@ -244,7 +244,8 @@ import orderList from '@/components/order/item.vue';
 				stopText:'暂停服务先做其他客户',
 				hos:0,
 				showPdf:false,
-				content:'是否确定生成报告'
+				content:'是否确定生成报告',
+				dataText:''
 			}
 		},
 		  computed: {
@@ -459,6 +460,11 @@ import orderList from '@/components/order/item.vue';
 						if(res.data.status==0){
 							that.queCreatePdf()
 						}
+						if(res.data.status ==0 || res.data.status == 1){
+							this.dataText = '报告生成中';
+						}else{
+							this.dataText = '已生成报告';
+						}
 					}
 				})
 				
@@ -590,8 +596,6 @@ import orderList from '@/components/order/item.vue';
 				}
 				this.showContent = false;
 				this.$api.orderStart(params).then(res=>{
-					// console.log(res.data.data.service_time)
-					// this.time = res.data.data.service_time	// 服务时间
 					
 					this.autograph = res.data.autograph
 					this.staffSign = res.data.staffSign
@@ -634,6 +638,24 @@ import orderList from '@/components/order/item.vue';
 						
 						this.list = list_add;
 					}
+					
+					// 报告
+					if(res.data.data){
+						console.log('res',res.data.data)
+						if(res.data.data.report==null && res.data.data.pdf_status==0){
+							
+							this.dataText = '待生成报告'
+						}else if(res.data.data.report==null && res.data.data.pdf_status==1){
+							
+							this.dataText = '报告生成中'
+						}else if(res.data.data.report){
+							
+							this.dataText = '已生成报告'
+						}else{
+							// this.dataText = '已签离'
+						}
+					}
+					
 					//隐藏加载框
 					setTimeout(() => {
 						uni.hideLoading();
