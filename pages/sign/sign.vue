@@ -211,9 +211,9 @@ export default {
 		}
 		this.jobid = index.jobid
 		this.jobtype = index.jobtype
-		this.lat = index.lat
-		this.lng = index.lng
-		this.addr = index.addr
+		// this.lat = index.lat
+		// this.lng = index.lng
+		// this.addr = index.addr
 
 		this.getTime()
 		if (this.timerInterval) {
