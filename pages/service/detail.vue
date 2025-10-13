@@ -133,6 +133,13 @@
 		
 	</view>
 
+		<u-modal :show="showDetail" @confirm="confirmDetail" @cancel="cancelDetail" ref="uModal" :asyncClose="true" :closeOnClickOverlay="true" title="提示" confirmText="去签离" cancelText="取消"
+			showConfirmButton="true" showCancelButton="true" v-if="noSignOrder">
+			<view class="slot-content">
+				<rich-text :nodes="noSignOrder.content" v-if="noSignOrder.content"></rich-text>
+			</view>
+		</u-modal>
+		
 	</view>
 </template>
 <script>
@@ -156,6 +163,7 @@ import popup from '@/components/feedback/popup.vue';
 				fileUrl:'',
 				staffOther:'',
 				service_button:'',
+				service_url:'',
 				tech_attachment:[],
 				
 				is_show_project:true,
@@ -177,6 +185,8 @@ import popup from '@/components/feedback/popup.vue';
 				menuData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
 				user_id:'',
 				hos:0,
+				noSignOrder:{},
+				showDetail:false
 			}
 		},
 		onLoad(index) {
@@ -201,8 +211,35 @@ import popup from '@/components/feedback/popup.vue';
 				this.user_id = user_id
 				// console.log(user_id,user_name)
 			}
+			this.getNoSignOrder()
 		},
 		methods: {
+			cancelDetail(){
+				this.showDetail = false
+			},
+			confirmDetail() {
+				this.showDetail = false;
+				uni.navigateTo({
+					url: "/pages/service/start?jobtype=" + this.noSignOrder.job_type + "&jobid=" + this.noSignOrder.job_id
+				});
+			},
+			getNoSignOrder(){
+				let params = {}
+				this.$api.noOrderSign(params).then(res=>{
+					if(res.code == 200) {
+						// console.log('未签离和暂停工单:',res.data)
+						
+						if(res.data.data && res.data.data.length>0){
+							console.log(res.data.data[0])
+							this.noSignOrder = res.data.data[0]
+						}else{
+							this.noSignOrder = {}
+						}
+					}
+				}).catch(err=>{
+					console.log(err)
+				})
+			},
 			updateJobDate(params){
 				console.log('callback:',params)
 				
@@ -350,49 +387,12 @@ import popup from '@/components/feedback/popup.vue';
 						
 						this.photosArr = photosArr
 					}
-					console.log('工单主负责人:',res.data.staff.main)
+					
 					if(this.hos == 1 ){
 						this.service_button = '查看服务报告'
-					}else if(res.data.staff.main == uni.getStorageSync('staffname')){
-						if(res.data.status == -1 && res.data.start_time == null){
-							this.service_button = '服务未完成';
-						}else{
-							this.service_button = '继续服务';
-						}
-						if(res.data.status == 2 && res.data.start_time == null){	// 1
-							this.service_button = '服务签到';
-						}
-						
-						
-						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==2){// 继续签到、签离
-							this.service_button = '服务签到'; //
-						}
-						if(res.data.status == 2 && res.data.start_time != null && res.data.service_ql==1){// 直接签离了的
-							this.service_button = '继续服务';
-						}
-						if(res.data.status == 3){
-							this.service_button = '服务已完成';
-						}
 					}else{
-						console.log('协助人员:', res.data.staff_other)
-						
-						
-						if(!this.service.sign_in_info)
-						{
-							console.log('协助人员没有签到记录')
-							this.service_button = '服务签到'
-						} else if(this.service.status == 3 && !this.service.sign_in_info){
-							this.service_button = '服务签到'
-						} else if(this.service.status == 3 && this.service.sign_in_info && this.service.sign_in_info.out_type==0){
-							this.service_button = '继续服务'
-						} else if(this.service.status == 3 && this.service.sign_in_info && this.service.sign_in_info.type != 0 ){
-							this.service_button = '查看服务报告'
-						} else if(this.service.status == 2 && this.service.sign_in_info.ql_type!=0 ){
-							this.service_button = '查看服务'
-						} else{
-							this.service_button = '继续服务'
-						}
-						
+						this.service_button = res.data.detail_text
+						this.service_url = res.data.detail_url
 					}
 					
 					if(res.data.order_type == 3)
@@ -408,6 +408,11 @@ import popup from '@/components/feedback/popup.vue';
 				})
 			},
 			start() {
+				if(this.noSignOrder.job_id && this.service.status == 2 && this.noSignOrder.job_id != this.service.job_id){
+					this.showDetail = true
+					return false
+				}
+				console.log(this.service_url)
 				let params = {
 					job_id:this.jobid,
 					job_type:this.jobtype
@@ -420,7 +425,17 @@ import popup from '@/components/feedback/popup.vue';
 						});
 						return ;
 					} else {
+						if(this.hos == 1){
+							uni.navigateTo({
+								url: "/pages/service/start?jobid=" + this.jobid + "&jobtype=" + this.jobtype + '&hos=' + this.hos
+							})
+						}else{
+							uni.navigateTo({
+								url: this.service_url + "?jobid=" + this.jobid + "&jobtype=" + this.jobtype + '&hos=' + this.hos
+							})
+						}
 						
+						return false
 						// 主要负责人
 						// console.log(this.service)
 						if(this.hos == 1){

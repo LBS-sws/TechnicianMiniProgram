@@ -1,6 +1,5 @@
 <template>
 	<view class="signin" :style="{ height: windowHeight + 'px' }">
-		
 		<view v-if="pageType == 1">
 			<!-- 提示 -->
 			<u-notify ref="notify" />
@@ -10,21 +9,16 @@
 				<view class="addr">{{customerInfo.addr}}</view>
 			</view>
 			<view class="addrNow" v-if="addressName">
-				<view>当前位置：{{addressName}} 
-				</view>
+				<view>当前位置：{{addressName}}</view>
 				<view>
-					距离门店
-					：{{distance}}
-									<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
-									<text v-else>千米</text>
+					距离门店：{{distance}}
+					<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
+					<text v-else>千米</text>
 				</view>
-				
 			</view>
 			<!-- 签到窗 -->
 			<view class="signin-area">
-				
 				<van-button
-					v-if="sign_whether==1"
 					class="signin-btn"
 					type="primary"
 					round
@@ -35,16 +29,6 @@
 					<view class="label">{{ signState.text }}</view>
 					<view class="time">{{ signState.time }}</view>
 				</van-button>
-				<van-button
-					v-else
-					class="signin-btn"
-					type="primary"
-					round
-					:disabled="signState.isSignin"
-				>
-					<view class="label">请在一公里内签到</view>
-				</van-button>
-			
 				<view class="signin-result" style="font-size: 16px;">
 					<van-icon v-if="signState.count" name="checked" size="30rpx" color="#4cd964" style="margin-right:10rpx" />
 					<text v-if="signState.count">签到成功</text>
@@ -63,18 +47,13 @@
 					<view class="text">检测到你暂未进入可签到区，请距离客户门店<text class="red">300米内</text>,若继续签到将会记录<text class="red">异常签到</text></view>
 				</view>
 				<view class="sign_info error">
-					
 				</view>
 			</view>
-			
 			<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
-			
 			<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 				<view class="abnormal">
 					<view class="title">异常签到/签离</view>
-					
 					<view class="item" v-for="(item,i) in abnormalList"  @click="exceptionHandle(i)">{{item.name}}</view>
-					
 				</view>
 			</u-popup>
 		</view>
@@ -98,7 +77,6 @@
 						<image class="w131-h131" :src="icon">
 						</image>
 					</view>
-					
 					<view class="back" @click="switchBtn">
 						<image :src="flip" mode="" style="width: 60rpx; height: 60rpx;"></image>
 					</view>
@@ -108,7 +86,6 @@
 		<view v-if="pageType == 3">
 			<preview :Height="cameraHeight" :imgUrl="imgUrl" @retake="retake" @confirm="confirm"></preview>
 		</view>
-		
 		<atl-map :disable="disable" v-if="mapShow" :longitude="longitude" :latitude="latitude" :marker="marker" :mapKey="key" :mapType="mapType" @confirm="confirmAmap">
 			<template v-slot:content>
 				<view style="position: absolute; bottom: 0; width: 100%; height: 24px; background-color: white">
@@ -116,7 +93,12 @@
 				</view>
 			</template>
 		</atl-map>
-	
+		
+		<view class="debug-list" v-if="demoList && demoList.length>0">
+			<view class="debug-item"  v-for="(item,index) in demoList" :key="index"  @click="debug(index)">{{item.title}}</view>
+			<view class="debug-item">{{point2.longitude}}</view>
+			<view class="debug-item">{{point2.latitude}}</view>
+		</view>
 	</view>
 </template>
 
@@ -139,7 +121,7 @@ export default {
 				curLocation: null
 			},
 			signState: {
-				isSignin: false,
+				isSignin: true,
 				time: '',
 				count: 0,
 				text: '拍照签到'
@@ -153,7 +135,6 @@ export default {
 			jobtype: '',
 			lat: '',
 			lng: '',
-			sign_whether: 1,
 			addr: '',
 			addrlat: '',
 			addrlng: '',
@@ -213,7 +194,8 @@ export default {
 			longitude:'',
 			latitude:'',
 			timer: null,
-			timerInterval: null  // 这个定时器在代码中使用了但没有在data中定义
+			timerInterval: null  ,// 这个定时器在代码中使用了但没有在data中定义
+			demoList:[]
 		}
 	},
 	onLoad(index) {
@@ -229,9 +211,9 @@ export default {
 		}
 		this.jobid = index.jobid
 		this.jobtype = index.jobtype
-		this.lat = index.lat
-		this.lng = index.lng
-		this.addr = index.addr
+		// this.lat = index.lat
+		// this.lng = index.lng
+		// this.addr = index.addr
 
 		this.getTime()
 		if (this.timerInterval) {
@@ -260,40 +242,43 @@ export default {
 	},
 	computed: {},
 	onShow() {
-		// 显示头部消息弹窗
-		// this.$refs.notify.show({
-		// 	type: 'warning',
-		// 	message: '请找负责人沟通,了解门店情况!',
-		// 	duration: 5000,
-		// 	fontSize: 15,
-		// 	icon: 'chat-fill'
-		// })
-		
-		// 二次开发
+	
 		this.detail();
-		// this.getRegeo();
 		
 		const systemInfo = uni.getSystemInfoSync()
 		this.windowHeight = systemInfo.windowHeight
 		this.cameraHeight = systemInfo.windowHeight - 80
 		
-		// 高德请求经纬度 三秒一次
-		// this.timer = setInterval(() => {
-			
-		// }, 3000)
-		// this.getRegeo()
+		setTimeout(()=>{
+			this.signState.isSignin = false
+		},1500);
 	},
 	onUnload() {
 		this.clearAllTimers();
 	},
 	onHide() {
-			// 页面隐藏时清除定时器
-			if (this.timer) {
-				clearInterval(this.timer)
-				this.timer = null
-			}
+		// 页面隐藏时清除定时器
+		if (this.timer) {
+			clearInterval(this.timer)
+			this.timer = null
+		}
 	},
+	watch: {
+        point2: {
+            handler(newVal, oldVal) {
+                console.log('myObject changed', newVal, oldVal);
+				console.log(this.point2)
+				this.distance = this.getDistance(this.point2, this.point1);
+            },
+             immediate: true,
+				deep: true
+        }
+    },
 	methods: {
+		debug(index){
+			this.point2.longitude = this.demoList[index].lng
+			this.point2.latitude = this.demoList[index].lat
+		},
 		clearAllTimers() {
 			if (this.timer) {
 				clearInterval(this.timer);
@@ -490,6 +475,10 @@ export default {
 		// 重新定位
 		resetLocation: debounce(function() {
 			this.getRegeo();
+			this.signState.isSignin = true
+			setTimeout(()=>{
+				this.signState.isSignin = false
+			},1500);
 		}, 500),
 		// 高德获取位置
 		getRegeo() {
@@ -500,6 +489,7 @@ export default {
 			this.amapPlugin.getRegeo({  
 				success: (data) => {  
 					console.log(data)
+					console.log('高德：',data[0].longitude,'-',data[0].latitude)
 					this.addressName = data[0].name; 
 					
 					this.point2.latitude = data[0].latitude
@@ -511,7 +501,6 @@ export default {
 					this.distance = this.getDistance(this.point2, this.point1);
 					uni.hideLoading(); 
 			
-					this.detail()
 				},
 				fail: (err) => {
 					uni.hideLoading();
@@ -540,11 +529,10 @@ export default {
 				this.point1.longitude = res.data.customer.lng
 				this.point1.latitude = res.data.customer.lat
 				console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
-				console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
 				
 				this.distance = this.getDistance(this.point2, this.point1);
-				console.log('距离：',this.distance);
 				
+				this.demoList = res.data.demoList
 			}).catch(err=>{
 				uni.hideLoading();
 				console.log(err)
@@ -1002,4 +990,16 @@ export default {
 		color: #ff0000;
 		width: 400rpx;
 	}
+.debug-list{
+	position: absolute;
+	top: 240rpx;
+	right: 20rpx;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	.debug-item{
+		margin-bottom: 30rpx;
+		text-align: right;
+	}
+}
 </style>

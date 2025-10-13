@@ -1,5 +1,4 @@
 <template>
-
 	<div class="signin">
 		<cl-message ref="message"></cl-message>
 		<view class="location">
@@ -7,14 +6,12 @@
 			<view class="customerInfo">
 				<view class="title">{{customerInfo.name_zh}}</view>
 				<view class="addr">{{customerInfo.addr}}</view>
-				<!-- <view class="time">已服务时间:{{formatTime}}</view> -->
 			</view>
 			<view class="addrNow" v-if="addressName">
 				<view>当前位置：{{addressName}} 
 				</view>
 				<view>
-					距离门店
-					：{{distance}}
+					距离门店：{{distance}}
 					<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
 					<text v-else>千米</text>
 				</view>
@@ -78,7 +75,11 @@
 				<view class="item" v-for="(item,i) in abnormalList"  @click="exceptionHandle(i)">{{item.name}}</view>
 			</view>
 		</u-popup>
-		
+		<view class="debug-list" v-if="demoList && demoList.length>0">
+			<view class="debug-item"  v-for="(item,index) in demoList" :key="index"  @click="debug(index)">{{item.title}}</view>
+			<view class="debug-item">{{point2.longitude}}</view>
+			<view class="debug-item">{{point2.latitude}}</view>
+		</view>
 	</div>
 </template>
 
@@ -178,6 +179,7 @@ import amap  from '@/utils/amap-wx.130.js';
 				requestInterval: 5000, // 请求间隔时间(ms)
 				longitude:'',
 				latitude:'',
+				demoList:[]
 			}
 		},
 		computed: {
@@ -260,7 +262,22 @@ import amap  from '@/utils/amap-wx.130.js';
 				this.timer = null;
 			}
 		},
+		watch: {
+		    point2: {
+		        handler(newVal, oldVal) {
+		            console.log('myObject changed', newVal, oldVal);
+					console.log(this.point2)
+					this.distance = this.getDistance(this.point2, this.point1);
+		        },
+		         immediate: true,
+					deep: true
+		    }
+		},
 		methods: {
+			debug(index){
+				this.point2.longitude = this.demoList[index].lng
+				this.point2.latitude = this.demoList[index].lat
+			},
 			//单独提取一个判断用户是否授权定位的函数，在需要的地方直接调用，避免了重复触发getLocation获取定位弹窗
 			checkLocationAuth() {
 				wx.getSetting({
@@ -367,7 +384,7 @@ import amap  from '@/utils/amap-wx.130.js';
 						uni.hideLoading();
 						this.location.loading = false;
 				
-						this.detail();
+						// this.detail();
 					},
 					fail: (err) => {
 						uni.hideLoading();
@@ -393,18 +410,16 @@ import amap  from '@/utils/amap-wx.130.js';
 					this.point1.longitude = res.data.customer.lng
 					this.point1.latitude = res.data.customer.lat
 					console.log('公司经度：',this.point1.longitude,'公司维度：',this.point1.latitude)
-					
-					console.log('高德经度：',this.point2.longitude,'高德维度：',this.point2.latitude)
-					
+				
 					this.longitude = this.point2.longitude
 					this.latitude = this.point2.latitude
 					
 					this.distance = this.getDistance(this.point2, this.point1);
 					
-					console.log('距离：',this.distance);
-
 					this.time = res.data.service_time	// 服务时间
 					this.startTimer();
+					
+					this.demoList = res.data.demoList
 					
 				}).catch(err=>{
 					uni.hideLoading();
@@ -689,9 +704,6 @@ import amap  from '@/utils/amap-wx.130.js';
 					return d.toFixed(0);
 				}
 			},
-		},
-		watch: {
-	
 		}
 	}
 	/**
@@ -1062,5 +1074,18 @@ import amap  from '@/utils/amap-wx.130.js';
 	font-size: 24rpx;
 	color: #2196F3;
 	padding:  40rpx 36rpx 0;
+}
+
+.debug-list{
+	position: absolute;
+	top: 240rpx;
+	right: 20rpx;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	.debug-item{
+		margin-bottom: 30rpx;
+		text-align: right;
+	}
 }
 </style>

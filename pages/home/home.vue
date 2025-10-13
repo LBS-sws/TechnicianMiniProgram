@@ -231,6 +231,42 @@ export default {
 				arr.push({job_id:item.job_id, job_type:item.job_type})
 			})
 			
+			let query = arr
+			this.$api.pdfCheckAll(query).then(res=>{
+				if(res.data.status){
+					uni.showToast({
+						icon:'none',
+						title:res.data.msg
+					})
+					this.showPdf = false
+					if(res.data.status==1){
+						let param = JSON.stringify(arr)
+						
+						uni.showToast({
+							icon:'loading',
+							title:'生成中'
+						})
+						setTimeout(()=>{
+							uni.showToast({
+								icon:'loading',
+								title:'请等一会查看！'
+							})
+							
+						},1500)
+						uni.setStorageSync('pdfOpen',0)
+						this.$api.makePdf(param).then(res=>{
+							console.log(res)
+							
+							this.pdfData = []
+							
+						}).catch(err=>{
+							console.log(err)
+						})
+					}
+				}
+			})
+			return false
+			
 			let param = JSON.stringify(arr)
 			
 			uni.showToast({
@@ -273,25 +309,42 @@ export default {
 		},
 		// 单个生成报告
 		createPdf(index){
-			let param = JSON.stringify([{
-			    'job_id':this.pdfData[index].job_id,
-			    'job_type':this.pdfData[index].job_type
-			}])
-			uni.showToast({
-				icon:'loading',
-				title:'生成中'
+			let that = this
+			
+			let query = {
+				'job_id':this.pdfData[index].job_id,
+				'job_type':this.pdfData[index].job_type
+			}
+			this.$api.pdfCheck(query).then(res=>{
+				if(res.data.status){
+					uni.showToast({
+						icon:'none',
+						title:res.data.msg
+					})
+					
+					if(res.data.status==1){
+						let param = JSON.stringify([{
+						    'job_id':this.pdfData[index].job_id,
+						    'job_type':this.pdfData[index].job_type
+						}])
+						uni.showToast({
+							icon:'loading',
+							title:'生成中'
+						})
+						// console.log(param)
+						this.$api.makePdf(param).then(res=>{
+							console.log(res)
+							uni.showToast({
+								title:res.msg,
+								icon:'none'
+							})
+							this.pdfData.splice(index, 1)
+						}).catch(err=>{
+							console.log(err)
+						})	
+					}
+				}
 			})
-			console.log(param)
-			this.$api.makePdf(param).then(res=>{
-				console.log(res)
-				uni.showToast({
-					title:res.msg,
-					icon:'none'
-				})
-				this.pdfData.splice(index, 1)
-			}).catch(err=>{
-				console.log(err)
-			})	
 		},
 		getOrderList(){
 			let param = {}
@@ -329,21 +382,21 @@ export default {
 		},
 		// 未签离工单
 		getNoSignOrder(){
-			let params = {}
-			this.$api.noOrderSign(params).then(res=>{
-				if(res.code == 200) {
-					// console.log('未签离和暂停工单:',res.data)
+			// let params = {}
+			// this.$api.noOrderSign(params).then(res=>{
+			// 	if(res.code == 200) {
+			// 		// console.log('未签离和暂停工单:',res.data)
 					
-					if(res.data.data && res.data.data.length>0){
-						console.log(res.data.data[0])
-						this.noSignOrder = res.data.data[0]
-					}else{
-						this.noSignOrder = {}
-					}
-				}
-			}).catch(err=>{
-				console.log(err)
-			})
+			// 		if(res.data.data && res.data.data.length>0){
+			// 			console.log(res.data.data[0])
+			// 			this.noSignOrder = res.data.data[0]
+			// 		}else{
+			// 			this.noSignOrder = {}
+			// 		}
+			// 	}
+			// }).catch(err=>{
+			// 	console.log(err)
+			// })
 		},
 		cancel(){
 			this.show = false
