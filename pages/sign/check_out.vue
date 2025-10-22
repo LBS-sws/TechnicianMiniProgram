@@ -7,7 +7,7 @@
 				<view class="title">{{customerInfo.name_zh}}</view>
 				<view class="addr">{{customerInfo.addr}}</view>
 			</view>
-			<view class="addrNow" v-if="addressName">
+			<!-- <view class="addrNow" v-if="addressName">
 				<view>当前位置：{{addressName}} 
 				</view>
 				<view>
@@ -15,7 +15,7 @@
 					<text v-if="DistanceType == 1 || DistanceType == 2">米</text>
 					<text v-else>千米</text>
 				</view>
-			</view>
+			</view> -->
 			<van-cell class="field-cell" required title-width="70px" title="发票签收：">
 				<view class="location">
 					<cl-radio v-model="invoice" :label="1">是</cl-radio>
@@ -62,10 +62,25 @@
 				<view class="icon_ui">i</view>
 				<view class="text">检测到你暂未进入可签到区，请距离客户门店<text class="red">300米内</text>,若继续签到将会记录<text class="red">异常签到</text></view>
 			</view>
-			<view class="sign_info error">
+			<!-- <view class="sign_info error">
 				
-			</view>
+			</view> -->
 		</view>
+		
+		<map class="order-map" :latitude="point2.latitude" :longitude="point2.longitude" show-location
+			:polyline="polyline" @markertap="markertap" :key="polyline.length + new Date().getTime()"
+			:markers="markers" style="width: 100%; height: 260px;">
+			<cover-view slot="callout">
+				<block v-for="(item,index) in markers" :key="index">
+					<cover-view class="customCallout" :marker-id="item.id">
+						<cover-view class="customCalloutContent">
+							{{item.title}}
+						</cover-view>
+					</cover-view>
+				</block>
+			</cover-view>		
+		</map>
+		
 		<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 		
 		<!-- 异常签离弹出 -->
@@ -75,11 +90,7 @@
 				<view class="item" v-for="(item,i) in abnormalList"  @click="exceptionHandle(i)">{{item.name}}</view>
 			</view>
 		</u-popup>
-		<view class="debug-list" v-if="demoList && demoList.length>0">
-			<view class="debug-item"  v-for="(item,index) in demoList" :key="index"  @click="debug(index)">{{item.title}}</view>
-			<view class="debug-item">{{point2.longitude}}</view>
-			<view class="debug-item">{{point2.latitude}}</view>
-		</view>
+		
 	</div>
 </template>
 
@@ -179,7 +190,16 @@ import amap  from '@/utils/amap-wx.130.js';
 				requestInterval: 5000, // 请求间隔时间(ms)
 				longitude:'',
 				latitude:'',
-				demoList:[]
+				
+				markers: [],
+				tripInfo: {},
+				polyline: [],
+				startPoint: {
+					latitude: 26.56045894387685, //纬度
+					longitude: 106.68005128661751, //经度
+					name: '',
+					address: ''
+				},
 			}
 		},
 		computed: {
@@ -274,9 +294,11 @@ import amap  from '@/utils/amap-wx.130.js';
 		    }
 		},
 		methods: {
-			debug(index){
-				this.point2.longitude = this.demoList[index].lng
-				this.point2.latitude = this.demoList[index].lat
+			// 点击标记点
+			markertap(e) {
+				let opt = this.markers.find(el => {
+					return el.id === e.detail.markerId
+				})
 			},
 			//单独提取一个判断用户是否授权定位的函数，在需要的地方直接调用，避免了重复触发getLocation获取定位弹窗
 			checkLocationAuth() {
@@ -384,7 +406,23 @@ import amap  from '@/utils/amap-wx.130.js';
 						uni.hideLoading();
 						this.location.loading = false;
 				
-						// this.detail();
+						this.markers[1] = {
+							id: 2,
+							latitude: data[0].latitude, //纬度
+							longitude: data[0].longitude, //经度
+							iconPath: 'https://files.lbsapps.cn/company/kongbai.png', //显示的图标
+							rotate: 0, // 旋转度数
+							width: 24, //宽
+							height: 30, //高
+							title: uni.getStorageSync('staffname'), //标注点名
+							// alpha: 0.5, //透明度
+							joinCluster: true,
+							customCallout: {
+								anchorY: 0,
+								anchorX: 0,
+								display: "ALWAYS"
+							},
+						}
 					},
 					fail: (err) => {
 						uni.hideLoading();
@@ -419,7 +457,23 @@ import amap  from '@/utils/amap-wx.130.js';
 					this.time = res.data.service_time	// 服务时间
 					this.startTimer();
 					
-					this.demoList = res.data.demoList
+					this.markers[0] = {
+						id: 1,
+						latitude: res.data.customer.lat, //纬度
+						longitude: res.data.customer.lng, //经度
+						iconPath: 'https://v1.lbsapps.cn/shop.png', //显示的图标
+						rotate: 0, // 旋转度数
+						width: 30, //宽
+						height: 30, //高
+						title: this.customerInfo.name_zh, //标注点名
+						// alpha: 0.5, //透明度
+						joinCluster: true,
+						customCallout: {
+							anchorY: 0,
+							anchorX: 0,
+							display: "ALWAYS"
+						},
+					}
 					
 				}).catch(err=>{
 					uni.hideLoading();
@@ -745,7 +799,7 @@ import amap  from '@/utils/amap-wx.130.js';
 		}
 
 		.signin-area {
-			padding-top: 100rpx;
+			padding-top: 60rpx;
 			text-align: center;
 
 			::v-deep .signin-btn {
@@ -896,7 +950,7 @@ import amap  from '@/utils/amap-wx.130.js';
 	}
 }
 .container-sign{
-	padding: 120rpx 34rpx 0 34rpx;
+	// padding: 120rpx 34rpx 0 34rpx;
 	.sign_info{
 		border-radius: 4px;
 		width: 100%;
@@ -1074,18 +1128,5 @@ import amap  from '@/utils/amap-wx.130.js';
 	font-size: 24rpx;
 	color: #2196F3;
 	padding:  40rpx 36rpx 0;
-}
-
-.debug-list{
-	position: absolute;
-	top: 240rpx;
-	right: 20rpx;
-	display: flex;
-	flex-direction: column;
-	flex-wrap: wrap;
-	.debug-item{
-		margin-bottom: 30rpx;
-		text-align: right;
-	}
 }
 </style>

@@ -8,7 +8,7 @@
 				<view class="title">{{customerInfo.name_zh}}</view>
 				<view class="addr">{{customerInfo.addr}}</view>
 			</view>
-			<view class="addrNow" v-if="addressName">
+			<view class="addrNow" v-if="addressName" style="display: none;">
 				<view>当前位置：{{addressName}}</view>
 				<view>
 					距离门店：{{distance}}
@@ -49,7 +49,7 @@
 				<view class="sign_info error">
 				</view>
 			</view>
-			<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
+			
 			<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 				<view class="abnormal">
 					<view class="title">异常签到/签离</view>
@@ -94,11 +94,21 @@
 			</template>
 		</atl-map>
 		
-		<view class="debug-list" v-if="demoList && demoList.length>0">
-			<view class="debug-item"  v-for="(item,index) in demoList" :key="index"  @click="debug(index)">{{item.title}}</view>
-			<view class="debug-item">{{point2.longitude}}</view>
-			<view class="debug-item">{{point2.latitude}}</view>
-		</view>
+		<map class="order-map" :latitude="point2.latitude" :longitude="point2.longitude" show-location
+			:polyline="polyline" @markertap="markertap" :key="polyline.length + new Date().getTime()"
+			:markers="markers" style="width: 100%; height: 260px;">
+			<cover-view slot="callout">
+				<block v-for="(item,index) in markers" :key="index">
+					<cover-view class="customCallout" :marker-id="item.id">
+						<cover-view class="customCalloutContent">
+							{{item.title}}
+						</cover-view>
+					</cover-view>
+				</block>
+			</cover-view>		
+		</map>
+		
+		<view class="reset_location"><view class="location_button" @click="resetLocation">重新定位</view></view>
 	</view>
 </template>
 
@@ -195,7 +205,15 @@ export default {
 			latitude:'',
 			timer: null,
 			timerInterval: null  ,// 这个定时器在代码中使用了但没有在data中定义
-			demoList:[]
+			markers: [],
+			tripInfo: {},
+			polyline: [],
+			startPoint: {
+				latitude: 26.56045894387685, //纬度
+				longitude: 106.68005128661751, //经度
+				name: '',
+				address: ''
+			},
 		}
 	},
 	onLoad(index) {
@@ -211,9 +229,6 @@ export default {
 		}
 		this.jobid = index.jobid
 		this.jobtype = index.jobtype
-		// this.lat = index.lat
-		// this.lng = index.lng
-		// this.addr = index.addr
 
 		this.getTime()
 		if (this.timerInterval) {
@@ -239,6 +254,9 @@ export default {
 		// 检查权限
 		this.checkLocationPermission();
 		this.checkCameraPermission();
+		
+		
+		// this.getCurrentLocation();
 	},
 	computed: {},
 	onShow() {
@@ -252,6 +270,8 @@ export default {
 		setTimeout(()=>{
 			this.signState.isSignin = false
 		},1500);
+		
+		
 	},
 	onUnload() {
 		this.clearAllTimers();
@@ -275,9 +295,12 @@ export default {
         }
     },
 	methods: {
-		debug(index){
-			this.point2.longitude = this.demoList[index].lng
-			this.point2.latitude = this.demoList[index].lat
+		
+		// 点击标记点
+		markertap(e) {
+			let opt = this.markers.find(el => {
+				return el.id === e.detail.markerId
+			})
 		},
 		clearAllTimers() {
 			if (this.timer) {
@@ -498,7 +521,26 @@ export default {
 					this.longitude = this.point2.longitude
 					this.latitude = this.point2.latitude
 					
-					this.distance = this.getDistance(this.point2, this.point1);
+					this.distance = this.getDistance(this.point2, this.point1); // 计算距离
+					
+					this.markers[1] = {
+						id: 2,
+						latitude: data[0].latitude, //纬度
+						longitude: data[0].longitude, //经度
+						iconPath: 'https://files.lbsapps.cn/company/kongbai.png', //显示的图标
+						rotate: 0, // 旋转度数
+						width: 24, //宽
+						height: 30, //高
+						title: uni.getStorageSync('staffname'), //标注点名
+						// alpha: 0.5, //透明度
+						joinCluster: true,
+						customCallout: {
+							anchorY: 0,
+							anchorX: 0,
+							display: "ALWAYS"
+						},
+					}
+					
 					uni.hideLoading(); 
 			
 				},
@@ -532,7 +574,25 @@ export default {
 				
 				this.distance = this.getDistance(this.point2, this.point1);
 				
-				this.demoList = res.data.demoList
+		
+				this.markers[0] = {
+					id: 1,
+					latitude: res.data.customer.lat, //纬度
+					longitude: res.data.customer.lng, //经度
+					iconPath: 'https://v1.lbsapps.cn/shop.png', //显示的图标
+					rotate: 0, // 旋转度数
+					width: 30, //宽
+					height: 30, //高
+					title: this.customerInfo.name_zh, //标注点名
+					// alpha: 0.5, //透明度
+					joinCluster: true,
+					customCallout: {
+						anchorY: 0,
+						anchorX: 0,
+						display: "ALWAYS"
+					},
+				}
+				
 			}).catch(err=>{
 				uni.hideLoading();
 				console.log(err)
@@ -757,7 +817,7 @@ export default {
 		}
 
 		.signin-area {
-			padding-top: 60rpx;
+			padding-top: 40rpx;
 			text-align: center;
 
 			::v-deep .signin-btn {
@@ -809,10 +869,10 @@ export default {
 .addrNow{
 	font-size: 24rpx;
 	color: #2196F3;
-	padding:  40rpx 36rpx 0;
+	padding:  30rpx 36rpx 0;
 }
 .container-sign{
-	padding: 120rpx 34rpx 0 34rpx;
+	padding: 60rpx 34rpx 0 34rpx;
 	.sign_info{
 		border-radius: 4px;
 		width: 100%;
@@ -871,13 +931,14 @@ export default {
 	}
 }
 .reset_location{
-	position: absolute;
-	bottom:40rpx;
-	left:0;
-	right: 0;
+	// position: fixed;
+	// bottom:40rpx;
+	// left:0;
+	// right: 0;
 	width: 100%;
 	display: flex;
 	justify-content: center;
+	margin-top: 140rpx;
 	.location_button{
 		font-size: 26rpx;
 		color: #007AFF;
@@ -990,16 +1051,10 @@ export default {
 		color: #ff0000;
 		width: 400rpx;
 	}
-.debug-list{
-	position: absolute;
-	top: 240rpx;
-	right: 20rpx;
-	display: flex;
-	flex-direction: column;
-	flex-wrap: wrap;
-	.debug-item{
-		margin-bottom: 30rpx;
-		text-align: right;
-	}
+.customCalloutContent{
+	background: #fff;
+	border-radius: 4px;
+	padding: 5px 5px;
+	font-size: 24rpx;
 }
 </style>
