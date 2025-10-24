@@ -297,5 +297,17 @@ export default {
 	pdfCheckAll(params){
 		return request("/Order.Order/pdfCheckAll", params, 'POST')
 	},
+	staffList(params){
+		return request("/Order.Order/staffList", params, 'POST')
+	},
+	staffAdd(params){
+		return request("/Order.Order/staffAdd", params, 'POST') 
+	},
+	staffEdit(params){
+		return request("/Order.Order/staffEdit", params, 'POST') 
+	},
+	staffInfo(params){
+		return request("/Order.Order/staffInfo", params, 'GET') 
+	}
 }
 

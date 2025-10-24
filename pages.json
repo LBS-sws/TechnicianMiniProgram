@@ -163,6 +163,12 @@
 					"style": {
 						"navigationBarTitleText": "风险情况"
 					}
+				},
+				{
+					"path": "staff_change",
+					"style": {
+						"navigationBarTitleText": "变更技术员"
+					}
 				}
 			]
 		},

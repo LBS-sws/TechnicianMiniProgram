@@ -182,7 +182,12 @@ import popup from '@/components/feedback/popup.vue';
 				
 				menuShow:false,
 				
-				menuData:[{label:'门店异常反馈', value:1}, {label:'申请更换日期', value:2}],
+				menuData:[
+					{label:'门店异常反馈', value:1}, 
+					// {label:'申请更换日期', value:2}, 
+					{label:'申请变更入口', value:3},
+					{label:'变更记录列表', value:4}
+				],
 				user_id:'',
 				hos:0,
 				noSignOrder:{},
@@ -200,6 +205,7 @@ import popup from '@/components/feedback/popup.vue';
 		onShow(index) {
 			this.staffOther = uni.getStorageSync('staffname')
 			this.service.Status = 0;
+			this.menuShow = false
 			this.data_select()
 			
 			// 获取当前用户user_id和name
@@ -301,11 +307,11 @@ import popup from '@/components/feedback/popup.vue';
 					this.$refs.popup.problem_type =  this.menuData[index].value
 					this.$refs.popup.userVal = this.user_id
 					
-					this.$refs.popup.show(); // 打开弹出层
+					this.$refs.popup.show();
 					
 					this.$forceUpdate()
 				}
-				
+				// 反馈
 				if(this.menuData[index].value == 1)
 				{
 					
@@ -314,11 +320,20 @@ import popup from '@/components/feedback/popup.vue';
 					this.$refs.openPopUp.show();
 					
 				}
-				this.menuShow = false	// 关闭下拉菜单
+				// 申请变更
+				if(this.menuData[index].value == 3){
+					
+					uni.navigateTo({
+						url:"/pages/service/staff_change?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&hos=" + this.hos
+					})
+				}
+				if(this.menuData[index].value == 4){
+					// uni.navigateTo({
+						
+					// })
+				}
+				this.menuShow = false
 			},
-			// showModal() {
-			// 			this.show = true;
-			// 		},
 			confirm() {
 				if(!this.confirm_flag){
 					this.show = false;
