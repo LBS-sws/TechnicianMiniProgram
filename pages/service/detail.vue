@@ -328,9 +328,9 @@ import popup from '@/components/feedback/popup.vue';
 					})
 				}
 				if(this.menuData[index].value == 4){
-					// uni.navigateTo({
-						
-					// })
+					uni.navigateTo({
+						url:'/pages/service/staff_list'
+					})
 				}
 				this.menuShow = false
 			},

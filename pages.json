@@ -167,7 +167,13 @@
 				{
 					"path": "staff_change",
 					"style": {
-						"navigationBarTitleText": "变更技术员"
+						"navigationBarTitleText": "变更申请"
+					}
+				},
+				{
+					"path": "staff_list",
+					"style": {
+						"navigationBarTitleText": "变更记录"
 					}
 				}
 			]

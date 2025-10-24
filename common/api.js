@@ -308,6 +308,9 @@ export default {
 	},
 	staffInfo(params){
 		return request("/Order.Order/staffInfo", params, 'GET') 
+	},
+	staffRecord(params){
+		return request("/Order.Order/staffRecord", params, 'GET') 
 	}
 }
 
