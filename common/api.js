@@ -311,6 +311,9 @@ export default {
 	},
 	staffRecord(params){
 		return request("/Order.Order/staffRecord", params, 'GET') 
+	},
+	staffAudit(params){
+		return request("/Order.Order/staffAudit", params, 'POST') 
 	}
 }
 

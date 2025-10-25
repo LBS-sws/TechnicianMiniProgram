@@ -199,7 +199,12 @@ export default{
 		},
 		// 发送审核
 		pushSubmit(){
-			
+			let params = {
+				id:this.item.id
+			}
+			this.$api.staffAudit(params).then(res=>{
+				
+			})
 		},
 		onSearch() {
 			if (this.key) {
