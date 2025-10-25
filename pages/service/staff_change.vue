@@ -322,7 +322,7 @@ export default{
 				if(res.data.id){
 					this.item = res.data
 					if(this.item.id){
-						this.job_id = this.job_type = this.service = this.content = '';
+						this.job_id = this.job_type = '';
 						this.dis = true
 					}
 					this.staffInfo()
