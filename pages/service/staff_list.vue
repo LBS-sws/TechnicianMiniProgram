@@ -6,7 +6,8 @@
 		@input="inputFun"
 		></u-search>
 		<view class="order-list">
-			<view class="item" v-for="(item,i) in data" :key="i">
+			<view class="item" v-for="(item,index) in data" :key="index"
+			@click="goDetail(index)">
 				<view class="h2">{{item.customer.name_zh}}</view>
 				<view class="service_list">
 					<view class="service_item service_type">{{item.service_name}}</view>
@@ -42,16 +43,6 @@
 </template>
 
 <script>
-export const fuzzyQuery = (list, keyWord, attribute = 'name') => {
-  const reg = new RegExp(keyWord)
-  const arr = []
-  for (let i = 0; i < list.length; i++) {
-    if (reg.test(list[i][attribute])) {
-      arr.push(list[i])
-    }
-  }
-  return arr
-}
 export default{
 	data(){
 		return{
@@ -64,7 +55,15 @@ export default{
 		this.list()
 	},
 	methods:{
-		
+		// 详情
+		goDetail(index){
+			// console.log(index)
+			let id = this.data[index].id
+			uni.navigateTo({
+				url:'/pages/service/staff_change?id='+ id
+			})
+		},
+		// 搜索
 		inputFun(e){
 			console.log(e)
 			this.clearTimer()
@@ -85,6 +84,7 @@ export default{
 				clearTimeout(this.timer)
 			}
 		},
+		// 列表
 		list(){
 			let params = {
 				page:1,
@@ -92,8 +92,7 @@ export default{
 				key: this.key
 			}
 			this.$api.staffRecord(params).then(res=>{
-				
-				console.log(res.data)
+				// console.log(res.data)
 				this.data = res.data
 			})
 		}

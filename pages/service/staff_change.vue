@@ -53,7 +53,15 @@
 			</view>
 			
 			<view class="sub_rp">
-				<u-button type="primary" text="保存" :disabled="disabled" @click="submit"></u-button>
+				<view v-if="!item.id">
+					<u-button type="primary" text="保存" :disabled="disabled" @click="submit"></u-button>
+					
+				</view>
+				<view v-else>
+					<u-button type="primary" text="保存" :disabled="disabled" @click="saveSubmit"></u-button>
+				</view>
+				
+				<u-button type="info" text="发送审核" @click="pushSubmit"></u-button>
 			</view>
 			
 			<!-- 搜索 -->
@@ -133,12 +141,17 @@ export default{
 		}
 	},
 	onLoad(index) {
-		this.jobid = index.jobid
-		this.jobtype = index.jobtype
+		if(index.jobid){
+			this.jobid = index.jobid
+			this.jobtype = index.jobtype
+		}
 		if(index.hos){
 			this.hos = index.hos
 		}
-		
+		if(index.id){
+			this.item = { id:index.id}
+		}
+		console.log(index)
 	},
 	onShow() {
 		
@@ -154,6 +167,8 @@ export default{
 		// }
 		if(!this.item.id){
 			this.detail()
+		}else{
+			this.staffInfo()
 		}
 	},
 	watch: {
@@ -178,7 +193,14 @@ export default{
 	    }
 	},
 	methods:{
-		// 自定义 start
+		// 编辑
+		saveSubmit(){
+			console.log('编辑')
+		},
+		// 发送审核
+		pushSubmit(){
+			
+		},
 		onSearch() {
 			if (this.key) {
 				let result = fuzzyQuery(this.options, this.key, 'name')
@@ -188,14 +210,12 @@ export default{
 			}
 		},
 		inputFun(e){
-			
 			this.clearTimer()
 			if (e.detail.value) {
 				
 				this.timer = setTimeout(() => {
 					this.onSearch()
 				}, 500)
-				
 			}else{
 				this.onSearch()
 			}
@@ -207,23 +227,21 @@ export default{
 		},
 		// 选择技术员
 		staffHandle(index){
-			
 			this.staff_id = this.options[index].id
 			this.staff_name = this.options[index].name
 			this.show = false
 		},
-		open() {
-          // console.log('open');
-        },
+		open() {},
         close() {
           this.show = false
-          // console.log('close');
         },
-		bindDateChange: function(e) { //选择日期
-		            this.date = e.detail.value
-		            console.log('date', this.date)
+		//选择日期
+		bindDateChange: function(e) { 
+		    this.date = e.detail.value
+		    console.log('date', this.date)
 		},
-		getDate(type) { //年月日
+		//年月日
+		getDate(type) { 
 		            const date = new Date();
 		            // const date = new Date();
 		            let year = date.getFullYear();
@@ -257,16 +275,16 @@ export default{
 				id:this.item.id
 			}
 			this.$api.staffInfo(params).then(res=>{
-				console.log(res)
+				// console.log(res)
 				if(res.data.id){
-					// this.item = res.data
+					
 					this.type = res.data.type
 					this.service = res.data
 					
 					this.user_name = res.data.staff.name
 					
 					this.content = res.data.content
-					
+					this.dis = true
 					if(res.data.type == 1){
 						// 日期
 						this.current = 0
