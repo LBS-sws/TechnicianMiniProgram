@@ -159,12 +159,6 @@ export default{
 		
 		this.staffList()
 		
-		// if(this.demo==1){
-		// 	this.detail()
-		// }else{
-		// 	this.item = { id: 15}
-		// 	this.staffInfo();
-		// }
 		if(!this.item.id){
 			this.detail()
 		}else{
@@ -196,6 +190,22 @@ export default{
 		// 编辑
 		saveSubmit(){
 			console.log('编辑')
+			let params = {
+				id:this.item.id,
+				type:this.type,
+				new_job_date:this.date,
+				new_staff_id:this.staff_id,
+				content:this.content,
+			}
+			this.$api.staffEdit(params).then(res=>{
+				console.log(res)
+				if(res.code==200){
+					uni.showToast({
+						title:res.msg,
+						icon:'none'
+					})
+				}
+			})
 		},
 		// 发送审核
 		pushSubmit(){
