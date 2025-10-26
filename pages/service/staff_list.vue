@@ -35,7 +35,7 @@
 				</view>
 				<view class="sh_box">
 					<view class="sh_zt">状态：</view>
-					<view class="sh_text"></view>
+					<view class="sh_text">{{item.status_text}}</view>
 				</view>
 			</view>
 		</view>

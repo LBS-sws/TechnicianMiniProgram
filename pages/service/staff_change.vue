@@ -53,15 +53,21 @@
 			</view>
 			
 			<view class="sub_rp">
-				<view v-if="!item.id">
-					<u-button type="primary" text="保存" :disabled="disabled" @click="submit"></u-button>
-					
-				</view>
-				<view v-else>
-					<u-button type="primary" text="保存" :disabled="disabled" @click="saveSubmit"></u-button>
+				<view class="list-view">
+					<view  class="item_btn">
+						<u-button type="info" text="发送审核" @click="pushSubmit"
+						:disabled="disabledPush"
+						v-if="item.id"
+						></u-button>
+					</view>
+					<view v-if="!item.id" class="item_btn">
+						<u-button type="primary" text="保存" :disabled="disabled" @click="submit"></u-button>
+					</view>
+					<view v-else  class="item_btn">
+						<u-button type="primary" text="保存" :disabled="disabled" @click="saveSubmit"></u-button>
+					</view>
 				</view>
 				
-				<u-button type="info" text="发送审核" @click="pushSubmit"></u-button>
 			</view>
 			
 			<!-- 搜索 -->
@@ -137,7 +143,8 @@ export default{
 			timer: null, // m自定义
 			key: '',
 			popList:[],
-			dis:false
+			dis:false,
+			disabledPush:false
 		}
 	},
 	onLoad(index) {
@@ -213,7 +220,13 @@ export default{
 				id:this.item.id
 			}
 			this.$api.staffAudit(params).then(res=>{
-				
+				if(res){
+					uni.showToast({
+						title:res.msg,
+						icon:'none'
+					})
+					this.disabledPush = true
+				}
 			})
 		},
 		onSearch() {
@@ -300,6 +313,19 @@ export default{
 					
 					this.content = res.data.content
 					this.dis = true
+					if(res.data.instId && !res.data.eventType){
+						this.disabledPush = true
+					}
+					// 通过了禁止提交和审核
+					if(res.data.eventType=='endEvent'){
+						this.disabledPush = true
+						this.disabled = true
+					}else if(res.data.eventType=='taskComplete'){
+						//发起人撤回后再提交，表单锁定不能编辑
+						this.disabledPush = true
+						this.disabled = true
+					}
+					
 					if(res.data.type == 1){
 						// 日期
 						this.current = 0
@@ -457,6 +483,13 @@ page{
 	width: 100%;
 	padding: 10rpx 10rpx;
 	box-sizing: border-box;
+	
+	.list-view{
+		display: flex;
+		.item_btn{
+			width: calc(50% - 10rpx);
+		}
+	}
 }
 .content{
 	.title{
