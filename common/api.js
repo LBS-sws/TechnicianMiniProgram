@@ -314,6 +314,10 @@ export default {
 	},
 	staffAudit(params){
 		return request("/Order.Order/staffAudit", params, 'POST') 
-	}
+	},
+	staffCause(params){
+		return request("/Order.Order/staffCause", params, 'GET') 
+	},
+	
 }
 

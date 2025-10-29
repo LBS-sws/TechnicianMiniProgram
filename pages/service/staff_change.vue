@@ -48,8 +48,16 @@
 
 			<view class="content">
 				<view class="title">原因：</view>
-				<u-textarea v-model="content" :disabled="disabled">
-				</u-textarea>
+				<!-- <u-textarea v-model="content" :disabled="disabled">
+				</u-textarea> -->
+				<view v-if="content" @click="showContent" class="show_content">
+					{{content}}
+				</view>
+				<view v-else  @click="showContent" class="show_content">
+					请选择
+				</view>
+				<u-picker :show="show1" :columns="columns" @confirm="confirm" @change="changeHandler"
+				ref="uPicker"></u-picker>
 			</view>
 			
 			<view class="sub_rp">
@@ -144,7 +152,21 @@ export default{
 			key: '',
 			popList:[],
 			dis:false,
-			disabledPush:false
+			disabledPush:false,
+			columns: [
+                    [
+						'客户要求变更日期',
+						'技术员身体原因，已于客户沟通变更日期',
+						'交通工具原因，已于客户沟通变更日期',
+						'应急服务更改行程，已于客户沟通变更日期',
+						'天气原因，已于客户沟通变更日期',
+						'缺少物料，已于客户沟通变更日期',
+						'更改行程，已于客户沟通变更日期',
+						'排班错误，已于客户沟通变更日期',
+
+					]
+                ],
+			show1: false,
 		}
 	},
 	onLoad(index) {
@@ -171,6 +193,7 @@ export default{
 		}else{
 			this.staffInfo()
 		}
+		this.staffCause()
 	},
 	watch: {
 	    type: {
@@ -194,6 +217,31 @@ export default{
 	    }
 	},
 	methods:{
+		showContent(){
+			console.log('123')
+			this.show1 = true
+		},
+		changeHandler(e) {
+                const {
+                    columnIndex,
+                    value,
+                    values, // values为当前变化列的数组内容
+                    index,
+					// 微信小程序无法将picker实例传出来，只能通过ref操作
+                    picker = this.$refs.uPicker
+                } = e
+                // 当第一列值发生变化时，变化第二列(后一列)对应的选项
+                if (columnIndex === 0) {
+                    // picker为选择器this实例，变化第二列对应的选项
+                    picker.setColumnValues(1, this.columnData[index])
+                }
+        },
+		// 回调参数为包含columnIndex、value、values
+		confirm(e) {
+            console.log('confirm', e)
+			this.content = e.value[0]
+            this.show1 = false
+		},
 		// 编辑
 		saveSubmit(){
 			console.log('编辑')
@@ -416,6 +464,16 @@ export default{
 				
 				this.popList = JSON.parse(JSON.stringify(res.data))
 			})
+		},
+		// 原因
+		staffCause(){
+			let params = {}
+			this.$api.staffCause(params).then(res=>{
+				console.log(res)
+				if(res.code==200){
+					this.columns = res.data
+				}
+			})
 		}
 		// ...
 	}
@@ -536,5 +594,12 @@ page{
 	line-height: 60rpx;
 	padding-left: 20rpx;
 	font-size: 28rpx;
+}
+.show_content{
+	width: 100%;
+    background: #eee;
+    padding: 20rpx 20rpx;
+    border-radius: 10rpx;
+    box-sizing: border-box;
 }
 </style>
