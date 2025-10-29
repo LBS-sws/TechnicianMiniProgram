@@ -58,7 +58,24 @@
 			<!-- 任务信息 -->
 			<view class="service_msg">服务信息</view>
 			<view class="v_magin" v-if="is_show_project">
-				项目：<span style="color: black;"><text selectable="true">{{service.project}}</text></span>
+				项目：<span style="color: black;">
+						<text selectable="true">{{service.project_service}}</text>
+					</span>
+			</view>
+			<view class="v_magin" v-if="service.project_check">
+				处理方式：<span style="color: black;">
+						<text selectable="true">{{service.project_check}}</text>
+					</span>
+			</view>
+			<view class="v_magin" v-if="service.project_eq">
+				设备：<span style="color: black;">
+						<text selectable="true">{{service.project_eq}}</text>
+					</span>
+			</view>
+			<view class="v_magin" v-if="service.project_area">
+				区域：<span style="color: black;">
+						<text selectable="true">{{service.project_area}}</text>
+					</span>
 			</view>
 			<view class="v_magin">
 				时间：<text selectable="true">
@@ -71,13 +88,13 @@
 			<view class="v_magin">
 				协作：<span style="color: black;"><text selectable="true">{{service.staff.other}}</text></span>
 			</view>
-			<span v-if="service.order_type==1">
+			<!-- <span v-if="service.order_type==1">
 				<view>
 					设备：<span style="color: black;"><text selectable="true">{{service.equipments}}</text></span>
 				</view>
-			</span>
+			</span> -->
 			<view class="v_magin">
-				要求：<span style="color: black;"><span><text selectable="true">{{service.remarks}}</text></span></span>
+				备注：<span style="color: black;"><span><text selectable="true">{{service.remarks}}</text></span></span>
 			</view>
 			<span v-if="is_show_bz">
 				<view @tap="update_remarks" class="v_magin">
