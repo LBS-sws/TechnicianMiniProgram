@@ -214,6 +214,7 @@ export default {
 				name: '',
 				address: ''
 			},
+			first_job:0
 		}
 	},
 	onLoad(index) {
@@ -255,12 +256,10 @@ export default {
 		this.checkLocationPermission();
 		this.checkCameraPermission();
 		
-		
-		// this.getCurrentLocation();
 	},
 	computed: {},
 	onShow() {
-	
+		this.isFirstJob()
 		this.detail();
 		
 		const systemInfo = uni.getSystemInfoSync()
@@ -290,12 +289,27 @@ export default {
 				console.log(this.point2)
 				this.distance = this.getDistance(this.point2, this.point1);
             },
-             immediate: true,
-				deep: true
-        }
+            immediate: true,
+			deep: true
+        },
+		
     },
 	methods: {
-		
+		// 第一次做单
+		isFirstJob(){
+			let that = this
+			let params = {
+				id: this.jobid,
+				job_type: this.jobtype
+			}
+			this.$api.isFirstJob(params).then(res=>{
+				// console.log(res)
+				if(res.code==200){
+					this.first_job = res.data.first
+					
+				}
+			})
+		},
 		// 点击标记点
 		markertap(e) {
 			let opt = this.markers.find(el => {
@@ -661,7 +675,16 @@ export default {
 						Math.cos(lat1) * Math.cos(lat2) * Math.sin((lon2 - lon1) / 2) * Math.sin((lon2 - lon1) / 2);
 				let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 				let d = R * c; // 初始计算得到的距离，单位：米
-			 
+				
+				if(this.first_job==1){
+					setTimeout(()=>{
+						this.DistanceType = 1;
+						this.signType = 1
+						this.bgcolor = '#007AFF'
+						this.signState.text = '拍照签到'
+					},300)
+				}
+				
 				if (d >= 1000) {
 					// 如果距离大于等于1000米（即1千米），则换算为千米并保留两位小数
 					this.DistanceType = 3;

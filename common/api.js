@@ -318,6 +318,8 @@ export default {
 	staffCause(params){
 		return request("/Order.Order/staffCause", params, 'GET') 
 	},
-	
+	isFirstJob(params){
+		return request("/Order.Order/isFirstJob", params, 'GET') 
+	},
 }
 
