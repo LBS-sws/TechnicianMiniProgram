@@ -1197,6 +1197,13 @@ import dayjs from "@/cl-uni/utils/dayjs";
 				})
 			},
 			download() {
+				// 没有报告地址
+				let url = `${this.$baseUrl}/Preview.Preview/getHtmlContent`;
+				
+				// 有报告地址
+				if(this.basic.Report){
+					url = `${this.$baseUrl}/Order.Order/getPdfContent`;
+				}
 				
 				uni.showLoading({
 					title: "数据加载中..."
@@ -1209,7 +1216,8 @@ import dayjs from "@/cl-uni/utils/dayjs";
 				let time = new Date().getTime();
 				
 				uni.request({
-					url: `${this.$baseUrl}/Preview.Preview/getHtmlContent`,
+					
+					url:url,// url: `${this.$baseUrl}/Preview.Preview/getHtmlContent`,
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
 						'token': uni.getStorageSync('token')
