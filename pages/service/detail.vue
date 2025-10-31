@@ -201,9 +201,9 @@ import popup from '@/components/feedback/popup.vue';
 				
 				menuData:[
 					{label:'门店异常反馈', value:1}, 
-					// {label:'申请更换日期', value:2}, 
-					{label:'申请变更入口', value:3},
-					{label:'变更记录列表', value:4}
+					{label:'申请更换日期', value:2}, 
+					// {label:'申请变更入口', value:3},
+					// {label:'变更记录列表', value:4}
 				],
 				user_id:'',
 				hos:0,
@@ -338,17 +338,17 @@ import popup from '@/components/feedback/popup.vue';
 					
 				}
 				// 申请变更
-				if(this.menuData[index].value == 3){
+				// if(this.menuData[index].value == 3){
 					
-					uni.navigateTo({
-						url:"/pages/service/staff_change?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&hos=" + this.hos
-					})
-				}
-				if(this.menuData[index].value == 4){
-					uni.navigateTo({
-						url:'/pages/service/staff_list'
-					})
-				}
+				// 	uni.navigateTo({
+				// 		url:"/pages/service/staff_change?jobid=" + this.jobid + "&jobtype=" + this.jobtype + "&hos=" + this.hos
+				// 	})
+				// }
+				// if(this.menuData[index].value == 4){
+				// 	uni.navigateTo({
+				// 		url:'/pages/service/staff_list'
+				// 	})
+				// }
 				this.menuShow = false
 			},
 			confirm() {
