@@ -720,7 +720,7 @@ import popup from '@/components/feedback/popup.vue';
 	}
 
 	.history {
-		z-index: 9999;
+		z-index: 9;
 		position: fixed;
 		bottom: 13%;
 		right: 20px;

@@ -23,8 +23,17 @@
 						
 						<view class="service">
 							<view class="service_title">反馈内容<span class="jh">*</span></view>
-							<view class="lz"></view>
-							<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="content" count></cl-textarea>
+							
+							<view v-if="content" @click="showContent" class="show_content">
+								{{content}}
+							</view>
+							<view v-else  @click="showContent" class="show_content">
+								请选择
+							</view>
+							<u-picker :show="showReason" :columns="columns" @confirm="confirm"
+							 @cancel="cancel"
+							 @change="changeHandler"
+							ref="uPicker"></u-picker>
 						</view>
 						
 						<view class="item-list">
@@ -47,7 +56,6 @@
 </template>
 
 <script>
-import DateTimePicker from '@/components/DateTimePicker.vue'; // 根据实际路径引入
 export default{
 	props:{
 		
@@ -71,10 +79,6 @@ export default{
 			type:[Number],
 			default:''
 		},
-		
-	},
-	components: {
-	    DateTimePicker
 	},
 	data(){
 		const now = new Date();
@@ -84,23 +88,68 @@ export default{
 			userData:[],
 			userVal:'',
 			content:'',
-			
+			showReason: false,
+			columns:[
+				[
+					// 111,
+					// 222
+				]
+			]
 		}
 	},
 	created() {
-		 
+		this.getReasonList();
 	},
 	methods:{
+		cancel(){
+			this.showReason = false
+		},
+		// 变更原因
+		getReasonList(){
+			let that = this
+			let params = {}
+			this.$api.staffCause(params).then(res=>{
+				// console.log(res)
+				if(res.code==200){
+					this.columns = res.data
+					
+				}
+			})
+		},
+		showContent(){
+			
+			this.showReason = true
+		},
+		changeHandler(e) {
+		        const {
+		            columnIndex,
+		            value,
+		            values, // values为当前变化列的数组内容
+		            index,
+					// 微信小程序无法将picker实例传出来，只能通过ref操作
+		            picker = this.$refs.uPicker
+		        } = e
+		        // 当第一列值发生变化时，变化第二列(后一列)对应的选项
+		        if (columnIndex === 0) {
+		            // picker为选择器this实例，变化第二列对应的选项
+		            picker.setColumnValues(1, this.columnData[index])
+		        }
+		},
+		// 回调参数为包含columnIndex、value、values
+		confirm(e) {
+		    console.log('confirm', e)
+			this.content = e.value[0]
+		    this.showReason = false
+		},
 		 submitForm() {
 		  if(this.content=='' || this.content ==null){
-		  			  uni.showToast({
-		  			  	title: '请输入反馈内容',
-		  			  	icon: 'none'
-		  			  })
-		  			  return false
+		  	uni.showToast({
+		  		title: '请输入反馈内容',
+		  		icon: 'none'
+		  	})
+		  	return false
 		  }
-		  // return false
-		  // 提交逻辑
+		  
 		  let params = {
 		  	job_id: this.jobId,
 		  	job_type: this.jobType,
@@ -120,8 +169,6 @@ export default{
 		close(){
 			this.$refs.popup.close()
 		},
-		//
-		
 	}
 }
 </script>
@@ -178,5 +225,14 @@ export default{
 }
 .sub-btn{
 	padding-top: 10rpx;
+}
+.show_content{
+	width: 100%;
+    background: #eee;
+    padding: 20rpx 20rpx;
+    border-radius: 10rpx;
+    box-sizing: border-box;
+	font-size: 24rpx;
+	height: 150rpx;
 }
 </style>

@@ -23,7 +23,7 @@
 						<view class="item-list">
 							<view class="service_title">申请工作日期<span class="jh">*</span>：</view>
 							<view style="max-width: 260rpx;">
-								 <!-- <DateTimePicker v-model="formData.applyTime" :defaultTime="defaultTime" /> -->
+								 
 								 <picker mode="date" :value="date" :start="startDate" :end="endDate" fields="day" @change="bindDateChange">
 								            <view class="uni-input">{{date}}</view>
 								        </picker>
@@ -32,8 +32,18 @@
 						</view>
 						<view class="service">
 							<view class="service_title">申请理由<span class="jh">*</span></view>
-							<view class="lz"></view>
-							<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="content" count></cl-textarea>
+							<!-- <view class="lz"></view>
+							<cl-textarea rows="13" cols="40" maxlength="500" placeholder="请输入" v-model="content" count></cl-textarea> -->
+							<view v-if="content" @click="showContent" class="show_content">
+								{{content}}
+							</view>
+							<view v-else  @click="showContent" class="show_content">
+								请选择
+							</view>
+							<u-picker :show="showReason" :columns="columns" @confirm="confirm"
+							 @cancel="cancel"
+							 @change="changeHandler"
+							ref="uPicker"></u-picker>
 						</view>
 						
 						<view class="item-list">
@@ -56,7 +66,6 @@
 </template>
 
 <script>
-import DateTimePicker from '@/components/DateTimePicker.vue'; // 根据实际路径引入
 export default{
 	props:{
 		title:{
@@ -83,17 +92,12 @@ export default{
 			type:[Number],
 			default:''
 		},
-		
-		
-	},
-	components: {
-	    DateTimePicker
 	},
 	data(){
 		const now = new Date();
 		const currentDate = this.getDate({
-		            format: true
-		        })
+		    format: true
+		})
 		return{
 			problem_type:'',
 			abnormal_type:'',
@@ -103,13 +107,19 @@ export default{
 			formData: {
 				applyTime: ''
 			},
-			// defaultTime: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
 			defaultTime: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
-			 date: currentDate
+			date: currentDate,
+			showReason: false,
+			columns:[
+				[
+					// 111,
+					// 222
+				]
+			]
 		}
 	},
 	created() {
-		 
+		this.getReasonList();
 	},
 	 computed:{
         startDate() {
@@ -120,6 +130,46 @@ export default{
         }
     },
 	methods:{
+		cancel(){
+			this.showReason = false
+		},
+		// 变更原因
+		getReasonList(){
+			let that = this
+			let params = {}
+			this.$api.staffCause(params).then(res=>{
+				// console.log(res)
+				if(res.code==200){
+					this.columns = res.data
+					
+				}
+			})
+		},
+		showContent(){
+			
+			this.showReason = true
+		},
+		changeHandler(e) {
+		        const {
+		            columnIndex,
+		            value,
+		            values, // values为当前变化列的数组内容
+		            index,
+					// 微信小程序无法将picker实例传出来，只能通过ref操作
+		            picker = this.$refs.uPicker
+		        } = e
+		        // 当第一列值发生变化时，变化第二列(后一列)对应的选项
+		        if (columnIndex === 0) {
+		            // picker为选择器this实例，变化第二列对应的选项
+		            picker.setColumnValues(1, this.columnData[index])
+		        }
+		},
+		// 回调参数为包含columnIndex、value、values
+		confirm(e) {
+		    console.log('confirm', e)
+			this.content = e.value[0]
+		    this.showReason = false
+		},
 		 bindDateChange: function(e) { //选择日期
 		            this.date = e.detail.value
 		            console.log('date', this.date)
@@ -140,13 +190,8 @@ export default{
 		            day = day > 9 ? day : '0' + day;
 		            return `${year}-${month}-${day}`;
 		},
+		// 提交
 		 submitForm() {
-			 
-			 // console.log(this.date)
-			 // return false
-		  // const applyTime = this.formData.applyTime || this.defaultTime; // 使用默认时间
-		  
-		  // 提交逻辑
 		  
 		  if(this.content=='' || this.content ==null){
 			  uni.showToast({
@@ -155,7 +200,6 @@ export default{
 			  })
 			  return false
 		  }
-		  //return false
 		  let params = {
 		  	job_id: this.jobId,
 		  	job_type: this.jobType,
@@ -165,9 +209,7 @@ export default{
 			content:this.content,
 			user_id:this.userVal
 		  }
-		  
 		  this.$emit('propUpdateJobDate',params);
-			
 		},
 		show(){
 			this.$refs.popup.open('center')
@@ -175,8 +217,6 @@ export default{
 		close(){
 			this.$refs.popup.close()
 		},
-		//
-		
 	}
 }
 </script>
@@ -233,5 +273,14 @@ export default{
 }
 .sub-btn{
 	padding-top: 10rpx;
+}
+.show_content{
+	width: 100%;
+    background: #eee;
+    padding: 20rpx 20rpx;
+    border-radius: 10rpx;
+    box-sizing: border-box;
+	font-size: 24rpx;
+	height: 150rpx;
 }
 </style>

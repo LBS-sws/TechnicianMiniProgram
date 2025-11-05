@@ -66,9 +66,9 @@ Vue.prototype.$amapApiKey="c6631b0a7212536acc8aa68df419f9b3" // 高德定位 key
 Vue.prototype.$amapWebApiKey="55bf8cc7ac61ce6099e8266ccc8ea0e8" // 高德经纬度解析 key
 
 
-// Vue.prototype.$baseUrl="http://localhost:10005/api"
+Vue.prototype.$baseUrl="http://localhost:10005/api"
 // Vue.prototype.$baseUrl="https://uat.teach.lbsapps.cn/api"
-Vue.prototype.$baseUrl="https://v1.teach.lbsapps.cn/api"
+// Vue.prototype.$baseUrl="https://v1.teach.lbsapps.cn/api"
 
 // Vue.prototype.$baseUrl="https://kp.teach.lbsapps.cn/api"
 Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"
