@@ -321,5 +321,8 @@ export default {
 	isFirstJob(params){
 		return request("/Order.Order/isFirstJob", params, 'GET') 
 	},
+	getSettingInfo(params){
+		return request("/System.Setting/info", params, 'GET') 
+	},
 }
 

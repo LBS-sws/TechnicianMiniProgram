@@ -29,34 +29,28 @@
 			<view class="old_staff">
 				当前技术员：<text class="staff_text">{{user_name}}</text>
 			</view>
-			
 			<view v-if="type==1">
 				<view style="font-size: 32rpx;">变更后日期：</view>
 				<picker mode="date" :value="date" :start="startDate" :end="endDate" fields="day" @change="bindDateChange">
 					<view class="uni-input-date">{{date}}</view>
 				</picker>
 			</view>
-			
 			<view class="new_staff"  v-if="type==2">
 				<view style="font-size: 32rpx;">变更后技术：</view>
-				<view class="uni-input-date" @click="show = true">
-					
+				<view class="uni-input-date" @click="popupHandle(1)">
 					<text v-if="staff_name">{{staff_name}}</text>
 					<text v-else>请选择</text>
 				</view>
 			</view>
-
 			<view class="content">
 				<view class="title">原因：</view>
-				<!-- <u-textarea v-model="content" :disabled="disabled">
-				</u-textarea> -->
 				<view v-if="content" @click="showContent" class="show_content">
 					{{content}}
 				</view>
 				<view v-else  @click="showContent" class="show_content">
 					请选择
 				</view>
-				<u-picker :show="show1" :columns="columns" @confirm="confirm" @change="changeHandler"
+				<u-picker :show="show1" :columns="columns" @confirm="confirm" @close="closea" @cancal="cancala" @change="changeHandler"
 				ref="uPicker"></u-picker>
 			</view>
 			
@@ -75,12 +69,10 @@
 						<u-button type="primary" text="保存" :disabled="disabled" @click="saveSubmit"></u-button>
 					</view>
 				</view>
-				
 			</view>
-			
 			<!-- 搜索 -->
 			<u-popup :show="show" @close="close" @open="open">
-				<view class="staff_list" style="height: 400rpx; overflow-y: auto;">
+				<view class="staff_list" style="height: 400rpx; overflow-y: auto;" v-if="contentType==1">
 					<input class="search_input" v-model.trim="key"
 						placeholder="请输入关键词" 
 						@input="inputFun"
@@ -91,12 +83,32 @@
 					   <view></view>
 				   </view>
 				</view>
+				<view v-else-if="contentType==2">
+					<view class="xynrbox">
+						<view class="xyText" v-html="tech_content">
+							
+						</view>
+						<view class="confirm_ui" @click="close()">关闭</view>
+					</view>
+				</view>
+				<view v-else>
+					
+				</view>
 			</u-popup>
 			<!-- 搜索 -->
 			
 		</view>
+		<view class="ht-box">
+			<view class="ht-txt">
+				<view class="ck_ui" @click="checkHandle" :class="checkedVal ? 'cur':'' ">
+					<view class="ck_text" >
+						<image src="@/static/checked_ck.svg" mode="widthFix" v-if="checkedVal"></image>
+					</view>
+				</view>
+				我已阅读并同意<text @click="popupHandle(2)">《相关内容》</text>
+			</view>
+		</view>
 		
-		<!-- <web-view :src="webUrl" v-else></web-view> -->
 	</view>
 </template>
 
@@ -128,7 +140,6 @@ export default{
 			content:"",
 			disabled:false,
 			options:[],
-			webUrl:"https://v1.lbsapps.cn/order_staff.html",
 			item:"",
 			type:1,
 			items: [
@@ -153,20 +164,11 @@ export default{
 			popList:[],
 			dis:false,
 			disabledPush:false,
-			columns: [
-                    [
-						'客户要求变更日期',
-						'技术员身体原因，已于客户沟通变更日期',
-						'交通工具原因，已于客户沟通变更日期',
-						'应急服务更改行程，已于客户沟通变更日期',
-						'天气原因，已于客户沟通变更日期',
-						'缺少物料，已于客户沟通变更日期',
-						'更改行程，已于客户沟通变更日期',
-						'排班错误，已于客户沟通变更日期',
-
-					]
-                ],
+			columns: [],
 			show1: false,
+			contentType:0,
+			checkedVal:true,
+			tech_content:""
 		}
 	},
 	onLoad(index) {
@@ -180,11 +182,9 @@ export default{
 		if(index.id){
 			this.item = { id:index.id}
 		}
-		console.log(index)
+		// console.log(index)
 	},
 	onShow() {
-		
-		//this.webUrl = this.webUrl + '?job_id='+ this.jobid + '&job_type=' + this.jobtype + '&token=' + token
 		
 		this.staffList()
 		
@@ -194,18 +194,17 @@ export default{
 			this.staffInfo()
 		}
 		this.staffCause()
+		
+		this.getSettingInfo()
 	},
 	watch: {
 	    type: {
 	        handler(newVal, oldVal) {
 	            // console.log('myObject changed', newVal, oldVal);
-				if(newVal != oldVal){
-					// this.content = '';
-					// this.staff = '';
-				}
+				if(newVal != oldVal){}
 	        },
-	         immediate: true,
-				deep: true
+	        immediate: true,
+			deep: true
 	    }
 	},
 	computed:{
@@ -217,8 +216,30 @@ export default{
 	    }
 	},
 	methods:{
+		getSettingInfo(){
+			let params = {}
+			this.$api.getSettingInfo(params).then(res=>{
+				console.log(res)
+				this.tech_content = res.data.tech_content
+			})
+		},
+		// 协议勾选事件
+		checkHandle(){
+			console.log(this.checkedVal)
+			this.checkedVal = !this.checkedVal
+		},
+		popupHandle(val){
+			this.contentType = val;
+			this.show = true
+		},
+		cancala(){
+			
+		},
+		closea(){
+			
+		},
 		showContent(){
-			console.log('123')
+			
 			this.show1 = true
 		},
 		changeHandler(e) {
@@ -233,7 +254,7 @@ export default{
                 // 当第一列值发生变化时，变化第二列(后一列)对应的选项
                 if (columnIndex === 0) {
                     // picker为选择器this实例，变化第二列对应的选项
-                    picker.setColumnValues(1, this.columnData[index])
+                    // picker.setColumnValues(1, this.columnData[index])
                 }
         },
 		// 回调参数为包含columnIndex、value、values
@@ -389,6 +410,14 @@ export default{
 			})
 		},
 		submit(){
+			if(!this.checkedVal){
+				uni.showToast({
+					title:'请勾选同意',
+					icon:'none'
+				})
+				return false
+			}
+			
 			if(this.type ==2 && !this.staff_id){
 				uni.showToast({
 					title:'请选择技术员',
@@ -602,4 +631,66 @@ page{
     border-radius: 10rpx;
     box-sizing: border-box;
 }
+.ht-box{
+	display: flex;
+	justify-content: flex-start;
+	align-content: center;
+	margin-bottom: 60rpx;
+	padding-left: 20rpx;
+	.ht-txt{
+		font-size: 24rpx;
+		color: #979797;
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		text{
+			color: #f0b764;
+		}
+		.ck_ui{
+			
+			width: 13px;
+			height: 13px;
+			color: #fff;
+			border-radius: 50%;
+			margin-right: 10rpx;
+			
+			background: #fff;
+			border: 1rpx solid #e6dede;
+			border-radius: 50%;
+			
+		}
+		.ck_ui.cur{
+			border-color: #2979ff;
+			background-color: #2979ff;
+			.ck_text{
+				image{
+					width: 100%;
+				}
+			}
+		}
+	}
+}
+.xynrbox{
+	font-size: 28rpx;
+    color: #979797;
+    text-align: left;
+    margin-top: 20rpx;
+	padding: 10rpx 20rpx;
+	
+	.xyText{
+		min-height: 400rpx;
+	}
+	.confirm_ui{
+		width: 508rpx;
+	    height: 86rpx;
+	    background: #f0b764;
+	    border-radius: 40rpx;
+	    color: #fff;
+	    font-size: 28rpx;
+	    text-align: center;
+	    line-height: 86rpx;
+	    margin: 0 auto;
+	}
+}
+
 </style>
