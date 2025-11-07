@@ -43,6 +43,16 @@
 								
 							</view>
 						</view>
+						<view class="ht-box">
+							<view class="ht-txt">
+								<view class="ck_ui" @click="checkHandle" :class="checkedVal ? 'cur':'' ">
+									<view class="ck_text" >
+										<image src="@/static/checked_ck.svg" mode="widthFix" v-if="checkedVal"></image>
+									</view>
+								</view>
+								{{tech_content}}
+							</view>
+						</view>
 						<view class="sub-btn">
 							<u-button type="primary" @click="submitForm">提交</u-button>
 						</view>
@@ -94,13 +104,29 @@ export default{
 					// 111,
 					// 222
 				]
-			]
+			],
+			checkedVal:true,
+			tech_content:""
 		}
 	},
 	created() {
 		this.getReasonList();
+		
+		this.getSettingInfo();
 	},
 	methods:{
+		getSettingInfo(){
+			let params = {}
+			this.$api.getSettingInfo(params).then(res=>{
+				console.log(res)
+				this.tech_content = res.data.tech_content
+			})
+		},
+		// 协议勾选事件
+		checkHandle(){
+			console.log(this.checkedVal)
+			this.checkedVal = !this.checkedVal
+		},
 		cancel(){
 			this.showReason = false
 		},
@@ -132,7 +158,7 @@ export default{
 		        // 当第一列值发生变化时，变化第二列(后一列)对应的选项
 		        if (columnIndex === 0) {
 		            // picker为选择器this实例，变化第二列对应的选项
-		            picker.setColumnValues(1, this.columnData[index])
+		            // picker.setColumnValues(1, this.columnData[index])
 		        }
 		},
 		// 回调参数为包含columnIndex、value、values
@@ -142,6 +168,13 @@ export default{
 		    this.showReason = false
 		},
 		 submitForm() {
+			 if(!this.checkedVal){
+			 	uni.showToast({
+			 		title:'请勾选同意',
+			 		icon:'none'
+			 	})
+			 	return false
+			 }
 		  if(this.content=='' || this.content ==null){
 		  	uni.showToast({
 		  		title: '请输入反馈内容',
@@ -234,5 +267,45 @@ export default{
     box-sizing: border-box;
 	font-size: 24rpx;
 	height: 150rpx;
+}
+
+.ht-box{
+	display: flex;
+	justify-content: flex-start;
+	align-content: center;
+	padding: 10rpx 0;
+	
+	.ht-txt{
+		font-size: 24rpx;
+		color: #979797;
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		text{
+			color: #f0b764;
+		}
+		.ck_ui{
+			
+			width: 13px;
+			height: 13px;
+			color: #fff;
+			border-radius: 50%;
+			margin-right: 10rpx;
+			
+			background: #fff;
+			border: 1rpx solid #e6dede;
+			border-radius: 50%;
+			
+		}
+		.ck_ui.cur{
+			border-color: #2979ff;
+			background-color: #2979ff;
+			.ck_text{
+				image{
+					width: 100%;
+				}
+			}
+		}
+	}
 }
 </style>
