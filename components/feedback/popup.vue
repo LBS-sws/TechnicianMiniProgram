@@ -14,12 +14,12 @@
 								<cl-select v-model="problem_type" :options="ServiceTypeData" disabled></cl-select>
 							</view>
 						</view>
-						<view class="item-list">
+						<!-- <view class="item-list">
 							<view class="service_title">是否异常反馈<span class="jh">*</span>：</view>
 							<view>
 								<cl-select v-model="abnormal_type" :options="TypeData"></cl-select>
 							</view>
-						</view>
+						</view> -->
 						
 						<view class="service">
 							<view class="service_title">反馈内容<span class="jh">*</span></view>

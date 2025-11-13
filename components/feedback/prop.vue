@@ -14,12 +14,12 @@
 								<cl-select v-model="problem_type" :options="ServiceTypeData" disabled></cl-select>
 							</view>
 						</view>
-						<view class="item-list">
+						<!-- <view class="item-list">
 							<view class="service_title">是否异常反馈<span class="jh">*</span>：</view>
 							<view>
 								<cl-select v-model="abnormal_type" :options="TypeData"></cl-select>
 							</view>
-						</view>
+						</view> -->
 						<view class="item-list">
 							<view class="service_title">申请工作日期<span class="jh">*</span>：</view>
 							<view style="max-width: 260rpx;">
@@ -218,7 +218,13 @@ export default{
 		},
 		// 提交
 		 submitForm() {
-		  
+		  if(!this.checkedVal){
+		  	uni.showToast({
+		  		title:'请勾选同意',
+		  		icon:'none'
+		  	})
+		  	return false
+		  }
 		  if(this.content=='' || this.content ==null){
 			  uni.showToast({
 			  	title: '请输入申请理由',
