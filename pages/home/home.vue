@@ -1,6 +1,16 @@
 <template>
-	<view v-if="isShowContent" class="content">
-		<view class="datec">
+	<view v-if="isShowContent" class="contentc">
+		<scroll-view scroll-y="true" :style="{ height : winHeight+'px'}"
+			 scroll-with-animation="true"
+			 :show-scrollbar="false"
+			 :scroll-top="scrollTop"
+			@scroll="onScroll"
+			>
+		<view class="bg" style="height: 117px; width: 100%;background-color: #0e8cf1;"></view>
+		<view class="contentBox">
+			
+		
+		<view class="datecc">
 			<zzx-calendar @selected-change="datechange"  @change-month="monthchange" :dotList="dotLists" :cilck_time="cilck_time"></zzx-calendar>
 		</view>
 		<!-- <view class="dateshow">
@@ -143,6 +153,8 @@
 				
 			</view>
 		</u-popup>
+		</view>
+		</scroll-view>
 	</view>
 </template>
 <script>
@@ -187,6 +199,9 @@ export default {
 			pdfData:[],
 			openPdf:0,
 			showModal: false,
+			
+			winHeight:0,
+			scrollTop:0,
 		};
 	},
 	onLoad() {
@@ -198,8 +213,17 @@ export default {
 		this.Data = todayISOString
 		
 		this.openPdf = uni.getStorageSync('pdfOpen')
+		
+		this.getSystemInfo();
 	},
 	onShow(index) {
+		
+		
+		const scrollTop=uni.getStorageSync("scrollTop");
+		// this.scrollTop = 100
+		// if(scrollTop>0){
+		// 	this.scrollTop=scrollTop;
+		// }
 		
 		this.getInitInfo()
 		this.getjobs();
@@ -207,8 +231,6 @@ export default {
 		if(!this.isFirstShow){
 			this.getUnFinshJobs();
 		}
-		
-		this.getNoSignOrder()
 		
 		this.getOrderList()
 		
@@ -218,9 +240,48 @@ export default {
 				this.reportShow = true
 			}
 		},400)
-
+		
+		this.current = uni.getStorageSync('homeTabCurrent')
+		setTimeout(()=>{
+			if(this.current==0){
+				this.jobs = this.startData
+			}
+			if(this.current==1){
+				this.jobs = this.conductData
+			}
+			if(this.current==2){
+				this.jobs = this.successData
+			}
+		},300)
+	},
+	watch: {
+	  current(newName, oldName) {
+	    console.log('userName变化:', newName);
+	  }
 	},
 	methods: {
+		// 获取设备页面高度
+		getSystemInfo(){
+			let that = this
+			uni.getSystemInfo({
+			    success: function (res) {
+					console.log('页面宽度', res.windowWidth)
+			        console.log('页面高度:', res.windowHeight);
+					that.winHeight = res.windowHeight
+			    },
+			    fail: function (err) {
+			        console.error('获取页面高度失败:', err);
+			    }
+			});
+		},
+		onScroll(e){
+			// console.log(e)
+			const scrollTop=e.detail.scrollTop;
+			if(scrollTop >0){
+				uni.setStorageSync("scrollTop",scrollTop);
+			}
+			
+		},
 		// 批量确认
 		batchConfirm() {
 			this.reportShow = false
@@ -365,38 +426,23 @@ export default {
 			this.reportShow = false
 		},
 		clickHandle(e){
-			// console.log(e)
+			
 			this.jobs = []
 			if(e.index==0){
 				this.current = 0
 				this.jobs = this.startData
+				uni.setStorageSync('homeTabCurrent',0)
 			}
 			if(e.index==1){
 				this.current = 1
 				this.jobs = this.conductData
+				uni.setStorageSync('homeTabCurrent',1)
 			}
 			if(e.index==2){
 				this.current = 2
 				this.jobs = this.successData
+				uni.setStorageSync('homeTabCurrent',2)
 			}
-		},
-		// 未签离工单
-		getNoSignOrder(){
-			// let params = {}
-			// this.$api.noOrderSign(params).then(res=>{
-			// 	if(res.code == 200) {
-			// 		// console.log('未签离和暂停工单:',res.data)
-					
-			// 		if(res.data.data && res.data.data.length>0){
-			// 			console.log(res.data.data[0])
-			// 			this.noSignOrder = res.data.data[0]
-			// 		}else{
-			// 			this.noSignOrder = {}
-			// 		}
-			// 	}
-			// }).catch(err=>{
-			// 	console.log(err)
-			// })
 		},
 		cancel(){
 			this.show = false
@@ -413,12 +459,11 @@ export default {
 		},
 		// 点击日 - 事件
 		datechange(e) {
-			// console.log('点击日 - 事件',e)
+			console.log('点击日 - 事件',e)
 			this.Data = e.fullDate;
 			this.Week = this.getWek(e.fullDate);
+			this.current = 0
 			this.getjobs();
-			
-			this.getNoSignOrder()
 		},
 		getWek(day) {
 			var dateObject = new Date(day);
@@ -462,7 +507,7 @@ export default {
 				jobdate: this.Data //todayISOString
 			}
 			this.$api.dayOrderList(params).then(res=>{
-				this.current = '0'
+				// this.current = '0'
 				if(res.code == 200) {
 					// console.log(res)
 					
@@ -832,6 +877,11 @@ export default {
 	background-color: #FFFFFF;
 	border-radius: 15px;
 }
+.datecc {
+	background-color: #FFFFFF;
+	border-radius: 15px;
+	margin-top: -140rpx;
+}
 .datecontent {
 	margin: 10px 5px;
 }
@@ -975,5 +1025,8 @@ export default {
 			margin: 0 10rpx;
 		}
 	}
+}
+.contentBox{
+	padding: 0 5px;
 }
 </style>

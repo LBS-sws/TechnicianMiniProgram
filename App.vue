@@ -3,16 +3,16 @@
 		onLaunch: function() {
 			this.globalData.overShare();
 			console.log("App Launch");
-			// checkLogin() {
 				
-				let params = {
+			let params = {
 					staffid: uni.getStorageSync('staffid'),
 					token: uni.getStorageSync('token')
-				}
-				if(!params){
-					return;
-				}
-			// }
+			}
+			if(!params){
+				return;
+			}
+			uni.setStorageSync('homeTabCurrent',0)
+			uni.setStorageSync('scrollTop',0)
 		},
 		onShow: function() {
 			console.log("App Show");
