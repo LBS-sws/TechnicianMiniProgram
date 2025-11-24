@@ -220,10 +220,15 @@ export default {
 		
 		
 		const scrollTop=uni.getStorageSync("scrollTop");
+		
+		let scrollTopNum = scrollTop.toFixed(0);
+		console.log('scrollTop',scrollTopNum)
 		// this.scrollTop = 100
-		// if(scrollTop>0){
-		// 	this.scrollTop=scrollTop;
-		// }
+		if(scrollTop>40){
+			 setTimeout(()=>{
+				 this.scrollTop = scrollTopNum;
+			 },400)
+		}
 		
 		this.getInitInfo()
 		this.getjobs();
