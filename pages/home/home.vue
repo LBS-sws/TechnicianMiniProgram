@@ -220,15 +220,12 @@ export default {
 		
 		
 		const scrollTop=uni.getStorageSync("scrollTop");
-		
-		let scrollTopNum = scrollTop.toFixed(0);
-		console.log('scrollTop',scrollTopNum)
-		// this.scrollTop = 100
 		if(scrollTop>40){
 			 setTimeout(()=>{
-				 this.scrollTop = scrollTopNum;
+				 this.scrollTop = scrollTop;
 			 },400)
 		}
+		
 		
 		this.getInitInfo()
 		this.getjobs();
@@ -248,6 +245,7 @@ export default {
 		
 		this.current = uni.getStorageSync('homeTabCurrent')
 		setTimeout(()=>{
+			
 			if(this.current==0){
 				this.jobs = this.startData
 			}
@@ -281,8 +279,9 @@ export default {
 		},
 		onScroll(e){
 			// console.log(e)
-			const scrollTop=e.detail.scrollTop;
+			let scrollTop=e.detail.scrollTop;
 			if(scrollTop >0){
+				scrollTop = scrollTop.toFixed(0);
 				uni.setStorageSync("scrollTop",scrollTop);
 			}
 			
@@ -515,7 +514,7 @@ export default {
 				// this.current = '0'
 				if(res.code == 200) {
 					// console.log(res)
-					
+					this.current = uni.getStorageSync('homeTabCurrent')
 					if(res.data.data){
 						this.jobs = res.data.data.start_data
 						
