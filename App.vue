@@ -72,16 +72,16 @@
 		                        view.onShareAppMessage = () => {
 		                            //分享配置
 		                            return {
-		                            title: '史伟莎服务报告',
+		                            title: '史伟莎外勤',
 		                            path: '/pages/home/home',
 		                               imageUrl: '/static/images/lbs_logo.png',
-									   success(res) {                                    
-										   uni.showToast({                                        
+									   success(res) { 
+										   uni.showToast({ 
 											title: '分享成功',
-										   })                                
-									   },                                
+										   }) 
+									   }, 
 									   fail(res) {
-									   uni.showToast({                                        
+									   uni.showToast({ 
 										   title: '分享失败',
 										   icon: 'none',
 										   })

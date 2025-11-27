@@ -59,19 +59,15 @@ const app = new Vue({
 });
 app.$mount();
 
-Vue.prototype.$version =2
-Vue.prototype.$mapApiKey="2atTyVGiF8KTsdegg7KKSjGTsdINm8gw" // 百度地图 appkey
-Vue.prototype.$mapApiUrl="https://api.map.baidu.com/reverse_geocoding/v3" // 百度地图apiURl
-Vue.prototype.$amapApiKey="c6631b0a7212536acc8aa68df419f9b3" // 高德定位 key
-Vue.prototype.$amapWebApiKey="55bf8cc7ac61ce6099e8266ccc8ea0e8" // 高德经纬度解析 key
+import { VERSION, BASE_URL, BASE_URL_IMGS, MAP_API_KEY, MAP_API_URL, AMAP_API_KEY, AMAP_WEB_API_KEY } from './common/config'
 
-
-// Vue.prototype.$baseUrl="http://localhost:10005/api"
-// Vue.prototype.$baseUrl="https://uat.teach.lbsapps.cn/api"
-Vue.prototype.$baseUrl="https://v1.teach.lbsapps.cn/api"
-
-// Vue.prototype.$baseUrl="https://kp.teach.lbsapps.cn/api"
-Vue.prototype.$baseUrl_imgs="https://files.lbsapps.cn"
+Vue.prototype.$version = VERSION
+Vue.prototype.$mapApiKey = MAP_API_KEY
+Vue.prototype.$mapApiUrl = MAP_API_URL
+Vue.prototype.$amapApiKey = AMAP_API_KEY
+Vue.prototype.$amapWebApiKey = AMAP_WEB_API_KEY
+Vue.prototype.$baseUrl = BASE_URL
+Vue.prototype.$baseUrl_imgs = BASE_URL_IMGS
 
 // wx68b6f3ef0a8ab2f1		test
 // wx3f3ad415ff3abb7d		v1		
