@@ -467,6 +467,7 @@ export default {
 			this.Data = e.fullDate;
 			this.Week = this.getWek(e.fullDate);
 			this.current = 0
+			uni.setStorageSync('homeTabCurrent',0)
 			this.getjobs();
 		},
 		getWek(day) {
@@ -514,7 +515,7 @@ export default {
 				// this.current = '0'
 				if(res.code == 200) {
 					// console.log(res)
-					this.current = uni.getStorageSync('homeTabCurrent')
+					this.current = uni.getStorageSync('homeTabCurrent') || 0
 					if(res.data.data){
 						this.jobs = res.data.data.start_data
 						

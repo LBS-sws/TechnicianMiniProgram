@@ -2,8 +2,8 @@
 
 
 // export const BASE_URL = 'https://v1.teach.lbsapps.cn/api'
-export const BASE_URL = 'https://uat.teach.lbsapps.cn/api'  
-// export const BASE_URL = 'http://localhost:10005/api' 
+// export const BASE_URL = 'https://uat.teach.lbsapps.cn/api'  
+export const BASE_URL = 'http://localhost:10005/api' 
 
 // export const BASE_URL = 'https://kp.teach.lbsapps.cn/api'  
 
