@@ -1,4 +1,3 @@
-
 import {BASE_URL} from '@/common/config'
 
 const defauls = {
@@ -7,16 +6,13 @@ const defauls = {
 }
 
 console.log(BASE_URL)
+
+// 防止多次重复跳转
+let isRedirecting = false;
+
 // 全局请求封装
 export default (path, data = {}, method = 'GET') => {
-	// console.log('%c请求拦截：', ' background:orange', data);
-
 	const token = uni.getStorageSync("token") ? `${uni.getStorageSync("token")}` : "";
-	
-	// uni.showLoading({
-	// 	title: "加载中",
-	// 	mask: true
-	// })
 
 	return new Promise((resolve, reject) => {
 		uni.request({
@@ -25,26 +21,29 @@ export default (path, data = {}, method = 'GET') => {
 			method: method,
 			data,
 			success(response) {
-				// console.log('%c响应拦截：', ' background:green', response);
 				if (response.data.code === 400) {
 					// logout()
 				}
 				if (response.data.code == 200) {
-					// uni.showToast({
-					// 	icon: "none",
-					// 	duration: 4000,
-					// 	title: response.data.msg
-					// });
+					// 成功处理
 				}
 				if (response.data.code == 401) {
+					// 防止多个请求同时跳转
+					if (isRedirecting) {
+						return false;
+					}
+					isRedirecting = true;
 					uni.showToast({
-						title: response.data.msg,
+						title: response.data.msg || 'token已过期，请重新登录',
 						icon: 'none',
-					});	
-					uni.clearStorageSync()
-					uni.reLaunch({
-						url:"/pages/login/login"
-					})
+					});
+					uni.clearStorageSync();
+					setTimeout(() => {
+						uni.reLaunch({
+							url:"/pages/login/login"
+						});
+						isRedirecting = false;
+					}, 500);
 					return false;
 				}
 				resolve(response.data);

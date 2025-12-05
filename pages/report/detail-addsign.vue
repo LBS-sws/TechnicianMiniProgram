@@ -643,6 +643,7 @@
 			    	job_id: this.jobid,
 			    	job_type: this.jobtype,
 			    }
+			    let time = new Date().getTime();
 			    wx.request({
 			      url: `${this.$baseUrl}/generatepdf`,
 			      header: {
@@ -651,48 +652,54 @@
 			      },
 				  method: 'POST',
 				  data: param,
-			      responseType: "arraybuffer", //注意这里的responseType
+			      responseType: "arraybuffer",
 			      success: (result) => {
 			        var fileManager = wx.getFileSystemManager();
-//			        var FilePath = wx.env.USER_DATA_PATH+ "/" +this.basic.CustomerName+"-服务报告"+"-"+this.basic.JobDate+".pdf";
-			        var FilePath = wx.env.USER_DATA_PATH+ "/服务报告-"+this.jobid+"-"+this.basic.JobDate+".pdf";
+			        var FilePath = wx.env.USER_DATA_PATH + "/服务报告-" + this.jobid + "-" + this.basic.JobDate + "-" + time + ".pdf";
 			        fileManager.writeFile({
 			          data: result.data,
 			          filePath: FilePath,
-			          encoding: "binary", //编码方式 
+			          encoding: "binary",
 			          success: res => {
-			            console.log('编码格式');
-			            wx.openDocument({ //我这里成功之后直接打开
-			              filePath: FilePath, 
-			              showMenu:true,
-			              fileType: "pdf",
-			              success: result => {
-			                //隐藏登录状态
-			                uni.hideLoading();
-			                console.log("打开文档成功");
-			              },
-			              fail: err => {
-			                console.log("打开文档失败", err);
-			              }
+			            wx.openDocument({
+			                filePath: FilePath,
+			                showMenu: true,
+			                fileType: "pdf",
+			                success: result => {
+			                    uni.hideLoading();
+			                    uni.showToast({
+			                        title: '文档打开成功',
+			                        icon: 'success',
+			                        duration: 1500
+			                    });
+			                },
+			                fail: err => {
+			                    uni.hideLoading();
+			                    uni.showToast({
+			                        title: '文档打开失败',
+			                        icon: 'none',
+			                        duration: 2000
+			                    });
+			                }
 			            });
 			          },
 			          fail: res => {
-						//隐藏登录状态
-						 uni.hideLoading();
-			            wx.showToast({
-			              title: '文档已下载!',
-			              icon: 'none', //默认值是success,就算没有icon这个值，就算有其他值最终也显示success
-			              duration: 2000, //停留时间
-			            })
-			            console.log(res);
+						uni.hideLoading();
+			            uni.showToast({
+			                title: '文件保存失败，请重试',
+			                icon: 'none',
+			                duration: 2000
+			            });
 			          }
 			        })
 			      },
 			      fail(err) {
-			        this.setData({
-			          loadingHidden: true,
-			        })
-			        console.log(err)
+			        uni.hideLoading();
+			        uni.showToast({
+			            title: '文档请求失败',
+			            icon: 'none',
+			            duration: 2000
+			        });
 			      }
 			    })
 			  },

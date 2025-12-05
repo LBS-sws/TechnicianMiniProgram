@@ -60,7 +60,7 @@
 						<view class="lab-item">{{item.first_job}}</view>
 						<view class="lab-item" v-if="item.customer.customer_type_text">{{item.customer.customer_type_text}}</view>
 						<view class="lab-item" v-if="item.stop_status==1">已暂停</view>
-						<view class="lab-item" v-if="item.customer.upload_source.name">{{item.customer.upload_source.name}}</view>
+						<view class="lab-item" v-if="item.customer.upload_source && item.customer.upload_source.name">{{item.customer.upload_source.name}}</view>
 					</view>
 				</view>
 				<view class="info-box">
@@ -164,6 +164,7 @@ export default {
 			isFirstShow: false,
 			show_dislog: false,
 			query: {type:'', value:''},
+			disabled: false,
 			typeList: [],
 			
 			show: false,
@@ -200,6 +201,9 @@ export default {
 		this.openPdf = uni.getStorageSync('pdfOpen')
 	},
 	onShow(index) {
+		uni.showLoading({
+			title: '加载中...'
+		});
 		
 		this.getInitInfo()
 		this.getjobs();
@@ -231,6 +235,10 @@ export default {
 				arr.push({job_id:item.job_id, job_type:item.job_type})
 			})
 			
+			uni.showLoading({
+				title: '生成中'
+			})
+			
 			let query = arr
 			this.$api.pdfCheckAll(query).then(res=>{
 				if(res.data.status){
@@ -241,52 +249,23 @@ export default {
 					this.showPdf = false
 					if(res.data.status==1){
 						let param = JSON.stringify(arr)
-						
-						uni.showToast({
-							icon:'loading',
-							title:'生成中'
-						})
-						setTimeout(()=>{
-							uni.showToast({
-								icon:'loading',
-								title:'请等一会查看！'
-							})
-							
-						},1500)
 						uni.setStorageSync('pdfOpen',0)
 						this.$api.makePdf(param).then(res=>{
 							console.log(res)
-							
 							this.pdfData = []
-							
+							uni.hideLoading()
+							uni.showToast({
+								title:'报告生成成功',
+								icon:'none'
+							})
 						}).catch(err=>{
 							console.log(err)
+							uni.hideLoading()
 						})
 					}
 				}
-			})
-			return false
-			
-			let param = JSON.stringify(arr)
-			
-			uni.showToast({
-				icon:'loading',
-				title:'生成中'
-			})
-			setTimeout(()=>{
-				uni.showToast({
-					icon:'loading',
-					title:'请等一会查看！'
-				})
-				
-			},1500)
-			uni.setStorageSync('pdfOpen',0)
-			this.$api.makePdf(param).then(res=>{
-				console.log(res)
-				
-				this.pdfData = []
-				
 			}).catch(err=>{
+				uni.hideLoading()
 				console.log(err)
 			})
 		},
@@ -315,7 +294,13 @@ export default {
 				'job_id':this.pdfData[index].job_id,
 				'job_type':this.pdfData[index].job_type
 			}
+			
+			uni.showLoading({
+				title: '检查中'
+			})
+			
 			this.$api.pdfCheck(query).then(res=>{
+				uni.hideLoading()
 				if(res.data.status){
 					uni.showToast({
 						icon:'none',
@@ -327,31 +312,39 @@ export default {
 						    'job_id':this.pdfData[index].job_id,
 						    'job_type':this.pdfData[index].job_type
 						}])
-						uni.showToast({
-							icon:'loading',
+						uni.showLoading({
 							title:'生成中'
 						})
-						// console.log(param)
 						this.$api.makePdf(param).then(res=>{
 							console.log(res)
+							uni.hideLoading()
 							uni.showToast({
 								title:res.msg,
 								icon:'none'
 							})
 							this.pdfData.splice(index, 1)
 						}).catch(err=>{
+							uni.hideLoading()
 							console.log(err)
 						})	
 					}
 				}
+			}).catch(err=>{
+				uni.hideLoading()
+				console.log(err)
 			})
 		},
 		getOrderList(){
 			let param = {}
+			uni.showLoading({
+				title: '加载中'
+			})
 			this.$api.OrderMakePdf(param).then(res=>{
 				this.pdfData = res.data
+				uni.hideLoading()
 			}).catch(err=>{
 				console.log(err)
+				uni.hideLoading()
 			})
 		},
 		open() {
@@ -365,20 +358,9 @@ export default {
 			this.reportShow = false
 		},
 		clickHandle(e){
-			// console.log(e)
-			this.jobs = []
-			if(e.index==0){
-				this.current = 0
-				this.jobs = this.startData
-			}
-			if(e.index==1){
-				this.current = 1
-				this.jobs = this.conductData
-			}
-			if(e.index==2){
-				this.current = 2
-				this.jobs = this.successData
-			}
+			this.current = e.index
+			const dataMap = [this.startData, this.conductData, this.successData]
+			this.jobs = dataMap[e.index] || []
 		},
 		// 未签离工单
 		getNoSignOrder(){
@@ -456,6 +438,9 @@ export default {
 		},
 		// 列表
 		getjobs() {
+			uni.showLoading({
+				title: '加载中...'
+			});
 			
 			this.list = []
 			let params = {
@@ -483,8 +468,10 @@ export default {
 					}
 					
 				}
+				uni.hideLoading();
 			}).catch(err=>{
 				console.log(err)
+				uni.hideLoading();
 			})
 		},
 		// 统计
@@ -498,11 +485,13 @@ export default {
 			this.$api.dayCount(params).then(res=>{
 				if(res.code == 200) {
 					this.dotLists = res.data
-					this.isShowContent = true
-					uni.hideLoading()
 				}
+				this.isShowContent = true
+				uni.hideLoading()
 			}).catch(err=>{
 				console.log(err)
+				this.isShowContent = true
+				uni.hideLoading();
 			})
 		},
 		//获取未完成的工单列表
@@ -521,10 +510,11 @@ export default {
 					if(res.data.length !== 0){
 						that.show_dislog = true
 					}
-					uni.hideLoading()
 				}
+				uni.hideLoading()
 			}).catch(err=>{
 				console.log(err)
+				uni.hideLoading();
 			})
 		},
 		//跳转至对应日期
@@ -559,10 +549,11 @@ export default {
 						type.push({label:res.data.typeList[i],value:i})
 					}
 					that.typeList = type
-					uni.hideLoading()
 				}
+				uni.hideLoading()
 			}).catch(err=>{
 				console.log(err)
+				uni.hideLoading();
 			})
 		},
 		//搜索
@@ -875,6 +866,20 @@ export default {
 	margin-top: 20%;
 	color: #a5a6a7;
 	font-size: 17px;
+}
+.content {
+	padding: 50px 5px;
+	height: 5%;
+	background-color: #0e8cf1;
+	color: #6b6464;
+}
+.customer_type {
+	background-color: #f6a6a6;
+	color: #e01313;
+	border-radius: 8px;
+	padding: 3px 0px;
+	text-align: center;
+	margin-right: 5px;
 }
 .content_t {
 	color: #6b6464;

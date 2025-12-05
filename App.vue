@@ -1,6 +1,12 @@
 <script>
+	import Vue from 'vue'
+	import { BASE_URL, BASE_URL_IMGS } from '@/common/config'
 	export default {
 		onLaunch: function() {
+			// 注册全局属性
+			Vue.prototype.$baseUrl = BASE_URL;
+			Vue.prototype.$baseUrl_imgs = BASE_URL_IMGS;
+			
 			this.globalData.overShare();
 			console.log("App Launch");
 			// checkLogin() {

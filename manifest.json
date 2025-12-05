@@ -86,9 +86,9 @@
         },
         "requiredPrivateInfos" : [ "getLocation" ],
         "usingComponents" : true,
-		"uniStatistics": {
-			"enable": true
-		}
+        "uniStatistics" : {
+            "enable" : true
+        }
     },
     "mp-alipay" : {
         "usingComponents" : true,

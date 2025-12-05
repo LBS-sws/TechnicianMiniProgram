@@ -66,7 +66,7 @@
 				percent: 0,
 				// showProgress:false,
 				imageNum: -1,
-				upPicUrl: `${this.$baseUrl}/Upload.Upload/image`,
+				upPicUrl: '',
 				init_photos: [],
 				headerUpload: {
 					'token': uni.getStorageSync('token')
@@ -95,6 +95,10 @@
 			this.jobtype = index.jobtype
 			this.shortcut_type = index.shortcut_type
 			this.service_type = index.service_type
+			// 设置uploadURL
+			this.upPicUrl = `${this.$baseUrl}/Upload.Upload/image`;
+			console.log('baseUrl:', this.$baseUrl);
+			console.log('upPicUrl:', this.upPicUrl);
 
 			if (this.id > 0) {
 				this.getItem()

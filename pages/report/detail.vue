@@ -6,9 +6,6 @@
 		</view>
 		<!-- 数据加载好后，所有内容一起显示 -->
 		<view v-else class="container" :class="isHeight ? 'heightHide':''">
-			<view class="download" @tap="download()" v-if="current_tab==0">
-				<cl-icon name="cl-icon-cloud-download" color="#007AFF" :size="80"></cl-icon>
-			</view>
 			<view>
 				<view class="add" @tap="add()" v-if="(current_tab>0 && current_tab<=tab_bar.length-2) && (basic.status==2 || basic.status==-1) && is_add">
 					<cl-icon name="cl-icon-plus-border" color="#007AFF" :size="80"></cl-icon>
@@ -21,7 +18,7 @@
 					v-bind:id="item.id" v-on:click="change_tab">{{item.tit}}</view>
 			</scroll-view> 
 			<view class="hr"></view>
-			<swiper class="swiper" v-bind:current="current_tab" duration="300" @change="change_swiper">
+			<swiper class="swiper" v-bind:current="current_tab" duration="300" @change="change_swiper" style="padding-bottom: 60px;">
 				<!-- 基础信息 -->
 				<swiper-item>
 					<view style="border-bottom: 1px solid #eeeeee;">
@@ -74,6 +71,7 @@
 							<text selectable="true">{{basic.equipments}}</text>
 						</cl-list-item>
 					</view>
+					<view style="height: 20px;"></view>
 				</swiper-item>
 				<!-- 服务简报 -->
 				<swiper-item v-if="show_briefing">
@@ -93,7 +91,7 @@
 				<!-- 物料使用 -->
 				<swiper-item v-if="show_material">
 					<cl-scroller>
-						<view style="background-color: #FFFFFF;" v-for="(item,index) in material">
+						<view style="background-color: #FFFFFF;" v-for="(item,index) in material" :key="index">
 							<view class="material_title" style="border-bottom: 1px solid #eeeeee;display: flex;justify-content: space-between;">
 								{{item.material_name}}
 								<view>
@@ -155,7 +153,7 @@
 				<!-- 设备巡查 -->
 				<swiper-item style="background-color: #FFFFFF;" v-if="show_equipment">
 					<cl-scroller>
-						<view class="new_card" v-for="(item, index) in equipment">
+						<view class="new_card" v-for="(item, index) in equipment" :key="index">
 							<view class="new_card_title">
 								<view class="new_card_title_left">
 									<span class="xh">|</span>
@@ -167,12 +165,13 @@
 							        <t-tr>
 							            <t-th v-for="(table_title, index_t) in item.table_title" :key="index_t">{{table_title}}</t-th>
 							        </t-tr>
-							        <t-tr v-if="JSON.stringify(item.content) != '{}'"
-							            v-for="(contents, index_cs) in item.table_data" :key="index_cs">
-							            <t-td v-for="(content, index_c) in contents" :key="index_c">
-							                <text v-if="content !== 'null' && content !== '' && content !== null">{{content}}</text>
-							            </t-td>
-							        </t-tr>
+							        <template v-if="JSON.stringify(item.content) != '{}'">
+							            <t-tr v-for="(contents, index_cs) in item.table_data" :key="index_cs">
+							                <t-td v-for="(content, index_c) in contents" :key="index_c">
+							                    <text v-if="content !== 'null' && content !== '' && content !== null">{{content}}</text>
+							                </t-td>
+							            </t-tr>
+							        </template>
 							    </t-table>
 							</view>
 						</view>
@@ -181,7 +180,7 @@
 				<!-- 风险跟进 -->
 				<swiper-item v-if="show_risk">
 					<cl-scroller>
-						<view class="risk" v-for="(item,index) in risk" @tap="risk_detail(item.id)">
+						<view class="risk" v-for="(item,index) in risk" :key="index" @tap="risk_detail(item.id)">
 							<cl-row>
 								<cl-col span="9">
 									<img :src="item.img" />
@@ -265,19 +264,21 @@
 				<!-- 8.风险情况 -->
 				<swiper-item class="condition" v-if="show_condition">
 					<cl-scroller>
-						<view class="risk" v-for="(item,index) in conditionData" :key="index" @tap="risk_qk_detail(item.id)" v-if="conditionData.length>0">
-						
-							<view class="item">
-								<view class="thumb">
-									<img :src="item.img" />
-								</view>
-								<view class="info">
-									<view class="item-x"><text class="span">风险区域：</text>{{item.check_area || ''}}</view>
-									<view class="item-x"><text class="span">风险程度：</text>{{item.cd || ''}}</view>
-									<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time || ''}}</view>
-								</view>
-							</view>
+						<view v-if="conditionData.length>0">
+							<view class="risk" v-for="(item,index) in conditionData" :key="index" @tap="risk_qk_detail(item.id)">
 							
+								<view class="item">
+									<view class="thumb">
+										<img :src="item.img" />
+									</view>
+									<view class="info">
+										<view class="item-x"><text class="span">风险区域：</text>{{item.check_area || ''}}</view>
+										<view class="item-x"><text class="span">风险程度：</text>{{item.cd || ''}}</view>
+										<view class="item-x"><text class="span">跟进时间：</text>{{item.create_time || ''}}</view>
+									</view>
+								</view>
+								
+							</view>
 						</view>
 					</cl-scroller>
 				</swiper-item>
@@ -377,11 +378,11 @@
 				<view class="review_popup">
 					<view class="review_popup_title">请点评</view>
 					
-					<view class="review_popup_box" :key="i" v-for="(itemx, i) in questionsData">
+					<view class="review_popup_box" v-for="(itemx, i) in questionsData" :key="i">
 						<view class="review_popup_box_title">{{ i+1 }}. {{itemx.question}}</view>
 						<view class="review_popup_box_entitle">　　{{itemx.en_question}}</view>
 						<radio-group @change="radioChange($event,i)">
-							<label class="uni-list-cell uni-list-cell-pd" v-for="(item, index) in itemx.options" :key="item.v">
+							<label class="uni-list-cell uni-list-cell-pd" v-for="item in itemx.options" :key="item.v">
 								<radio :value="item.v" :checked="item.v == itemx.answer" />{{item.t}}
 							</label>
 						</radio-group>
@@ -394,6 +395,24 @@
 			       <SignatureList :jobs="jobs" @updateJobList="updateJobList" @cancel="cancel" @confirm="confirm"></SignatureList>
 			    </view>
 			</u-popup>
+			
+			<!-- 底部固定下载预览浮窗 - 仅在基础信息tab显示 -->
+			<view class="fixed-action-bar" v-if="current_tab === 0">
+				<view class="action-item">
+					<view class="action-button" @tap="download()" title="下载报告">
+						<cl-icon name="cloud-download" color="#27bd51" :size="40"></cl-icon>
+						<view class="action-label">下载</view>
+						<view class="action-hint">可分享为PDF</view>
+					</view>
+				</view>
+				<view class="action-item">
+					<view class="action-button" @tap="previewH5()" title="预览报告">
+						<cl-icon name="eye-open" color="#007AFF" :size="40"></cl-icon>
+						<view class="action-label">预览</view>
+						<view class="action-hint">临时查看</view>
+					</view>
+				</view>
+			</view>
 			
 		</view>
 	</view>
@@ -1196,82 +1215,146 @@ import dayjs from "@/cl-uni/utils/dayjs";
 					console.log(err)
 				})
 			},
+			// 下载PDF文件
 			download() {
-				// 没有报告地址
-				let url = `${this.$baseUrl}/Preview.Preview/getHtmlContent`;
+				uni.showLoading({
+					title: "打开PDF中..."
+				});
 				
-				// 有报告地址
+				let param = {
+					job_id: this.jobid,
+					job_type: this.jobtype
+				}
+				
+				// 根据是否有报告地址选择API
+				let url = `${this.$baseUrl}/Preview.Preview/downloadPdf`;
+				
 				if(this.basic.Report){
 					url = `${this.$baseUrl}/Order.Order/getPdfContent`;
 				}
 				
-				uni.showLoading({
-					title: "数据加载中..."
+				// 生成UUID以防止文件名重复
+				let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+					let r = Math.random() * 16 | 0,
+						v = c === 'x' ? r : (r & 0x3 | 0x8);
+					return v.toString(16);
 				});
-				let param = {
-					job_id: this.jobid,
-					job_type: this.jobtype,
-					preview:1
-				}
-				let time = new Date().getTime();
+				let fileName = `${this.basic.customer.name_zh || '报告'}-${this.jobid}-${uuid}.pdf`;
+				let FilePath = `${wx.env.USER_DATA_PATH}/${fileName}`;
 				
 				uni.request({
-					
-					url:url,// url: `${this.$baseUrl}/Preview.Preview/getHtmlContent`,
+					url: url,
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
 						'token': uni.getStorageSync('token')
 					},
 					method: 'GET',
 					data: param,
-					responseType: "arraybuffer", //注意这里的responseType
+					responseType: "arraybuffer",
 					success: (result) => {
-						var fileManager = uni.getFileSystemManager();
-						var FilePath = `${wx.env.USER_DATA_PATH}/${this.basic.customer.name_zh}-${this.jobid}-${this.basic.job_date}-`+time+`.pdf`;
-						fileManager.writeFile({
-							filePath: FilePath,
-							data: result.data,
-							encoding: "binary", //编码方式 
-							success: res => {
-								console.log('编码格式');
-			          uni.openDocument({ //我这里成功之后直接打开
-									filePath: FilePath,
-									showMenu: true,
-									fileType: "pdf",
-									success: result => {
-										//隐藏加载状态
-										uni.hideLoading();
-										console.log("打开文档成功");
-									},
-									fail: err => {
-										console.log("打开文档失败", err);
-										//隐藏加载状态
-										uni.hideLoading();
-										uni.showToast({
-											title: '打开文档失败',
-											icon: 'none',
-											duration: 2000
-										});
-									}
-								});
-							},
-							fail: res => {
-								//隐藏加载状态
-								uni.hideLoading();
-								uni.showToast({
-									title: '文档已下载!',
-									icon: 'none', //默认值是success,就算没有icon这个值，就算有其他值最终也显示success
-									duration: 2000, //停留时间
-								})
-								console.log(res);
-							}
-						})
+						// 检查是否获取到PDF数据
+						if (!result.data || result.data.length === 0) {
+							uni.hideLoading();
+							uni.showToast({
+								title: '获取PDF内容失败',
+								icon: 'none',
+								duration: 2000
+							});
+							return;
+						}
+						
+					var fileManager = uni.getFileSystemManager();
+					console.log('保存路径:', FilePath);
+					
+					fileManager.writeFile({
+						filePath: FilePath,
+						data: result.data,
+						encoding: "binary",
+						success: res => {
+							uni.hideLoading();
+							console.log('保存成功:', FilePath);
+							
+							// 直接打开PDF预览，不显示任何菜单
+							wx.openDocument({
+								filePath: FilePath,
+								fileType: 'pdf',
+								success: (res) => {
+									console.log('打开PDF成功');
+								},
+								fail: (err) => {
+									console.log('打开PDF失败:', err);
+								}
+							});
+						},
+						fail: res => {
+							uni.hideLoading();
+							uni.showToast({
+								title: '保存PDF失败，请重试',
+								icon: 'none',
+								duration: 2000
+							});
+							console.log('写入文件失败:', res);
+						}
+					});
+				},
+				fail: (err) => {
+					uni.hideLoading();
+					uni.showToast({
+						title: 'PDF打开失败，请稍后重试',
+						icon: 'none',
+						duration: 2000
+					});
+					console.log('下载请求失败:', err);
+				}
+			});
+		},
+			// 预览HTML网页内容
+			previewH5() {
+				uni.showLoading({
+					title: "加载中..."
+				});
+				
+				let param = {
+					job_id: this.jobid,
+					job_type: this.jobtype,
+					preview: 1
+				}
+				
+				// 先请求getHtmlContent接口获取HTML地址
+				uni.request({
+					url: `${this.$baseUrl}/Preview.Preview/getHtmlContent`,
+					header: {
+						'content-type': 'application/x-www-form-urlencoded',
+						'token': uni.getStorageSync('token')
 					},
-					fail(err) {
+					method: 'GET',
+					data: param,
+					success: (result) => {
 						uni.hideLoading();
-						console.log(err)
+						
+						if (result.data.code === 200 && result.data.data.html_url) {
+							// 跳转到webview页面进行HTML预览
+							uni.navigateTo({
+								url: `/pages/report/webview?url=${encodeURIComponent(result.data.data.html_url)}&job_id=${this.jobid}&job_type=${this.jobtype}`
+							});
+						} else {
+							uni.showToast({
+								title: result.data.msg || '获取预览内容失败',
+								icon: 'none',
+								duration: 2000
+							});
+						}
+					},
+					fail: (err) => {
+						uni.hideLoading();
+						uni.showToast({
+							title: '预览加载失败',
+							icon: 'none',
+							duration: 2000
+						});
+						console.log('预览请求失败:', err);
 					}
-				})
+				});
 			},
 			// 提交客户点评
 			submitStartSign_sDialog() {
@@ -1665,9 +1748,9 @@ import dayjs from "@/cl-uni/utils/dayjs";
 	}
 
 	.add {
-		z-index: 9999;
+		z-index: 999;
 		position: fixed;
-		bottom: 10%;
+		bottom: calc(60px + 12px + 12px);
 		right: 15px
 	}
 	.eblock {
@@ -1715,11 +1798,66 @@ import dayjs from "@/cl-uni/utils/dayjs";
 		font-size: 30rpx;
 		/* font-size: 30rpx; */
 	}
-	.download {
-		z-index: 9999;
-		position: fixed;
-		bottom: 10%;
-		right: 15px
+	.download-group {
+		display: flex;
+		flex-direction: row;
+		gap: 12px;
+		padding: 20px 15px;
+		margin-top: 10px;
+		justify-content: center;
+		background: #fff;
+	}
+	
+	.download-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 18px 22px 16px;
+		border-radius: 10px;
+		background: #fff;
+		box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+		transition: all 0.3s ease;
+		flex: 1;
+		max-width: 140px;
+	}
+	
+	.download-item:active {
+		transform: translateY(-2px);
+		box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+	}
+	
+	.download-item.preview-btn {
+		border: 2px solid #007AFF;
+		background: #f5fbff;
+	}
+	
+	.download-item.download-btn {
+		border: 1px solid #e8e8e8;
+		background: #fff;
+	}
+	
+	.download-label {
+		font-size: 15px;
+		font-weight: 600;
+		margin-top: 10px;
+		text-align: center;
+	}
+	
+	.download-item.preview-btn .download-label {
+		color: #007AFF;
+	}
+	
+	.download-item.download-btn .download-label {
+		color: #666;
+	}
+	
+	.download-tips {
+		font-size: 11px;
+		color: #999;
+		margin-top: 6px;
+		text-align: center;
+		line-height: 1.4;
 	}
 	.review_popup{
 		box-sizing:border-box;
@@ -1779,5 +1917,50 @@ import dayjs from "@/cl-uni/utils/dayjs";
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.fixed-action-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	gap: 16px;
+	padding: 25px 15px;
+	background: #fff;
+	box-shadow: 0 -1px 3px rgba(0,0,0,0.06);
+	z-index: 100;
+}
+.action-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+.action-button {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 8px 12px;
+	border-radius: 6px;
+	background: #f5f5f5;
+	transition: all 0.2s ease;
+}
+.action-button:active {
+	background: #e8e8e8;
+}
+.action-label {
+	font-size: 12px;
+	color: #333;
+	text-align: center;
+}
+.action-hint {
+	font-size: 10px;
+	color: #999;
+	text-align: center;
+	line-height: 1.2;
+	max-width: 70px;
 }
 </style>

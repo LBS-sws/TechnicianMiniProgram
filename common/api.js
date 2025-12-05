@@ -6,6 +6,18 @@ export default {
 		return request("/Staff.Login/login", params, 'POST')
 		// return request("/Staff.Login/login", params)
 	},
+	// 微信登录 pages/login/login
+	wechatLogin(params) {
+		return request("/Staff.Login/wechatLogin", params, 'POST')
+	},
+	// 绑定微信 pages/my/wechat-setting
+	bindWeixin(params) {
+		return request("/Staff.Login/bindWeixin", params, 'POST')
+	},
+	// 解绑微信 pages/my/wechat-setting
+	unbindWeixin(params) {
+		return request("/Staff.Login/unbindWeixin", params, 'POST')
+	},
 	
 	// 首页 当日工作单 pages/home/home
 	dayOrderList(params){
@@ -98,6 +110,10 @@ export default {
 	// 勘察单 风险评估 问题列表
 	getRiskProblemList(params){
 		return request("/Exploration.Risk/getProblemList", params, 'GET')
+	},
+	// 预览报告
+	getHtmlContent(params){
+		return request("/Preview.Preview/getHtmlContent", params, 'GET')
 	},
 	// 勘察单 风险评估 编辑
 	editRiskAssessment(params){
@@ -323,6 +339,10 @@ export default {
 	},
 	getSettingInfo(params){
 		return request("/System.Setting/info", params, 'GET') 
+	},
+	// AI识别按钮配置
+	getAIButtonConfig(params){
+		return request("/System.Setting/getAIButtonConfig", params, 'GET')
 	},
 }
 

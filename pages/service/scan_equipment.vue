@@ -80,8 +80,9 @@
 						  </view>
 						</view>
 					</view>
-				</view>
-			</template>
+		
+	</view>
+</template>
 			<template v-else>
 				<view class="new_card_content">
 					<cl-row>
@@ -96,6 +97,12 @@
 					</cl-row>
 				</view>
 			</template>
+			
+			<!-- 图片同步开关 - 只有智能识别后且setting_office_id有值才显示 -->
+			<view v-if="hasRecognized && setting_office_id" class="sync-switch-container">
+				<view class="sync-switch-label">保存时同步图片到现场工作照</view>
+				<switch :checked="syncToWorkPhoto" @change="onSyncSwitchChange" color="#007AFF"></switch>
+			</view>
 		</view>
 		<view class="service">
 			<view class="service_title">检查与处理<span class="dcts">(可多选)</span></view>
@@ -114,6 +121,17 @@
 					placeholder="示例" clearable v-model="more_info" @change="selectChange"></ld-select>
 			</view>
 			<cl-textarea rows="13" cols="40" placeholder="请输入" v-model="more_info" count></cl-textarea>
+		</view>
+		<view class="service" v-if="imageUrl && setting_office_id">
+			<view class="service_title">检查照片</view>
+			<view class="image-display">
+				<image :src="imageUrl" mode="aspectFill" class="uploaded-image" @tap="previewImage"></image>
+				<view class="image-actions">
+					<view class="delete-btn" @tap="deleteImage">
+						<text class="delete-icon">×</text>
+					</view>
+				</view>
+			</view>
 		</view>
 		<view class="claer">
 			
@@ -152,6 +170,24 @@
 		</view>
 		
 		<view v-if="!can_save" class="bu" @tap="back()">返回</view>
+		
+		<!-- 悬浮AI识别按钮 - 只在灭蝇灯设备且setting_office_id有值时显示 -->
+		<view 
+			v-if="setting_office_id"
+			class="floating-ai-btn" 
+			:class="{dragging: isDragging}"
+			:style="{
+				left: btnLeft + 'px',
+				top: btnTop + 'px'
+			}"
+			@touchstart="onTouchStart"
+			@touchmove="onTouchMove"
+			@touchend="onTouchEnd"
+			@tap="startAIRecognition"
+		>
+			<cl-icon name="scan" :size="28" color="#FFFFFF" style="margin-bottom: 6px;"></cl-icon>
+			<text class="ai-btn-text">{{ hasRecognized ? '重新识别' : 'AI识别' }}</text>
+		</view>
 		
 	</view>
 </template>
@@ -218,6 +254,19 @@ export default {
 			is_single:true,
 			previous_next: 0, 	// 0 默认   1 上一个   2 下一个 
 			deviceOption:[],
+			imageUrl: '',
+			showUpload: false,
+			// 拖拽相关状态
+			isDragging: false,
+			startX: 0,
+			startY: 0,
+			btnLeft: 0,
+			btnTop: 0,
+			lastMoveTime: 0,
+			screenInfo: null, // 缓存屏幕信息
+			hasRecognized: false, // 是否已经识别过
+			syncToWorkPhoto: false, // 是否同步图片到现场工作照
+			setting_office_id: '', // 办公室ID
 		}
 	},
 	onLoad(index) {
@@ -239,6 +288,10 @@ export default {
 		this.eqIdListStr = index.id_list
 		this.previous_next = 0
 		// this.ct = uni.getStorageSync('ct')
+		
+		// 初始化悬浮按钮位置
+		this.initButtonPosition()
+		
 		var arr = index.id.split(",");
 		console.log('arr.length',arr.length)
 		if(arr.length > 1){
@@ -456,6 +509,34 @@ export default {
 						})
 						this.shortcuts = shortcutsArr
 						this.shortcutsOld = shortcutsArr
+										
+						// 从响应数据中获取setting_office_id
+						console.log('完整响应数据:', res.data)
+						console.log('res.data.setting_office_id:', res.data.setting_office_id)
+						console.log('res.data.list:', res.data.list)
+						
+						// 优先从响应数据获取，如果没有则从localStorage获取
+						if (res.data.setting_office_id) {
+							this.setting_office_id = res.data.setting_office_id
+							console.log('✓ 从 res.data 获取 setting_office_id:', this.setting_office_id)
+						} else if (res.data.list && res.data.list.length > 0 && res.data.list[0].setting_office_id) {
+							this.setting_office_id = res.data.list[0].setting_office_id
+							console.log('✓ 从 res.data.list[0] 获取 setting_office_id:', this.setting_office_id)
+						} else {
+							// 从localStorage中获取
+							this.setting_office_id = uni.getStorageSync('setting_office_id')
+							console.log('✓ 从 localStorage 获取 setting_office_id:', this.setting_office_id)
+						}
+						
+						console.log('最终 this.setting_office_id:', this.setting_office_id)
+						
+						// 获取AI按钮城市配置
+						if (this.setting_office_id) {
+							console.log('✓ setting_office_id 有值，开始请求 getAIButtonConfig')
+							this.getAIButtonConfig()
+						} else {
+							console.log('✗ setting_office_id 为空，跳过请求 getAIButtonConfig')
+						}
 					}else{
 						uni.showToast({icon: 'none',title: '出现错误,请重试'});
 					}
@@ -579,7 +660,8 @@ export default {
 					more_info: this.more_info,
 					eq_number: this.eq_mark_num,
 					equipment_area_type: this.equipment_area_type,
-					ids:ids
+					ids:ids,
+					imageUrl: this.imageUrl
 				}
 				uni.setStorageSync('last_id_' + this.jobid,this.id)
 				this.$api.editEq(params).then(res=>{
@@ -589,6 +671,12 @@ export default {
 						icon: 'none'
 					});
 					if(res.code == 200){
+						
+						// 如果有AI识别的图片且开启了同步开关，保存成功后同步到现场工作照
+						if (this.hasRecognized && this.syncToWorkPhoto && this.imageUrl) {
+							// 从本地图片URL转换为网络URL进行同步
+							this.syncImageToWorkPhotoAfterSave()
+						}
 						
 						if(this.previous_next == 1){
 							var arr = this.eqIdListStr.split(",");
@@ -690,12 +778,556 @@ export default {
 				}).catch(err=>{
 					console.log(err)
 				})
+			},
+			
+			// 开关事件处理
+			onSyncSwitchChange(e) {
+				this.syncToWorkPhoto = e.detail.value
+				console.log('图片同步开关状态:', this.syncToWorkPhoto)
+			},
+			
+			// 保存成功后同步图片到现场工作照
+			async syncImageToWorkPhotoAfterSave() {
+				try {
+					console.log('保存成功后开始同步图片到现场工作照')
+					
+					// 检查是否有图片URL
+					if (!this.imageUrl) {
+						console.log('没有图片URL，跳过同步')
+						return
+					}
+					
+					// AI识别后的图片已经是网络URL，直接使用
+					console.log('使用识别图片URL进行同步:', this.imageUrl)
+					
+					// 调用同步方法
+					await this.syncImageToWorkPhoto(this.imageUrl)
+					
+				} catch (error) {
+					console.error('保存后同步图片失败:', error)
+					uni.showToast({
+						title: '图片同步失败',
+						icon: 'none'
+					})
+				}
+			},
+			
+			// 同步图片到现场工作照
+			async syncImageToWorkPhoto(imageUrl) {
+				try {
+					console.log('开始同步图片到现场工作照:', imageUrl)
+					console.log('当前job_id:', this.jobid, 'job_type:', this.jobtype)
+					
+					uni.showLoading({
+					title: '正在同步识别图片...'
+				})
+					
+					// 从网络URL中提取相对路径
+					const relativePath = imageUrl.replace(this.$baseUrl_imgs, '')
+					console.log('提取的相对路径:', relativePath)
+					
+					// 先查询是否已有现场工作照记录
+					const getParams = {
+						job_id: this.jobid,
+						job_type: this.jobtype,
+						limit: 100,
+						page: 1
+					}
+					console.log('查询现场工作照参数:', getParams)
+					
+					const existingPhotos = await this.$api.getSiteWorkPhotosInfo(getParams)
+					console.log('现有现场工作照记录:', existingPhotos)
+					
+					let response
+					if (existingPhotos.code === 200 && existingPhotos.data && existingPhotos.data.data && existingPhotos.data.data.length > 0) {
+						// 找到现有记录，将图片添加到第一条记录中
+						const firstRecord = existingPhotos.data.data[0]
+						const existingSitePhotos = firstRecord.site_photos || []
+						console.log('现有图片:', existingSitePhotos)
+						
+						// 检查是否已经包含该图片
+						if (!existingSitePhotos.includes(relativePath)) {
+							// 将新图片添加到现有图片数组中
+							const updatedPhotos = [...existingSitePhotos, relativePath]
+							console.log('更新后的图片数组:', updatedPhotos)
+							
+							// 检查图片数量是否超过4张
+							if (updatedPhotos.length > 4) {
+								uni.hideLoading()
+								uni.showToast({
+									title: '现场工作照最多只能有4张图片',
+									icon: 'none'
+								})
+								return
+							}
+							
+							// 使用 addSiteWorkPhotos 接口更新记录
+							const updateParam = {
+								job_id: this.jobid,
+								job_type: this.jobtype,
+								site_photos: updatedPhotos.join(','),
+								remarks: (firstRecord.remarks || '') + '\n[AI识别自动同步]'
+							}
+							console.log('更新参数:', updateParam)
+							
+							// 先删除原记录
+							await this.$api.delSiteWorkPhotos({id: firstRecord.id})
+							// 再添加新记录
+							response = await this.$api.addSiteWorkPhotos(updateParam)
+							console.log('更新响应:', response)
+						} else {
+							uni.hideLoading()
+							uni.showToast({
+								title: '该图片已存在于现场工作照中',
+								icon: 'none'
+							})
+							return
+						}
+					} else {
+						// 没有现有记录，创建新记录
+						const addParam = {
+							job_id: this.jobid,
+							job_type: this.jobtype,
+							site_photos: relativePath,
+							remarks: '灭蝇灯检查'
+						}
+						console.log('添加参数:', addParam)
+						
+						response = await this.$api.addSiteWorkPhotos(addParam)
+						console.log('添加响应:', response)
+					}
+					
+					uni.hideLoading()
+					
+					if (response && response.code === 200) {
+						uni.showToast({
+							title: '识别图片已同步到现场工作照',
+							icon: 'success'
+						})
+					} else {
+						console.error('同步失败，响应:', response)
+						uni.showToast({
+							title: (response && response.msg) || '同步失败',
+							icon: 'none'
+						})
+					}
+				} catch (error) {
+					uni.hideLoading()
+					console.error('同步图片到现场工作照失败:', error)
+					uni.showToast({
+						title: '同步失败，请重试',
+						icon: 'none'
+					})
+				}
+			},
+
+
+			
+			// 开始AI识别
+			startAIRecognition() {
+				// 如果正在拖拽，不触发点击事件
+				if (this.isDragging) {
+					return
+				}
+				
+				// 直接选择图片并上传识别
+				uni.chooseImage({
+					count: 1,
+					sizeType: ['compressed'],
+					sourceType: ['camera', 'album'],
+					success: (res) => {
+						this.handleImageUploadAndRecognize(res.tempFilePaths[0])
+					},
+					fail: (err) => {
+						console.log('❌ chooseImage fail:', err)
+						// 权限不足时给予提示，便于用户授权
+						if (err.errMsg.indexOf('authorize') !== -1 || err.errMsg.indexOf('auth') !== -1 || (err.errMsg && err.errMsg.includes('scope is not declared'))) {
+							uni.showModal({
+								title: '权限提示',
+								content: '上传图片需要您的相册或相机权限，请前往设置开启',
+								confirmText: '去设置',
+								success: (res) => {
+									if (res.confirm) {
+										uni.openSetting()
+									}
+								}
+							})
+						} else {
+							uni.showToast({
+								title: '选择图片失败，请重试',
+								icon: 'none',
+								duration: 2000
+							});
+						}
+					}
+				})
+			},
+			
+			// 处理图片上传和识别
+			async handleImageUploadAndRecognize(filePath) {
+				try {
+					// 显示加载提示
+					uni.showLoading({
+						title: '正在上传图片...'
+					})
+					
+					// 设置本地图片URL用于预览
+					this.imageUrl = filePath
+					this.showUpload = true
+					
+					// 先上传图片到服务器获取网络URL
+					const networkImageUrl = await this.uploadImageToServer(filePath)
+					
+					// 更新加载提示
+					uni.showLoading({
+						title: 'AI识别中...'
+					})
+					
+					// 使用网络图片URL调用AI识别接口
+					const aiResult = await this.callAIRecognition(networkImageUrl)
+					
+					uni.hideLoading()
+					
+					if (aiResult.confidence > 0) {
+			uni.showToast({
+				title: `识别成功`,
+				icon: 'success'
+			})
+			
+			// AI识别成功后，将imageUrl更新为网络URL
+			this.imageUrl = networkImageUrl
+			
+			// 设置已识别状态
+			this.hasRecognized = true
+			
+			// 自动填充识别结果到检查数据
+			this.fillRecognitionResult(aiResult)
+			
+			// AI识别成功后提示用户可以开启同步开关
+			setTimeout(() => {
+				uni.showToast({
+					title: '可开启下方同步开关，保存时自动同步到现场工作照',
+					icon: 'none',
+					duration: 4000
+				})
+			}, 1500)
+					} else {
+					// 即使识别失败也设置已识别状态，允许重新识别
+					this.hasRecognized = true
+					uni.showToast({
+						title: '未识别到害虫',
+						icon: 'none'
+					})
+				}
+					
+				} catch (error) {
+				uni.hideLoading()
+				// 错误情况下也设置已识别状态，允许重新识别
+				this.hasRecognized = true
+				console.error('处理失败:', error)
+				uni.showToast({
+					title: error.message || '处理失败，请重试',
+					icon: 'none'
+				})
 			}
+			},
+			
+			// 上传图片到服务器获取网络URL
+			async uploadImageToServer(filePath) {
+				return new Promise((resolve, reject) => {
+					uni.uploadFile({
+						url: this.$baseUrl + '/Upload.Upload/image', // 根据实际接口地址修改
+						filePath: filePath,
+						name: 'file',
+						header: {
+							'token': uni.getStorageSync('token') || ''
+						},
+						formData: {
+							type: 'ai_recognition'
+						},
+						success: (res) => {
+							try {
+								const data = JSON.parse(res.data)
+								console.log('图片上传响应:', data)
+								if (data.code === 200 && data.data && data.data.detault_url) {
+									// 拼接完整的图片URL
+									const fullImageUrl = this.$baseUrl_imgs + data.data.detault_url
+									console.log('完整图片URL:', fullImageUrl)
+									resolve(fullImageUrl)
+								} else {
+									reject(new Error(data.msg || '图片上传失败'))
+								}
+							} catch (error) {
+								console.error('上传响应解析失败:', error)
+								reject(new Error('上传响应解析失败'))
+							}
+						},
+						fail: (error) => {
+							console.error('图片上传失败:', error)
+							reject(new Error('图片上传失败：' + (error.errMsg || '网络错误')))
+						}
+					})
+				})
+			},
+			
+			// 调用AI识别接口
+			async callAIRecognition(imageUrl) {
+				try {
+					console.log('开始调用AI识别接口，图片URL:', imageUrl)
+					console.log('equipment_type:', this.list[0]['equipment_type_id'])
+					
+					// 调用真实的AI识别接口，传递网络图片URL和设备类型
+					const response = await this.$api.getMosquitoIdentifier({
+						image_url: imageUrl, // 使用网络图片URL
+						equipment_type: this.list[0]['equipment_type_id']// 传递设备类型给后端
+					})
+					
+					console.log('AI识别接口响应:', response)
+					
+					// 检查多种可能的成功状态码
+					if ((response.code === 200 || response.code === 0) && response.data) {
+						const data = response.data
+						console.log('AI识别成功，数据:', data)
+						
+						// 如果返回的数据包含check_datas和original，直接映射到前端
+						if (data.check_datas && data.original) {
+							this.mapBackendDataToCheckDatas(data)
+						}
+						
+						return {
+							description: data.description || `检测到${data.pestCount || 0}只${data.pestName || '害虫'}`,
+							confidence: data.confidence || 0.8,
+							pestCount: data.pestCount || 0,
+							pestName: data.pestName || '害虫',
+							severity: data.severity || '轻微'
+						}
+					} else {
+						// API调用失败，返回默认结果
+						console.log('AI识别失败，响应码:', response.code, '消息:', response.msg)
+						return {
+							description: response.msg || '识别失败，请重试',
+							confidence: 0,
+							pestCount: 0,
+							pestName: '未知',
+							severity: '轻微'
+						}
+					}
+				} catch (error) {
+					console.error('AI识别接口调用失败:', error)
+					// 接口调用异常，返回默认结果
+					return {
+						description: '网络异常，识别失败',
+						confidence: 0,
+						pestCount: 0,
+						pestName: '未知',
+						severity: '轻微'
+					}
+				}
+			},
+			
+			// 将后端返回的数据映射到前端检查数据
+			mapBackendDataToCheckDatas(backendData) {
+				// 直接使用后端返回的check_datas
+				if (backendData && backendData.check_datas) {
+					this.check_datas = backendData.check_datas
+				}
+			},
+			
+
+			
+			// 填充识别结果到检查数据
+			fillRecognitionResult(aiResult) {
+				// 如果有害虫数量，自动填充到检查数据中
+				if (aiResult.pestCount > 0 && this.check_datas.length > 0) {
+					// 假设第一个检查项是害虫数量
+					if (this.typeid === 1) { // 数量输入类型
+						this.check_datas[0].value = aiResult.pestCount
+					}
+				}
+			
+				// 在补充说明中添加识别结果
+			let recognitionInfo
+			// 优先根据check_datas生成详细结果，如果没有检测到害虫则使用AI接口返回的description
+			// 根据check_datas生成详细的识别结果
+			const detectedPests = []
+			let totalCount = 0
+			
+			this.check_datas.forEach(item => {
+				if (item.value > 0) {
+					detectedPests.push(`${item.label}${item.value}只`)
+					totalCount += item.value
+				}
+			})
+			
+			if (detectedPests.length > 0) {
+				recognitionInfo = `检查结果：检测到${detectedPests.join('、')}`
+			} else if (aiResult.description && aiResult.description.trim()) {
+				recognitionInfo = `检查结果：${aiResult.description}`
+			} else {
+				recognitionInfo = `检查结果：未检测到害虫`
+			}
+			
+			if (this.more_info) {
+				if (Array.isArray(this.more_info)) {
+					this.more_info.push(recognitionInfo)
+				} else {
+					this.more_info = this.more_info + '，' + recognitionInfo
+				}
+			} else {
+				this.more_info = recognitionInfo
+			}
+			},
+			
+			// 预览图片
+			previewImage() {
+				if (this.imageUrl) {
+					uni.previewImage({
+						urls: [this.imageUrl],
+						current: 0
+					})
+				}
+			},
+			
+			// 删除图片
+			deleteImage() {
+				uni.showModal({
+					title: '提示',
+					content: '确定要删除这张图片吗？',
+					success: (res) => {
+						if (res.confirm) {
+							this.imageUrl = ''
+							this.showUpload = false
+						}
+					}
+				})
+			},
+			
+			// 拖拽开始
+			onTouchStart(e) {
+				this.isDragging = false
+				this.startX = e.touches[0].clientX
+				this.startY = e.touches[0].clientY
+				this.lastMoveTime = Date.now()
+				
+				// 缓存屏幕信息，避免在移动时重复获取
+				if (!this.screenInfo) {
+					this.screenInfo = uni.getSystemInfoSync()
+				}
+			},
+			
+			// 拖拽移动
+			onTouchMove(e) {
+				// 节流处理，减少频繁更新
+				const now = Date.now()
+				if (now - this.lastMoveTime < 16) { // 约60fps
+					return
+				}
+				this.lastMoveTime = now
+				
+				// 计算移动距离，超过阈值才开始拖拽
+				const deltaX = e.touches[0].clientX - this.startX
+				const deltaY = e.touches[0].clientY - this.startY
+				
+				// 使用简单的距离判断
+				if (Math.abs(deltaX) > 8 || Math.abs(deltaY) > 8) {
+					this.isDragging = true
+				}
+				
+				if (this.isDragging) {
+					const screenWidth = this.screenInfo.screenWidth
+					const screenHeight = this.screenInfo.screenHeight
+					
+					// 直接使用相对坐标计算（避免中心对齐的额外计算）
+					let newLeft = this.btnLeft + deltaX
+					let newTop = this.btnTop + deltaY
+					
+					// 边界限制
+					const btnSize = 70
+					const margin = 10
+					newLeft = Math.max(margin, Math.min(screenWidth - btnSize - margin, newLeft))
+					newTop = Math.max(margin, Math.min(screenHeight - btnSize - margin, newTop))
+					
+					this.btnLeft = newLeft
+					this.btnTop = newTop
+					
+					// 更新起始点以支持持续拖拽
+					this.startX = e.touches[0].clientX
+					this.startY = e.touches[0].clientY
+				}
+			},
+			
+			// 拖拽结束
+			onTouchEnd(e) {
+				if (!this.isDragging) {
+					return
+				}
+				
+				// 自动吸附到屏幕边缘
+				const screenWidth = this.screenInfo.screenWidth
+				const centerX = screenWidth / 2
+				
+				if (this.btnLeft < centerX) {
+					this.btnLeft = 10
+				} else {
+					this.btnLeft = screenWidth - 80
+				}
+				
+				// 立即重置拖拽状态，防止触发点击
+				this.isDragging = false
+			},
+			
+			// 获取AI按钮城市配置
+			getAIButtonConfig() {
+				const settingOfficeId = this.setting_office_id
+				if (!settingOfficeId) {
+					console.log('getAIButtonConfig: setting_office_id为空，跳过请求')
+					return
+				}
+				
+				console.log('发起getAIButtonConfig请求，setting_office_id:', settingOfficeId)
+				
+				let params = {
+					setting_office_id: settingOfficeId
+				}
+				this.$api.getAIButtonConfig(params).then(res => {
+					console.log('🎉 getAIButtonConfig成功响应:', res)
+					console.log('响应数据:', res.data)
+					console.log('is_enabled值:', res.data?.is_enabled)
+					
+					if (res.code === 200 && res.data) {
+						// 如果is_enabled为false，隐藏AI按钮
+						if (res.data.is_enabled === false) {
+							console.log('❌ AI配置为disabled，隐藏按钮')
+							this.setting_office_id = ''
+						} else {
+							console.log('✅ AI配置为enabled，保留按钮显示')
+							console.log('当前setting_office_id保留为:', this.setting_office_id)
+						}
+					} else {
+						console.log('⚠️ 响应不是200，code:', res.code)
+					}
+				}).catch(err => {
+					console.error('❌ getAIButtonConfig请求失败:', err)
+					console.error('错误信息:', err.message)
+				})
+			},
+			
+			// 初始化按钮位置
+			initButtonPosition() {
+				// 缓存屏幕信息
+				this.screenInfo = uni.getSystemInfoSync()
+				const screenWidth = this.screenInfo.screenWidth
+				const screenHeight = this.screenInfo.screenHeight
+				
+				// 设置初始位置：右边中央（转换为px单位）
+				this.btnLeft = screenWidth - 70 - 10 // 距离右边10px，按钮宽度70px
+				this.btnTop = (screenHeight / 2) - 35 // 垂直居中，按钮高度70px的一半
+			}
+		}
 	}
-}
 </script>
 
-<style>
+<style lang="scss">
 .new_card {
 	background-color: #fff;
 	border-radius: 10px;
@@ -864,5 +1496,138 @@ page {
 .claer{
 	width: 100%;
 	height: 80rpx;
+}
+
+/* 悬浮AI识别按钮 */
+.floating-ai-btn {
+	position: fixed;
+	width: 70px;
+	height: 70px;
+	background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+	border-radius: 35px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1);
+	z-index: 999;
+	cursor: move;
+	border: none;
+	backdrop-filter: blur(10px);
+	will-change: left, top;
+	backface-visibility: hidden;
+	-webkit-transform: translateZ(0);
+	transform: translateZ(0);
+}
+
+.floating-ai-btn.dragging {
+	transition: none !important;
+}
+
+.floating-ai-btn:not(.dragging) {
+	transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-ai-btn:active {
+	transform: scale(0.92);
+}
+
+.floating-ai-btn:hover {
+	transform: translateY(-2px);
+}
+
+.ai-btn-icon {
+	font-size: 28rpx;
+	margin-bottom: 2rpx;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+	transform: scale(1.1);
+}
+
+.ai-btn-text {
+	color: #FFFFFF;
+	font-size: 22rpx;
+	font-weight: 600;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	letter-spacing: 0.5rpx;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 图片同步开关样式 */
+.sync-switch-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20rpx 30rpx;
+	margin-top: 20rpx;
+	border-top: 1px solid #f0f0f0;
+	background-color: #fafafa;
+}
+
+.sync-switch-label {
+	font-size: 28rpx;
+	color: #333;
+	font-weight: 500;
+}
+
+.ai-btn-icon {
+	font-size: 32rpx;
+	margin-bottom: 4rpx;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+	transform: scale(1.2);
+	animation: pulse 2s infinite;
+}
+
+.ai-btn-text {
+	color: #FFFFFF;
+	font-size: 20rpx;
+	font-weight: 700;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+	letter-spacing: 1rpx;
+	text-transform: uppercase;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@keyframes pulse {
+	0%, 100% {
+		transform: scale(1.2);
+	}
+	50% {
+		transform: scale(1.3);
+	}
+}
+
+/* 图片显示区域 */
+.image-display {
+	position: relative;
+	margin: 20rpx 0;
+	
+	.uploaded-image {
+		width: 100%;
+		height: 400rpx;
+		border-radius: 12rpx;
+		border: 2rpx solid #e0e0e0;
+	}
+	
+	.image-actions {
+		position: absolute;
+		top: 10rpx;
+		right: 10rpx;
+		
+		.delete-btn {
+			width: 50rpx;
+			height: 50rpx;
+			background: rgba(255, 59, 48, 0.8);
+			color: #fff;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			
+			.delete-icon {
+				font-size: 30rpx;
+				font-weight: bold;
+			}
+		}
+	}
 }
 </style>

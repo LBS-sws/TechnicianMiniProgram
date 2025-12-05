@@ -1,10 +1,7 @@
 <template>
 	<view class="zzx-calendar">
 		<view class="calendar-heander">
-				{{timeStr}}
-			<view class="back-today" @click="goback" v-if="showBack">
-				返回今日
-			</view>
+			{{timeStr}}{{todayInfo}}
 		</view>
 		<view class="calendar-weeks">
 			<view class="calendar-week" v-for="(week, index) in weeks" :key="index">
@@ -31,6 +28,7 @@
 										]"
 								>
 									{{item.time.getDate()}}
+									<view class="work-badge" :class="item.info && item.info.inProgress ? 'badge-primary' : (item.info && item.info.unfinsh ? 'badge-danger' : 'badge-success')" v-if="item.info && item.info.count">{{item.info.count}}</view>
 								</view>
 								<view class="dot-show" v-if="item.info && !item.info['unfinsh']" :style="[dotStyle]"></view>
 								<view class="dot-show" v-if="item.info && item.info['unfinsh']" :style="[ReddotStyle]"></view>
@@ -41,7 +39,7 @@
 								<view class="calendar-day" v-for="(item,index) in predays" :key="index"
 									:class="{
 										'day-hidden': !item.show
-									}">
+									}" @click="clickItem(item)">
 									<view
 										class="date"
 										:class="[
@@ -56,7 +54,7 @@
 								<view class="calendar-day" v-for="(item,index) in nextdays" :key="index"
 									:class="{
 										'day-hidden': !item.show
-									}">
+									}" @click="clickItem(item)">
 									<view
 										class="date"
 										:class="[
@@ -89,14 +87,14 @@
 				default: 500
 			},
 			dotList: {
-				type: Array, /// 打点日期列表
+				type: Array,
 				default() {
 					return [
 					]
 				}
 			},
 			cilck_time: {
-				type: Object, /// 打点日期列表
+				type: Object,
 				default() {
 					return {
 						cur: '',
@@ -105,19 +103,19 @@
 				}
 			},
 			showBack: {
-				type: Boolean, // 是否返回今日
+				type: Boolean,
 				default: false
 			},
 			todayClass: {
-				type: String, // 今日的自定义样式class
+				type: String,
 				default: 'is-today'
 			},
 			checkedClass: {
-				type: String, // 选中日期的样式class
+				type: String,
 				default: 'is-checked'
 			},
 			dotStyle: {
-				type: Object, // 打点日期的自定义样式
+				type: Object,
 				default() {
 					return {
 						background: '#1899dc'
@@ -125,7 +123,7 @@
 				}
 			},
 			ReddotStyle: {
-				type: Object, // 打点日期的自定义样式
+				type: Object,
 				default() {
 					return {
 						background: '#E91E63'
@@ -145,18 +143,16 @@
 				this.days = days;
 			},
 			cilck_time: function(newvalue){
-				this.initDate(newvalue.cur)//跳转对应日期页面
-				this.clickItem(newvalue)//选中指定日期
+				this.initDate(newvalue.cur)
+				this.clickItem(newvalue)
 			}
 		},
 		computed: {
 			sheight() {
-				// 根据年月判断有多少行
-				// 判断该月有多少天
 				let h = '70rpx';
 				if (!this.weekMode) {
 					const d = new Date(this.currentYear, this.currentMonth, 0);
-					const days = d.getDate(); // 判断本月有多少天
+					const days = d.getDate();
 					let day = new Date(d.setDate(1)).getDay();
 					if (day === 0) {
 						day = 7;
@@ -168,12 +164,9 @@
 				return h
 			},
 			timeStr() {
-				let str = '';
-			    const d = new Date(this.currentYear, this.currentMonth - 1, this.currentDate);
-				const y = d.getFullYear();
-				const m = (d.getMonth()+1) <=9 ? `0${d.getMonth()+1}` : d.getMonth()+1;
-				str = `${y}年${m}月`;
-				return str;
+				const y = this.currentYear;
+				const m = this.currentMonth <= 9 ? `0${this.currentMonth}` : this.currentMonth;
+				return `${y}年${m}月`;
 			},
 			predays() {
 				let pres = [];
@@ -198,6 +191,14 @@
 					nexts = gegerateDates(d, 'month')
 				}
 				return nexts;
+			},
+			todayInfo() {
+				if (!this.selectedDate) return '';
+				const date = new Date(this.selectedDate.replace(/-/g, '/'));
+				const day = String(date.getDate()).padStart(2, '0');
+				const weeks = ['日', '一', '二', '三', '四', '五', '六'];
+				const week = weeks[date.getDay()];
+				return ` ${day}日 周${week}`;
 			}
 		},
 		data() {
@@ -210,19 +211,13 @@
 				days: [],
 				weekMode: true,
 				swiper: [0,1,2],
-				// dotList: [], // 打点的日期列表
-				selectedDate: formatDate(new Date(), 'yyyy-MM-dd')
+				selectedDate: ''
 			};
 		},
 		methods: {
 			changeSwp(e) {
-				// console.log(e);
 				const pre = this.current;
 				const current = e.target.current;
-				/* 根据前一个减去目前的值我们可以判断是下一个月/周还是上一个月/周 
-				*current - pre === 1, -2时是下一个月/周
-				*current -pre === -1, 2时是上一个月或者上一周
-				*/
 				this.current = current;
 				if (current - pre === 1 || current - pre === -2) {
 					this.daysNext();
@@ -230,7 +225,6 @@
 					this.daysPre();
 				}
 			},
-			// 初始化日历的方法
 			initDate(cur) {
 				let date = ''
 				if (cur) {
@@ -238,27 +232,20 @@
 				} else {
 					date = new Date()
 				}
-				this.currentDate = date.getDate()          // 今日日期 几号
-				this.currentYear = date.getFullYear()       // 当前年份
-				this.currentMonth = date.getMonth() + 1    // 当前月份
-				this.currentWeek = date.getDay() === 0 ? 7 : date.getDay() // 1...6,0   // 星期几
-				const nowY = new Date().getFullYear()       // 当前年份
+				this.currentDate = date.getDate()
+				this.currentYear = date.getFullYear()
+				this.currentMonth = date.getMonth() + 1
+				this.currentWeek = date.getDay() === 0 ? 7 : date.getDay()
+				const nowY = new Date().getFullYear()
 				const nowM = new Date().getMonth() + 1
-				const nowD = new Date().getDate()          // 今日日期 几号
+				const nowD = new Date().getDate()
 				const nowW = new Date().getDay();
-				// this.selectedDate = formatDate(new Date(), 'yyyy-MM-dd')
 				this.days = [];
 				let days = [];
 				if (this.weekMode) {
 					days = gegerateDates(date, 'week');
-					// this.selectedDate = days[0].fullDate;
 				} else {
 					days = gegerateDates(date, 'month');
-					// const sel = new Date(this.selectedDate.replace('-', '/').replace('-', '/'));
-					// const isMonth = sel.getFullYear() === this.currentYear && (sel.getMonth() + 1) === this.currentMonth;
-					// if(!isMonth) {
-					// 	this.selectedDate = formatDate(new Date(this.currentYear, this.currentMonth-1,1), 'yyyy-MM-dd')
-					// }
 				}
 				days.forEach(day => {
 					const dot = this.dotList.find(item => {
@@ -269,7 +256,6 @@
 					}
 				})
 				this.days = days;
-				//  派发事件,时间发生改变
 				let obj = {
 					start: '',
 					end: ''
@@ -285,21 +271,20 @@
 				}
 				this.$emit('days-change', obj)
 			},
-			//  上一个
-			daysPre () {
+			daysPre() {
+				this.selectedDate = '';
 				if (this.weekMode) {
-				const d = new Date(this.currentYear, this.currentMonth - 1,this.currentDate);
-				d.setDate(d.getDate() - 7);
-				this.initDate(d);  
-			} else {
+					const d = new Date(this.currentYear, this.currentMonth - 1,this.currentDate);
+					d.setDate(d.getDate() - 7);
+					this.initDate(d);  
+				} else {
 					const d = new Date(this.currentYear, this.currentMonth -2, 1);
 					this.initDate(d);
 				}
-			  // console.log('pre',this.currentMonth)
 				this.$emit('change-month', this.currentYear +'-' +  this.currentMonth);
 			},
-			//  下一个
-			daysNext () {
+			daysNext() {
+				this.selectedDate = '';
 				if (this.weekMode) {
 					const d = new Date(this.currentYear, this.currentMonth - 1,this.currentDate);
 					d.setDate(d.getDate() + 7);
@@ -308,7 +293,6 @@
 					const d = new Date(this.currentYear, this.currentMonth, 1);
 					this.initDate(d);
 				}
-				// console.log('next',this.currentMonth)
 				this.$emit('change-month', this.currentYear +'-' + this.currentMonth);
 			},
 			changeMode() {
@@ -326,7 +310,6 @@
 				}
 				this.initDate(d)
 			},
-			// 点击日期
 			clickItem(e) {
 				this.selectedDate = e.fullDate;
 				this.$emit('selected-change', e);
@@ -334,7 +317,7 @@
 			goback() {
 				const d = new Date();
 				this.initDate(d);
-			}
+			},
 		},
 		created() {
 			this.initDate();
@@ -353,19 +336,13 @@
 		height: 60upx;
 		line-height: 60upx;
 		position: relative;
-		// font-size: 30upx;字体
 		font-size: 35upx;
-		.back-today {
-			position: absolute;
-			right: 0;
-			width: 100upx;
-			height: 30upx;
-			line-height: 30upx;
-			font-size: 20upx;
-			top: 15upx;
-			border-radius: 15upx 0 0 15upx;
-			color: #ffffff;
-			background-color: #007aff;
+		.today-tip {
+			font-size: 35upx;
+			color: #333333;
+			margin-left: 0;
+			cursor: pointer;
+			user-select: none;
 		}
 	}
 	.calendar-weeks {
@@ -376,7 +353,7 @@
 		line-height: 60upx;
 		justify-content: center;
 		align-items: center;
-		font-size: 35upx;//30upx;
+		font-size: 35upx;
 		.calendar-week {
 			width: calc(100% / 7);
 			height: 100%;
@@ -405,16 +382,17 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-		font-size: 33upx;//28upx
-		.calendar-day {
-			width: calc(100% / 7);
-			height: 70upx;
-			text-align: center;
-			display: flex;
-			flex-flow: column nowrap;
-			justify-content: flex-start;
-			align-items: center;
-		}
+		font-size: 33upx;
+	.calendar-day {
+		width: calc(100% / 7);
+		height: 70upx;
+		text-align: center;
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: flex-start;
+		align-items: center;
+		padding-top: 4upx;
+	}
 	}
 	.day-hidden {
 		visibility: hidden;
@@ -426,27 +404,27 @@
 		.mode-arrow-top {
 			width: 0;
 			height:0;
-			border-left: 15upx solid transparent;//12
-		    border-right: 15upx solid transparent;//12
-		    border-bottom: 13upx solid #007aff;//10
+			border-left: 15upx solid transparent;
+		    border-right: 15upx solid transparent;
+		    border-bottom: 13upx solid #007aff;
 		}
 		.mode-arrow-bottom {
 			width: 0;
 			height:0;
-			border-left: 15upx solid transparent;//12
-			border-right: 15upx solid transparent;//12
-			border-top: 13upx solid #007aff;//10
+			border-left: 15upx solid transparent;
+			border-right: 15upx solid transparent;
+			border-top: 13upx solid #007aff;
 		}
 	}
 	.is-today {
 		background: #ffffff;
-		// border: 1upx solid #FF6633;
 		border-radius: 50%;
 		color: #007aff;
+		border: 2upx solid #007aff;
 	}
 	.is-checked {
 		background: #007aff;
-		color: #ffffff;
+		color: #ffffff !important;
 	}
 	.date {
 		width: 50upx;
@@ -454,6 +432,8 @@
 		line-height: 50upx;
 		margin: 0 auto;
 		border-radius: 50upx;
+		position: relative;
+		color: #666666;
 	}
 	.dot-show {
 		margin-top:4upx;
@@ -461,6 +441,36 @@
 		height: 10upx;
 		background: #c6c6c6;
 		border-radius: 10upx;
+	}
+	.work-count {
+		display: none;
+	}
+	.work-badge {
+		position: absolute;
+		top: -8upx;
+		right: -8upx;
+		min-width: 22upx;
+		height: 22upx;
+		padding: 0 4upx;
+		background-color: #e91e63;
+		color: #ffffff;
+		font-size: 12upx;
+		font-weight: 600;
+		border-radius: 11upx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+		z-index: 10;
+	}
+	.badge-success {
+		background-color: #4CAF50;
+	}
+	.badge-danger {
+		background-color: #e91e63;
+	}
+	.badge-primary {
+		background-color: #1899dc;
 	}
 }
 </style>

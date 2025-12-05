@@ -7,6 +7,12 @@
 			}
 		},
 		{
+			"path": "pages/login/bind-account",
+			"style": {
+				"navigationBarTitleText": "绑定账户"
+			}
+		},
+		{
 			"path": "pages/home/home",
 			"style": {
 				"navigationBarTitleText": "史伟莎"
@@ -22,6 +28,12 @@
 			"path": "pages/my/aboutus",
 			"style": {
 				"navigationBarTitleText": "关于我们"
+			}
+		},
+		{
+			"path": "pages/my/wechat-setting",
+			"style": {
+				"navigationBarTitleText": "微信登录设置"
 			}
 		},
 		{
@@ -203,6 +215,12 @@
 					"path": "material",
 					"style": {
 						"navigationBarTitleText": "物料证件"
+					}
+				},
+				{
+					"path": "webview",
+					"style": {
+						"navigationBarTitleText": "报告预览"
 					}
 				}
 			]

@@ -221,7 +221,16 @@ export default {
 		                    this.imageList.push({ url: res.tempFilePaths[i], progress: 0, error: false }); // 不压缩，直接添加到imageList中
 		                }
 		            }
-		        }
+		        },
+				fail: (err) => {
+					if (err.errMsg && err.errMsg.includes('cancel')) {
+						return;
+					}
+					uni.showToast({
+						title: '选择图片失败，请重试',
+						icon: 'none'
+					});
+				}
 		    });
 		},
 		removeImg(e) {

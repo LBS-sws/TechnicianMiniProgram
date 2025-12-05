@@ -87,7 +87,7 @@
 		<u-popup :show="show" :round="10" mode="bottom" @close="close" @open="open">
 			<view class="abnormal">
 				<view class="title">异常签到/签离</view>
-				<view class="item" v-for="(item,i) in abnormalList"  @click="exceptionHandle(i)">{{item.name}}</view>
+				<view class="item" v-for="(item,i) in abnormalList" :key="i" @click="exceptionHandle(i)">{{item.name}}</view>
 			</view>
 		</u-popup>
 		

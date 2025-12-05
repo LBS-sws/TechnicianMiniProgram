@@ -222,6 +222,26 @@ export default {
 					this.image.scale = 1;
 					this.setImage(res.tempFilePaths[0]);
 				},
+				fail: (err) => {
+					if (err.errMsg.indexOf('authorize') !== -1 || err.errMsg.indexOf('auth') !== -1) {
+						uni.showModal({
+							title: '权限提示',
+							content: '上传图片需要您的相册或相机权限，请前往设置开启',
+							confirmText: '去设置',
+							success: (res) => {
+								if (res.confirm) {
+									uni.openSetting()
+								}
+							}
+						})
+					} else {
+						uni.showToast({
+							title: '选择图片失败，请重试',
+							icon: 'none',
+							duration: 2000
+						});
+					}
+				}
 			});
 		},
 
