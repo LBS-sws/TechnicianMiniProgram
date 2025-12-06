@@ -1274,10 +1274,11 @@ import dayjs from "@/cl-uni/utils/dayjs";
 							uni.hideLoading();
 							console.log('保存成功:', FilePath);
 							
-							// 直接打开PDF预览，不显示任何菜单
+							// 打开PDF预览，并显示右上角菜单（包含分享）
 							wx.openDocument({
 								filePath: FilePath,
 								fileType: 'pdf',
+								showMenu: true,
 								success: (res) => {
 									console.log('打开PDF成功');
 								},
